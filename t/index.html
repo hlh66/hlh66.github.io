@@ -1,13 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>跳转中...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动跳转</title>
+    <script>
+        window.onload = function() {
+            const tunnelUrl = "https://4cb8972bfbff4d36-103-167-135-141.serveousercontent.com";
+            const statusDiv = document.getElementById('status');
+            const redirectLink = document.getElementById('redirect-link');
+
+            statusDiv.innerHTML = '正在跳转到: ' + tunnelUrl;
+            redirectLink.href = tunnelUrl;
+            redirectLink.textContent = tunnelUrl;
+
+            setTimeout(() => {
+                window.location.href = tunnelUrl;
+            }, 3000);
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        #status { color: #666; margin: 20px 0; font-size: 16px; }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        a:hover { background: #667eea; color: white; }
+        .info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <script>
-        // 跳转到 www 首页
-        window.location.href = "https://ad663c1.r3.cpolar.top/";
-    </script>
+    <div class="container">
+        <h1>🚀 自动跳转</h1>
+        <div id="status">正在初始化...</div>
+        <a id="redirect-link" href="#">立即跳转</a>
+        <div class="info">
+            <p>系统会自动跳转到最新的隧道地址</p>
+            <p>如果页面没有自动跳转，请点击上方按钮</p>
+        </div>
+    </div>
 </body>
 </html>
