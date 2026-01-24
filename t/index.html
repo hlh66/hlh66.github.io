@@ -3,39 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自动跳转</title>
-    <script>
-        window.onload = function() {
-            const tunnelUrl = "https://93f168db57906fcb-120-235-87-244.serveousercontent.com";
-            window.location.href = tunnelUrl;
-        };
-    </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 500px;
-        }
-        h1 { color: #333; margin-bottom: 20px; }
-        #status { color: #666; margin: 20px 0; font-size: 16px; }
-    </style>
+    <title>跳转中...</title>
+    <meta http-equiv="refresh" content="0;url=https://d76c9fa746ca2f07-120-235-87-244.serveousercontent.com">
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 正在跳转...</h1>
-        <div id="status">请稍候</div>
+    <script>
+        var targetUrl = "https://d76c9fa746ca2f07-120-235-87-244.serveousercontent.com";
+        try {
+            window.location.replace(targetUrl);
+        } catch(e) {
+            window.location.href = targetUrl;
+        }
+    </script>
+    <div style="text-align:center;padding:50px;font-family:Arial,sans-serif;">
+        <h1>正在跳转...</h1>
+        <p><a href="https://d76c9fa746ca2f07-120-235-87-244.serveousercontent.com">如果未自动跳转，请点击这里</a></p>
+        <p style="color:#666;font-size:12px;">目标地址: https://d76c9fa746ca2f07-120-235-87-244.serveousercontent.com</p>
     </div>
 </body>
 </html>
