@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正在跳转...</title>
+    <title>自动跳转</title>
     <script>
-        // 读取本地的link.json（由GitHub Actions同步）
-        fetch('link.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('无法读取链接文件');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.url) {
-                    window.location.href = data.url;
-                } else {
-                    document.body.innerHTML = '<p>链接为空</p>';
-                }
-            })
-            .catch(error => {
-                document.body.innerHTML = '<p>跳转失败: ' + error.message + '</p>';
-            });
+        window.onload = function() {
+            const tunnelUrl = "https://8f8cc9064259cdfb-120-235-87-244.serveousercontent.com";
+            window.location.href = tunnelUrl;
+        };
     </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        #status { color: #666; margin: 20px 0; font-size: 16px; }
+    </style>
 </head>
 <body>
-    <p>正在跳转...</p>
+    <div class="container">
+        <h1>🚀 正在跳转...</h1>
+        <div id="status">请稍候</div>
+    </div>
 </body>
 </html>
