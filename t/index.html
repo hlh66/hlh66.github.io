@@ -3,39 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自动跳转</title>
+    <title>正在跳转...</title>
+    <meta http-equiv="refresh" content="0; url=https://gitee.com/alin489/nn/blob/master/执行反馈.md">
     <script>
-        window.onload = function() {
-            const tunnelUrl = "https://5eb7b5bb55af40f9-120-235-87-244.serveousercontent.com";
-            window.location.href = tunnelUrl;
-        };
+        // 直接跳转，不需要fetch
+        window.location.replace("https://gitee.com/alin489/nn/blob/master/执行反馈.md");
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 500px;
-        }
-        h1 { color: #333; margin-bottom: 20px; }
-        #status { color: #666; margin: 20px 0; font-size: 16px; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 正在跳转...</h1>
-        <div id="status">请稍候</div>
-    </div>
+    <p>正在跳转到Gitee...</p>
+    <noscript>
+        <a href="https://gitee.com/alin489/nn/blob/master/执行反馈.md">点击此处跳转</a>
+    </noscript>
 </body>
 </html>
