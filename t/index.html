@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>正在跳转...</title>
-    <meta http-equiv="refresh" content="0; url=https://gitee.com/alin489/nn/blob/master/执行反馈.md">
     <script>
-        // 直接跳转，不需要fetch
-        window.location.replace("https://gitee.com/alin489/nn/blob/master/执行反馈.md");
+        // 读取本地的link.json（由GitHub Actions同步）
+        fetch('link.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('无法读取链接文件');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    document.body.innerHTML = '<p>链接为空</p>';
+                }
+            })
+            .catch(error => {
+                document.body.innerHTML = '<p>跳转失败: ' + error.message + '</p>';
+            });
     </script>
 </head>
 <body>
-    <p>正在跳转到Gitee...</p>
-    <noscript>
-        <a href="https://gitee.com/alin489/nn/blob/master/执行反馈.md">点击此处跳转</a>
-    </noscript>
+    <p>正在跳转...</p>
 </body>
 </html>
