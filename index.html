@@ -1,29 +1,909 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>正在跳转...</title>
-    <!-- 主跳转方式1：Meta Refresh -->
-    <meta http-equiv="refresh" content="0; url=https://www.tldraw.com/f/S79o2B3APeTpouS1TuTFP?d=v-41.-159.3103.1643.Lv9rHuEwfrW2QGakvkQk_">
-    <!-- 主跳转方式2：JS跳转（更快） -->
-    <script>
-        try {
-            // 尝试直接跳转（兼容大多数浏览器）
-            window.location.replace("https://www.tldraw.com/f/S79o2B3APeTpouS1TuTFP?d=v-41.-159.3103.1643.Lv9rHuEwfrW2QGakvkQk_");
-        } catch(e) {
-            // 如果失败，使用meta refresh
-            document.write('<meta http-equiv="refresh" content="0;url=https://www.tldraw.com/f/S79o2B3APeTpouS1TuTFP?d=v-41.-159.3103.1643.Lv9rHuEwfrW2QGakvkQk_">');
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    </script>
-    <!-- 防止浏览器缓存导致不跳转 -->
-    <meta http-equiv="pragma" content="no-cache">
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="expires" content="0">
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        /* 头部区域 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* 自我介绍 */
+        .intro-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .intro-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        .intro-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .edit-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+        
+        .edit-btn:hover {
+            background: #5568d3;
+        }
+        
+        /* 励志名言 */
+        .quote-section {
+            padding: 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .quote-content {
+            font-size: 24px;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .quote-author {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .refresh-quote {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-quote:hover {
+            background: white;
+            color: #f5576c;
+        }
+        
+        /* 导航区域 */
+        .nav-section {
+            padding: 40px;
+        }
+        
+        .nav-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .card p {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        /* 笔记区域 */
+        .notes-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .notes-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        .notes-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .note-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .note-item:last-child {
+            border-bottom: none;
+        }
+        
+        .note-content {
+            flex: 1;
+            padding-right: 15px;
+        }
+        
+        .note-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .note-text {
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .add-note-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .add-note-form input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .add-note-form input:focus {
+            border-color: #667eea;
+        }
+        
+        .add-note-form button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .add-note-form button:hover {
+            background: #5568d3;
+        }
+        
+        /* 编辑器 */
+        .editor {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .editor.active {
+            display: flex;
+        }
+        
+        .editor-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .editor h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .editor textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+        
+        .editor textarea:focus {
+            border-color: #667eea;
+        }
+        
+        .editor-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .editor-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .editor-buttons .save {
+            background: #28a745;
+            color: white;
+        }
+        
+        .editor-buttons .cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        /* 导航链接编辑器 */
+        .nav-link-editor {
+            margin-bottom: 15px;
+        }
+        
+        .nav-link-editor .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link-editor label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .nav-link-editor input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .nav-link-editor input:focus {
+            border-color: #667eea;
+        }
+        
+        .nav-link-editor .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .nav-link-editor .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        .add-nav-link {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .add-nav-link:hover {
+            background: #5568d3;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .quote-content {
+                font-size: 20px;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .add-note-form {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 终极备用方案：手动点击链接 -->
-    <noscript>
-        <p>您的浏览器不支持自动跳转，请 <a href="https://www.tldraw.com/f/S79o2B3APeTpouS1TuTFP?d=v-41.-159.3103.1643.Lv9rHuEwfrW2QGakvkQk_" style="color:blue;text-decoration:underline">点击此处</a> 继续访问。</p>
-    </noscript>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>👋 欢迎来到我的个人主页</h1>
+            <p>一个充满创意和灵感的空间</p>
+        </div>
+        
+        <!-- 自我介绍 -->
+        <div class="intro-section">
+            <h2>💫 关于我 <button class="edit-btn" onclick="editIntro()">✏️ 编辑</button></h2>
+            <div class="intro-content" id="introContent">
+                你好！我是一个热爱技术和生活的人。在这里，你可以找到我的各种项目、笔记和创意作品。我热衷于探索新技术，喜欢分享知识和经验。希望这个小小的网络空间能给你带来一些启发和帮助！
+            </div>
+        </div>
+        
+        <!-- 励志名言 -->
+        <div class="quote-section">
+            <div class="quote-content" id="quoteContent">"成功不是终点，失败也非末日，最重要的是继续前进的勇气。"</div>
+            <div class="quote-author" id="quoteAuthor">— 温斯顿·丘吉尔</div>
+            <button class="refresh-quote" onclick="newQuote()">🔄 换一句</button>
+        </div>
+        
+        <!-- 导航区域 -->
+        <div class="nav-section">
+            <h2>📂 快速导航 <button class="edit-btn" onclick="editNavLinks()">✏️ 编辑</button></h2>
+            <div class="card-grid" id="navLinks">
+            </div>
+        </div>
+        
+        <!-- 笔记区域 -->
+        <div class="notes-section">
+            <h2>📚 我的笔记</h2>
+            <div class="notes-container">
+                <div id="notesList">
+                    <div class="note-item">
+                        <div class="note-content">
+                            <div class="note-date">2026-01-24</div>
+                            <div class="note-text">今天完成了个人主页的搭建，包含了自我介绍、导航和励志名言功能。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="add-note-form">
+                    <input type="text" id="newNoteInput" placeholder="写点什么...">
+                    <button onclick="addNote()">➕ 添加笔记</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>© 2026 我的个人主页 | 最后更新: <span id="lastUpdate"></span></p>
+        </div>
+    </div>
+    
+    <!-- 编辑器 -->
+    <div class="editor" id="editor">
+        <div class="editor-content">
+            <h3>✏️ 编辑内容</h3>
+            <textarea id="editorTextarea" placeholder="输入内容..."></textarea>
+            <div class="editor-buttons">
+                <button class="cancel" onclick="closeEditor()">取消</button>
+                <button class="save" onclick="saveContent()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航链接编辑器 -->
+    <div class="editor" id="navEditor">
+        <div class="editor-content">
+            <h3>✏️ 编辑快速导航</h3>
+            <div id="navLinksEditor"></div>
+            <button class="add-nav-link" onclick="addNavLink()">➕ 添加链接</button>
+            <div class="editor-buttons">
+                <button class="cancel" onclick="closeNavEditor()">取消</button>
+                <button class="save" onclick="saveNavLinks()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 励志名言库
+        const quotes = [
+            { text: "成功不是终点，失败也非末日，最重要的是继续前进的勇气。", author: "温斯顿·丘吉尔" },
+            { text: "The only way to do great work is to love what you do.", author: "史蒂夫·乔布斯" },
+            { text: "Believe you can and you're halfway there.", author: "西奥多·罗斯福" },
+            { text: "The future belongs to those who believe in the beauty of their dreams.", author: "埃莉诺·罗斯福" },
+            { text: "It does not matter how slowly you go as long as you do not stop.", author: "孔子" },
+            { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "温斯顿·丘吉尔" },
+            { text: "The only impossible journey is the one you never begin.", author: "托尼·罗宾斯" },
+            { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "拉尔夫·沃尔多·爱默生" },
+            { text: "Your time is limited, don't waste it living someone else's life.", author: "史蒂夫·乔布斯" },
+            { text: "The best way to predict the future is to create it.", author: "彼得·德鲁克" }
+        ];
+        
+        // 加载保存的内容
+        async function loadContent() {
+            try {
+                // 从后端加载数据
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                
+                // 加载自我介绍
+                if (data.introContent) {
+                    document.getElementById('introContent').textContent = data.introContent;
+                }
+                
+                // 加载笔记
+                if (data.myNotes) {
+                    renderNotes(data.myNotes);
+                }
+                
+                // 加载导航链接
+                if (data.navLinks) {
+                    renderNavLinks(data.navLinks);
+                } else {
+                    // 默认导航链接
+                    const defaultLinks = [
+                        { icon: '🎮', title: '游戏娱乐', desc: 'XNKL游戏和娱乐项目', url: '/xnkl/' },
+                        { icon: '📹', title: '摄像头视频', desc: '监控录像文件查看', url: '/camera_video/' },
+                        { icon: '📝', title: '我的笔记', desc: '在线笔记编辑器', url: '/chat_notes/notes/' },
+                        { icon: '💻', title: 'Web终端', desc: '在线命令执行终端', url: '/term/' },
+                        { icon: '🔗', title: 'Gitee仓库', desc: '我的代码和文档', url: 'https://gitee.com/alin489/my-notes' }
+                    ];
+                    renderNavLinks(defaultLinks);
+                }
+                
+                // 更新时间
+                if (data.lastUpdate) {
+                    document.getElementById('lastUpdate').textContent = new Date(data.lastUpdate).toLocaleString('zh-CN');
+                } else {
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                // 如果后端失败，尝试从localStorage加载
+                const savedIntro = localStorage.getItem('introContent');
+                if (savedIntro) {
+                    document.getElementById('introContent').textContent = savedIntro;
+                }
+                
+                const savedNotes = localStorage.getItem('myNotes');
+                if (savedNotes) {
+                    const notes = JSON.parse(savedNotes);
+                    renderNotes(notes);
+                }
+                
+                const savedNavLinks = localStorage.getItem('navLinks');
+                if (savedNavLinks) {
+                    renderNavLinks(JSON.parse(savedNavLinks));
+                } else {
+                    const defaultLinks = [
+                        { icon: '🎮', title: '游戏娱乐', desc: 'XNKL游戏和娱乐项目', url: '/xnkl/' },
+                        { icon: '📹', title: '摄像头视频', desc: '监控录像文件查看', url: '/camera_video/' },
+                        { icon: '📝', title: '我的笔记', desc: '在线笔记编辑器', url: '/chat_notes/notes/' },
+                        { icon: '💻', title: 'Web终端', desc: '在线命令执行终端', url: '/term/' },
+                        { icon: '🔗', title: 'Gitee仓库', desc: '我的代码和文档', url: 'https://gitee.com/alin489/my-notes' }
+                    ];
+                    renderNavLinks(defaultLinks);
+                }
+                
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+            }
+        }
+        
+        // 渲染导航链接
+        function renderNavLinks(links) {
+            const navLinksContainer = document.getElementById('navLinks');
+            navLinksContainer.innerHTML = '';
+            
+            links.forEach(link => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = function() {
+                    if (link.url.startsWith('http')) {
+                        window.open(link.url);
+                    } else {
+                        window.location.href = link.url;
+                    }
+                };
+                card.innerHTML = `
+                    <div class="card-icon">${link.icon}</div>
+                    <h3>${link.title}</h3>
+                    <p>${link.desc}</p>
+                `;
+                navLinksContainer.appendChild(card);
+            });
+        }
+        
+        // 编辑导航链接
+        function editNavLinks() {
+            const navLinksContainer = document.getElementById('navLinks');
+            const cards = navLinksContainer.querySelectorAll('.card');
+            
+            const editorContainer = document.getElementById('navLinksEditor');
+            editorContainer.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const icon = card.querySelector('.card-icon').textContent;
+                const title = card.querySelector('h3').textContent;
+                const desc = card.querySelector('p').textContent;
+                
+                const linkEditor = document.createElement('div');
+                linkEditor.className = 'nav-link-editor';
+                linkEditor.innerHTML = `
+                    <div class="form-group">
+                        <label>图标</label>
+                        <input type="text" class="nav-icon" value="${icon}" placeholder="例如: 🎮">
+                    </div>
+                    <div class="form-group">
+                        <label>标题</label>
+                        <input type="text" class="nav-title" value="${title}" placeholder="例如: 游戏娱乐">
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <input type="text" class="nav-desc" value="${desc}" placeholder="例如: XNKL游戏和娱乐项目">
+                    </div>
+                    <div class="form-group">
+                        <label>链接</label>
+                        <input type="text" class="nav-url" value="" placeholder="例如: /xnkl/ 或 https://example.com">
+                    </div>
+                    <button class="remove-btn" onclick="this.parentElement.remove()">删除</button>
+                `;
+                editorContainer.appendChild(linkEditor);
+            });
+            
+            document.getElementById('navEditor').classList.add('active');
+        }
+        
+        // 添加导航链接
+        function addNavLink() {
+            const editorContainer = document.getElementById('navLinksEditor');
+            const linkEditor = document.createElement('div');
+            linkEditor.className = 'nav-link-editor';
+            linkEditor.innerHTML = `
+                <div class="form-group">
+                    <label>图标</label>
+                    <input type="text" class="nav-icon" value="🔗" placeholder="例如: 🎮">
+                </div>
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" class="nav-title" value="" placeholder="例如: 游戏娱乐">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <input type="text" class="nav-desc" value="" placeholder="例如: XNKL游戏和娱乐项目">
+                </div>
+                <div class="form-group">
+                    <label>链接</label>
+                    <input type="text" class="nav-url" value="" placeholder="例如: /xnkl/ 或 https://example.com">
+                </div>
+                <button class="remove-btn" onclick="this.parentElement.remove()">删除</button>
+            `;
+            editorContainer.appendChild(linkEditor);
+        }
+        
+        // 关闭导航编辑器
+        function closeNavEditor() {
+            document.getElementById('navEditor').classList.remove('active');
+        }
+        
+        // 保存导航链接
+        async function saveNavLinks() {
+            const linkEditors = document.querySelectorAll('.nav-link-editor');
+            const links = [];
+            
+            linkEditors.forEach(editor => {
+                const icon = editor.querySelector('.nav-icon').value;
+                const title = editor.querySelector('.nav-title').value;
+                const desc = editor.querySelector('.nav-desc').value;
+                const url = editor.querySelector('.nav-url').value;
+                
+                if (title && url) {
+                    links.push({ icon, title, desc, url });
+                }
+            });
+            
+            try {
+                // 保存到后端
+                const response = await fetch('/api/navlinks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ navLinks: links })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderNavLinks(links);
+                    closeNavEditor();
+                    alert('保存成功！');
+                } else {
+                    alert('保存失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('保存失败:', error);
+                // 如果后端失败，保存到localStorage
+                localStorage.setItem('navLinks', JSON.stringify(links));
+                renderNavLinks(links);
+                closeNavEditor();
+                alert('已保存到本地（后端连接失败）');
+            }
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        // 新的励志名言
+        function newQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const quote = quotes[randomIndex];
+            document.getElementById('quoteContent').textContent = `"${quote.text}"`;
+            document.getElementById('quoteAuthor').textContent = `— ${quote.author}`;
+        }
+        
+        // 编辑自我介绍
+        function editIntro() {
+            const content = document.getElementById('introContent').textContent;
+            document.getElementById('editorTextarea').value = content;
+            document.getElementById('editor').classList.add('active');
+            currentEditType = 'intro';
+        }
+        
+        // 关闭编辑器
+        function closeEditor() {
+            document.getElementById('editor').classList.remove('active');
+        }
+        
+        // 保存内容
+        async function saveContent() {
+            const content = document.getElementById('editorTextarea').value;
+            
+            if (currentEditType === 'intro') {
+                document.getElementById('introContent').textContent = content;
+                
+                try {
+                    // 保存到后端
+                    const response = await fetch('/api/intro', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ content: content })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // 同时保存到localStorage作为备份
+                        localStorage.setItem('introContent', content);
+                        alert('保存成功！');
+                    } else {
+                        alert('保存失败：' + result.message);
+                    }
+                } catch (error) {
+                    console.error('保存失败:', error);
+                    // 如果后端失败，保存到localStorage
+                    localStorage.setItem('introContent', content);
+                    alert('已保存到本地（后端连接失败）');
+                }
+            }
+            
+            closeEditor();
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        // 渲染笔记
+        function renderNotes(notes) {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = '';
+            
+            notes.forEach(note => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <div class="note-content">
+                        <div class="note-date">${note.date}</div>
+                        <div class="note-text">${note.text}</div>
+                    </div>
+                    <button onclick="deleteNote(${note.id})" style="background:#dc3545;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">删除</button>
+                `;
+                notesList.appendChild(noteItem);
+            });
+        }
+        
+        // 添加笔记
+        async function addNote() {
+            const input = document.getElementById('newNoteInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            try {
+                // 保存到后端
+                const response = await fetch('/api/notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 重新加载笔记
+                    await loadContent();
+                    input.value = '';
+                } else {
+                    alert('添加失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('添加失败:', error);
+                // 如果后端失败，保存到localStorage
+                const notes = JSON.parse(localStorage.getItem('myNotes') || '[]');
+                const newNote = {
+                    id: Date.now(),
+                    text: text,
+                    date: new Date().toLocaleDateString('zh-CN')
+                };
+                
+                notes.unshift(newNote);
+                localStorage.setItem('myNotes', JSON.stringify(notes));
+                
+                renderNotes(notes);
+                input.value = '';
+                alert('已保存到本地（后端连接失败）');
+            }
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        // 删除笔记
+        async function deleteNote(id) {
+            if (!confirm('确定要删除这条笔记吗？')) return;
+            
+            try {
+                // 从后端删除
+                const response = await fetch('/api/notes', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 重新加载笔记
+                    await loadContent();
+                } else {
+                    alert('删除失败：' + result.message);
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+                // 如果后端失败，从localStorage删除
+                let notes = JSON.parse(localStorage.getItem('myNotes') || '[]');
+                notes = notes.filter(note => note.id !== id);
+                localStorage.setItem('myNotes', JSON.stringify(notes));
+                
+                renderNotes(notes);
+                alert('已从本地删除（后端连接失败）');
+            }
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        let currentEditType = '';
+        
+        // 初始化
+        loadContent();
+        
+        // 按Enter键添加笔记
+        document.getElementById('newNoteInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addNote();
+            }
+        });
+    </script>
 </body>
 </html>
