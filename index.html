@@ -328,23 +328,41 @@
         .formula-card {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             border-radius: 20px;
-            padding: 40px;
+            padding: 50px 40px;
             text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
         
         .formula-text {
-            font-size: 36px;
+            font-size: 42px;
             font-family: 'Times New Roman', serif;
             margin-bottom: 15px;
             color: #333;
+            animation: fadeInUp 0.6s ease-out;
         }
         
         .formula-name {
-            font-size: 18px;
+            font-size: 20px;
             color: #666;
             font-style: italic;
+        }
+        
+        .refresh-formula {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .refresh-formula:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
         }
         
         /* 英语单词卡片 */
@@ -507,16 +525,11 @@
         <div class="math-section">
             <h2>🔢 经典数学公式</h2>
             <div class="formula-card">
-                <div class="formula-text">E = mc²</div>
-                <div class="formula-name">爱因斯坦质能方程</div>
+                <div class="formula-text" id="formulaText">E = mc²</div>
+                <div class="formula-name" id="formulaName">爱因斯坦质能方程</div>
             </div>
-            <div class="formula-card">
-                <div class="formula-text">e^(iπ) + 1 = 0</div>
-                <div class="formula-name">欧拉公式 - 最美的数学公式</div>
-            </div>
-            <div class="formula-card">
-                <div class="formula-text">a² + b² = c²</div>
-                <div class="formula-name">勾股定理</div>
+            <div style="text-align: center;">
+                <button class="refresh-formula" onclick="newFormula()">🔄 换一个</button>
             </div>
         </div>
         
@@ -556,6 +569,36 @@
                 particle.style.animationDuration = Math.random() * 10 + 10 + 's';
                 container.appendChild(particle);
             }
+        }
+        
+        // 数学公式库
+        const formulas = [
+            { text: "E = mc²", name: "爱因斯坦质能方程" },
+            { text: "e^(iπ) + 1 = 0", name: "欧拉公式 - 最美的数学公式" },
+            { text: "a² + b² = c²", name: "勾股定理" },
+            { text: "∫ e^x dx = e^x + C", name: "指数函数积分" },
+            { text: "sin²θ + cos²θ = 1", name: "三角恒等式" },
+            { text: "π = 3.14159265359...", name: "圆周率" },
+            { text: "ln(ab) = ln(a) + ln(b)", name: "对数性质" },
+            { text: "a^m × a^n = a^(m+n)", name: "指数法则" },
+            { text: "∑(i=1 to n) i = n(n+1)/2", name: "等差数列求和" },
+            { text: "∫ x^n dx = x^(n+1)/(n+1) + C", name: "幂函数积分" }
+        ];
+        
+        // 切换数学公式
+        function newFormula() {
+            const randomIndex = Math.floor(Math.random() * formulas.length);
+            const formulaData = formulas[randomIndex];
+            const formulaTextEl = document.getElementById('formulaText');
+            const formulaNameEl = document.getElementById('formulaName');
+            
+            // 添加动画效果
+            formulaTextEl.style.animation = 'none';
+            formulaTextEl.offsetHeight; // 触发重排
+            formulaTextEl.style.animation = 'fadeInUp 0.6s ease-out';
+            
+            formulaTextEl.textContent = formulaData.text;
+            formulaNameEl.textContent = formulaData.name;
         }
         
         // 英语单词库
@@ -646,6 +689,7 @@
             createParticles();
             newQuote();
             newWord();
+            newFormula();
         });
     </script>
 </body>
