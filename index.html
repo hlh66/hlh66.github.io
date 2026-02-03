@@ -392,6 +392,13 @@
             font-weight: bold;
             margin-bottom: 15px;
             animation: fadeInUp 0.6s ease-out;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        
+        .word:hover {
+            transform: scale(1.1);
         }
         
         .phonetic {
@@ -407,7 +414,14 @@
             opacity: 0.95;
         }
         
-        .refresh-word {
+        .word-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .refresh-word, .play-word {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 2px solid white;
@@ -415,11 +429,10 @@
             border-radius: 30px;
             cursor: pointer;
             font-size: 15px;
-            margin-top: 30px;
             transition: all 0.3s;
         }
         
-        .refresh-word:hover {
+        .refresh-word:hover, .play-word:hover {
             background: white;
             color: #667eea;
             transform: scale(1.05);
@@ -473,8 +486,8 @@
     <div class="container">
         <!-- 头部 -->
         <div class="header">
-            <h1>📚 学习空间</h1>
-            <p>洪老师 Mr.Hong | 探索英语与数学的奇妙世界</p>
+            <h1>📚 洪老师 Mr.Hong 学习空间</h1>
+            <p>英语 & 数学</p>
         </div>
         
         <!-- 励志名言 -->
@@ -488,35 +501,35 @@
         <div class="nav-section">
             <h2>🎯 学习导航</h2>
             <div class="card-grid">
-                <div class="card" onclick="window.open('https://www.duolingo.com/', '_blank')">
-                    <div class="card-icon">🦉</div>
-                    <h3>Duolingo</h3>
-                    <p>趣味英语学习平台</p>
+                <div class="card" onclick="window.open('https://www.xuexi.cn/', '_blank')">
+                    <div class="card-icon">📚</div>
+                    <h3>学习强国</h3>
+                    <p>优质教育资源平台</p>
                 </div>
-                <div class="card" onclick="window.open('https://www.khanacademy.org/', '_blank')">
-                    <div class="card-icon">📐</div>
-                    <h3>Khan Academy</h3>
-                    <p>免费数学课程</p>
+                <div class="card" onclick="window.open('https://www.zxxk.com/', '_blank')">
+                    <div class="card-icon">✏️</div>
+                    <h3>学科网</h3>
+                    <p>小学英语数学资源</p>
                 </div>
-                <div class="card" onclick="window.open('https://www.bilibili.com/', '_blank')">
-                    <div class="card-icon">📺</div>
-                    <h3>Bilibili</h3>
-                    <p>英语数学学习视频</p>
+                <div class="card" onclick="window.open('https://www.21cnjy.com/', '_blank')">
+                    <div class="card-icon">📝</div>
+                    <h3>21世纪教育网</h3>
+                    <p>中小学学习资料</p>
                 </div>
-                <div class="card" onclick="window.open('https://www.dictionary.com/', '_blank')">
-                    <div class="card-icon">📖</div>
-                    <h3>Dictionary</h3>
-                    <p>在线英语词典</p>
-                </div>
-                <div class="card" onclick="window.open('https://www.wolframalpha.com/', '_blank')">
-                    <div class="card-icon">🧮</div>
-                    <h3>Wolfram Alpha</h3>
-                    <p>数学计算引擎</p>
-                </div>
-                <div class="card" onclick="window.open('https://www.oxfordlearnersdictionaries.com/', '_blank')">
+                <div class="card" onclick="window.open('https://www.yjbys.com/', '_blank')">
                     <div class="card-icon">🎓</div>
-                    <h3>Oxford Dictionary</h3>
-                    <p>牛津英语学习词典</p>
+                    <h3>应届毕业生网</h3>
+                    <p>教育资源下载</p>
+                </div>
+                <div class="card" onclick="window.open('https://www.pep.com.cn/', '_blank')">
+                    <div class="card-icon">📖</div>
+                    <h3>人教版官网</h3>
+                    <p>官方教材资源</p>
+                </div>
+                <div class="card" onclick="window.open('https://www.51zxw.net/', '_blank')">
+                    <div class="card-icon">💻</div>
+                    <h3>我要自学网</h3>
+                    <p>免费视频教程</p>
                 </div>
             </div>
         </div>
@@ -537,11 +550,12 @@
         <div class="english-section">
             <h2>📖 每日英语</h2>
             <div class="word-card">
-                <div class="word" id="wordText">Determination</div>
+                <div class="word" id="wordText" onclick="playWord()">Determination 🔊</div>
                 <div class="phonetic" id="wordPhonetic">/dɪˌtɜːmɪˈneɪʃn/</div>
                 <div class="definition" id="wordDefinition">n. 决心；决意；果断</div>
             </div>
-            <div style="text-align: center;">
+            <div class="word-buttons">
+                <button class="play-word" onclick="playWord()">🔊 朗读</button>
                 <button class="refresh-word" onclick="newWord()">🔄 换一个</button>
             </div>
         </div>
@@ -628,9 +642,21 @@
             wordEl.offsetHeight; // 触发重排
             wordEl.style.animation = 'fadeInUp 0.6s ease-out';
             
-            wordEl.textContent = wordData.word;
+            wordEl.textContent = wordData.word + ' 🔊';
             phoneticEl.textContent = wordData.phonetic;
             definitionEl.textContent = wordData.definition;
+            
+            // 自动朗读
+            playWord(wordData.word);
+        }
+        
+        // 朗读单词
+        function playWord(word) {
+            const wordToRead = word || document.getElementById('wordText').textContent.replace(' 🔊', '');
+            const utterance = new SpeechSynthesisUtterance(wordToRead);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
         }
         
         // 励志名言库（中英文混合）
