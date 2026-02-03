@@ -480,7 +480,7 @@
     
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop>
-        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/KieLoKaz/Free_Ganymed/KieLoKaz_-_01_-_Reunion_of_the_Spirits.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
     </audio>
     
     <div class="container">
@@ -759,13 +759,19 @@
         const musicIcon = document.getElementById('musicIcon');
         const musicStatus = document.getElementById('musicStatus');
         
+        // 设置初始音量
+        bgMusic.volume = 0.5;
+        
         function toggleMusic() {
             if (isPlaying) {
                 bgMusic.pause();
                 musicIcon.textContent = '🎵';
                 musicStatus.textContent = '点击播放';
             } else {
-                bgMusic.play();
+                bgMusic.play().catch(e => {
+                    console.log('播放失败:', e);
+                    alert('音乐播放失败，请检查网络连接');
+                });
                 musicIcon.textContent = '⏸️';
                 musicStatus.textContent = '点击暂停';
             }
