@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>快速跳转 - 内网穿透记录</title>
+    <title>正在跳转...</title>
+    <meta http-equiv="refresh" content="3;url=https://gitee.com/alin489/nn/blob/master/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E8%AE%B0%E5%BD%95.md">
     <style>
         * {
             margin: 0;
@@ -33,10 +34,23 @@
             margin-bottom: 20px;
             font-size: 28px;
         }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .info {
             color: #666;
             font-size: 16px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             line-height: 1.6;
         }
         .btn {
@@ -55,30 +69,18 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
-        .btn:active {
-            transform: translateY(0);
-        }
-        .footer {
-            margin-top: 30px;
-            color: #999;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 内网穿透记录</h1>
+        <div class="spinner"></div>
+        <h1>🚀 正在跳转</h1>
         <div class="info">
-            点击下方按钮跳转到 Gitee 查看最新的内网穿透链接
+            页面将在 3 秒后自动跳转到 Gitee 内网穿透记录...
         </div>
-        
-        <a href="https://gitee.com/alin489/nn/blob/master/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E8%AE%B0%E5%BD%95.md" class="btn" target="_blank">
-            跳转到 Gitee →
+        <a href="https://gitee.com/alin489/nn/blob/master/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E8%AE%B0%E5%BD%95.md" class="btn">
+            立即跳转 →
         </a>
-        
-        <div class="footer">
-            数据来源: Gitee - alin489/nn
-        </div>
     </div>
 </body>
 </html>
