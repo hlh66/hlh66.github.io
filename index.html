@@ -361,36 +361,50 @@
         }
         
         .word-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-        
-        .word-card:hover {
-            transform: translateX(10px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            color: white;
         }
         
         .word {
-            font-size: 28px;
+            font-size: 42px;
             font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            animation: fadeInUp 0.6s ease-out;
         }
         
         .phonetic {
-            font-size: 16px;
-            color: #999;
-            margin-bottom: 10px;
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            font-family: 'Times New Roman', serif;
         }
         
         .definition {
-            font-size: 16px;
-            color: #555;
-            line-height: 1.6;
+            font-size: 20px;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+        
+        .refresh-word {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-word:hover {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
         }
         
         /* 页脚 */
@@ -510,19 +524,12 @@
         <div class="english-section">
             <h2>📖 每日英语</h2>
             <div class="word-card">
-                <div class="word">Determination</div>
-                <div class="phonetic">/dɪˌtɜːmɪˈneɪʃn/</div>
-                <div class="definition">n. 决心；决意；果断</div>
+                <div class="word" id="wordText">Determination</div>
+                <div class="phonetic" id="wordPhonetic">/dɪˌtɜːmɪˈneɪʃn/</div>
+                <div class="definition" id="wordDefinition">n. 决心；决意；果断</div>
             </div>
-            <div class="word-card">
-                <div class="word">Persistence</div>
-                <div class="phonetic">/pəˈsɪstəns/</div>
-                <div class="definition">n. 坚持；执着；连续性</div>
-            </div>
-            <div class="word-card">
-                <div class="word">Achievement</div>
-                <div class="phonetic">/əˈtʃiːvmənt/</div>
-                <div class="definition">n. 成就；完成；达到</div>
+            <div style="text-align: center;">
+                <button class="refresh-word" onclick="newWord()">🔄 换一个</button>
             </div>
         </div>
         
@@ -549,6 +556,38 @@
                 particle.style.animationDuration = Math.random() * 10 + 10 + 's';
                 container.appendChild(particle);
             }
+        }
+        
+        // 英语单词库
+        const words = [
+            { word: "Determination", phonetic: "/dɪˌtɜːmɪˈneɪʃn/", definition: "n. 决心；决意；果断" },
+            { word: "Persistence", phonetic: "/pəˈsɪstəns/", definition: "n. 坚持；执着；连续性" },
+            { word: "Achievement", phonetic: "/əˈtʃiːvmənt/", definition: "n. 成就；完成；达到" },
+            { word: "Diligence", phonetic: "/ˈdɪlɪdʒəns/", definition: "n. 勤奋；努力" },
+            { word: "Ambition", phonetic: "/æmˈbɪʃn/", definition: "n. 雄心；抱负；野心" },
+            { word: "Knowledge", phonetic: "/ˈnɒlɪdʒ/", definition: "n. 知识；学问；了解" },
+            { word: "Excellence", phonetic: "/ˈeksələns/", definition: "n. 优秀；卓越；杰出" },
+            { word: "Creativity", phonetic: "/ˌkriːeɪˈtɪvəti/", definition: "n. 创造力；创造性" },
+            { word: "Wisdom", phonetic: "/ˈwɪzdəm/", definition: "n. 智慧；明智；学识" },
+            { word: "Courage", phonetic: "/ˈkʌrɪdʒ/", definition: "n. 勇气；胆量；无畏" }
+        ];
+        
+        // 切换英语单词
+        function newWord() {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            const wordData = words[randomIndex];
+            const wordEl = document.getElementById('wordText');
+            const phoneticEl = document.getElementById('wordPhonetic');
+            const definitionEl = document.getElementById('wordDefinition');
+            
+            // 添加动画效果
+            wordEl.style.animation = 'none';
+            wordEl.offsetHeight; // 触发重排
+            wordEl.style.animation = 'fadeInUp 0.6s ease-out';
+            
+            wordEl.textContent = wordData.word;
+            phoneticEl.textContent = wordData.phonetic;
+            definitionEl.textContent = wordData.definition;
         }
         
         // 英语励志名言库
@@ -606,6 +645,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             newQuote();
+            newWord();
         });
     </script>
 </body>
