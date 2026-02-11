@@ -173,11 +173,11 @@
     <div class="container">
         <div class="loader"></div>
         <h1>正在跳转</h1>
-        <p>正在检测最佳访问路径...</p>
-        <div class="status" id="status">正在检测链接可用性...</div>
+        <p>正在检测线路1...</p>
+        <div class="status" id="status">优先检测线路1可用性</div>
         <div class="links">
-            <a href="http://s0.v100.vip:10989/wx/" class="link primary" id="link1">主链接</a>
-            <a href="https://news.ixbk.net/" class="link" id="link2">备用链接</a>
+            <a href="http://s0.v100.vip:10989/wx/" class="link primary" id="link1">线路1</a>
+            <a href="https://news.ixbk.net/" class="link" id="link2">线路2</a>
         </div>
     </div>
 
@@ -185,82 +185,145 @@
         const primaryUrl = 'http://s0.v100.vip:10989/wx/';
         const backupUrl = 'https://news.ixbk.net/';
         const statusEl = document.getElementById('status');
+        const line1El = document.getElementById('link1');
         
-        // 尝试检测主链接是否可用
-        async function checkAndRedirect() {
-            try {
-                statusEl.textContent = '正在检测主链接...';
-                
-                // 使用 fetch 尝试检测主链接
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                try {
-                    const response = await fetch(primaryUrl, {
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    statusEl.textContent = '主链接可用，正在跳转...';
-                    statusEl.style.color = '#90EE90';
-                    
-                    // 延迟跳转以便用户看到状态
-                    setTimeout(() => {
-                        window.location.href = primaryUrl;
-                    }, 1000);
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    // 由于跨域限制，fetch 可能会失败，尝试 img 加载测试
-                    await testWithImage();
-                }
-            } catch (error) {
-                console.error('检测失败:', error);
-                fallbackToBackup();
+        let checkAttempts = 0;
+        const maxAttempts = 3; // 线路1最多尝试3次
+        
+        // 尝试检测线路1是否可用
+        async function checkLine1() {
+            checkAttempts++;
+            statusEl.textContent = `正在检测线路1... (尝试 ${checkAttempts}/${maxAttempts})`;
+            
+            // 方法1: 尝试图片加载检测
+            const imageResult = await testWithImage();
+            if (imageResult) {
+                // 线路1可用
+                statusEl.textContent = '线路1可用，正在跳转...';
+                statusEl.style.color = '#90EE90';
+                line1El.style.background = 'rgba(144, 238, 144, 0.4)';
+                setTimeout(() => {
+                    window.location.href = primaryUrl;
+                }, 1000);
+                return true;
             }
+            
+            // 方法2: 尝试fetch检测
+            const fetchResult = await testWithFetch();
+            if (fetchResult) {
+                statusEl.textContent = '线路1可用，正在跳转...';
+                statusEl.style.color = '#90EE90';
+                line1El.style.background = 'rgba(144, 238, 144, 0.4)';
+                setTimeout(() => {
+                    window.location.href = primaryUrl;
+                }, 1000);
+                return true;
+            }
+            
+            // 如果还有尝试次数，继续重试
+            if (checkAttempts < maxAttempts) {
+                setTimeout(checkLine1, 1500);
+                return false;
+            }
+            
+            // 线路1确实不可用，切换到线路2
+            fallbackToLine2();
+            return false;
         }
         
         // 使用图片加载测试链接可用性
         function testWithImage() {
             return new Promise((resolve) => {
-                statusEl.textContent = '备用检测中...';
                 const img = new Image();
+                let resolved = false;
+                
                 img.onload = () => {
-                    statusEl.textContent = '主链接可用，正在跳转...';
-                    statusEl.style.color = '#90EE90';
-                    setTimeout(() => {
-                        window.location.href = primaryUrl;
-                    }, 1000);
-                    resolve();
+                    if (!resolved) {
+                        resolved = true;
+                        console.log('图片加载成功');
+                        resolve(true);
+                    }
                 };
+                
                 img.onerror = () => {
-                    fallbackToBackup();
-                    resolve();
+                    if (!resolved) {
+                        resolved = true;
+                        console.log('图片加载失败');
+                        resolve(false);
+                    }
                 };
-                // 尝试加载 favicon
-                img.src = primaryUrl + 'favicon.ico?' + Date.now();
+                
+                // 尝试加载多个可能的资源
+                const testResources = ['favicon.ico', 'logo.png', 'index.html'];
+                let resourceIndex = 0;
+                
+                function tryNextResource() {
+                    if (resourceIndex >= testResources.length || resolved) {
+                        if (!resolved) {
+                            resolved = true;
+                            resolve(false);
+                        }
+                        return;
+                    }
+                    
+                    img.src = primaryUrl + testResources[resourceIndex] + '?' + Date.now();
+                    resourceIndex++;
+                }
+                
+                tryNextResource();
                 
                 // 设置超时
                 setTimeout(() => {
-                    fallbackToBackup();
-                    resolve();
-                }, 3000);
+                    if (!resolved) {
+                        resolved = true;
+                        resolve(false);
+                    }
+                }, 2500);
             });
         }
         
-        // 跳转到备用链接
-        function fallbackToBackup() {
-            statusEl.textContent = '主链接不可用，正在跳转到备用链接...';
+        // 使用fetch检测链接可用性
+        function testWithFetch() {
+            return new Promise((resolve) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                fetch(primaryUrl, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    signal: controller.signal
+                })
+                .then(() => {
+                    clearTimeout(timeoutId);
+                    console.log('fetch检测成功');
+                    resolve(true);
+                })
+                .catch((error) => {
+                    clearTimeout(timeoutId);
+                    console.log('fetch检测失败:', error);
+                    // fetch失败不代表链接不可用（可能是跨域问题）
+                    // 这种情况下返回false，让其他检测方法继续
+                    resolve(false);
+                });
+            });
+        }
+        
+        // 跳转到线路2
+        function fallbackToLine2() {
+            statusEl.textContent = '线路1不可用，正在切换到线路2...';
             statusEl.style.color = '#FFB6C1';
+            line1El.style.background = 'rgba(255, 182, 193, 0.4)';
+            
             setTimeout(() => {
+                statusEl.textContent = '正在跳转到线路2...';
                 window.location.href = backupUrl;
-            }, 1000);
+            }, 1500);
         }
         
         // 开始检测
         window.addEventListener('load', () => {
-            setTimeout(checkAndRedirect, 500);
+            setTimeout(checkLine1, 800);
         });
     </script>
 </body>
