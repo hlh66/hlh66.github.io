@@ -195,28 +195,26 @@
             checkAttempts++;
             statusEl.textContent = `正在检测线路1... (尝试 ${checkAttempts}/${maxAttempts})`;
             
-            // 方法1: 尝试图片加载检测
-            const imageResult = await testWithImage();
-            if (imageResult) {
+            // 同时启动两种检测方法，任一成功即返回
+            const results = await Promise.allSettled([
+                testWithImage(),
+                testWithFetch()
+            ]);
+            
+            // 检查是否有任一方法成功
+            const imageOk = results[0].status === 'fulfilled' && results[0].value === true;
+            const fetchOk = results[1].status === 'fulfilled' && results[1].value === true;
+            
+            console.log('检测结果 - 图片:', imageOk, 'Fetch:', fetchOk);
+            
+            if (imageOk || fetchOk) {
                 // 线路1可用
                 statusEl.textContent = '线路1可用，正在跳转...';
                 statusEl.style.color = '#90EE90';
                 line1El.style.background = 'rgba(144, 238, 144, 0.4)';
                 setTimeout(() => {
                     window.location.href = primaryUrl;
-                }, 1000);
-                return true;
-            }
-            
-            // 方法2: 尝试fetch检测
-            const fetchResult = await testWithFetch();
-            if (fetchResult) {
-                statusEl.textContent = '线路1可用，正在跳转...';
-                statusEl.style.color = '#90EE90';
-                line1El.style.background = 'rgba(144, 238, 144, 0.4)';
-                setTimeout(() => {
-                    window.location.href = primaryUrl;
-                }, 1000);
+                }, 800);
                 return true;
             }
             
@@ -234,51 +232,49 @@
         // 使用图片加载测试链接可用性
         function testWithImage() {
             return new Promise((resolve) => {
-                const img = new Image();
-                let resolved = false;
-                
-                img.onload = () => {
-                    if (!resolved) {
-                        resolved = true;
-                        console.log('图片加载成功');
-                        resolve(true);
-                    }
-                };
-                
-                img.onerror = () => {
-                    if (!resolved) {
-                        resolved = true;
-                        console.log('图片加载失败');
-                        resolve(false);
-                    }
-                };
-                
-                // 尝试加载多个可能的资源
                 const testResources = ['favicon.ico', 'logo.png', 'index.html'];
-                let resourceIndex = 0;
+                let currentIndex = 0;
+                let allChecked = false;
                 
-                function tryNextResource() {
-                    if (resourceIndex >= testResources.length || resolved) {
-                        if (!resolved) {
-                            resolved = true;
-                            resolve(false);
-                        }
+                function checkNextResource() {
+                    if (currentIndex >= testResources.length) {
+                        allChecked = true;
+                        resolve(false);
                         return;
                     }
                     
-                    img.src = primaryUrl + testResources[resourceIndex] + '?' + Date.now();
-                    resourceIndex++;
+                    const img = new Image();
+                    const resourceUrl = primaryUrl + testResources[currentIndex] + '?t=' + Date.now();
+                    
+                    let timedOut = false;
+                    const timeoutId = setTimeout(() => {
+                        timedOut = true;
+                        img.src = ''; // 停止加载
+                        currentIndex++;
+                        checkNextResource();
+                    }, 1500);
+                    
+                    img.onload = () => {
+                        clearTimeout(timeoutId);
+                        if (!timedOut) {
+                            console.log('资源加载成功:', testResources[currentIndex]);
+                            resolve(true);
+                        }
+                    };
+                    
+                    img.onerror = () => {
+                        clearTimeout(timeoutId);
+                        if (!timedOut) {
+                            console.log('资源加载失败:', testResources[currentIndex]);
+                            currentIndex++;
+                            checkNextResource();
+                        }
+                    };
+                    
+                    img.src = resourceUrl;
                 }
                 
-                tryNextResource();
-                
-                // 设置超时
-                setTimeout(() => {
-                    if (!resolved) {
-                        resolved = true;
-                        resolve(false);
-                    }
-                }, 2500);
+                checkNextResource();
             });
         }
         
@@ -286,24 +282,26 @@
         function testWithFetch() {
             return new Promise((resolve) => {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    resolve(false);
+                }, 4000);
                 
                 fetch(primaryUrl, {
-                    method: 'HEAD',
+                    method: 'GET',
                     mode: 'no-cors',
                     cache: 'no-cache',
                     signal: controller.signal
                 })
-                .then(() => {
+                .then((response) => {
                     clearTimeout(timeoutId);
-                    console.log('fetch检测成功');
+                    console.log('fetch检测成功:', response);
+                    // no-cors模式下response类型是opaque，但能说明连接成功
                     resolve(true);
                 })
                 .catch((error) => {
                     clearTimeout(timeoutId);
                     console.log('fetch检测失败:', error);
-                    // fetch失败不代表链接不可用（可能是跨域问题）
-                    // 这种情况下返回false，让其他检测方法继续
                     resolve(false);
                 });
             });
