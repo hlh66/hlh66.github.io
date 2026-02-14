@@ -69,39 +69,7 @@
             opacity: 0.9;
             animation: fadeInUp 0.6s ease-out 0.3s both;
         }
-        .links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            animation: fadeInUp 0.6s ease-out 0.4s both;
-        }
-        .link {
-            display: inline-block;
-            padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
-        .link.primary {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -175,10 +143,6 @@
         <h1>正在跳转</h1>
         <p>正在检测线路1...</p>
         <div class="status" id="status">优先检测线路1可用性</div>
-        <div class="links">
-            <a href="http://s0.v100.vip:10989/wx/" class="link" id="link1">线路1</a>
-            <a href="https://news.ixbk.net/" class="link" id="link2">线路2</a>
-        </div>
     </div>
 
     <script>
@@ -192,8 +156,6 @@
         const timeout = 5000;
         
         const statusEl = document.getElementById('status');
-        const line1El = document.getElementById('link1');
-        const line2El = document.getElementById('link2');
         
         // 按顺序尝试每条线路
         async function tryLineByLine() {
@@ -204,12 +166,9 @@
                 if (i === 0) {
                     document.querySelector('p').textContent = `正在尝试线路1...`;
                     statusEl.textContent = '优先检测线路1可用性';
-                    line1El.classList.add('primary');
                 } else {
                     document.querySelector('p').textContent = `正在尝试线路2...`;
                     statusEl.textContent = '线路1不可用，切换到线路2';
-                    line1El.style.background = 'rgba(255, 182, 193, 0.4)';
-                    line2El.classList.add('primary');
                 }
                 
                 try {
@@ -227,12 +186,6 @@
                     // 线路可用，更新显示并跳转
                     statusEl.textContent = `线路${i+1}可用，正在跳转...`;
                     statusEl.style.color = '#90EE90';
-                    
-                    if (i === 0) {
-                        line1El.style.background = 'rgba(144, 238, 144, 0.4)';
-                    } else {
-                        line2El.style.background = 'rgba(144, 238, 144, 0.4)';
-                    }
                     
                     setTimeout(() => {
                         window.location.replace(url);
