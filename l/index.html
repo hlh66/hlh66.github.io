@@ -1,164 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=http://s0.v100.vip:10989/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正在跳转...</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #fff;
-            overflow: hidden;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .container {
-            text-align: center;
-            padding: 60px 40px;
-            position: relative;
-            z-index: 1;
-        }
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-top: 5px solid #fff;
-            border-right: 5px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 35px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        h1 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.6s ease-out;
-        }
-        p {
-            font-size: 18px;
-            opacity: 0.95;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
-            animation: fadeInUp 0.6s ease-out 0.2s both;
-        }
-        .link {
-            display: inline-block;
-            padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.6s ease-out 0.4s both;
-        }
-        .link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-        .particle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite;
-        }
-        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
-        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
-        .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
-        .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
-        .particle:nth-child(6) { left: 60%; animation-delay: 10s; }
-        .particle:nth-child(7) { left: 70%; animation-delay: 12s; }
-        .particle:nth-child(8) { left: 80%; animation-delay: 14s; }
-        .particle:nth-child(9) { left: 90%; animation-delay: 16s; }
-        .particle:nth-child(10) { left: 95%; animation-delay: 18s; }
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) scale(1);
-                opacity: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 网页导航</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh; color: #e0e0e0; padding: 40px 20px;
+}
+.container { max-width: 900px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { font-size: 2.5rem; color: #fff; margin-bottom: 12px; }
+.header p { font-size: 1.1rem; color: #a0a0c0; }
+.header .url-hint { margin-top: 15px; font-size: 0.85rem; color: #606080; }
+
+.tag-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; }
+.tag { padding: 8px 20px; border-radius: 25px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s;
+  background: rgba(255,255,255,0.1); color: #a0a0c0; border: 1px solid rgba(255,255,255,0.15); }
+.tag:hover { background: rgba(255,255,255,0.2); color: #fff; }
+.tag.active { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-color: transparent; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
+.card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 28px; transition: all 0.3s; }
+.card:hover { transform: translateY(-4px); border-color: rgba(102,126,234,0.5); background: rgba(255,255,255,0.08); }
+.card-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.card h3 { font-size: 1.2rem; color: #fff; margin-bottom: 8px; }
+.card .desc { font-size: 0.9rem; color: #a0a0c0; line-height: 1.6; margin-bottom: 16px; }
+.card .source { font-size: 0.75rem; color: #606080; margin-bottom: 16px; word-break: break-all; }
+.card .btn { display: inline-block; padding: 10px 24px; border-radius: 10px; font-weight: 600;
+  text-decoration: none; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; transition: all 0.3s; }
+.card .btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(102,126,234,0.4); }
+.card .labels { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.card .label { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+  background: rgba(102,126,234,0.2); color: #8ea0f0; }
+
+.footer { text-align: center; margin-top: 50px; color: #606080; font-size: 0.85rem; }
+.footer a { color: #667eea; text-decoration: none; }
+</style>
 </head>
 <body>
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 网页导航</h1>
+    <p>点击标签筛选，点击卡片进入查看</p>
+    <p class="url-hint">短链接：hlh66.github.io/l &nbsp;|&nbsp; 完整版：hlh66.github.io/web-pages/</p>
+  </div>
+
+  <div class="tag-bar">
+    <span class="tag active" onclick="filterTag(this, 'all')">全部</span>
+    <span class="tag" onclick="filterTag(this, '教学')">教学</span>
+    <span class="tag" onclick="filterTag(this, 'AI')">AI</span>
+    <span class="tag" onclick="filterTag(this, '工具')">工具</span>
+    <span class="tag" onclick="filterTag(this, '资源')">资源</span>
+  </div>
+
+  <div class="card-grid" id="card-grid">
+    <div class="card" data-tags="教学 AI">
+      <div class="card-icon">📖</div>
+      <div class="labels"><span class="label">教学</span><span class="label">AI</span></div>
+      <h3>AI赋能备课指令模板</h3>
+      <p class="desc">AI辅助备课的指令模板，紫色渐变风格，含具体指令示例，帮助教师用AI提升备课效率。</p>
+      <p class="source">来源：六年级英语资料\AI赋能教学案例</p>
+      <a class="btn" href="https://hlh66.github.io/web-pages/pages/ai-lesson-prep.html" target="_blank">查看网页 →</a>
     </div>
-    <div class="container">
-        <div class="loader"></div>
-        <h1>正在跳转</h1>
-        <p>即将带您前往目标页面</p>
-        <a href="http://s0.v100.vip:10989/" class="link">立即跳转</a>
-    </div>
+  </div>
+
+  <div class="footer">
+    <p>📄 GitHub Pages | 自动同步 | 最后更新：2026-08-05</p>
+    <p><a href="https://github.com/hlh66/web-pages">查看仓库</a></p>
+  </div>
+</div>
+
+<script>
+function filterTag(el, tag) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    if (tag === 'all' || c.dataset.tags.includes(tag)) {
+      c.style.display = '';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+</script>
 </body>
 </html>
