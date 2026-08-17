@@ -2,10 +2,509 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=l/">
-<title>网页导航</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 洪老师 - 个人导航</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding: 30px 20px;
+}
+
+.container { max-width: 1000px; margin: 0 auto; }
+
+/* === 顶部头像区 === */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 30px rgba(102,126,234,0.3);
+}
+.header h1 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.header p {
+  font-size: 0.95rem;
+  color: #8888aa;
+}
+
+/* === 搜索框 === */
+.search-box {
+  max-width: 500px;
+  margin: 20px auto 30px;
+  display: flex;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 12px 20px 12px 44px;
+  border-radius: 25px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s;
+}
+.search-box input::placeholder { color: #666680; }
+.search-box input:focus {
+  border-color: rgba(102,126,234,0.6);
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 0 20px rgba(102,126,234,0.15);
+}
+.search-box .icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  opacity: 0.5;
+}
+
+/* === 标签栏 === */
+.tag-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  background: rgba(255,255,255,0.06);
+  color: #9999bb;
+  border: 1px solid rgba(255,255,255,0.08);
+  user-select: none;
+}
+.tag:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.tag.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 12px rgba(102,126,234,0.3);
+}
+
+/* === 卡片网格 === */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(102,126,234,0.4);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.card h3 {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.card .desc {
+  font-size: 0.82rem;
+  color: #9090aa;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+.card .labels {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.card .label {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(102,126,234,0.15);
+  color: #8ea0f0;
+}
+.card .label.l-red { background: rgba(239,83,80,0.15); color: #ef5350; }
+.card .label.l-green { background: rgba(102,187,106,0.15); color: #66bb6a; }
+.card .label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
+.card .label.l-cyan { background: rgba(38,198,218,0.15); color: #26c6da; }
+
+.card .btn-row {
+  display: flex;
+  gap: 8px;
+}
+.card .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+.card .btn.primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+}
+.card .btn.primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.35);
+}
+.card .btn.secondary {
+  background: rgba(255,255,255,0.08);
+  color: #bbb;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.card .btn.secondary:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* === 分区标题 === */
+.section-title {
+  font-size: 1rem;
+  color: #fff;
+  margin: 30px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title .icon { font-size: 1.1rem; }
+
+/* === 底部 === */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: #505060;
+  font-size: 0.8rem;
+}
+.footer a { color: #667eea; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* === 响应式 === */
+@media (max-width: 600px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
 </head>
 <body>
-<p>正在跳转... <a href="l/">点击这里</a></p>
+<div class="container">
+
+  <!-- 顶部 -->
+  <div class="header">
+    <div class="avatar">📚</div>
+    <h1>洪老师 · 个人导航</h1>
+    <p>教学资源 · AI工具 · 开发项目 · 实用链接</p>
+  </div>
+
+  <!-- 搜索 -->
+  <div class="search-box">
+    <span class="icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索网页标题或描述..." oninput="filterSearch()">
+  </div>
+
+  <!-- 标签栏 -->
+  <div class="tag-bar" id="tagBar">
+    <span class="tag active" onclick="filterTag(this,'all')">🌐 全部</span>
+    <span class="tag" onclick="filterTag(this,'教学')">📚 教学</span>
+    <span class="tag" onclick="filterTag(this,'AI')">🤖 AI</span>
+    <span class="tag" onclick="filterTag(this,'工具')">🔧 工具</span>
+    <span class="tag" onclick="filterTag(this,'开发')">💻 开发</span>
+    <span class="tag" onclick="filterTag(this,'资源')">📁 资源</span>
+  </div>
+
+  <!-- 卡片网格 -->
+  <div class="card-grid" id="cardGrid">
+
+    <!-- ===== 个人服务 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">🏠</span> 个人服务</div>
+
+    <div class="card" data-tags="工具 开发" data-search="微信扫码登录 v100 vip s0">
+      <div class="card-icon">📱</div>
+      <div class="labels"><span class="label l-cyan">工具</span><span class="label">开发</span></div>
+      <h3>微信扫码登录</h3>
+      <p class="desc">微信扫码登录系统，支持网页端微信扫码、截图跳转等功能。HBuilderX打包APK版本参考。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://s0.v100.vip:10989/" target="_blank">打开 →</a>
+        <a class="btn secondary" href="https://s0.v100.vip:10989/wx/login.html" target="_blank">登录页</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="工具 AI" data-search="ai赋能备课指令模板">
+      <div class="card-icon">📖</div>
+      <div class="labels"><span class="label">教学</span><span class="label l-red">AI</span></div>
+      <h3>AI赋能备课指令模板</h3>
+      <p class="desc">AI辅助备课的指令模板，紫色渐变风格，含具体指令示例，帮助教师用AI提升备课效率。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://hlh66.github.io/web-pages/pages/ai-lesson-prep.html" target="_blank">查看 →</a>
+      </div>
+    </div>
+
+    <!-- ===== 教学资源 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">📚</span> 教学资源</div>
+
+    <div class="card" data-tags="教学" data-search="课程表 作息 时间">
+      <div class="card-icon">📅</div>
+      <div class="labels"><span class="label l-green">教学</span></div>
+      <h3>课程表作息</h3>
+      <p class="desc">二年级数学+科学课程表，周一至周五完整课表及晚托安排。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\课程表作息\\课程表_v3.html');return false;">本地查看</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="教学 资源" data-search="教资 作文 素材 朗读 播报">
+      <div class="card-icon">🔊</div>
+      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
+      <h3>教资作文素材 · 朗读版</h3>
+      <p class="desc">教资备考作文素材，支持Edge TTS语音朗读、逐句高亮、全屏展示，每日更新新素材。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\网页播放朗读\\第7版_每日更新版\\第7版_每日更新版.html');return false;">本地查看</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="教学 资源" data-search="板书 生成器">
+      <div class="card-icon">✏️</div>
+      <div class="labels"><span class="label l-green">教学</span></div>
+      <h3>板书贴生成器</h3>
+      <p class="desc">A4横向板书贴纸生成工具，支持标题/关键词/形容词/标签/圆形词等多种样式。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\板书贴生成器\\');return false;">本地查看</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="教学 资源" data-search="荔湾区 考编 英语 真题">
+      <div class="card-icon">📝</div>
+      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
+      <h3>荔湾区考编资料</h3>
+      <p class="desc">荔湾区英语教师招聘考试真题及知识点梳理，含答案校对版。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\荔湾区考编资料\\');return false;">本地查看</a>
+      </div>
+    </div>
+
+    <!-- ===== AI工具 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">🤖</span> AI 工具</div>
+
+    <div class="card" data-tags="AI 工具" data-search="agnes ai 小爱 api">
+      <div class="card-icon">💬</div>
+      <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
+      <h3>Agnes AI (小爱API)</h3>
+      <p class="desc">Agnes 2.0 Flash 模型，OpenAI兼容接口，用于飞书机器人、opencode等场景。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://apihub.agnes-ai.cn/v1/chat/completions" target="_blank">API地址</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="AI 工具" data-search="智谱 glm bigmodel 清言">
+      <div class="card-icon">🔮</div>
+      <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
+      <h3>智谱AI (GLM)</h3>
+      <p class="desc">智谱BigModel平台，GLM-4.7-flash、AutoGLM等模型，支持视频生成、手机自动化。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://open.bigmodel.cn/api/paas/v4" target="_blank">API地址</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="AI 工具" data-search="deepseek">
+      <div class="card-icon">🧠</div>
+      <div class="labels"><span class="label l-red">AI</span></div>
+      <h3>DeepSeek</h3>
+      <p class="desc">DeepSeek AI大模型，支持深度思考和对话生成。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://www.deepseek.com" target="_blank">官网</a>
+      </div>
+    </div>
+
+    <!-- ===== 开发项目 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">💻</span> 开发项目</div>
+
+    <div class="card" data-tags="开发 工具" data-search="github 仓库 笔记 notes">
+      <div class="card-icon">🐙</div>
+      <div class="labels"><span class="label l-orange">开发</span></div>
+      <h3>GitHub 笔记仓库</h3>
+      <p class="desc">个人笔记Git仓库，三端同步（Gitee + GitHub + 飞书Wiki）。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://github.com/hlh66/notes" target="_blank">查看 →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="开发 资源" data-search="gitee 笔记 同步">
+      <div class="card-icon">🟢</div>
+      <div class="labels"><span class="label l-orange">开发</span></div>
+      <h3>Gitee 笔记仓库</h3>
+      <p class="desc">Gitee镜像仓库，国内访问更快，手机端Obsidian同步源。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://gitee.com/alin489/nn" target="_blank">查看 →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="开发 工具" data-search="网页合集 web-pages github pages">
+      <div class="card-icon">🌐</div>
+      <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
+      <h3>网页合集 (web-pages)</h3>
+      <p class="desc">HTML网页合集仓库，带标签导航首页，GitHub Pages托管。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://hlh66.github.io/web-pages/" target="_blank">查看 →</a>
+        <a class="btn secondary" href="https://github.com/hlh66/web-pages" target="_blank">仓库</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="开发 资源" data-search="obsidian 知识库 gitee 笔记">
+      <div class="card-icon">📓</div>
+      <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
+      <h3>Obsidian 知识库</h3>
+      <p class="desc">Obsidian Vault，通过Gitee同步，手机端可查看。含教育教学、技术项目等分类。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://gitee.com/alin489/obsidian-vault" target="_blank">Gitee仓库</a>
+      </div>
+    </div>
+
+    <!-- ===== 实用链接 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">🔗</span> 实用链接</div>
+
+    <div class="card" data-tags="资源" data-search="飞书 wiki 笔记 文档">
+      <div class="card-icon">📕</div>
+      <div class="labels"><span class="label">资源</span></div>
+      <h3>飞书 Wiki 笔记</h3>
+      <p class="desc">飞书Wiki整理版笔记，每日从飞书文档提取整理，含待办/规则/账号/设备等模块。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://haezdegprxl.feishu.cn/wiki/E99SwvC5riwkNFk1t2mcG2Ssnth" target="_blank">查看 →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="资源" data-search="飞书 原文 每日 笔记">
+      <div class="card-icon">📖</div>
+      <div class="labels"><span class="label">资源</span></div>
+      <h3>飞书原文（每日笔记）</h3>
+      <p class="desc">飞书文档原文，每天记录的原始内容，前200行会被提取整理。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://haezdegprxl.feishu.cn/docx/VcFmdYHVbokmTqx5uoacTVWgnbg" target="_blank">查看 →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="工具 资源" data-search="夸克 网盘 文件">
+      <div class="card-icon">☁️</div>
+      <div class="labels"><span class="label l-cyan">工具</span><span class="label">资源</span></div>
+      <h3>夸克网盘</h3>
+      <p class="desc">夸克网盘分享文件夹，含考研资料、教学资源等。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://pan.quark.cn/s/9475b4d67c4546f3a1b2786633321385" target="_blank">打开</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="教学 资源" data-search="板书 网站 gogoupup">
+      <div class="card-icon">🎨</div>
+      <div class="labels"><span class="label l-green">教学</span></div>
+      <h3>板书网站</h3>
+      <p class="desc">在线板书制作工具网站。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="https://www.gogoupup.com/" target="_blank">打开</a>
+      </div>
+    </div>
+
+    <div class="card" data-tags="教学 资源" data-search="知网 论文 卡号">
+      <div class="card-icon">📄</div>
+      <div class="labels"><span class="label l-green">教学</span></div>
+      <h3>知网论文</h3>
+      <p class="desc">知网论文下载，卡号登录方式。</p>
+      <div class="btn-row">
+        <a class="btn secondary" href="http://3.shutong2.com" target="_blank">打开</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <p>📄 GitHub Pages · <a href="https://github.com/hlh66/hlh66.github.io">查看仓库</a> · 更新日期：2026-08-18</p>
+  </div>
+
+</div>
+
+<script>
+// 标签筛选
+function filterTag(el, tag) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    if (tag === 'all' || c.dataset.tags.includes(tag)) {
+      c.style.display = '';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+  // 显示/隐藏分区标题
+  document.querySelectorAll('.section-title').forEach(st => {
+    let next = st.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section-title')) {
+      if (next.style.display !== 'none') { hasVisible = true; break; }
+      next = next.nextElementSibling;
+    }
+    st.style.display = hasVisible ? '' : 'none';
+  });
+}
+
+// 搜索过滤
+function filterSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.card').forEach(c => {
+    const text = (c.dataset.search || '') + ' ' + c.textContent.toLowerCase();
+    if (!q || text.includes(q)) {
+      c.style.display = '';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+  // 更新分区标题可见性
+  document.querySelectorAll('.section-title').forEach(st => {
+    let next = st.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section-title')) {
+      if (next.style.display !== 'none') { hasVisible = true; break; }
+      next = next.nextElementSibling;
+    }
+    st.style.display = hasVisible ? '' : 'none';
+  });
+}
+</script>
 </body>
 </html>
