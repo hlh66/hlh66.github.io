@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌐 Nternal 网络资源 · 洪老师</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding: 30px 20px;
+}
+.container { max-width: 1000px; margin: 0 auto; }
+
+/* 返回按钮 */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8ea0f0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  transition: color 0.25s;
+}
+.back-link:hover { color: #fff; }
+
+/* 顶部标题 */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header .icon-big {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.header p {
+  font-size: 0.95rem;
+  color: #8888aa;
+}
+
+/* 分区标题 */
+.section-title {
+  font-size: 1rem;
+  color: #fff;
+  margin: 30px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 资源卡片网格 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(102,126,234,0.4);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.card h3 {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.card .desc {
+  font-size: 0.82rem;
+  color: #9090aa;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+.card .labels {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.card .label {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(102,126,234,0.15);
+  color: #8ea0f0;
+}
+.card .label.l-red { background: rgba(239,83,80,0.15); color: #ef5350; }
+.card .label.l-green { background: rgba(102,187,106,0.15); color: #66bb6a; }
+.card .label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
+.card .label.l-cyan { background: rgba(38,198,218,0.15); color: #26c6da; }
+.card .btn-row {
+  display: flex;
+  gap: 8px;
+}
+.card .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+.card .btn.primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+}
+.card .btn.primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.35);
+}
+.card .btn.secondary {
+  background: rgba(255,255,255,0.08);
+  color: #bbb;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.card .btn.secondary:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* 信息区块 */
+.info-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 30px;
+}
+.info-box h2 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.info-row .ir-label {
+  font-size: 0.85rem;
+  color: #9090aa;
+}
+.info-row .ir-value {
+  font-size: 0.85rem;
+  color: #e0e0e0;
+  font-family: Consolas, monospace;
+}
+.info-row .ir-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.info-row .ir-status.online {
+  background: rgba(102,187,106,0.15);
+  color: #66bb6a;
+}
+.info-row .ir-status.offline {
+  background: rgba(239,83,80,0.15);
+  color: #ef5350;
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: #505060;
+  font-size: 0.8rem;
+}
+.footer a { color: #667eea; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="./index.html">← 返回导航首页</a>
+
+  <div class="header">
+    <div class="icon-big">🌐</div>
+    <h1>Nternal 网络资源</h1>
+    <p>内部服务 · 穿透节点 · 远程访问 · 网络拓扑</p>
+  </div>
+
+  <!-- 公网服务节点 -->
+  <div class="section-title"><span>🌍</span> 公网服务节点</div>
+  <div class="card-grid">
+
+    <div class="card">
+      <div class="card-icon">🚀</div>
+      <div class="labels"><span class="label l-cyan">CDN</span><span class="label">公网</span></div>
+      <h3>Cloudflare Pages</h3>
+      <p class="desc">Cloudflare全球CDN加速的静态站点，主站备用入口。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://hlh66.pages.dev/" target="_blank">打开 →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <div class="labels"><span class="label l-orange">Flask</span><span class="label">公网</span></div>
+      <h3>平板导航站</h3>
+      <p class="desc">平板Flask服务，通过公网域名访问。微信页面、教资素材等。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="http://hlh66.fucku.top/" target="_blank">打开 →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🔌</div>
+      <div class="labels"><span class="label l-orange">FRP</span><span class="label">穿透</span></div>
+      <h3>FRP 穿透节点 (UK)</h3>
+      <p class="desc">FRP内网穿透，UK节点中转，端口57017。远程访问内网服务。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="http://uk.frp.one:57017/" target="_blank">打开 →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <div class="labels"><span class="label l-cyan">v100</span><span class="label">公网</span></div>
+      <h3>s0.v100.vip</h3>
+      <p class="desc">微信扫码登录系统及微信相关页面服务。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://s0.v100.vip/" target="_blank">打开 →</a>
+        <a class="btn secondary" href="https://s0.v100.vip:10989/wx/login.html" target="_blank">登录页</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GitHub/Gitee 托管 -->
+  <div class="section-title"><span>📦</span> 代码托管与Pages</div>
+  <div class="card-grid">
+
+    <div class="card">
+      <div class="card-icon">🐙</div>
+      <div class="labels"><span class="label l-orange">GitHub</span></div>
+      <h3>GitHub Pages 主站</h3>
+      <p class="desc">本站，GitHub Pages托管，个人导航首页。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://hlh66.github.io/" target="_blank">打开 →</a>
+        <a class="btn secondary" href="https://github.com/hlh66/hlh66.github.io" target="_blank">仓库</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <div class="labels"><span class="label l-orange">GitHub</span></div>
+      <h3>网页合集 (web-pages)</h3>
+      <p class="desc">HTML网页合集，带标签导航首页，GitHub Pages托管。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://hlh66.github.io/web-pages/" target="_blank">打开 →</a>
+        <a class="btn secondary" href="https://github.com/hlh66/web-pages" target="_blank">仓库</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🟢</div>
+      <div class="labels"><span class="label l-green">Gitee</span></div>
+      <h3>Gitee 镜像</h3>
+      <p class="desc">Gitee镜像仓库，国内访问更快，Obsidian同步源。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://gitee.com/alin489/nn" target="_blank">打开 →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📓</div>
+      <div class="labels"><span class="label l-green">Gitee</span></div>
+      <h3>Obsidian 知识库</h3>
+      <p class="desc">Obsidian Vault，Gitee同步，手机端可查看。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://gitee.com/alin489/obsidian-vault" target="_blank">打开 →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 服务状态总览 -->
+  <div class="info-box">
+    <h2>📊 服务状态总览</h2>
+
+    <div class="info-row">
+      <span class="ir-label">Cloudflare Pages</span>
+      <span class="ir-value">hlh66.pages.dev</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">平板Flask导航</span>
+      <span class="ir-value">hlh66.fucku.top</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">FRP穿透 (UK节点)</span>
+      <span class="ir-value">uk.frp.one:57017</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">微信登录服务</span>
+      <span class="ir-value">s0.v100.vip</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">GitHub Pages 主站</span>
+      <span class="ir-value">hlh66.github.io</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">网页合集</span>
+      <span class="ir-value">hlh66.github.io/web-pages</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">Gitee 镜像</span>
+      <span class="ir-value">gitee.com/alin489/nn</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+
+    <div class="info-row">
+      <span class="ir-label">飞书Wiki笔记</span>
+      <span class="ir-value">haezdegprxl.feishu.cn</span>
+      <span class="ir-status online">● 公网</span>
+    </div>
+  </div>
+
+  <!-- 网络拓扑说明 -->
+  <div class="info-box">
+    <h2>🗺️ 网络拓扑概览</h2>
+    <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:16px;font-family:Consolas,monospace;font-size:0.82rem;line-height:1.8;color:#a0d0a0;overflow-x:auto;">
+<pre style="margin:0;">                    ┌─────────────────┐
+                    │  公网用户/手机   │
+                    └───────┬─────────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+    ┌─────▼─────┐   ┌──────▼──────┐  ┌──────▼──────┐
+    │ Cloudflare │   │  GitHub     │  │  FRP UK     │
+    │  Pages     │   │  Pages      │  │  节点       │
+    │ (CDN加速)  │   │  (静态托管) │  │ (内网穿透)  │
+    └────────────┘   └─────────────┘  └──────┬──────┘
+                                                │
+                                         ┌──────▼──────┐
+                                         │  内网服务    │
+                                         │ (Flask等)   │
+                                         └─────────────┘
+
+    其他公网服务:
+    ├── s0.v100.vip     → 微信登录页面
+    ├── hlh66.fucku.top → 平板Flask导航
+    └── gitee.com       → Gitee镜像仓库</pre>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>📄 <a href="./index.html">返回导航首页</a> · 更新日期：2026-08-19</p>
+  </div>
+
+</div>
+</body>
+</html>
