@@ -6,7 +6,6 @@
 <title>📚 洪老师 - 个人导航</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
   font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
   background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
@@ -14,9 +13,7 @@ body {
   color: #e0e0e0;
   padding: 30px 20px;
 }
-
 .container { max-width: 1000px; margin: 0 auto; }
-
 /* === 顶部头像区 === */
 .header {
   text-align: center;
@@ -42,7 +39,6 @@ body {
   font-size: 0.95rem;
   color: #8888aa;
 }
-
 /* === 搜索框 === */
 .search-box {
   max-width: 500px;
@@ -75,7 +71,6 @@ body {
   font-size: 18px;
   opacity: 0.5;
 }
-
 /* === 标签栏 === */
 .tag-bar {
   display: flex;
@@ -102,7 +97,6 @@ body {
   border-color: transparent;
   box-shadow: 0 2px 12px rgba(102,126,234,0.3);
 }
-
 /* === 卡片网格 === */
 .card-grid {
   display: grid;
@@ -158,7 +152,6 @@ body {
 .card .label.l-green { background: rgba(102,187,106,0.15); color: #66bb6a; }
 .card .label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
 .card .label.l-cyan { background: rgba(38,198,218,0.15); color: #26c6da; }
-
 .card .btn-row {
   display: flex;
   gap: 8px;
@@ -191,7 +184,6 @@ body {
   background: rgba(255,255,255,0.15);
   color: #fff;
 }
-
 /* === 分区标题 === */
 .section-title {
   font-size: 1rem;
@@ -204,7 +196,6 @@ body {
   gap: 8px;
 }
 .section-title .icon { font-size: 1.1rem; }
-
 /* === 底部 === */
 .footer {
   text-align: center;
@@ -216,7 +207,6 @@ body {
 }
 .footer a { color: #667eea; text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
-
 /* === 响应式 === */
 @media (max-width: 600px) {
   .card-grid { grid-template-columns: 1fr; }
@@ -226,21 +216,15 @@ body {
 </head>
 <body>
 <div class="container">
-
-  <!-- 顶部 -->
   <div class="header">
     <div class="avatar">📚</div>
     <h1>洪老师 · 个人导航</h1>
     <p>教学资源 · AI工具 · 开发项目 · 实用链接</p>
   </div>
-
-  <!-- 搜索 -->
   <div class="search-box">
     <span class="icon">🔍</span>
     <input type="text" id="searchInput" placeholder="搜索网页标题或描述..." oninput="filterSearch()">
   </div>
-
-  <!-- 标签栏 -->
   <div class="tag-bar" id="tagBar">
     <span class="tag active" onclick="filterTag(this,'all')">🌐 全部</span>
     <span class="tag" onclick="filterTag(this,'教学')">📚 教学</span>
@@ -249,13 +233,18 @@ body {
     <span class="tag" onclick="filterTag(this,'开发')">💻 开发</span>
     <span class="tag" onclick="filterTag(this,'资源')">📁 资源</span>
   </div>
-
-  <!-- 卡片网格 -->
   <div class="card-grid" id="cardGrid">
-
-    <!-- ===== 公网址点 ===== -->
+    <div class="section-title" style="grid-column:1/-1"><span class="icon">📝</span> 教资备考</div>
+    <div class="card" data-tags="教学 资源" data-search="易错 100题 刷题 朗读 科一 科二 教资">
+      <div class="card-icon">✏️</div>
+      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
+      <h3>易错100题 - 朗读刷题版</h3>
+      <p class="desc">教资科一+科二易错100题，带答案解析，支持语音朗读，手机电脑都能用。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="/yc/" target="_blank">开始刷题 →</a>
+      </div>
+    </div>
     <div class="section-title" style="grid-column:1/-1"><span class="icon">🌍</span> 公网址点</div>
-
     <div class="card" data-tags="开发 资源" data-search="cloudflare pages 导航 主站">
       <div class="card-icon">🚀</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
@@ -265,7 +254,6 @@ body {
         <a class="btn primary" href="https://hlh66.pages.dev/" target="_blank">打开 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 工具" data-search="frp 内网穿透 uk remote 穿透">
       <div class="card-icon">🔌</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
@@ -275,7 +263,6 @@ body {
         <a class="btn primary" href="http://uk.frp.one:57017/" target="_blank">打开 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 资源" data-search="平板 flask 导航站 fucku 洪林华">
       <div class="card-icon">📱</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
@@ -285,7 +272,6 @@ body {
         <a class="btn primary" href="http://hlh66.fucku.top/" target="_blank">打开 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="工具 开发" data-search="微信扫码登录 v100 vip s0">
       <div class="card-icon">📱</div>
       <div class="labels"><span class="label l-cyan">工具</span><span class="label">开发</span></div>
@@ -296,10 +282,7 @@ body {
         <a class="btn secondary" href="https://s0.v100.vip:10989/wx/login.html" target="_blank">登录页</a>
       </div>
     </div>
-
-    <!-- ===== 个人服务 ===== -->
     <div class="section-title" style="grid-column:1/-1"><span class="icon">🏠</span> 个人服务</div>
-
     <div class="card" data-tags="工具 AI" data-search="ai赋能备课指令模板">
       <div class="card-icon">📖</div>
       <div class="labels"><span class="label">教学</span><span class="label l-red">AI</span></div>
@@ -309,53 +292,7 @@ body {
         <a class="btn primary" href="/ai/" target="_blank">查看 →</a>
       </div>
     </div>
-
-    <!-- ===== 教学资源 ===== -->
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">📚</span> 教学资源</div>
-
-    <div class="card" data-tags="教学" data-search="课程表 作息 时间">
-      <div class="card-icon">📅</div>
-      <div class="labels"><span class="label l-green">教学</span></div>
-      <h3>课程表作息</h3>
-      <p class="desc">二年级数学+科学课程表，周一至周五完整课表及晚托安排。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\课程表作息\\课程表_v3.html');return false;">本地查看</a>
-      </div>
-    </div>
-
-    <div class="card" data-tags="教学 资源" data-search="教资 作文 素材 朗读 播报">
-      <div class="card-icon">🔊</div>
-      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
-      <h3>教资作文素材 · 朗读版</h3>
-      <p class="desc">教资备考作文素材，支持Edge TTS语音朗读、逐句高亮、全屏展示，每日更新新素材。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\网页播放朗读\\第7版_每日更新版\\第7版_每日更新版.html');return false;">本地查看</a>
-      </div>
-    </div>
-
-    <div class="card" data-tags="教学 资源" data-search="板书 生成器">
-      <div class="card-icon">✏️</div>
-      <div class="labels"><span class="label l-green">教学</span></div>
-      <h3>板书贴生成器</h3>
-      <p class="desc">A4横向板书贴纸生成工具，支持标题/关键词/形容词/标签/圆形词等多种样式。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\板书贴生成器\\');return false;">本地查看</a>
-      </div>
-    </div>
-
-    <div class="card" data-tags="教学 资源" data-search="荔湾区 考编 英语 真题">
-      <div class="card-icon">📝</div>
-      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
-      <h3>荔湾区考编资料</h3>
-      <p class="desc">荔湾区英语教师招聘考试真题及知识点梳理，含答案校对版。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="#" onclick="alert('本地文件：D:\\Desktop\\荔湾区考编资料\\');return false;">本地查看</a>
-      </div>
-    </div>
-
-    <!-- ===== AI工具 ===== -->
     <div class="section-title" style="grid-column:1/-1"><span class="icon">🤖</span> AI 工具</div>
-
     <div class="card" data-tags="AI 工具" data-search="agnes ai 小爱 api">
       <div class="card-icon">💬</div>
       <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
@@ -365,7 +302,6 @@ body {
         <a class="btn secondary" href="https://apihub.agnes-ai.cn/v1/chat/completions" target="_blank">API地址</a>
       </div>
     </div>
-
     <div class="card" data-tags="AI 工具" data-search="智谱 glm bigmodel 清言">
       <div class="card-icon">🔮</div>
       <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
@@ -375,7 +311,6 @@ body {
         <a class="btn secondary" href="https://open.bigmodel.cn/api/paas/v4" target="_blank">API地址</a>
       </div>
     </div>
-
     <div class="card" data-tags="AI 工具" data-search="deepseek">
       <div class="card-icon">🧠</div>
       <div class="labels"><span class="label l-red">AI</span></div>
@@ -385,10 +320,7 @@ body {
         <a class="btn secondary" href="https://www.deepseek.com" target="_blank">官网</a>
       </div>
     </div>
-
-    <!-- ===== 开发项目 ===== -->
     <div class="section-title" style="grid-column:1/-1"><span class="icon">💻</span> 开发项目</div>
-
     <div class="card" data-tags="开发 工具" data-search="github 仓库 笔记 notes">
       <div class="card-icon">🐙</div>
       <div class="labels"><span class="label l-orange">开发</span></div>
@@ -398,7 +330,6 @@ body {
         <a class="btn primary" href="https://github.com/hlh66/notes" target="_blank">查看 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 资源" data-search="gitee 笔记 同步">
       <div class="card-icon">🟢</div>
       <div class="labels"><span class="label l-orange">开发</span></div>
@@ -408,7 +339,6 @@ body {
         <a class="btn primary" href="https://gitee.com/alin489/nn" target="_blank">查看 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 工具" data-search="网页合集 web-pages github pages">
       <div class="card-icon">🌐</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
@@ -419,7 +349,6 @@ body {
         <a class="btn secondary" href="https://github.com/hlh66/web-pages" target="_blank">仓库</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 资源" data-search="obsidian 知识库 gitee 笔记">
       <div class="card-icon">📓</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
@@ -429,10 +358,7 @@ body {
         <a class="btn secondary" href="https://gitee.com/alin489/obsidian-vault" target="_blank">Gitee仓库</a>
       </div>
     </div>
-
-    <!-- ===== 网络工具页面 ===== -->
     <div class="section-title" style="grid-column:1/-1"><span class="icon">🛠️</span> 网络工具页面</div>
-
     <div class="card" data-tags="开发 工具" data-search="tcp 网络工具 端口 调试">
       <div class="card-icon"> 🔗</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
@@ -442,7 +368,6 @@ body {
         <a class="btn primary" href=".//tw/" target="_blank">打开 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="开发 资源" data-search="netternal internal 内部 网络">
       <div class="card-icon"> 🌐</div>
       <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
@@ -452,10 +377,7 @@ body {
         <a class="btn primary" href=".//nt/" target="_blank">打开 →</a>
       </div>
     </div>
-
-    <!-- ===== 实用链接 ===== -->
     <div class="section-title" style="grid-column:1/-1"><span class="icon">🔗</span> 实用链接</div>
-
     <div class="card" data-tags="资源" data-search="飞书 wiki 笔记 文档">
       <div class="card-icon">📕</div>
       <div class="labels"><span class="label">资源</span></div>
@@ -465,7 +387,6 @@ body {
         <a class="btn primary" href="https://haezdegprxl.feishu.cn/wiki/E99SwvC5riwkNFk1t2mcG2Ssnth" target="_blank">查看 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="资源" data-search="飞书 原文 每日 笔记">
       <div class="card-icon">📖</div>
       <div class="labels"><span class="label">资源</span></div>
@@ -475,7 +396,6 @@ body {
         <a class="btn primary" href="https://haezdegprxl.feishu.cn/docx/VcFmdYHVbokmTqx5uoacTVWgnbg" target="_blank">查看 →</a>
       </div>
     </div>
-
     <div class="card" data-tags="工具 资源" data-search="夸克 网盘 文件">
       <div class="card-icon">☁️</div>
       <div class="labels"><span class="label l-cyan">工具</span><span class="label">资源</span></div>
@@ -485,7 +405,6 @@ body {
         <a class="btn secondary" href="https://pan.quark.cn/s/9475b4d67c4546f3a1b2786633321385" target="_blank">打开</a>
       </div>
     </div>
-
     <div class="card" data-tags="教学 资源" data-search="板书 网站 gogoupup">
       <div class="card-icon">🎨</div>
       <div class="labels"><span class="label l-green">教学</span></div>
@@ -495,7 +414,6 @@ body {
         <a class="btn secondary" href="https://www.gogoupup.com/" target="_blank">打开</a>
       </div>
     </div>
-
     <div class="card" data-tags="教学 资源" data-search="知网 论文 卡号">
       <div class="card-icon">📄</div>
       <div class="labels"><span class="label l-green">教学</span></div>
@@ -505,16 +423,11 @@ body {
         <a class="btn secondary" href="http://3.shutong2.com" target="_blank">打开</a>
       </div>
     </div>
-
   </div>
-
-  <!-- 底部 -->
   <div class="footer">
     <p>📄 GitHub Pages · <a href="https://github.com/hlh66/hlh66.github.io">查看仓库</a> · 更新日期：2026-08-19</p>
   </div>
-
 </div>
-
 <script>
 // 标签筛选
 function filterTag(el, tag) {
@@ -538,7 +451,6 @@ function filterTag(el, tag) {
     st.style.display = hasVisible ? '' : 'none';
   });
 }
-
 // 搜索过滤
 function filterSearch() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
