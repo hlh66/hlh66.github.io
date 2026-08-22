@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI赋能备课指令模板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh; padding: 30px 20px;
+}
+.container { max-width: 900px; margin: 0 auto; }
+.header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; padding: 40px; border-radius: 20px 20px 0 0;
+  text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.header h1 { font-size: 2.2em; margin-bottom: 10px; }
+.header .subtitle { font-size: 1.1em; opacity: 0.9; }
+.header .meta { margin-top: 15px; font-size: 0.9em; opacity: 0.8; }
+.content {
+  background: white; padding: 40px; border-radius: 0 0 20px 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2); line-height: 1.8;
+}
+h2 {
+  color: #4a3071; font-size: 1.5em; margin: 30px 0 15px;
+  padding-bottom: 10px; border-bottom: 3px solid #667eea;
+}
+h2 .icon { margin-right: 8px; }
+h3 { color: #6c5ce7; font-size: 1.2em; margin: 20px 0 10px; }
+p { color: #333; margin-bottom: 12px; }
+.intro-box {
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  border-left: 5px solid #00b894; padding: 20px; border-radius: 10px;
+  margin: 20px 0; font-size: 1.05em;
+}
+.prompt-box {
+  background: #2d3436; color: #dfe6e9; padding: 20px; border-radius: 12px;
+  margin: 15px 0; font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.95em; line-height: 1.6; position: relative;
+  border: 1px solid #636e72;
+}
+.prompt-box::before {
+  content: '🤖 AI指令'; position: absolute; top: -12px; left: 15px;
+  background: #6c5ce7; color: white; padding: 2px 12px;
+  border-radius: 12px; font-size: 0.8em; font-family: 'Microsoft YaHei', sans-serif;
+}
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: #6c5ce7; color: white; border: none; padding: 5px 15px;
+  border-radius: 8px; cursor: pointer; font-size: 0.8em;
+  font-family: 'Microsoft YaHei', sans-serif; transition: all 0.3s;
+}
+.copy-btn:hover { background: #a29bfe; transform: scale(1.05); }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; padding: 12px; text-align: left; border-radius: 8px 8px 0 0;
+}
+td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+tr:hover td { background: #f8f7ff; }
+.module-card {
+  border: 2px solid #e0e0e0; border-radius: 15px; padding: 20px;
+  margin: 20px 0; transition: all 0.3s; position: relative; overflow: hidden;
+}
+.module-card:hover { border-color: #6c5ce7; box-shadow: 0 4px 20px rgba(108,92,231,0.15); }
+.module-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
+}
+.card-blue::before { background: #0984e3; }
+.card-green::before { background: #00b894; }
+.card-orange::before { background: #e17055; }
+.card-purple::before { background: #6c5ce7; }
+.card-red::before { background: #d63031; }
+.card-yellow::before { background: #fdcb6e; }
+.tag {
+  display: inline-block; padding: 3px 12px; border-radius: 20px;
+  font-size: 0.85em; margin: 2px;
+}
+.tag-blue { background: #dfe6e9; color: #0984e3; }
+.tag-green { background: #dfe6e9; color: #00b894; }
+.tag-red { background: #dfe6e9; color: #d63031; }
+.tip-box {
+  background: #fef9e7; border: 2px dashed #f39c12; padding: 15px;
+  border-radius: 10px; margin: 15px 0; color: #7d6608;
+}
+.tip-box strong { color: #d4ac0d; }
+.footer {
+  text-align: center; padding: 30px; color: rgba(255,255,255,0.7);
+  font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🤖 AI赋能备课指令模板</h1>
+    <div class="subtitle">输入一份试卷/教材，AI自动生成全套教学材料</div>
+    <div class="meta">设计者：洪老师 | 创建日期：2026-08-04 | 版本：v1.0</div>
+  </div>
+
+  <div class="content">
+    <div class="intro-box">
+      <strong>📌 使用方法：</strong>将以下指令复制粘贴到AI对话窗口（豆包/文心一言/ChatGPT等），把<code>[方括号]</code>中的内容替换为你的实际资料即可。每个模块可单独使用，也可以用"一键全流程指令"一次性生成所有材料。
+    </div>
+
+    <h2><span class="icon">🚀</span>一、一键全流程指令（推荐！）</h2>
+    <p>把这段指令丢给AI，它会自动按6个模块生成一整套AI赋能教学材料：</p>
+
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyText(this)">复制</button>
+你是一位资深小学英语教学设计师和AI教育应用专家。
+
+【教材版本】人教版小学英语 [年级] [上/下]册
+【单元范围】Unit [X] - Unit [Y]
+【教学资料】[粘贴试卷内容/教材目录/知识点清单]
+
+请根据以上资料，生成一套完整的AI赋能教学材料，包含以下6个模块：
+
+模块1：学情分析报告
+- 试卷结构分析（题型、分值、知识点覆盖）
+- 高危知识点诊断（失分重灾区+错因预估）
+- 分层教学建议（A/B/C三层学生特征与策略）
+
+模块2：分层练习题
+- 基础层（A层）：核心词汇+句型操练，降低认知负荷
+- 提高层（B层）：情境改错+连词成句+阅读训练
+- 拓展层（C层）：分级阅读+写作任务+项目式学习
+
+模块3：错题精讲
+- 选出10道高频错题
+- 每题包含：错误句子、正确答案、错因诊断、知识点精讲（含口诀）、3道变式练习
+
+模块4：听力拓展材料
+- 生成5套听力练习（选图片/选答语/对话理解/短文判断/填空）
+- 每套附听力脚本和答案
+- 推荐TTS语音合成方案
+
+模块5：学历案设计
+- 按六要素设计：主题、学习目标、评价任务、学习过程、检测反馈、反思改进
+- 每个环节标注AI赋能点
+- 包含课前诊断、课中活动、课后分层作业
+
+模块6：情境创设
+- 设计4个真实化教学情境（含角色设定、任务说明、对话模板、评价标准）
+- 附AI生成情境的提示词模板
+
+输出要求：
+1. 每个模块单独标注，结构清晰
+2. 所有练习题附答案
+3. AI赋能环节用 ⚡ 标注
+4. 语言简洁实用，可直接用于教学
+    </div>
+
+    <div class="tip-box">
+      <strong>💡 小技巧：</strong>如果AI输出的内容太长被截断，可以对它说"请继续生成模块X"，它会接着上一次的内容继续。
+    </div>
+
+    <h2><span class="icon">📋</span>二、单模块指令（按需选用）</h2>
+
+    <div class="module-card card-blue">
+      <h3>📊 模块1：学情分析</h3>
+      <span class="tag tag-blue">用途：分析考试成绩</span>
+      <span class="tag tag-green">输出：诊断报告</span>
+      <p><strong>适用场景：</strong>考试结束后，快速分析试卷结构和学生薄弱点</p>
+      <div class="prompt-box">
+你是一位小学英语教学分析专家。以下是学生的考试试卷和成绩数据：
+
+【试卷内容】[粘贴试卷题目]
+【成绩数据】[粘贴Excel成绩/各题得分率]
+
+请生成学情分析报告：
+1. 试卷结构分析（题型、分值分布、知识点覆盖）
+2. 各题型难度评估和实际得分率对比
+3. 高危知识点诊断（列出失分最严重的3-5个知识点）
+4. 每个高危知识点附错因分析和改进建议
+5. A/B/C三层学生分布和建议策略
+      </div>
+    </div>
+
+    <div class="module-card card-green">
+      <h3>✏️ 模块2：分层练习</h3>
+      <span class="tag tag-blue">用途：课后分层作业</span>
+      <span class="tag tag-green">输出：三套练习题</span>
+      <p><strong>适用场景：</strong>根据学情分析结果，为不同水平学生生成差异化练习</p>
+      <div class="prompt-box">
+你是一位小学英语教师。请根据以下单元和知识点，生成三套分层练习题：
+
+【单元】人教版六年级上册 Unit [X]: [单元主题]
+【核心词汇】[列出词汇]
+【核心句型】[列出句型]
+【分层依据】[如：A层得分率<50%，B层50-75%，C层>75%]
+
+基础层（A层）10题：词汇配对+简单填空+句型仿写
+提高层（B层）10题：情境改错+连词成句+短文阅读
+拓展层（C层）5题：分级阅读+写作任务+项目式学习
+
+每题附答案和解析。标注考查的知识点。
+      </div>
+    </div>
+
+    <div class="module-card card-orange">
+      <h3>🔍 模块3：错题精讲</h3>
+      <span class="tag tag-blue">用途：课后辅导</span>
+      <span class="tag tag-green">输出：错题分析报告</span>
+      <p><strong>适用场景：</strong>针对考试中的高频错题，生成精讲材料和变式练习</p>
+      <div class="prompt-box">
+你是一位小学英语辅导教师。以下是学生考试中的高频错题：
+
+【错题清单】[粘贴错题和学生常见错误答案]
+
+请为每道错题生成：
+1. 错误句子和正确答案
+2. 错因诊断（学生为什么会选错？）
+3. 知识点精讲（用口诀/对比表/思维导图描述）
+4. 3道变式练习（同知识点，不同情境）
+5. 一句话学习建议
+
+最后生成一个"常见错误类型统计表"。
+      </div>
+    </div>
+
+    <div class="module-card card-red">
+      <h3>🎧 模块4：听力拓展</h3>
+      <span class="tag tag-blue">用途：听力训练</span>
+      <span class="tag tag-green">输出：听力材料+脚本</span>
+      <p><strong>适用场景：</strong>生成补充听力练习，可用TTS工具转为音频</p>
+      <div class="prompt-box">
+你是一位小学英语听力材料设计专家。
+
+【单元】Unit [X]: [主题]
+【题型要求】
+  1. 选图片5题  2. 选答语5题  3. 对话理解5题
+  4. 短文判断5题  5. 填空5题
+
+请生成听力材料，每题包含：
+- 听力脚本（对话/短文文本）
+- 题目和选项
+- 正确答案
+- 考查点说明
+
+脚本难度适合[六年级]学生，语速适中，话题贴近学生生活。
+      </div>
+    </div>
+
+    <div class="module-card card-purple">
+      <h3>📝 模块5：学历案设计</h3>
+      <span class="tag tag-blue">用途：教案设计</span>
+      <span class="tag tag-green">输出：完整学历案</span>
+      <p><strong>适用场景：</strong>按佛山学历案六要素设计一节课的完整教学方案</p>
+      <div class="prompt-box">
+你是一位精通"学历案"教学设计的小学英语教师。
+
+【课题】Unit [X] [课题名称]
+【课时】1课时（40分钟）
+【学情】[简述学生水平]
+
+请按学历案六要素设计：
+1. 主题与课时（含情境创设）
+2. 学习目标（知识/能力/情感三维）
+3. 评价任务（逆向设计：评价先于活动，含量规表）
+4. 学习过程（课前诊断→课中活动→课后作业，每环节标注AI赋能点⚡）
+5. 检测与反馈（数据收集方式+AI分析方案）
+6. 反思与改进（教师反思+学生反思+AI辅助反思）
+
+要求：每个教学活动都标注"教师活动""学生活动""AI赋能"三栏。
+      </div>
+    </div>
+
+    <div class="module-card card-yellow">
+      <h3>🎭 模块6：情境创设</h3>
+      <span class="tag tag-blue">用途：课堂导入</span>
+      <span class="tag tag-green">输出：教学情境+对话模板</span>
+      <p><strong>适用场景：</strong>快速生成真实化教学情境，激发学生兴趣</p>
+      <div class="prompt-box">
+你是一位小学英语教学情境设计专家。
+
+【单元】Unit [X]: [主题]
+【核心句型】[列出3-5个核心句型]
+
+请设计4个教学情境，每个包含：
+1. 情境描述（与学生生活相关的真实场景）
+2. 角色设定（学生扮演什么角色）
+3. 任务说明（学生需要做什么）
+4. 核心句型卡（学生需要用的句子）
+5. 对话模板（基础弱的学生可填空使用，用____标出填空处）
+6. 评价标准（3个维度，每个3级）
+
+情境类型建议：调查任务、角色扮演、信息差活动、项目式任务。
+      </div>
+    </div>
+
+    <h2><span class="icon">⚙️</span>三、指令优化技巧</h2>
+    <table>
+      <tr><th>技巧</th><th>说明</th><th>示例</th></tr>
+      <tr><td>角色设定</td><td>开头给AI一个身份</td><td>"你是一位资深小学英语教师..."</td></tr>
+      <tr><td>明确输入</td><td>用方括号标出需要替换的内容</td><td>【单元】Unit [X]</td></tr>
+      <tr><td>结构化输出</td><td>告诉AI你要几个模块、每个模块包含什么</td><td>"模块1：学情分析，包含..."</td></tr>
+      <tr><td>限定难度</td><td>指定适合的年级和难度</td><td>"难度适合六年级学生"</td></tr>
+      <tr><td>附答案</td><td>要求AI输出答案和解析</td><td>"每题附答案和解析"</td></tr>
+      <tr><td>标注考点</td><td>让AI标注每题考查的知识点</td><td>"标注考查的知识点"</td></tr>
+      <tr><td>分步生成</td><td>内容太长时，分模块逐步生成</td><td>"请继续生成模块3"</td></tr>
+    </table>
+
+    <div class="tip-box">
+      <strong>💡 核心原则：</strong>指令不需要语法完美，关键信息说清楚就行。AI是靠语义理解的，不是靠语法。像跟同事说话一样描述你的需求就好。
+    </div>
+
+    <h2><span class="icon">📊</span>四、效率对比数据</h2>
+    <table>
+      <tr><th>备课环节</th><th>传统方式</th><th>AI赋能后</th><th>节省时间</th></tr>
+      <tr><td>试卷分析</td><td>2-3小时</td><td>15分钟</td><td style="color:#00b894;font-weight:bold;">85%</td></tr>
+      <tr><td>分层出题</td><td>1-2小时</td><td>20分钟</td><td style="color:#00b894;font-weight:bold;">75%</td></tr>
+      <tr><td>错题精讲</td><td>1小时</td><td>15分钟</td><td style="color:#00b894;font-weight:bold;">75%</td></tr>
+      <tr><td>听力材料</td><td>需找素材+录制</td><td>AI生成+TTS</td><td style="color:#00b894;font-weight:bold;">90%</td></tr>
+      <tr><td>学历案设计</td><td>2-3小时</td><td>30分钟</td><td style="color:#00b894;font-weight:bold;">80%</td></tr>
+      <tr><td>情境创设</td><td>30-60分钟</td><td>5分钟</td><td style="color:#00b894;font-weight:bold;">90%</td></tr>
+      <tr style="background:#f8f7ff;font-weight:bold;"><td>合计</td><td>7-10小时</td><td>约1.5小时</td><td style="color:#d63031;font-size:1.1em;">约80%</td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    AI赋能教学案例 · 佛山市2026年学术研讨会论文实证素材<br>
+    设计者：洪老师 | 用AI赋能教育，让教学更高效
+  </div>
+</div>
+
+<script>
+function copyText(btn) {
+  var text = btn.parentElement.innerText.replace('复制','').trim();
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '已复制✓';
+    setTimeout(function() { btn.textContent = '复制'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
