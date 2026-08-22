@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教资作文素材 - 侧栏控制版</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #0a0f1e;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* === 侧栏切换按钮（固定在右上角）=== */
+  .sidebar-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1200;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff6f00, #ff8f00);
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(255,111,0,0.4);
+    transition: all 0.3s;
+  }
+  .sidebar-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(255,111,0,0.6); }
+  .sidebar-toggle.active { transform: rotate(90deg); }
+
+  /* === 侧栏遮罩 === */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+
+  /* === 右侧抽屉式侧栏 === */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 340px;
+    height: 100vh;
+    background: rgba(13,21,37,0.98);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255,111,0,0.15);
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 50px rgba(0,0,0,0.5);
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  /* 侧栏头部 */
+  .sidebar-header {
+    flex-shrink: 0;
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sidebar-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+  }
+  .sidebar-close {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    font-size: 22px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .sidebar-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+  /* 侧栏内容区（可滚动）*/
+  .sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,111,0,0.3) transparent;
+  }
+  .sidebar-body::-webkit-scrollbar { width: 4px; }
+  .sidebar-body::-webkit-scrollbar-thumb { background: rgba(255,111,0,0.3); border-radius: 2px; }
+
+  /* 侧栏区块 */
+  .sb-section {
+    margin-bottom: 22px;
+  }
+  .sb-section-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: rgba(255,202,40,0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* 播放控制按钮组 */
+  .play-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .pc-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #ff6f00, #ff8f00);
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .pc-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255,111,0,0.35); }
+  .pc-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .pc-btn.secondary {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .pc-btn.secondary:hover { background: rgba(255,255,255,0.15); }
+  .pc-btn .pc-icon { font-size: 20px; }
+  .pc-btn .pc-label { font-size: 11px; opacity: 0.9; }
+
+  /* 设置项 */
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .setting-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+  .setting-select {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 140px;
+  }
+  .setting-select option { background: #0d1525; color: #fff; }
+
+  /* 章节目录列表 */
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .toc-cat-label {
+    font-size: 10px;
+    color: rgba(255,111,0,0.5);
+    font-weight: bold;
+    padding: 8px 4px 4px;
+    letter-spacing: 1px;
+  }
+  .toc-item {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    text-align: left;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .toc-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .toc-item.on {
+    background: linear-gradient(135deg, rgba(255,111,0,0.25), rgba(255,143,0,0.15));
+    color: #ffca28;
+    font-weight: bold;
+  }
+  .toc-num {
+    font-size: 11px;
+    opacity: 0.5;
+    min-width: 22px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+  .toc-item.on .toc-num { opacity: 0.8; }
+
+  /* === 主内容区（全屏）=== */
+  .main-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    transition: padding 0.35s;
+  }
+
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    opacity: 0.35;
+  }
+  .bg-glow.g1 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,111,0,0.3) 0%, transparent 70%);
+    top: -100px; right: -80px;
+  }
+  .bg-glow.g2 {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(21,101,192,0.28) 0%, transparent 70%);
+    bottom: -80px; left: -60px;
+  }
+  .bg-glow.g3 {
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(102,187,106,0.2) 0%, transparent 70%);
+    top: 40%; left: 30%;
+  }
+
+  /* === 文字展示区域 === */
+  .text-display {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1100px;
+    text-align: center;
+  }
+
+  .display-title {
+    font-size: clamp(22px, 3.5vw, 42px);
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 6px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  .display-subtitle {
+    font-size: clamp(12px, 1.5vw, 17px);
+    color: rgba(255,255,255,0.45);
+    margin-bottom: clamp(24px, 4vh, 48px);
+  }
+
+  .reading-body {
+    font-size: clamp(26px, 4.2vw, 56px);
+    line-height: 1.85;
+    text-align: justify;
+    color: rgba(255,255,255,0.85);
+    word-break: break-all;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.3);
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    padding-right: 8px;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,111,0,0.3) transparent;
+  }
+  .reading-body::-webkit-scrollbar { width: 4px; }
+  .reading-body::-webkit-scrollbar-thumb { background: rgba(255,111,0,0.3); border-radius: 2px; }
+  .reading-body::-webkit-scrollbar-track { background: transparent; }
+
+  .w-read { color: rgba(255,255,255,0.22); transition: color 0.15s; }
+  .w-now {
+    background: linear-gradient(120deg, #ff6f00, #ffca28);
+    color: #0d1b2a;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 2px 6px;
+    margin: 0 -2px;
+    box-shadow: 0 0 22px rgba(255,152,0,0.95), 0 3px 12px rgba(255,111,0,0.4);
+    display: inline-block;
+    transition: all 0.05s;
+    transform: scale(1.07);
+  }
+  .w-next { color: rgba(255,255,255,0.85); }
+
+  /* === 底部进度条（极简，贴底）=== */
+  .mini-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+    z-index: 500;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6f00, #ffca28, #66bb6a);
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  /* === 自动播放提示 === */
+  .autoplay-hint {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 9000;
+    background: linear-gradient(135deg, rgba(255,111,0,0.95), rgba(255,143,0,0.95));
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 30px rgba(255,111,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    white-space: nowrap;
+  }
+  .autoplay-hint.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    animation: hint-pulse 2s infinite;
+  }
+  @keyframes hint-pulse {
+    0%, 100% { box-shadow: 0 6px 30px rgba(255,111,0,0.5); }
+    50% { box-shadow: 0 6px 40px rgba(255,111,0,0.8); }
+  }
+
+  /* 状态文字（左下角小字）*/
+  .status-pill {
+    position: fixed;
+    bottom: 14px;
+    left: 16px;
+    z-index: 500;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    background: rgba(10,15,30,0.7);
+    padding: 4px 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* === 引擎状态徽章 === */
+  .engine-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .engine-badge.edge {
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,180,255,0.1));
+    color: #00d4ff;
+    border: 1px solid rgba(0,212,255,0.3);
+  }
+  .engine-badge.web {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .engine-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+  .engine-badge.edge .dot { background: #00d4ff; }
+  .engine-badge.web .dot { background: rgba(255,255,255,0.4); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* === 滑块样式 === */
+  .slider-row { margin-bottom: 12px; }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 4px;
+  }
+  .slider-value { color: #ffca28; font-weight: bold; }
+  .setting-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.12);
+    outline: none;
+    cursor: pointer;
+  }
+  .setting-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6f00, #ffca28);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255,111,0,0.4);
+  }
+  .setting-slider::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6f00, #ffca28);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255,111,0,0.4);
+  }
+
+  /* === 加载提示 === */
+  .tts-loading {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8000;
+    background: rgba(10,15,30,0.95);
+    color: #00d4ff;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid rgba(0,212,255,0.3);
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .tts-loading.show { display: flex; }
+  .tts-loading .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,212,255,0.2);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* === 添加内容表单 === */
+  .add-content-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .add-content-form input,
+  .add-content-form textarea {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .add-content-form input:focus,
+  .add-content-form textarea:focus {
+    border-color: rgba(255,111,0,0.5);
+  }
+  .add-content-form input::placeholder,
+  .add-content-form textarea::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+  .add-content-form textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .add-content-form .form-row {
+    display: flex;
+    gap: 8px;
+  }
+  .add-content-form .form-row input {
+    flex: 1;
+  }
+  .add-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .add-submit-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #00d4ff, #00a8e8);
+    color: #fff;
+    border: none;
+    padding: 10px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.25s;
+  }
+  .add-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,212,255,0.3); }
+  .add-clear-btn {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .add-clear-btn:hover { background: rgba(255,82,82,0.15); color: #ff5252; }
+  .user-content-tag {
+    display: inline-block;
+    font-size: 9px;
+    background: rgba(0,212,255,0.2);
+    color: #00d4ff;
+    padding: 1px 6px;
+    border-radius: 6px;
+    margin-left: 4px;
+  }
+  .toc-item .toc-delete {
+    display: none;
+    background: rgba(255,82,82,0.2);
+    color: #ff5252;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    padding: 2px 8px;
+    cursor: pointer;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .toc-item:hover .toc-delete { display: block; }
+  .toc-item .toc-delete:hover { background: rgba(255,82,82,0.4); }
+</style>
+</head>
+<body>
+
+<!-- 侧栏切换按钮 -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+
+<!-- 侧栏遮罩 -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- 右侧抽屉侧栏 -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">📚 控制面板</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-body">
+    <!-- 播放控制 -->
+    <div class="sb-section">
+      <div class="sb-section-title">▶ 播放控制</div>
+      <div class="play-controls">
+        <button class="pc-btn" id="pcPause" onclick="togglePause()">
+          <span class="pc-icon" id="pcPauseIcon">⏸️</span>
+          <span class="pc-label" id="pcPauseLabel">暂停</span>
+        </button>
+        <button class="pc-btn secondary" onclick="stopAll()">
+          <span class="pc-icon">⏹️</span>
+          <span class="pc-label">停止</span>
+        </button>
+        <button class="pc-btn secondary" onclick="toggleFullscreen()">
+          <span class="pc-icon">🖥️</span>
+          <span class="pc-label">全屏</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 语音设置 -->
+    <div class="sb-section">
+      <div class="sb-section-title">⚙ 语音设置</div>
+      <div id="engineBadge" class="engine-badge web">
+        <span class="dot"></span>
+        <span id="engineText">检测中...</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">🎙️ 声音</span>
+        <select class="setting-select" id="voiceSel"><option value="">加载中...</option></select>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">语速</span>
+        <select class="setting-select" id="speedSel">
+          <option value="0.75">很慢 0.75x</option>
+          <option value="0.85">慢速 0.85x</option>
+          <option value="1.0" selected>正常 1.0x</option>
+          <option value="1.15">快速 1.15x</option>
+          <option value="1.3">极速 1.3x</option>
+        </select>
+      </div>
+      <div class="slider-row" id="pitchRow">
+        <div class="slider-label">
+          <span>🎵 音调</span>
+          <span class="slider-value" id="pitchVal">0</span>
+        </div>
+        <input type="range" class="setting-slider" id="pitchSlider" min="-10" max="10" value="0" step="1">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label">
+          <span>🔊 音量</span>
+          <span class="slider-value" id="volVal">100%</span>
+        </div>
+        <input type="range" class="setting-slider" id="volSlider" min="0" max="100" value="100" step="5">
+      </div>
+    </div>
+
+    <!-- 添加内容 -->
+    <div class="sb-section">
+      <div class="sb-section-title">✏️ 添加自定义内容</div>
+      <div class="add-content-form">
+        <div class="form-row">
+          <input type="text" id="addCategory" placeholder="分类（如：主题/名言/自定义）" value="自定义">
+        </div>
+        <input type="text" id="addTitle" placeholder="标题（如：我的素材1）">
+        <textarea id="addText" placeholder="输入要朗读的内容...&#10;换行用回车键"></textarea>
+        <div class="add-btn-row">
+          <button class="add-submit-btn" onclick="addUserContent">➕ 添加并保存</button>
+          <button class="add-clear-btn" onclick="clearAllUserContent">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 章节目录 -->
+    <div class="sb-section">
+      <div class="sb-section-title">📖 章节目录（点击跳转）</div>
+      <div class="toc-list" id="tocList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 自动播放提示 -->
+<div class="autoplay-hint" id="autoplayHint" onclick="retryPlay()">👆 浏览器拦截了自动播放，点此开始</div>
+<div class="tts-loading" id="ttsLoading"><div class="spinner"></div><span>语音生成中...</span></div>
+
+<!-- 主内容区 -->
+<div class="main-stage" id="mainStage">
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="bg-glow g3"></div>
+
+  <div class="text-display">
+    <div class="display-title" id="dispTitle">🌳 立德树人</div>
+    <div class="display-subtitle" id="dispSubtitle">教育之本在于立德 · #1/10</div>
+    <div class="reading-body" id="readingBody"></div>
+  </div>
+</div>
+
+<!-- 底部进度条 -->
+<div class="mini-bar"><div class="mini-bar-fill" id="progFill"></div></div>
+<div class="status-pill" id="statusPill">准备就绪</div>
+
+<script>
+  // ================================================================
+  //  数据
+  //  ★★★ 后期添加新内容，插在数组最前面（unshift），不是放最后！
+  //  ★★★ 因为最新添加的最不熟悉，需要最先读到。
+  //  ★★★ 用 sections.unshift({ cat:'主题', t:'标题', s:'副标题', txt:'内容' }) 添加
+  // ================================================================
+  const sections = [
+{ cat:'yicuo', t:'KE2-1', s:'YiCuo100', txt:'[KE2] #1\n\n“治贫先治愚”教育扶贫能够阻断贫困的代际传递，这是因为教育具有（ ）。 A.政治功能 B.经济功能 C.生态功能 D.人口功能\n\n1.【答案】B 【解析】本题考查教育的经济功能。教育的经济功能具体体现在：教育是劳动力再产生的基本途径、 是科学知识再生产的最有效形式、是创造和发展新的科学技术的重要基地。题干中的“教育扶贫能够阻断 贫困的代际传递”是通过提升教育水平来改变贫困地区的现状，促进贫困地区的经济发展，属于教育的经 济功能。故本题选B。' },
+{ cat:'yicuo', t:'KE2-2', s:'YiCuo100', txt:'[KE2] #2\n\n三（3）班的一些学生只要作业稍微难一点就望而却步，还有一些学生在班级活动中经常叫苦叫累。 对此，班主任需要在班级加强学生（ ）。 A.情绪情感的教育 B.意志品质的培养 C.人际交往的教育 D.思维品质的培养\n\n2.【答案】B 【解析】本题考查意志。意志是指有意识地支配、调节行为，通过克服困难，以实现预定目的的心理 过程。题干中学生遇到稍微难一点的作业就望而却步，体现了意志力的薄弱，因此老师应注重对学生意志 品质的培养。故本题选B。' },
+{ cat:'yicuo', t:'KE2-3', s:'YiCuo100', txt:'[KE2] #3\n\n小军因为喜欢班主任王老师，所以喜欢她的课和她组织的各种活动。这种心理现象属于（ ）。 A.泛化 B.强化 C.分化 D.消退\n\n3.【答案】A 【解析】本题考查经典条件反射的基本规律。经典条件反射的基本规律包括获得与消退、泛化与分化、 恢复。其中泛化是对相似的刺激以同样的方式做出反应。题干中的小军因为喜欢王老师，也喜欢她上的课 和她组织的活动，是对相似的刺激产生了相同的反应，属于刺激的泛化。故本题选A。' },
+{ cat:'yicuo', t:'KE2-4', s:'YiCuo100', txt:'[KE2] #4\n\n可以促进铁吸收的维生素是（ ）。 A.维生素A B.维生素B C.维生素C D.维生素D\n\n4.【答案】C 【解析】本题考查营养基础知识。维生素C 可使难以吸收利用的三价铁还原，以增加肠道对铁的消化 吸收。维生素C 提高缺铁性贫血的疗效。患有缺铁性贫血的儿童往往伴有维生素C 的缺乏，故单纯以铁剂 治疗缺铁性贫血，其效果不如添加维生素C 联合治疗好。故本题选C。' },
+{ cat:'yicuo', t:'KE2-5', s:'YiCuo100', txt:'[KE2] #5\n\n中华人民共和国成立初期，我国师范院校教育学课程普遍采用的教材是（ ）。 A.夸美纽斯的《大教学论》 B.赫尔巴特的《普通教育学》 C.凯洛夫的《教育学》 D.马卡连柯的《论共产主义教育》\n\n5.【答案】C 【解析】本题考查教育人物及作品。1939 年凯洛夫主编的《教育学》，被公认为是世界上第一部马克 思主义的教育学著作，并对我国新中国成立后乃至现在的教育都产生了很大的影响。因此中华人民共和国 成立初期，我国师范院校教育学课程普遍采用的就是他的这本教材。故本题选C。' },
+{ cat:'yicuo', t:'KE2-6', s:'YiCuo100', txt:'[KE2] #6\n\n（ ）是课程安排的整体规划，是学校组织教育教学的基本依据。 A.课程计划 B.课程评价 C.课程标准 D.课时计划\n\n6.【答案】A 【解析】本题考查课程计划。课程计划是根据一定的教育目的和培养目标，由教育行政部门制定的有 关学校教育和教学工作的指导性文件。课程计划是指导和规定课程与教学活动的依据，是学校课程与教学 活动的依据。A 选项符合题意。易混选项C，课程标准是教材编写、教学、考试评价以及课程实施管理的直 易错100 题中小学科二 让每一个孩子都能遇到好老师 2 接依据。故本题选A。' },
+{ cat:'yicuo', t:'KE2-7', s:'YiCuo100', txt:'[KE2] #7\n\n教师在课堂上通过展示各种实物、直观教具或进行示范性实验，让学生通过观察获得感性认识的教 学方法属于（ ）。 A.实验法 B.演示法 C.讨论法 D.练习法\n\n7.【答案】B 【解析】本题考查演示法。演示法是指教师通过展示实物、教具和示范性的实验来说明、印证某一事 物和现象，使学生掌握新知识的一种教学方法。故本题选B。' },
+{ cat:'yicuo', t:'KE2-8', s:'YiCuo100', txt:'[KE2] #8\n\n王老师在讲授“磷及其化合物的性质”时，以磷化氢的“自燃”现象，说明民间俗称“鬼火”现象 产生的原因，对学生进行了“无神论”教育。王老师在教学中主要贯彻的是（ ）。 A.循序渐进原则 B.直观性原则 易错100 题中小学科二 让每一个孩子都能遇到好老师 2 C.科学性和思想性相结合原则 D.启发性原则\n\n8.【答案】C 【解析】本题考查教学原则。科学性和思想性相结合原则是指教学中要以马克思主义为指导，引导学 生掌握正确的知识，同时结合知识对学生进行社会主义品德和正确人生观、科学世界观教育。它是教学的 教育性规律的反映。题干中，老师既教了关于磷的知识，同时对学生进行了“无神论”的思想品德教育， 符合科学性和思想性相结合原则的含义。故本题选C。' },
+{ cat:'yicuo', t:'KE2-9', s:'YiCuo100', txt:'[KE2] #9\n\n美国课程论专家古德莱德，把课程划分为五个层次，按照由具体到抽象的排序依次为（ ）。 A.经验的课程—运作的课程—理解的课程—正式的课程—理想的课程 B.理想的课程—正式的课程—理解的课程—运作的课程—经验的课程 C.运作的课程—正式的课程—经验的课程—理想的课程—理解的课程 D.经验的课程—理想的课程—运作的课程—正式的课程—理解的课程\n\n9.【答案】A 【解析】本题考查古德莱德的课程分类。古德莱德把课程分为：（1）理想的课程，即由一些教育研究 机构、学术团体和课程专家提出的应该开设的课程。（2）正式的课程，即由教育行政部门规定的课程计划、 课程标准和教材，我们平时在课程表中看到的课程即属此类。（3）领悟或理解的课程，即任课教师所领悟 的课程，这种领悟的课程可能与正式课程之间会产生一定的距离，正所谓“一千个读者就有一千个哈姆雷 特”。（4）运作的课程，即在课堂上实际实施的课程，在实施中，教师常常会根据学生的反应随时进行调 整。（5）经验的课程，是学生在课堂学习中实实在在体验到的东西，即课程经验。题干问的是从具体到抽 象，故只有A 选项符合。B 选项是从抽象到具体。故本题选A。' },
+{ cat:'yicuo', t:'KE2-10', s:'YiCuo100', txt:'[KE2] #10\n\n“庶”与“富”是“教”的先决条件。首次提出这一教育观点的教育家是（ ） A.孔子 B.孟子 C.荀子 D.墨子\n\n10.【答案】A 【解析】本题考查孔子的教育思想。孔子认为教育对社会的发展有作用，提出了“庶、富、教”的观 点，认为人口、财富和教育是立国的三个要素；提出了“性相近，习相远”的哲学命题，强调后天环境对 人发展的影响。故本题选A。' },
+{ cat:'yicuo', t:'KE2-11', s:'YiCuo100', txt:'[KE2] #11\n\n光明路小学为了提升学校文化建设，一方面发动教师献计献策，另一方面求助于大学文化设计的专 家到校实地考察，经过一段时间的不断研磨和完善，光明路小学的学校文化建设上了一个层次，这种教育 研究属于（ ）。 A.个案研究 B.调查研究 C.行动研究 D.实验研究\n\n11.【答案】C 【解析】本题考查行动研究法。个案研究是主要通过案例方式考察教育现象，基本目的在于描述与解 释，在描述过程中进行解释。调查研究主要是研究者采用问卷、访谈、观察、测量等方式对现状进行了解， 对事实进行考察，对材料进行收集，从而探讨教育问题、教育现象之间联系的研究方法。实验研究是运用 一定的人为手段，主动干预或控制研究对象的发生、发展过程，通过观察、测量、比较等方式探索、验证 所研究现象因果关系的研究方法。行动研究是教师和研究人员针对实践中的问题，综合运用各种有效方法， 以改进教育工作为目的的教育研究活动。它将教育理论和教育实践融为一体，将教育者和教育现实问题紧 密结合，强调在“行动”中研究，在“情境”中研究，在“做”中研究。题干中描述符合行动研究的教育 易错100 题中小学科二 让每一个孩子都能遇到好老师 3 研究方法。故本题选C。' },
+{ cat:'yicuo', t:'KE2-12', s:'YiCuo100', txt:'[KE2] #12\n\n“笨鸟先飞”“勤能补拙”说明（ ）。 A.需要对能力有影响 B.动机对能力有影响 C.性格对能力有影响 D.气质对能力有影响\n\n12.【答案】C 【解析】本题考查性格与能力的关系。性格结构中的态度特征指个体对自己、他人、集体、社会以及 对工作、劳动、学习的态度特征。如谦虚或自负、利他或利己、粗心或细心、创造或墨守成规等。理智特 征指个体在感知、记忆、想象、思维等认识过程中表现出来的认知特点和风格。如主动感知或被动感知， 习惯于看到细节还是看到轮廓等。题干中的“笨鸟先飞”“勤能补拙”说明的是性格特征对能力的积极影 响。故本题选C。' },
+{ cat:'yicuo', t:'KE2-13', s:'YiCuo100', txt:'[KE2] #13\n\n李伟同学在上课前会对本节课的内容进行判断，如果认为自己能听懂老师讲述的知识，他就会认真 听课。根据班杜拉的理论，这种现象是（ ）。 A.结果期待 B.过程期待 C.社会期待 D.效能期待\n\n13.【答案】D 【解析】本题考查班杜拉的自我效能感理论。自我效能感理论由班杜拉首次提出，他认为人的行为受 行为的先行因素与结果因素的影响。其中，行为的先行因素是人在认识到行为与强化之间的依随关系之后 产生的对下一步强化的期待。该期待包括结果期待和效能期待。结果期待是人对自己的某一行为会导致某 一结果的客观推测。效能期待是人对自己能够进行某一行为的实施能力的主观推测或判断（即自我效能感）， 它意味着人是否确信自己能够成功地进行某一行为。当个体确信自己有能力进行某一活动，他就会产生高 度的自我效能感，并努力实施该活动。题干中李伟认为自己能听懂老师讲授的知识，才会做出认真听课的 行为，是对自己能力的主观判断，符合效能期待的含义。故本题选D。' },
+{ cat:'yicuo', t:'KE2-14', s:'YiCuo100', txt:'[KE2] #14\n\n在古代，中国、埃及和希腊的学校主要采用的教学组织形式是（ ）。 A.个别教学 B.复式数学 C.分组数学 D.班级教学\n\n14.【答案】A 【解析】本题考查个别教学制。个别教学制的产生是与古代社会生产力发展水平比较低的状况相适应 的。在古代的东西方，学校教学组织形式一般都是个别教学形式。教师向学生传授知识，布置检查和批改 作业都是个别进行的，即教师对学生一个个轮流地教，教师在教某个学生时，其余学生均按教师要求进行 复习或作业。在古代中国、埃及和希腊的学校主要采用的教学组织形式就是个别教学制。故本题选A。' },
+{ cat:'yicuo', t:'KE2-15', s:'YiCuo100', txt:'[KE2] #15\n\n张老师在课堂教学中按教学要求向学生提问，通过问答、对话的形式来引导学生思考并获取和巩固 知识。张老师所用的这种教学方法是（ ）。 A.讲解法 B.练习法 C.谈话法 D.探究法 易错100 题中小学科二 让每一个孩子都能遇到好老师 3\n\n15.【答案】C 【解析】本题考查教学方法。谈话法，也叫问答法，是教师和学生相互交谈，以引导学生根据自己已 有的知识、经验，通过独立思考去获得新知识的教学方法。从题干中的“问答、对话的形式”等关键词可 以看出张老师使用了谈话法。故本题选C。' },
+{ cat:'yicuo', t:'KE2-16', s:'YiCuo100', txt:'[KE2] #16\n\n中国少年先锋队是一个少年儿童的群众组织，其队旗上的图案是（ ）。 A.火炬加镰刀 B.镰刀加斧头 C.五角星加镰刀 D.火炬加五角星\n\n16.【答案】D 【解析】本题考查中国少年先锋队的队旗。少先队的队旗是少先队组织的标志。中国少年先锋队队旗 是五角星加火炬的红旗。队旗为红色，象征革命胜利，队旗中央的五角星，代表中国共产党的领导，火炬 象征光明。故本题选D。 易错100 题中小学科二 让每一个孩子都能遇到好老师 4' },
+{ cat:'yicuo', t:'KE2-17', s:'YiCuo100', txt:'[KE2] #17\n\n班主任的工作重点和最为经常的工作是（ ）。 A.整合各方面影响，使其形成正向的合力 B.教育学生努力学习 C.全面了解和研究学生 D.对学生进行品德教育\n\n17.【答案】D 【解析】本题考查班主任工作。整合各方面影响是德育的一致性和连贯性原则的体现，所以A 不符合 题干。根据《班主任工作的暂行规定》班主任应该“教育学生努力完成学习任务”，工作、任务不仅限于 学习。所以B 不符合题干；班主任工作的基础和前提是全面了解和研究学生。所以C 不符合题干；对学生 进行思想品德教育是班主任工作的重点，所以D 符合题干。故本题选D。' },
+{ cat:'yicuo', t:'KE2-18', s:'YiCuo100', txt:'[KE2] #18\n\n“为天地立心，为生民立命，为往圣继绝学，为万世开太平。”宋代大儒张载的“横渠四句”成为 了后代许多读书人的座右铭。这四句中的“为往圣继绝学”体现了教育的（ ）。 A.文化传递功能 B.人口控制功能 C.社会改造功能 D.社会流动性功能\n\n18.【答案】A 【解析】本题考查文化的传递功能。文化的传递功能是指教育作为培养人的活动，它以文化为中介， 客观上起着文化的传承和普及作用。题干中“为往圣继绝学”的意思是：能够将儒家的智慧义理发扬光大， 教化万民，才是读书人的立足之本，我们是为了继承先贤的智慧，创当代太平盛世。体现了教育对文化的 传递功能。故本题选A。' },
+{ cat:'yicuo', t:'KE2-19', s:'YiCuo100', txt:'[KE2] #19\n\n识字教学中，教师将“辩”“辨”“辫”“瓣”的不同部件标成红色，以帮助小学生更好区别。这 一做法符合（ ）。 A.知觉的选择性 B.知觉的理解性 C.知觉的恒常性 D.知觉的整体性\n\n19.【答案】A 【解析】本题考查知觉的选择性。知觉的选择性指作用于人的客观事物是纷繁多样的，人不可能在瞬 间全部清楚地感知到；但可以按照某种需要和目的，主动而有意地选择少数事物（或事物的某一部分）作 为知觉的对象，或无意识地被某种事物所吸引，以它作为知觉对象，对它产生鲜明、清晰的知觉映象，而 把周围其余的事物当成知觉的背景，只产生比较模糊的知觉映象。题干中老师将音同形近字的不同部分标 上红色，易于学生注意到它们的不同之处，这是利用了知觉的选择性。故本题选A。' },
+{ cat:'yicuo', t:'KE2-20', s:'YiCuo100', txt:'[KE2] #20\n\n教师的知识结构中，小学英语教师所拥有的英语学科知识属于（ ）。 A.一般性知识 B.条件性知识 C.本体性知识 D.实践性知识\n\n20.【答案】C 【解析】本题考查本体性知识。本体性知识，指教师所具有的特定的学科知识。题干中小学英语教师 所拥有的英语学科知识属于本体性知识。故本题选C。' },
+{ cat:'yicuo', t:'KE2-21', s:'YiCuo100', txt:'[KE2] #21\n\n某班级这学期更换了班主任后，学生的行为习惯、课堂氛围及学生成绩有了明显的变化，这体现了 （ ）的重要性。 A.学科课程 B.隐性课程 C.显性课程 D.活动课程\n\n21.【答案】B 【解析】本题考查隐性课程。隐性课程亦称潜在课程、隐蔽课程，则是以内隐的、间接的方式呈现的 课程，是学生在显性课程以外所获得的所有学校教育的经验。学生在学习过程中，从具体学习环境中所获 得的“计划外”的知识、观念、情感等，不是课程计划中所预期的东西。隐性课程的表现形式中包含：观 念性隐性课程，包括隐藏于显性课程之中的意识形态，学校的学风、校风，有关领导和教师的教育理念、 价值观、知识观、教学风格、教学指导思想等。题目中更换了班主任后，学生的行为习惯、课堂氛围及学 生成绩有了明显的变化，体现了隐性课程的重要性。故本题选B。' },
+{ cat:'yicuo', t:'KE2-22', s:'YiCuo100', txt:'[KE2] #22\n\n美国教育心理学家（ ）主张：“不论我们选教什么学科，务必使学生理解该学科的基本结构。” A.梅伊曼 B.赫尔巴特 C.赞科夫 D.布鲁纳\n\n22.【答案】D 【解析】本题考查布鲁纳的教育思想。结构主义课程理论是当代西方出现的一个重要的课程理论，其 代表人物是该课程理论的创始人布鲁纳。结构主义课程理论以学科结构为课程中心，认为人的学习是认知 易错100 题中小学科二 让每一个孩子都能遇到好老师 5 结构不断改进与完善的过程，因此，学科基本结构的学习对学习者的认知结构发展最有价值。题干中“不 论我们选教什么学科，务必使学生理解该学科的基本结构。”符合布鲁纳的结构主义课程理论。故本题选 D。' },
+{ cat:'yicuo', t:'KE2-23', s:'YiCuo100', txt:'[KE2] #23\n\n小红语文测验得了90 分，但与全班平均成绩相比属于“中下”，老师鼓励她继续努力，争取取得 更好的成绩。这种评价方式属于（ ）。 A.标准参照评价 B.常模参照评价 易错100 题中小学科二 让每一个孩子都能遇到好老师 4 C.个体内差异评价 D.形成性评价\n\n23.【答案】B 【解析】本题考查常模参照评价。相对评价又称为常模参照评价，依据学生个人的成绩在该班学生成 绩序列中或常模中所处的位置来评价和决定他的成绩优劣，而不考虑他是否达到了教学目标的要求。题干 中教师将小红的语文测验成绩与全班平均成绩比较而判为“中下”，符合常模参照评价的含义。故本题选 B。' },
+{ cat:'yicuo', t:'KE2-24', s:'YiCuo100', txt:'[KE2] #24\n\n在教育研究文献中，各类文物、教育史专著、名师教育实录等属于（ ）。 A.事实性文献 B.工具性文献 C.理论性文献 D.经验性文献\n\n24.【答案】A 【解析】本题考查文献的分类。按文献的功能可分为事实性文献、工具性文献、理论性文献、政策性 文献和经验性文献。事实性文献指专门为教育科学研究提供事实证据的文献，包括古今中外已被发现和证 实的各种形式、各种内容的事实资料，如文物、教育史专著、各种测验量表、各类教育实验报告、教育名 家教育实录等。工具性文献指专门为教育科学研究提供检索咨询的文献，包括工具书、网上检索查询、学 术动态综述等。理论性文献指专门为教育科学研究提供理论认识的文献，包括教育专著、论文、文集、教 育家评传、方法论著作等。政策性文献指专门为教育科学研究提供政策依据的文献，包括规章制度、政府 文件与统计资料等。经验性文献指专门为教育科学研究提供感性认识的文献，包括调查报告、工作总结、 经验、教育参考书、各级各类学校教科书、课程标准等。故本题选A。' },
+{ cat:'yicuo', t:'KE2-25', s:'YiCuo100', txt:'[KE2] #25\n\n小学《品德与生活》的教学目标，应随着儿童生活及活动过程的变化和需要不断调整。教学内容应 从教科书扩展到儿童生活的各个方面，课堂从教室扩展到家庭、社会，以及儿童的其他生活空间。这段话 说明该课程具有（ ）。 A.生活性 B.综合性 C.开放性 D.活动性\n\n25.【答案】C 【解析】本题考查《品德与生活》课程的特点。《品德与生活》课程具有如下基础特征：生活性、综合 性、开放性、活动性。A 选项生活性，是指课程视儿童的生活为宝贵的课程资源。课程学习本身是儿童生 活的组成部分；是儿童在教师指导下真实体验生活、主动参与生活、创造生活的过程。课程遵循儿童生活 的逻辑；以儿童生活中的需要和问题为出发点；以儿童的现实生活为课程内容的主要源泉；以用正确的价 值观引导儿童在生活中发展、在发展中生活为课程的基本追求。B 选项综合性，是指课程设计体现儿童与 自然、儿童与社会、儿童与自我的内在整合；课程内容体现品德教育和生活教育有机融合；教学活动体现 儿童的生活体验与道德体验；知识学习与社会参与、问题探究等彼此渗透、相互促进；实现生活、教学、 发展的三位一体。D 选项活动性，是指课程超越单一的书本知识的传递和接受；以活动为教和学的基本形 式。课程的呈现形态主要是儿童直接参与的各种主题活动、游戏或其他实践活动；课程目标主要通过儿童 在教师指导下的活动过程中的体验、感悟和主动建构来实现。C 选项开放性，是指课程面向儿童的整个生 活世界，教学目标随着儿童生活及活动过程的变化和需要不断调整；教学内容从教科书扩展到儿童生活的 易错100 题中小学科二 让每一个孩子都能遇到好老师 6 各个方面；课堂从教室扩展到家庭、社区以及儿童的其他生活空间。题干中体现的课程面向儿童生活的各 个方面，正是开放性的表现。故本题选C。' },
+{ cat:'yicuo', t:'KE2-26', s:'YiCuo100', txt:'[KE2] #26\n\n学完“压强”概念，学生理解了“在同等压力下，受力面积越大，压强越小”的道理。田老师要求 学生举例说明这个原理在生活中的运用。田老师贯彻的主要教学原则是（ ）。 A.理论联系实际 B.循序渐进 C.直观性 D.启发性\n\n26.【答案】A 【解析】本题考查理论联系实际原则。理论联系实际原则是指教学要以学习基础知识为主导，从理论 与实际的联系上去理解知识，注意运用知识去分析问题和解决问题，达到学懂会用、学以致用。理论联系 实际教学原则是间接经验和直接经验相统一的规律在教学中的反映。题干中学生学完知识后，老师要求学 生举例说明该知识在生活中的运用就是此原则的体现。故本题选A。' },
+{ cat:'yicuo', t:'KE2-27', s:'YiCuo100', txt:'[KE2] #27\n\n晓杰在阅读课文时，常常自我提问：“我对课文表达的内容清楚了吗？我抓住了课文的重点了吗？” 这种学习策略属于（ ）。 A.复述策略 B.组织策略 C.计划策略 D.监控策略\n\n27.【答案】D 【解析】本题考查学习策略的类型。监控策略是指在认知过程中，根据认知目标及时评价、反馈自己 认知活动的结果与不足，正确估计自己达到认知目标的程度、水平；根据有效性标准评价各种认知行动、 策略的效果。包括阅读时对注意加以跟踪、对材料进行自我提问、考试时监控自己的速度和时间。题干中 晓杰在阅读中的自我提问符合监控策略的含义和范畴。故本题选D。' },
+{ cat:'yicuo', t:'KE2-28', s:'YiCuo100', txt:'[KE2] #28\n\n“课程不应指向活动，而应直接关注制定一套有结构、有序列的学习目标，所有教学活动都是为了 达到这些目标而服务的。”这种观点意味着课程即（ ）。 A.教学科目 B.经验获得 C.社会改造 D.预期的学习结果\n\n28.【答案】D 【解析】本题考查课程的定义。关于课程的定义，主要有以下几种观点：（1）课程即教学科目，强调 学校向学生传授学科的知识体系，是一种典型的“教程”；（2）课程即预期的学习效果，认为课程应该直 接关注预期的学习结果或目标，即要把重点从手段转向目的；（3）课程即有计划的教学活动；（4）课程即 学习经验，指学生体验到的意义，而不是要学生再现的事实或要学生演示的行为；（5）课程即社会文化的 再生产，学校教育的职责是再生产对下一代有用的知识、技能；（6）课程即社会改造。题干表述属于课程 即预期学习效果的观点。故本题选D。' },
+{ cat:'yicuo', t:'KE2-29', s:'YiCuo100', txt:'[KE2] #29\n\n国强认为欺负弱小是不可取的、不道德的，因此，他在生活中总是能自觉杜绝这样的行为。这说明 其品德发展处于（ ）。 A.依从阶段 B.内化阶段 C.自主阶段 D.外化阶段\n\n29.【答案】B 【解析】本题考查态度与品德学习的一般过程。态度与品德学习的一般过程包括：依从、认同、内化。 其中，内化指在思想观点上与他人的思想观点一致，将自己所认同的思想和自己原有的观点、信念融为一 体，构成一个完整的价值体系。在内化阶段，个体的行为具有高度的自觉性和主动性，并具有坚定性，表 现为“富贵不能淫，贫贱不能移，威武不能屈”。此时，稳定的态度和品德即形成了。题干中，国强能够 坚持自己的观念并总能自觉落实到行动中，处于品德发展的内化阶段。故本题选B。' },
+{ cat:'yicuo', t:'KE2-30', s:'YiCuo100', txt:'[KE2] #30\n\n课外是课内的延伸和拓展，课内是课外的深化和提升，课内与课外相结合才能真正促进孩子的发展， 下列选项中表达了这一思想的是（ ）。 A.安其学而亲其师，乐其友而信其道 B.时教必有正业，退息必有居学 C.发然后禁，则扞格而不胜 D.独学而无友，则孤陋而寡闻 易错100 题中小学科二 让每一个孩子都能遇到好老师 5\n\n30.【答案】B 【解析】本题考查课内与课外相结合思想。选项A 是指这潜心学习并亲近师长，乐于同朋友交往并坚 持正道，这样即使离开了师长和朋友，也不会违背他们的教育。选项C 是指如果在不良行为发生以后才去 禁止，就会遭到情绪上的抵触而不易纠正。强调的是不良行为的预防。选项D 是指如果学习中缺乏学友之 易错100 题中小学科二 让每一个孩子都能遇到好老师 7 间的交流切磋，就必然会导致知识狭隘，见识短浅，强调的是合作学习的重要性。选项B 是指按照时序进 行，必须有正式的课业，课后休息时也得有课外练习。所以B 符合课内和课外相结合思想。故本题选B。' },
+{ cat:'yicuo', t:'KE2-31', s:'YiCuo100', txt:'[KE2] #31\n\n有的人在逆境中奋起，有的人在逆境中消沉；有的人在顺境中如鱼得水，有的人在顺境中却虚度光 阴。这种现象说明（ ）。 A.顺境有利于人的发展 B.环境好坏决定人的发展 C.逆境有利于人的发展 D.人对环境影响有能动性\n\n31.【答案】D 【解析】本题考查环境对人的作用。环境对人的作用包括：（1）为个体的发展提供了多种可能，包括 机遇、条件和对象；（2）环境对个体发展的影响有积极和消极之分；（3）人在接受环境影响和作用时的主 观能动性；（4）环境不能决定人的发展。题干所述无论逆境还是顺境，人都有可能获得有利发展或不利发 展，这说明人在接受环境影响和作用时具有主观能动性。故本题选D。' },
+{ cat:'yicuo', t:'KE2-32', s:'YiCuo100', txt:'[KE2] #32\n\n进入初中后，赵东难以控制自己的情绪，时常无故地兴奋不已，转而又哀伤忧愁。这反映了青少年 情绪发展具有（ ）。 A.弥散性 B.闭锁性 C.波动性 D.感染性\n\n32.【答案】C 【解析】本题考查青少年情绪发展的波动性。青少年情绪发展的波动性主要表现在：青少年会因一时 成功，欣喜若狂、激动不已，又会因一点挫折，垂头丧气、懊恼不已。表现为情绪在两极性的明显起伏。 题干中赵东时常无故兴奋，转而又哀伤忧愁，是波动性的表现。故本题选C。' },
+{ cat:'yicuo', t:'KE2-33', s:'YiCuo100', txt:'[KE2] #33\n\n在17 世纪至19 世纪，主张让儿童接受顺其自然教育的教育家是（ ）。 A.洛克 B.卢梭 C.康德 D.杜威\n\n33.【答案】B 【解析】本题考查卢梭的教育思想。卢梭主张教育目的在于培养自然人；反对封建教育轻视儿童，要 求提高儿童在教育中的地位；主张改革教育内容和方法，顺应儿童的本性，让他们的身心自由发展。故本 题选B。' },
+{ cat:'yicuo', t:'KE2-34', s:'YiCuo100', txt:'[KE2] #34\n\n毛泽东在《体育之研究》一文中指出：“欲图体育之有效，非动其主观，促其对于体育之自觉不可。” 这句话强调学校体育应注重（ ）。 A.帮助学生形成正确的体育观念 B.增强学生的体质 C.培养学生自我锻炼的能力与习惯 D.发展学生的体育特长\n\n34.【答案】C 【解析】本题考查学校体育。毛泽东的这句话的意思为：想要得到体育的效果，不是动用主观力量， 非要促进他们对体育的自觉性不可。强调学生要积极主动去锻炼。学校要培养学生自我锻炼的能力和习惯。 故本题选C。' },
+{ cat:'yicuo', t:'KE2-35', s:'YiCuo100', txt:'[KE2] #35\n\n救护者对儿童进行急救处理时，做法正确的是（ ）。 A.某生突发惊厥，救护者紧紧搂住该生 B.某生鼻出血，救护者让该生高仰头，捏住鼻翼 C.某生摔伤，救护者怀疑伤及腰椎，抱起该生急送医院 D.溺水者被救上岸，救护者首先迅速帮助其清理呼吸道，控水\n\n35.【答案】D 【解析】本题考查急救技术。溺水者被救上岸，救护者首先迅速帮助其清理呼吸道，控水，保证其呼 吸道的畅通。A 选项突发惊厥，教师应首先拿毛巾塞进儿童的嘴里，防止其自我伤害。B 选项，鼻出血时应 安慰儿童不要紧张，安静坐下，头略向前低。C 选项儿童摔伤，救护者怀疑伤及腰椎，应找专业医生用担 架送儿童去医院。故本题选D。' },
+{ cat:'yicuo', t:'KE2-36', s:'YiCuo100', txt:'[KE2] #36\n\n晶晶告诉妈妈，她知道1+3=4，但是不明白为什么老师会说4=1+3。晶晶的认知发展阶段还处在（ ）。 A.感知运动阶段 B.前运算阶段 C.具体运算阶段 D.形式运算阶段\n\n36.【答案】B 【解析】本题考查前运算阶段。皮亚杰提出认知发展的阶段理论，将个体的认知发展分为四个阶段： （1）感知运动阶段；（2）前运算阶段；（3）具体运算阶段；（4）形式运算阶段。前运算阶段的特征是：① 出现了语词或其他符号，开始出现表象和形象图式；②儿童的概念是具体的、动作的，而非抽象的，思维 具有不可逆性；③认为外界一切事物都是有生命的——泛灵论；④自我为中心。题干体现的是思维不可逆， 易错100 题中小学科二 让每一个孩子都能遇到好老师 8 属于前运算阶段。故本题选B。' },
+{ cat:'yicuo', t:'KE2-37', s:'YiCuo100', txt:'[KE2] #37\n\n讲完“体积的大小”后，张老师要求学生回家量一量日常用品的体积，这种教学方法是（ ）。 A.实习作业法 B.实践探究法 C.实物演示法 D.实验教学法\n\n37.【答案】A 【解析】本题考查实习作业法。实习作业法是指教师根据学科课程标准要求，指导学生运用所学的知 识在课上或者课外从事一定的工作或操作，将书本知识运用于实践的教学方法。这种方法在自然学科的教 学中占有重要的地位，如数学课的测量练习、生物课的植物栽培和动物饲养等。题干中“张老师要求学生 回家量一量日常用品的体积”属于数学课的测量练习。故本题选A。' },
+{ cat:'yicuo', t:'KE2-38', s:'YiCuo100', txt:'[KE2] #38\n\n学生们可以从政治的、经济的、地理的和历史的角度探讨英国与欧盟关系的问题，这种课程类型属 于（ ）。 A.学科课程 B.经验课程 易错100 题中小学科二 让每一个孩子都能遇到好老师 6 C.分科课程 D.综合课程\n\n38.【答案】D 【解析】本题考查综合课程。综合课程指打破传统的分科课程的知识领域，组合两门以上学科领域而 构成的一门学科，它采取合并相关学科的办法，减少教学科目，把几门学科的教学内容组织在一门综合学 科之中。学生们探讨问题时能从政治的、经济的、地理的和历史的角度综合考虑，这属于综合课程。故本 题选D。' },
+{ cat:'yicuo', t:'KE2-39', s:'YiCuo100', txt:'[KE2] #39\n\n小学生通过学习，掌握了“长方形面积＝长×宽”这一公式。这种学习属于（ ）。 A.信号学习 B.连锁学习 C.概念学习 D.命题学习\n\n39.【答案】D 【解析】本题考查知识学习的分类。命题学习是指获得由几个概念构成的命题的复合意义，实际上是 学习表示若干概念之间关系的判断。题干中的面积计算公式体现了三个概念之间的关系。故本题选D。' },
+{ cat:'yicuo', t:'KE2-40', s:'YiCuo100', txt:'[KE2] #40\n\n明朝著名学者王阳明说：“大抵童子之情，乐嬉游而惮拘检，如草木之始萌芽，舒畅之则条达，摧 挠之则衰痿。今教童子，必使其趋向鼓舞，中心喜悦，则其进自不能已。”这句话表明教育要遵循（ ）。 A.知行统一原则 B.因材施教原则 C.尊重学生原则 D.疏导原则\n\n40.【答案】C 【解析】本题考查德育原则。题干中王阳明观点的意思是：应结合孩子的天性进行教育，使他们顺着 自己的兴趣，多加鼓励，他们内心喜悦，自然就能不断进步。学生只有受到尊重和信赖，才能充分发挥自 己的能动性和创造性，所以符合尊重信任学生与严格要求学生相结合的原则。故本题选C。' },
+{ cat:'yicuo', t:'KE2-41', s:'YiCuo100', txt:'[KE2] #41\n\n广义的教育制度指国民教育制度，是一个国家为实现其国民教育的目的，从组织系统上建立起来的 一切教育设施和有关规章制度，狭义的教育制度是指（ ）。 A.高等教育制度 B.自学高考制度 C.学校教育制度 D.成人高考制度\n\n41.【答案】C 【解析】本题考查教育制度。教育制度是指一个国家各级各类实施教育的机构体系及其组织运行的规 则。广义的教育制度指国民教育制度。狭义的教育制度指学校教育制度，简称学制。故本题选C。' },
+{ cat:'yicuo', t:'KE2-42', s:'YiCuo100', txt:'[KE2] #42\n\n小文学习成绩不好，但爱在同学面前炫耀自己的限量版运动鞋或其他高档物品，看到同学投来羡慕 的眼光，感到十分满足。小文的心理防御方式是（ ）。 A.升华 B.转移 C.补偿 D.退行\n\n42.【答案】C 【解析】本题考查补偿。补偿又称代偿，是指个体利用某种方法来弥补其生理或心理上的缺陷，从而 掩盖自己的自卑感和不安全感。所谓“失之东隅，收之桑榆”就是这种机制。故本题选C。' },
+{ cat:'yicuo', t:'KE2-43', s:'YiCuo100', txt:'[KE2] #43\n\n划分机械学习与有意义学习的主要依据是（ ）。 A.学生是否主动学习 B.学习目的是否为解决问题 C.学生是否理解学习材料 D.学习内容是否由学生发现\n\n43.【答案】C 【解析】本题考查学习的分类。奥苏贝尔根据学习的材料和学习者原有知识的关系，将学习分为有意 义学习和机械学习；根据学习进行的方式，他将学习划分为发现学习和接受学习。学习材料与原有知识的 关系是指学生能否根据已有知识经验理解新材料也就是学生是否理解学习材料。A 选项，学生是否主动学 习主要体现的是发现学习和接受学习的分类。B 和D 选项强调的是学习目的和学习内容，与题意不符。故 易错100 题中小学科二 让每一个孩子都能遇到好老师 9 本题选C。' },
+{ cat:'yicuo', t:'KE2-44', s:'YiCuo100', txt:'[KE2] #44\n\n中学生晓阳总认为他是一个完美的人，任何事情都会按自己的意愿发展，但是现实往往事与愿违， 这让他非常苦恼，希望得到心理辅导老师的帮助。如果对晓阳进行心理辅导，最可行的办法是（ ）。 A.放松训练法 B.系统脱敏法 C.理性情绪法 D.代币强化法\n\n44.【答案】C 【解析】本题考查理性情绪疗法。理性情绪疗法认为人的情绪受他们对事件的知觉的影响，这种影响 不是取决于事件的本身，而是取决于个体对事件的看法，合理的观念导致健康的情绪，不合理的观念导致 负向的、不稳定的情绪。题干中晓阳总认为自己是一个完美的人，任何事情都会按自己的意愿发展，这就 是一种不合理的观念，若要帮助晓阳改善情绪状态，必须驳斥他的这一不合理观念，使之建立新观念并获 得正向的情绪效果。故本题选C。' },
+{ cat:'yicuo', t:'KE2-45', s:'YiCuo100', txt:'[KE2] #45\n\n在教育理论指导下，通过运用观察、列表、问卷、访谈、个案研究以及测验等方式，搜集教育问题 的资料，从而对教育的现状做出科学分析，并提出具体工作建议的一整套实践活动的研究方法是（ ）。 A.教育行动研究法 B.调查研究法 C.教育叙事研究法 D.比较研究法 易错100 题中小学科二 让每一个孩子都能遇到好老师 7\n\n45.【答案】B 【解析】本题考查调查研究法。调查研究法是在教育理论指导下，通过运用观察、列表、问卷、访谈、 个案研究以及测验等方式，以教育理论为指导，搜集教育问题的资料，从而对教育的现状作出科学分析， 并提出具体工作建议的研究方法。故本题选B。' },
+{ cat:'yicuo', t:'KE2-46', s:'YiCuo100', txt:'[KE2] #46\n\n1903 年，清政府颁发《奏定学堂章程》，该学制体现了张之洞“中学为体，西学为用”的思想，主 要借鉴了日本的学制，其最大的特点就是修业年限长。该学制标志着我国国民教育制度的开始，又称为（ ）。 A.六三三制 B.壬子癸丑学制 C.壬寅学制 D.癸卯学制\n\n46.【答案】D 【解析】本题考查癸卯学制。1903 年（光绪二十九年），清政府拟定了《奏定学堂章程》，1904 年1 月 颁布执行，又称“癸卯学制”。“癸卯学制”主要承袭了日本的学制，是中国第一个实行的现代学制。故 本题选D。' },
+{ cat:'yicuo', t:'KE2-47', s:'YiCuo100', txt:'[KE2] #47\n\n张老师在工作中，注重以自己的高尚品德、人格魅力以及对学生的深切期望和真诚的爱来触动、感 化学生，促使学生思想转变。这种德育方法是（ ）。 A.实际锻炼法 B.品德评价法 C.个人修养法 D.情感陶冶法\n\n47.【答案】D 【解析】本题考查情感陶冶法。情感陶冶法是教育者自觉创设良好的教育情境，使受教育者在道德和 思想情操方面受到潜移默化的感染、熏陶的方法。情感陶冶法包括人格感化、环境陶冶、艺术陶冶等。题 干所述属于人格感化。故本题选D。' },
+{ cat:'yicuo', t:'KE2-48', s:'YiCuo100', txt:'[KE2] #48\n\n教学《圆的认识》一课时，教师展示圆形纸片、硬币，让学生看一看，摸一摸，然后总结圆的特点。 这一教学过程主要遵循的是（ ）。 A.直观性原则 B.启发性原则 C.循序渐进原则 D.因材施教原则\n\n48.【答案】A 【解析】本题考查直观性教学原则。直观性原则是指在教学中引导学生直接感知事物、模型或通过教 师用形象语言描绘教学对象，使学生获得丰富的感性认识。直观教具包括实物直观、模象直观和言语直观。 展示圆形纸片、硬币采用了实物直观，体现了直观性原则。故本题选A。' },
+{ cat:'yicuo', t:'KE2-49', s:'YiCuo100', txt:'[KE2] #49\n\n“不忘初心，牢记使命”，对于学生而言，就是让自己意识到自己是社会主义的建设者和接班人， 要为这一历史使命而勤奋学习，不辜负祖国的期望。这属于（ ）。 A.近景的直接性动机 B.近景的间接性动机 C.远景的直接性动机 D.远景的间接性动机\n\n49.【答案】D 【解析】本题考查学习动机的分类。根据学习动机起作用时间的长短，可以把学习动机分为近景的直 接性学习动机和远景的间接性学习动机：近景的直接性学习动机是指由活动的直接结果所引起的对某种活 动的动机，这种动机很具体，但不够稳定，易随环境的变化而变化。远景的间接性学习动机是指由于了解 活动的社会意义、活动结果的社会价值而引起的对某种活动的动机，这种学习动机既具有一定的社会性和 理想色彩，又与个人的志向、世界观相联系，具有较强的稳定性和持久性。题干中，为社会主义的建设而 易错100 题中小学科二 让每一个孩子都能遇到好老师 10 勤奋学习，属于远景的间接性动机。故本题选D。' },
+{ cat:'yicuo', t:'KE2-50', s:'YiCuo100', txt:'[KE2] #50\n\n学期末，李老师对小明作出的评语是：“这个学期你上课听讲比以往认真，积极回答课堂提问，能 按时完成作业，学习成绩有很大的进步，继续加油，我看好你哦！”这种评价属于（ ）。 A.绝对评价 B.相对评价 C.量化评价 D.质性评价\n\n50.【答案】D 【解析】本题考查质性评价。质性评价也叫定性评价，定性评价是根据评价者对评价对象平时的表现、 现实和状态或文献资料的观察和分析，直接对评价对象做出定性结论的价值判断。李老师对小明做出的评 语是基于日常观察的基础上对学生做出的定性结论，属于质性评价。故本题选D。' },
+{ cat:'yicuo', t:'KE2-51', s:'YiCuo100', txt:'[KE2] #51\n\n人的高级心理机能是在一定的社会历史文化背景下，借助语言，通过人与人的社会交往而形成的。 持这种观点的心理学家是（ ）。 A.维果茨基 B.乔姆斯基 C.巴甫洛夫 D.弗洛伊德\n\n51.【答案】A 【解析】本题考查维果茨基的文化—历史发展理论。维果茨基所提出的“文化—历史”发展论认为， 人的高级心理机能是在与周围人的交往过程中产生与发展起来的，是社会文化、历史发展的产物。故本题 选A。' },
+{ cat:'yicuo', t:'KE2-52', s:'YiCuo100', txt:'[KE2] #52\n\n在近代教育史上，反对思辨，主张用实证方法研究知识价值，提出教育的任务是教导人们为完美生 活做准备的教育家是（ ）。 A.夸美纽斯 B.赫尔巴特 C.斯宾塞 D.卢梭 易错100 题中小学科二 让每一个孩子都能遇到好老师 8\n\n52.【答案】C 【解析】本题考查斯宾塞的教育思想。英国教育家斯宾塞在《什么知识最有价值》中说道：“为我们 的完美生活做好准备，乃是教育所应完成的功能；一种教育课程是否合理的判断，就要看这种功能的完成 程度如何为准。”斯宾塞是著名的实证主义者，他反对思辨，主张科学只是对经验事实的描写和记录，提 出教育的任务是教导人们为完美生活做准备。故本题选C。' },
+{ cat:'yicuo', t:'KE2-53', s:'YiCuo100', txt:'[KE2] #53\n\n子路对教育的作用不以为然，说：南山有竹，人不去管它，照样长得直：砍来当箭，照样能穿透犀 牛皮。孔子对他说：若是将砍来的竹子刮光，装上箭头，磨得很利，岂不射得更深吗？子路接受了孔子的 教诲，成了孔门的学生。孔子的做法体现了哪一教育原则？（ ） A.教育影响的一致性、连贯性原则 B.理论联系实际原则 C.长善救失原则 D.疏导原则\n\n53.【答案】D 【解析】本题考查德育原则。疏导原则是指进行德育要循循善诱，以理服人，从提高学生认识入手， 调动学生的主动性，使他们积极向上。题干中孔子的话体现了以理服人。故本题选D。' },
+{ cat:'yicuo', t:'KE2-54', s:'YiCuo100', txt:'[KE2] #54\n\n在教学《桂林山水》一课时，教师制定的“感受山水之美，体会作者对祖国的热爱之情”的教学目 标属于（ ）。 A.结果性目标 B.体验性目标 C.表现性目标 D.知识性目标\n\n54.【答案】B 【解析】本题考查体验性目标。《义务教育课程标准》中的目标主要是按结果性目标和体验性目标来描 述的，对不同水平的学习和不同类型的目标要求用不同的行为动词进行描述。其中，体验性目标则主要用 于反映“过程与方法”“情感态度与价值观”等目标领域的要求。题干体现了体验性目标。故本题选B。' },
+{ cat:'yicuo', t:'KE2-55', s:'YiCuo100', txt:'[KE2] #55\n\n1632 年捷克教育家夸美纽斯出版《大教学论》。下列不属于夸美纽斯教育观点的是（ ）。 A.夸美纽斯认为教育的最终目的是为人的永生做准备 B.提出普及教育思想 C.教育要心理学化 D.教育适应自然\n\n55.【答案】C 【解析】本题考查夸美纽斯的教育思想。夸美纽斯的教育思想主要有：1632 年的《大教学论》是近代 第一本教育学著作。认为教育的最终目的是为人的永生做准备；提出“泛智教育”，把一切知识教给一切 人；教育要遵循自然；提出普及教育思想等。C 选项教育要心理学化是裴斯泰洛齐提出来的。故本题选C。' },
+{ cat:'yicuo', t:'KE2-56', s:'YiCuo100', txt:'[KE2] #56\n\n张老师在教学中经常用奖励来激发学生的学习动机，培养学生良好的学习习惯。张老师的这种做法 符合（ ）。 A.人本主义学习观 B.行为主义学习观 C.认知主义学习观 D.建构主义学习观\n\n56.【答案】B 【解析】本题考查学习动机理论。行为主义的学习动机理论主要强调通过奖励与惩罚的措施，来维持 学生的学习动机。题目中用奖励来激发学生的学习动机体现了这一点。故本题选B。 易错100 题中小学科二 让每一个孩子都能遇到好老师 11' },
+{ cat:'yicuo', t:'KE2-57', s:'YiCuo100', txt:'[KE2] #57\n\n提出“学校即社会”“教育即生活”“教育即生长”“教育即经验地不断改组”“儿童中 心”“从做中学”等一系列口号和原则的是（ ）。 A.布拉梅尔德 B.布鲁纳 C.卢梭 D.杜威\n\n57.【答案】D 【解析】本题考查杜威的思想。杜威的《民主主义与教育》从实用主义出发，反对传统的教育以学科 教材为中心和脱离实际生活；主张让学生在实际生活中学习，提出“教育即生活”“教育即成长”“教育 即经验的重组和改造”“学校即社会”和“从做中学”。他的这种学说以“经验”为基础，强调儿童在教 育中的中心地位，主张教师应以学生的发展为目的，围绕学生的需要和活动组织教学。故本题选D。' },
+{ cat:'yicuo', t:'KE2-58', s:'YiCuo100', txt:'[KE2] #58\n\n教师布置的作业应让学生“跳一跳，够得着”，这体现的作业设计基本要求是（ ）。 A.形式多样 B.难度适宜 C.尊重差异 D.注重创新\n\n58.【答案】B 【解析】本题考查作业设计的基本要求。作业的要求有：符合课程标准和教科书的要求，要有代表性； 作业分量要适当，难易要适度；要向学生提出明确的要求；老师要经常检查和批改学生的作业。“跳一跳， 够得着”体现了作业既能符合学生的发展水平，又不能过难，是可以通过努力实现的，所以体现了难度适 宜。故本题选B。' },
+{ cat:'yicuo', t:'KE2-59', s:'YiCuo100', txt:'[KE2] #59\n\n在学校教育中，学生对客观世界的认识主要借助的是（ ）。 A.生产经验 B.生活经验 C.直接经验 D.间接经验 易错100 题中小学科二 让每一个孩子都能遇到好老师 9\n\n59.【答案】D 【解析】本题考查教学过程的间接性规律。学生在学校中主要学习的是间接经验，这也是他们在学校 教育中认识客观世界的主要材料。故本题选D。' },
+{ cat:'yicuo', t:'KE2-60', s:'YiCuo100', txt:'[KE2] #60\n\n赵老师讲解课文《秋》时，先放了一些秋的图片，让学生感受秋意，不知不觉中学生们就记住所学 的材料了。案例中的赵老师广泛利用环境信息，注意调动和发掘大脑无意识领域的潜能，使学生在轻松愉 快的气氛中学习，这种教学方法属于（ ）。 A.发现学习法 B.非指导性教学法 C.范例教学法 D.暗示教学法\n\n60.【答案】D 【解析】本题考查教学模式。暗示教学法，就是对教学环境进行精心的设计，用暗示、联想练习和音 乐等各种综合方式建立起无意识的心理倾向，创造高度的学习动机，激发学生的学习需要和兴趣，充分发 挥学生的潜力，使学生在轻松愉快的学习中获得更好的效果。案例中的赵老师广泛利用环境信息，注意调 动和发掘大脑无意识领域的潜能，使学生在轻松愉快的气氛中学习，这种教学方法属于暗示教学法。故本 题选D。' },
+{ cat:'yicuo', t:'KE2-61', s:'YiCuo100', txt:'[KE2] #61\n\n梦佳理解了“物质决定意识，意识反作用于物质”的涵义。按照皮亚杰的认知发展阶段理论，梦佳 的思维发展水平处于（ ）。 A.感知运动阶段 B.前运算阶段 C.具体运算阶段 D.形式运算阶段\n\n61.【答案】D 【解析】本题考查皮亚杰认知发展阶段理论。皮亚杰将个体的认知发展分为四个阶段。其中，第四阶 段是形式运算阶段（11—15 岁以上），该阶段的儿童思维以命题的方式进行，能够根据逻辑推理、归纳或 者演绎的方式解决问题。题干中，学生理解物质和意识之间的关系内涵，属于辩证思维，说明思维水平处 于形式运算阶段。故本题选D。' },
+{ cat:'yicuo', t:'KE2-62', s:'YiCuo100', txt:'[KE2] #62\n\n在课程理论发展史上，第一次专门系统研究课程编制的理论是（ ）。 A.泰勒原理教育 B.目标分类学 C.多元智能理论 D.生活教育理论\n\n62.【答案】A 【解析】本题考查泰勒的课程理论。在课程理论发展史上，第一次专门系统研究课程编制的理论是泰 勒原理教育。泰勒提出了课程设计的目标模式，以及关于课程设计的四个问题：目标、内容、方法、评价。 故本题选A。 易错100 题中小学科二 让每一个孩子都能遇到好老师 12' },
+{ cat:'yicuo', t:'KE2-63', s:'YiCuo100', txt:'[KE2] #63\n\n教师引导学生选择有针对性的格言、箴言，作为座右铭以自励、自警、自律，使其获得教育的德育 方法是（ ）。 A.说服教育法 B.个人修养法 C.环境陶冶法 D.品德评价法\n\n63.【答案】B 【解析】本题考查个人修养法。个人修养法是在教师的引导下，学生经过自觉学习、自我反思和自我 行为调节，使自身品德不断完善的一种重要方法，主要包括立志、学习、反思、箴言、慎独等。故本题选 B。' },
+{ cat:'yicuo', t:'KE2-64', s:'YiCuo100', txt:'[KE2] #64\n\n儿童身心发展有两个高速发展期：乳儿期与青春期，反映了身心发展的（ ）规律。 A.顺序性 B.不平衡性 C.阶段性 D.个别差异性\n\n64.【答案】B 【解析】本题考查不平衡性规律。个体发展的不平衡性表现在两个方面：首先，同一方面的发展速度， 在不同年龄阶段变化是不平衡的，其次，不同方面发展的不平衡性。题目中“两个高速发展期”表明不同 时期，发展速度不同，体现了不平衡性。故本题选B。' },
+{ cat:'yicuo', t:'KE2-65', s:'YiCuo100', txt:'[KE2] #65\n\n晓军上中学后，自尊心越来越强，自我评价越来越客观，全面，自我控制能力明显提高，这反映的 是晓军自我意识哪一方面的发展？（ ） A.生理自我 B.心理自我 C.社会自我 D.物质自化\n\n65.【答案】B 【解析】本题考查自我意识的发展阶段。自我意识的发展分为三个阶段：生理自我、社会自我和心理 自我。其中，心理自我，是指个体对自己的心理属性的意识，包括对自己的感知、记忆、思维、智力、性 格、气质、动机、需要、价值观和行为等的意识。心理自我在青年初期开始发展和形成。题干中描述的是 中学生自尊心变强、自我评价更客观，体现的都是心理自我。故本题选B。' },
+{ cat:'yicuo', t:'KE2-66', s:'YiCuo100', txt:'[KE2] #66\n\n夏日炎炎，身处蓝绿色调装饰的室内，会感觉相对清凉，这是感觉的（ ）。 A.对比 B.后像 C.联觉 D.适应\n\n66.【答案】C 【解析】本题考查联觉。一种感觉兼有另一种感觉的心理现象叫联觉，如红色给人以热烈的感觉、紫 色给人以高贵的感觉等。题干蓝绿色除了产生视觉，还产生了温度觉，属于联觉，所以C 符合题干；感觉 对比是同一感受器接受不同的刺激，而使感受性发生变化的现象，所以A 不符合题干；感觉后像是指在刺 激作用停止后暂时保留的感觉现象称为感觉后效。所以B 不符合题干；感觉适应是指由于刺激对感受器的 持续作用而使感受性发生变化的现象，如视觉适应、嗅觉适应等，所以D 不符合题干。故本题选C。' },
+{ cat:'yicuo', t:'KE2-67', s:'YiCuo100', txt:'[KE2] #67\n\n一位初中语文教师教学生用列课文结构提纲、画网络图的方法促进学习。这里所教的学习策略是 （ ）。 A.复述策略 B.组织策略 易错100 题中小学科二 让每一个孩子都能遇到好老师 10 C.精制策略 D.组块策略\n\n67.【答案】B 【解析】本题考查组织策略。组织策略即根据知识经验之间的内在关系，对学习材料进行系统、有序 的分类、整理与概括，使之结构合理化，包括列提纲、利用图形和表格、概括和归纳等。材料中“列课文 结构提纲、画网络图”均属于学习策略中的组织策略。故本题选B。' },
+{ cat:'yicuo', t:'KE2-68', s:'YiCuo100', txt:'[KE2] #68\n\n晓玲性格内向，平时不敢同老师讲话，遇到疑难问题也没有勇气求教。偶有一次，她向杨老师求教， 杨老师耐心解答了问题，并对她的行为及时给予表扬。经过多次这样的教学交往，晓玲学会了主动向老师 请教问题。杨老师改变晓玲行为的方法属于（ ）。 A.强化法 B.自控法 C.脱敏法 D.放松法\n\n68.【答案】A 【解析】本题考查行为改变的基本方法。强化法用来培养新的适应行为。根据学习原理，一个行为发 生后，如果紧跟着一个强化刺激，这个行为就会再一次发生。在本题中，晓玲主动向杨老师求教的行为发 生后，杨老师耐心解答了问题并对晓玲的行为及时给予了表扬，就是对晓玲的行为进行了强化刺激，有助 于晓玲主动求教行为的再次发生。故本题选A。 易错100 题中小学科二 让每一个孩子都能遇到好老师 13' },
+{ cat:'yicuo', t:'KE2-69', s:'YiCuo100', txt:'[KE2] #69\n\n晓旭认为服从、听话的孩子就是好孩子，于是她对老师和家长绝对遵从，期望得到他们的赞许。根 据科尔伯格的道德发展理论，她的道德发展处于（ ）。 A.社会契约取向阶段 B.相对功利取向阶段 C.寻求认可取向阶段 D.遵守法规取向阶段\n\n69.【答案】C 【解析】本题考查科尔伯格道德发展阶段理论。科尔伯格将个体道德发展分为三水平六阶段。其中习 俗水平下第三阶段：寻求认可取向阶段（好孩子阶段），在此阶段的儿童看来，一种行为是否正确，要看其 是否被别人喜爱，能否取悦他人。考虑社会对一个“好孩子”的期许来做事。题干中，晓旭认为服从、听 话的孩子就是好孩子，并以这一要求来行事，符合寻求认可取向阶段。故本题选C。' },
+{ cat:'yicuo', t:'KE2-70', s:'YiCuo100', txt:'[KE2] #70\n\n邻居小孩一直体弱多病，经常去打针，每次打针他都害怕而大哭，久而久之，一见穿白大褂的大夫 就大哭，有一次，带他去亲戚家玩，清洁工来了，穿白衣，戴白帽，酷似大夫，小孩一见，立马大哭。该 学习理论的代表人物是（ ）。 A.桑代克 B.巴普洛夫 C.斯金纳 D.班杜拉\n\n70.【答案】B 【解析】本题考查巴普洛夫的经典性条件作用理论。经典性条件作用理论是巴普洛夫提出来的。操作 性条件作用理论是斯金纳提出来的。桑代克的是尝试错误说。班杜拉的是社会学习理论。泛化是对相似的 刺激以同样的方式作出反应。题干中邻居小孩因为打针害怕白大褂的大夫，然后清洁工来了，穿白衣，戴 白帽，酷似大夫，这种相类似的刺激也引起了小孩害怕的反应。泛化是巴普洛夫提出的理论。故本题选B。' },
+{ cat:'yicuo', t:'KE2-71', s:'YiCuo100', txt:'[KE2] #71\n\n在心理辅导中，小学生有时会把辅导老师当成自己的父母，以获得情感的满足。这种心理现象属于 （ ）。 A.共情 B.移情 C.同情 D.亲情\n\n71.【答案】B 【解析】本题考查移情。移情是来访者将自己过去对生活中某些重要人物的情感会太多投射到分析者 身上的过程，即指本应是对他人的情感和态度转移到了分析家身上。小学生有时会把辅导老师当成自己的 父母，正是移情的表现。故本题选B。' },
+{ cat:'yicuo', t:'KE2-72', s:'YiCuo100', txt:'[KE2] #72\n\n在小学科学教材中，先呈现动植物的基本知识，接着是与动植物有关的生态系统知识，再是与人类 有关的生态系统知识。这种课程内容的组织形式属于（ ）。 A.直线式 B.螺旋式 C.并列式 D.循环式\n\n72.【答案】B 【解析】本题考查课程内容组织方式。课程内容组织方式包括直线式和螺旋式。直线式指把课程内容 组织成一条在逻辑上前后联系的“直线”，前后内容基本不重复，即课程内容直线前进，前面安排过的内容 在后面不再呈现，强调知识本身内在逻辑的直线性；螺旋式指在不同阶段、单元或不同课程门类中，使课 程内容重复出现，逐渐扩大知识面，加深知识难度，即同一课程内容前后重复出现，前面呈现的内容是后 面学习内容的基础，后面学习内容是对前面学过内容的不断扩展与加深，层层递进。题干中先呈现动植物 的基本知识，接着是与动植物有关的生态系统知识，再是与人类有关的生态系统知识，内容不断扩展与加 深，层层递进，属于螺旋式。故本题选B。' },
+{ cat:'yicuo', t:'KE2-73', s:'YiCuo100', txt:'[KE2] #73\n\n“玉不琢，不成器；人不学，不知道。是故古之王者，建国君民，教学为先。”《学记》中的这句话 反映了（ ）。 A.教育与经济的关系 B.教育与文化的关系 C.教育与政治的关系 D.教育与科技的关系\n\n73.【答案】C 【解析】本题考查《学记》。“建国君民，教学为先”出自《学记》，意思是治国安民，第一要务就是推 行道德教化，反映了教育与政治的关系。故本题选C。' },
+{ cat:'yicuo', t:'KE2-74', s:'YiCuo100', txt:'[KE2] #74\n\n从课外活动的内容看，学校举办的法治教育报告会属于（ ）。 A.学科活动 B.社会活动 易错100 题中小学科二 让每一个孩子都能遇到好老师 11 C.主题活动 D.文体活动\n\n74.【答案】C 【解析】本题考查课外活动的类型。课外活动包括社会实践活动、学科活动、科技活动、主题活动等 多种内容。主题活动是就特定专题而展开短期或长期的专门活动。题干中法治教育报告是针对法律主题进 行的教育活动。故本题选C。 易错100 题中小学科二 让每一个孩子都能遇到好老师 14' },
+{ cat:'yicuo', t:'KE2-75', s:'YiCuo100', txt:'[KE2] #75\n\n小学高年级学生自我意识的发展受学校、教师、同伴等影响显著。这表明其自我意识发展处于（ ）。 A.生理自我时期 B.社会自我时期 C.心理自我时期 D.精神自我时期\n\n75.【答案】B 【解析】本题考查自我意识发展的三阶段。个体自我意识的发展经历了生理自我到社会自我再到心理 自我的过程。儿童在3 岁之后，自我意识的发展进入社会自我阶段。社会自我至少年期基本成熟。题干中 描述的情形属于社会自我阶段。故本题选B。' },
+{ cat:'yicuo', t:'KE2-76', s:'YiCuo100', txt:'[KE2] #76\n\n《中华人民共和国义务教育法》颁布时间为（ ）。 A.1983 年 B.1986 年 C.1993 年 D.2006 年\n\n76.【答案】B 【解析】本题考查《中华人民共和国义务教育法》。1986 年4 月12 日第六届全国人民代表大会第四次 会议通过的《中华人民共和国义务教育法》规定，国家实行九年制义务教育。故本题选B。' },
+{ cat:'yicuo', t:'KE2-77', s:'YiCuo100', txt:'[KE2] #77\n\n在小学课程实施过程中，教师挖掘和利用的民风民俗、传说故事、传统节日、文化活动等资源属于 （ ）。 A.自然资源 B.校内资源 C.社会资源 D.个体资源\n\n77.【答案】C 【解析】本题考查课程资源的类型。按照空间分布，课程资源分为校内和校外资源。学校范围内的课 程资源就是校内课程资源。超出学校范围的课程资源就是校外课程资源。题干中的民风民俗、传说故事等 资源属于校外资源中的社会资源。故本题选C。' },
+{ cat:'yicuo', t:'KE2-78', s:'YiCuo100', txt:'[KE2] #78\n\n教育具有自身发展的规律，在某些方面不一定会随着社会的改变而改变，这反映了教育的哪一特 征？（ ） A.阶级性 B.生产性 C.目的性 D.相对独立性\n\n78.【答案】D 【解析】本题考查教育的相对独立性。教育是一种主体性的实践活动，在能动地反作用于社会发展的 过程中，具有主体自身的价值取向与行为选择，由此实现着教育的社会功能，并表现出自身的相对独立性。 所谓教育的相对独立性，是指作为社会一个子系统的教育，具有自身的规律，对政治经济制度和生产力发 展具有能动作用。具体表现为：（1）教育对社会的作用具有能动性；（2）教育具有自身的质的规定性；（3） 教育具有历史继承性；（4）教育与社会发展具有不平衡性；（5）教育的独立性并非绝对独立性，而是相对 独立性。故本题选D。' },
+{ cat:'yicuo', t:'KE2-79', s:'YiCuo100', txt:'[KE2] #79\n\n钱老师上课时经常先提出问题让大家思考一会儿，然后再叫学生回答，以使学生的心理活动更好地 维持在教学活动中，钱老师所采用的课堂管理方式是（ ）。 A.团体警觉 B.替代强化 C.最小干预 D.处理转换\n\n79.【答案】A 【解析】本题考查课堂管理方式。团体警觉是指在课堂中，先提出问题，让学生思考后再去点名，而 不是先点名，再提问，以此更好地引起全体学生的注意。故本题选A。' },
+{ cat:'yicuo', t:'KE2-80', s:'YiCuo100', txt:'[KE2] #80\n\n谢晶在全校大会上受到表扬，兴奋不已；会议结束后，当听到几个同学议论“她有什么了不起，你 看她长得那个样”时，她又很快陷入极度苦恼之中。谢晶的表现典型地反映了中学生情绪的哪种特点？（ ） A.两极性 B.不平衡性 C.阶段性 D.爆发性 二、简答题\n\n80.【答案】A 【解析】本题考查中学生情绪发展的特点。青少年学生正处于身心各方面迅速发展的时期，心理矛盾 错综复杂，神经过程的兴奋和抑制发展不平衡，导致情绪表现的两极性十分明显，情绪容易从一个极端走 向另一个极端，相反情绪的转换剧烈。题干中谢晶先是非常兴奋继而因为小事又变得极度苦恼，体现出情 绪的两极变化。故本题选A。 二、简答题 81.【参考答案】 《小学教师专业标准（试行）》中“终身学习”的基本理念： 易错100 题中小学科二 让每一个孩子都能遇到好老师 15 （1）学习先进小学教育理论，了解国内外小学教育改革与发展的经验和做法； （2）优化知识结构，提高文化素养； （3）具有终身学习与持续发展的意识和能力，做终身学习的典范。 82.【参考答案】 加里培林将智力技能形成划分为5 个阶段： （1）活动定向阶段； （2）物质与物质化阶段； （3）出声的外部言语动作阶段； （4）不出声的外部言语动作阶段； （5）内部言语阶段。 83.【参考答案】 小学教师在撰写操行评语时需要注意： （1）针对性。如针对学生的年龄、性别、个性等特点，充分体现学生的特长，防止千篇一律。 （2）全面性。要从素质教育的高度出发，从德、智、体等各个方面来评价学生，防止以偏概全。 （3）发展性。要以动态的眼光来看待学生，充分肯定学生的成长与进步，防止一成不变。 （4）鼓励性。要满腔热情地反映学生的优点，避免采用严肃冷峻、古板生硬的语言。 （5）可接受性。一是指出的问题不仅真实可靠，而且还要有一定的艺术角度。二是评语用词尽量简单 明了，贴近学生的年龄和文化水平。 84.【参考答案】 中学教学中贯彻启发性原则的基本要求是： （1）调动学生学习的主动性； （2）启发学生独立思考，发展学生的逻辑思维能力； （3）让学生动手，培养独立解决问题的能力； （4）发扬教学民主。 85.【参考答案】 培养学生想象力的方法有： （1）培养和保护学生的好奇心； （2）丰富学生知识，扩大表象储备； （3）创造想象情境，引发想象； 易错100 题中小学科二 让每一个孩子都能遇到好老师 16 （4）利用生动活泼的教学形式唤起学生的想象。 86.【参考答案】 注意的品质包括： （1）注意的广度； （2）注意的稳定性； （3）注意的分配； （4）注意的转移。 87.【参考答案】 小学教师进行教学研究的基本要求包括： （1）以科学理论为指导； （2）遵循学科的特点、规律； （3）有目的性、计划性。 88.【参考答案】 建构主义思想的核心是知识是在主客体相互作用的活动中建构起来的。 （1）知识观 建构主义在一定程度上对知识的客观性和确定性提出质疑，强调知识的动态性。 （2）学习观 建构主义强调学习的主动建构性、社会互动性和情境性。 （3）学生观 第一，建构主义强调学生经验世界的丰富性，强调学生的巨大潜能； 第二，建构主义者强调学生经验世界的差异性，每个人在自己的活动和交往中形成了自己的个性化的、 独特的经验，每个人有自己的兴趣和认知风格。 （4）教学观 由于知识的动态性和相对性以及学习的建构过程，教学不再是传递客观和确定的现成知识，而是激发 出学生原有的相关知识经验，促进知识的“生长”，促进学生的知识建构活动，以促成知识经验的重新组织、 转化和改造。 89.【参考答案】 元认知策略大致可分为以下三种： （1）计划策略：指根据认知活动的特定目标，在认知活动开始之前计划完成任务所涉及的各种活动、 易错100 题中小学科二 让每一个孩子都能遇到好老师 17 预计结果、选择策略，设想解决问题的方法，并预估其有效性等。 （2）监控策略：指在认知过程中，根据认知目标及时评价、反馈自己认知活动的结果与不足，正确估 计自己达到认知目标的程度、水平；根据有效性标准，评价各种认知行动、策略的效果。 （3）调节策略：指根据对认知活动结果的检查，如发现问题，则采取相应的补救措施，根据对认知策 略的效果的检查，及时修正、调整认知策略。 90.【参考答案】 教材编写的基本要求有： （1）按照不同学科的特点，在内容上体现科学性与思想性； （2）强调内容的基础性； （3）在保证科学性的前提下，必须注意到基本教材对大多数学生和大多数学校的适用性； （4）在教材的编排上，要做到知识的内在逻辑与教学法要求的统一； （5）教科书的编排形式要有利于学生的学习； （6）兼顾同一年级各门学科内容之间的关系和同一学科各年级教材之间的衔接。 三、辨析题 91.【参考答案】 这个观点是错误的。 第一，教学是教师的教与学生的学共同组成的一种教育活动，是一种双边活动。第二，教师在教学活 动中起主导作用，学生在教学活动中处于主体地位，而不是客体。学生虽然许多方面并不成熟，需要教师 的指导，但他仍是认识和自身发展的主体，具有主观能动性。第三，在教学中要充分发挥学生的主观能动 性，才能促进教学活动的顺利开展。否定学生在教学中的主体作用，必然会削弱教学效果。因此，这种观 点是错误的。 92.【参考答案】 这种观点是错误的。 第一，学习动机和学习效果之间呈“倒U 型曲线”，并不是学习动机强，学习效果越好；第二，中等 程度的动机水平最有利于学习效果的提高，动机不足或过分强烈都会影响学习效率；第三，最佳动机水平 与学习课题的难易程度有关，任务难度越高，最佳动机水平越低；反之任务难度低，最佳动机水平越高。 因此，这种观点是错误的。 93.【参考答案】 这种说法是错误的。 易错100 题中小学科二 让每一个孩子都能遇到好老师 18 教育的任务不仅仅是向学生传授知识。教学的首要任务是向学生传授科学文化基础知识以及基本技能。 除此之外，还要培养学生高尚的审美情趣、增强学生体力、养成良好的思想品德以及发展学生的智力。因 此，这种观点是错误的。 94.【参考答案】 这种观点是错误的。 皮亚杰利用对偶故事法，发现并总结出了儿童道德认知发展的总规律，即儿童道德的发展经历从他律 到自律的发展过程。科尔伯格提出道德发展阶段论，采用“道德两难故事法”，最典型的就是“海因茨偷 药”的故事，让儿童对道德两难问题作出判断，提出道德认知发展的三水平六阶段理论。题干中科尔伯格 是用两难故事法对道德认知进行的研究。因此，这种观点是错误的。 95.【参考答案】 这种观点是错误的。 道德认识是人们对于行为规范及其意义的认识，是人的认识过程在品德上的表现，是个体品德的基础。 道德行为是个人在一定的道德认识支配下表现出来的对他人和社会有道德意义的活动，是衡量道德品质的 重要标志。但道德行为的形成受主观和客观等多方面因素的影响，也即道德认识在转化为道德行为的过程 中，需要道德意志和道德情感的参与，并不是有了什么样的道德认识就一定会有什么样的道德行为。因此， 这种观点是错误的。 四、材料分析题 96.【参考答案】 （1）课堂教学情境是指教师根据教学目标和教学内容，有目的地创设服务于学生学习的一种特殊的教 学环境。创设小学课堂教学情境时应考虑小学生的心理特点、材料的呈现形式和小学生的知识基础等。生 活是教学赖以生存和发展的源泉，因此，教学必须从抽象、枯燥的形式中解放出来，走向生活，创设生活 情境使教学生活化。材料中孙老师创设的情境，将数学问题转化为学生生活实际问题，激发了学生学习的 兴趣，收到了良好的教学效果。 （2）①教师应该全面深入地理解教材，知道教材的地位和作用。明确教材的知识结构、理论体系，贯 通教材的知识点，熟知教材的内容，并内化为自己的知识储备。 ②教师要充分地了解学生的实际情况，知道学生需要什么，知道哪些内容更有实效性。有针对性地选 择教学内容，激发学生的好奇心和学习兴趣。 ③合理安排教学内容。安排教学内容主要是在广度和深度上，一节课的内容难易程度、信息量的大小 等部会影响教学效果，教师要根据课程特点以及学生实际情况合理选择教学内容。 易错100 题中小学科二 让每一个孩子都能遇到好老师 19 97.【参考答案】 （1）李某不良品德形成的原因可能有： ①归属与爱的需要没有得到满足。归属与爱的需要，也称社交需要，是指每个人都有被他人或群体接 纳、爱护、关注、鼓励及支持的需要。材料中，李某从小父母离异，跟着年老多病的祖父生活，父亲偶尔 回家，对他非打即骂，说明李某缺失关爱。 ②缺乏正确的家庭教育，家庭教养方式不科学。民主型的家庭教养方式最有利于孩子成长，材料中， 李某的祖父对他管教不严，是放任型的，而父亲动辄打骂，是专断型的。错误的教养方式下，孩子容易出 现攻击性行为，缺乏社会责任感。 ③同伴群体的负面影响。个体的态度与品德的形成受同伴群体的影响，同伴群体的负面作用是与家庭、 社区、学校、大众传媒等方面的因素联系在一起的。材料中，李某在社会上结交不良青年，容易形成坏的 行为习惯。 （2）班主任应该： ①了解和研究学生的情况，把握清楚学生行为背后的原因，才能做出有针对性地教育对策。班主任应 该通过家访、电话等方式了解李某的家庭情况，向其家长宣传科学的教育理念，取得家长的理解和配合； ②关心爱护后进生，尊重他们的人格。班主任在日常的学习和生活中，多关注李某的表现，多与之私 下交流，多给予关爱和鼓励。还可以发动班级的力量，成立互助小组，共同帮助李某，走近李某。满足李 某归属与爱的需要； ③长善救失，因材施教。李某虽然纪律不佳，但是擅长运动，班主任要善于发现学生的闪光点，一分 为二地看待他。可以发展李某的运动特长，鼓励他多参与班级、学校的体育活动； ④遵循德育过程的学生思想品德形成的长期性和反复性规律。坚持抓反复，反复抓。班主任应该制定 一个长久的教育计划，有耐心、有爱心的对待李某这种特殊学生，观察、记录他的每一点变化。 综上所述，相信通过以上努力，李某这种特殊学生肯定会发生积极的改变。 98.【参考答案】 （1）材料中的学习现象可以用经验类化理论解释。该理论代表人物是贾德，他用著名的“水下打靶（也 称水下击靶）”实验证明，迁移产生的关键是学习者在两种活动中通过概括形成了能够泛化的共同原理。因 此，该理论也叫概括化理论。材料中，学生掌握了五言绝句的平仄规律后，再学习五言律诗时，通过概括 形成了能够泛化的共同原理，进而很快就能总结出五言律诗的平仄规律。再后来，当学生学习七言律诗时， 也是因为同样的原因，很快总结出了其平仄规律。 （2）学习迁移的经验类化理论（概括化理论）带来的启示体现在： 易错100 题中小学科二 让每一个孩子都能遇到好老师 20 第一，在教学过程中老师应注重原理、理论的教学，促进学生对于共同原理的理解和把握。 第二，注重用理论指导实践，积极创设实践机会，多学多练。 第三，在实践中教师积极指导，尤其是引导学生将原理迁移到操作中。 99.【参考答案】 （1）材料中学生的行为体现了低年级小学生特有的年龄特征： ①想象力进一步丰富和发展，对想象和现实之间没有明确的界限。材料中学生问“我能成为齐天大圣 吗？”“你喜欢熊大还是熊二？”体现了想象力发展的特征。 ②观察力的迅速发展，有很大的具体性和直观性。材料中学生问“太阳为什么白天出来……”体现出 了学生对自然现象的直观细致观察。 ③对世界有着强烈的好奇心和求知欲。材料中在观察到诸多现象之后，孩子们特别喜欢问问题，对世 界的探索欲、好奇心与日俱增。 （2）面对学生的稀奇古怪的问题，老师应该采取如下做法： ①树立正确的学生观，尊重学生的独特性，遵循学生发展的阶段特征，保护学生的好奇心，接纳学生 的稀奇古怪的问题。 ②坚持发展性评价，对极具创造性的回答，予以鼓励和表扬。 ③创设有利于创造性产生的环境。教师应给学生创造一个能容忍、支持标新立异者或偏离常规思维者 的环境，让学生感受到“心理安全”和“心理自由”。敢于大胆发问，大胆质疑。 ④重视非逻辑思维能力，鼓励学生大胆猜测，进行丰富想象，而不拘泥于常规，引导学生进行积极交 流、讨论得出答案。 100.【参考答案】 （1）材料中的“我”贯彻了疏导原则、因材施教原则、尊重学生与严格要求学生相结合原则、教育的 一致性和连贯性原则、集体教育和个别教育相结合的原则、长善救失原则。 （2）①疏导原则是指进行德育要循循善诱，以理服人，从提高学生认识入手，调动学生的主动性，使 他们积极向上。材料中的“我”通过与王伟语重心长的谈心，循循善诱，为他制定了一系列措施，从而调 动了他的积极主动性，体现了疏导原则。 ②因材施教原则是指进行德育要从学生的思想认识和品德发展的实际出发，根据他们的年龄特征和个 性差异进行不同的教育，使每个学生的品德都能得到最好的发展。材料中的“我”通过各种途径了解王伟 的具体情况，从实际出发，提高王伟的道德认识，体现了因材施教原则。 ③尊重学生与严格要求学生相结合原则是指进行德育要把对学生个人的尊重和信赖与对他们的思想和 易错100 题中小学科二 让每一个孩子都能遇到好老师 21 行为的严格要求结合起来，使教育者对学生的影响与要求易于转化为学生的品德。材料中的“我”在针对 王伟不爱学习、玩游戏的情况，没有直接批评，而是发动全班同学关心他、表扬他，在尊重的基础上要求 他不上网，体现了尊重学生与严格要求学生相结合原则。 ④教育的一致性与连贯性原则是指进行德育应当有目的、有计划地把来自各方面对学生的教育影响加 以组织、调节，使其相互配合，协调一致，前后连贯地进行，以保障学生的品德能按教育目的的要求发展。 材料中的“我”通过做家访，发动家庭力量，通过开班会，发动学校集体力量，保证对王伟的教育从空间 上和时间上保持一致，体现了教育的一致性与连贯性原则。 ⑤集体教育和个别教育相结合的原则是指在德育过程中，教育者要善于组织和教育学生热爱集体，并 依靠集体教育每个学生，同时通过对个别学生的教育，来促进集体的形成和发展，从而把集体教育和个别 教育有机地结合起来。材料中的“我”通过开班会，提高班集体对网络游戏的认识，通过发动全班同学对 王伟进行关心、表扬、监督，还让王伟担任学校清洁区卫生评分员，赋予他一定的责任，体现了集体教育 和个别教育相结合的原则。 ⑥长善救失原则是指在德育工作中，教育者要善于依靠、发扬学生自身的积极因素，调动学生自我教 育的积极性，克服消极因素，以达到长善救失的目的。材料中的“我”发挥王伟的特长，将画板报的任务 交给他，从而提高他的思想水平，体现了长善救失原则。 综上所述，材料中的“我”遵循德育过程的规律，善于运用德育原则，来促进学生的发展的意识和行 为，值得大家学习。' },
+{ cat:'yicuo', t:'KE2-81', s:'YiCuo100', txt:'[KE2] #81\n\n简述《小学教师专业标准（试行）》中“终身学习”的基本理念。 易错100 题中小学科二 让每一个孩子都能遇到好老师 12\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-82', s:'YiCuo100', txt:'[KE2] #82\n\n简述加里培林关于智力技能形成的阶段。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-83', s:'YiCuo100', txt:'[KE2] #83\n\n小学教师在撰写操行评语时应注意什么？\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-84', s:'YiCuo100', txt:'[KE2] #84\n\n简述中学教学中贯彻启发性教学原则的基本要求。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-85', s:'YiCuo100', txt:'[KE2] #85\n\n简述培养学生想象力的方法。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-86', s:'YiCuo100', txt:'[KE2] #86\n\n注意的品质有哪些？\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-87', s:'YiCuo100', txt:'[KE2] #87\n\n简述小学教师进行教学研究的基本要求。 易错100 题中小学科二 让每一个孩子都能遇到好老师 13\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-88', s:'YiCuo100', txt:'[KE2] #88\n\n简述建构主义学习理论的主要观点。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-89', s:'YiCuo100', txt:'[KE2] #89\n\n简述元认知策略的种类。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-90', s:'YiCuo100', txt:'[KE2] #90\n\n简述教材编写的基本要求。 三、辨析题\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-91', s:'YiCuo100', txt:'[KE2] #91\n\n教师是教学的主体，学生是客体。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-92', s:'YiCuo100', txt:'[KE2] #92\n\n学习动机强，学习效果越好。 易错100 题中小学科二 让每一个孩子都能遇到好老师 14\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-93', s:'YiCuo100', txt:'[KE2] #93\n\n教育的任务就是向学生传授知识。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-94', s:'YiCuo100', txt:'[KE2] #94\n\n科尔伯格通过对偶故事法来研究儿童的道德判断，提出儿童的道德认知发展是从他律阶段到自律阶 段的发展过程。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-95', s:'YiCuo100', txt:'[KE2] #95\n\n有什么样的道德认识，就一定有什么样的道德行为。 四、材料分析题\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-96', s:'YiCuo100', txt:'[KE2] #96\n\n小学数学材料中有这样一个问题：一个服装厂计划做630 套衣服，已经做了6 天，平均每天做75 套，剩下的要3 天做完，平均每天要做多少套？ 为了让学生积极参与，孙老师把题目改编为：“六一”儿童节要到了，我们三年级要参加表演，需要 演出服装160 套。文心服装厂已经做了5 天，平均每天能20 套，现在离“六一”儿童节还有两天，请你帮 忙算算每天需要完成多少套？ 巧妙的设计激发了学生浓厚的学习兴趣…… 问题： （1）对孙老师成功的教学情境创设进行评析。 （2）阐述教师处理教材内容时的基本要求。 易错100 题中小学科二 让每一个孩子都能遇到好老师 15\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-97', s:'YiCuo100', txt:'[KE2] #97\n\n学生李某从小父母离异，跟着年老多病的祖父生活，祖父对他管教不严，他经常和社会上的一些无 业青年混混在一起打架斗殴。父亲偶尔回家，对他非打即骂。在学校，他破坏课堂纪律、拖欠作业，完不 成学习任务，还欺负小同学，全班同学都看不起他、疏远他，但他喜欢运动，是班级篮球队的主力队员。 请回答： （1）简述李某不良品德形成的原因； （2）结合案例，分析班主任应如何开展对李某的教育工作。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-98', s:'YiCuo100', txt:'[KE2] #98\n\n王老师是初中语文老师，根据教学进度安排，最近她开始讲授古代诗歌单元。在教学时，她先是引 导学生探索五言绝句的平仄规律，刚开始学生总结不准确，经过多次讲解和引导，学生掌握了五言绝句的 平仄规律，随后王老师发现，当学生又学习五言律诗时，他们很快就能总结出五言律诗的平仄规律，再后 来，当学生学习七言律诗时，也很快总结出了其平仄规律。 本单元结束后，王老师进行教学反思：学生之所以能够很容易地总结出七言律诗的平仄规律，是因为 易错100 题中小学科二 让每一个孩子都能遇到好老师 16 学生已经掌握了五言绝句、五言律诗的平仄规律，他们利用已掌握的方法进行分析，很快就能总结出七言 律诗的平仄规律。 问题： （1）请用迁移相关理论分析上述学习现象。 （2）该迁移理论对教学有何启示？\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-99', s:'YiCuo100', txt:'[KE2] #99\n\n一（2）班的学生经常向刘老师提出一些“稀奇古怪”的问题。比如，当她在课堂上讲太阳和月亮 时，有的学生便会问：“老师，太阳为什么白天出来？月亮为什么晚上才出来？”刘老师对这样的问题还能 回答。但有些学生提出的问题，就让她难以应对了。比如，有的学生会问：“老师，为什么有的小朋友跟爸 爸姓，有的小朋友跟妈妈姓？”“我能成为齐天大圣吗？”“你喜欢熊大还是熊二？”等等。 问题： （1）分析材料中低年级小学生的行为表现。 （2）结合材料谈谈教师应如何对待学生“稀奇古怪”的提问。 易错100 题中小学科二 让每一个孩子都能遇到好老师 17\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE2-100', s:'YiCuo100', txt:'[KE2] #100\n\n上学期初，我们班转来个学生叫王伟，他沉迷于网络游戏，导致学习不认真，对班级活动漠不关 心，还常常旷课。 我对王伟定期家访。在家访时了解到，早在王伟读小学的时候，父母为了不让他到处乱跑，便常给他 零花钱去玩电子游戏，以至于形成了网瘾。鉴于此，我建议王伟的父母多抽些时间来与他交流、沟通，并 控制好他的零花钱，尽可能地限制他玩网络游戏。 同时，我发动了全班同学利用各种报刊、网络收集资料，并召开了一次题为“网络游戏给我们带来什 么”的主题班会，通过激烈辩论，最终同学们得出的结论是：中学生玩网络游戏的弊远远大于利，我们不 能沉迷于网络游戏。王伟在班会课后感中写道：“通过主题班会，我才真正意识到经常旷课上网是多么愚蠢。 过去我对学习一直不感兴趣，上课听不懂，整天无所事事，为了消磨时间，我就常常逃课去上网了……” 针对王伟的情况，我语重心长地与他谈心，并为他采取了一项措施：他每坚持一天不上网，就会有一 位同学给他写上一句祝福或鼓励的话。我们班共有50 个同学，有四十九颗火热的心愿意帮助他，我希望他 不要辜负同学们的期望，王伟爽快地说：“没问题。” 此外，为了培养王伟对班集体的责任心，我与班委协商，让他担任学校清洁区卫生评分员，他也非常 乐意地接受了，同时，同学们充分发掘王伟的特长，在每次出黑板报时，就把画报头和插图的任务交给他。 班干部们也非常热心，主动担任王伟各科学习的辅导员，常常辅导他做作业。 一学期过去了，他不再沉迷于网络游戏，学习成绩比以前明显提高，思想也有了很大进步。 问题： 材料中的“我”贯彻了哪些德育原则？结合材料加以分析。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-1', s:'YiCuo100', txt:'[KE1] #1\n\n工作多年的张老师有较高水平的教学能力和技巧，班级管理井井有条，还注重激发自我潜能。张老 师所处的教师发展阶段是（ ）。 A.专家生涯阶段 B.退缩生涯阶段 C.更新生涯阶段 D.预备生涯阶段\n\n1.【答案】A 【解析】本题考查教师职业发展阶段。斯德菲依据人文心理学派的自我实现理论，提出教师的人文发 展模式，又称教师更新生涯发展模式，将教师的发展分为以下五个阶段：（1）预备生涯阶段：主要包括初 任教职的教师或重新任职的教师；（2）专家生涯阶段：处于这一阶段的教师已具备较高水平的教学能力与 技能，对学生抱有很高的期望。同时，也能激发自我潜能，达到自我实现的目的；（3）退缩生涯阶段：包 括初期退缩、持续退缩和深度退缩三个阶段；（4）更新生涯阶段：此阶段的教师致力于追求其专业成长、 吸收新知，但仍需要外在的支持，更需要学校行政部门的支持与协助。（5）退出生涯阶段：到了退休年龄， 或由于其他原因而离开教育岗位。故本题选A。' },
+{ cat:'yicuo', t:'KE1-2', s:'YiCuo100', txt:'[KE1] #2\n\n陶行知说：“活的人才教育，不是灌输知识，而是将开发文化宝库的钥匙，仅我们知道的交给学生。” 这句话隐含的学生观不包括的是（ ）。 A.教师要重视学生的完整性 B.教师要重视学生的主体性 C.教师要重视学生的发展性 D.教师要重视学生的独立性\n\n2.【答案】A 【解析】本题考查学生观。陶行知的话强调学生是自身学习的主体，我们要尊重学生独立、主体的地 位，促进学生长远发展。题干中未体现重视学生的完整性。故本题选A。' },
+{ cat:'yicuo', t:'KE1-3', s:'YiCuo100', txt:'[KE1] #3\n\n张老师选择用诗歌《我用残损的手掌》的教学开展课例研究，并写成课例研究报告提供给青年教师 学习。张老师的角色是（ ）。 A.教学过程的管理者 B.同侪共进的合作者 C.学生成长的示范者 D.校本课程的开发者\n\n3.【答案】B 【解析】本题考查新课程下的教师观。题干中张老师选择用诗歌《我用残损的手掌》的教学开展课例 研究，形成了研究报告，并将这一报告提供给青年教师学习，是与同辈、同侪老师们一起合作共同进步， 体现了张老师是同侪共进的合作者。题干中未体现张老师对于教学过程的管理，也未体现对于学生成长的 示范，排除A、C 项。D 项中校本课程指的是以学校为本位、由学校自己确定的课程，题干中开展课例研究 不属于开发校本课程，排除D 项。故本题选B。' },
+{ cat:'yicuo', t:'KE1-4', s:'YiCuo100', txt:'[KE1] #4\n\n李某开设的营业性电子游戏厅，没有在显著位置设立未成年人禁入标志。责令其改正的管理机关是 （ ）。 A.检察机关 B.公安机关 C.文化行政部门 D.教育行政部门\n\n4.【答案】C 【解析】本题考查《中华人民共和国预防未成年犯罪法》。《中华人民共和国预防未成年犯罪法》（2012 年修订）第五十五条规定，营业性歌舞厅以及其他未成年人不适宜进入的场所、营业性电子游戏场所，违 反本法第三十三条的规定，不设置明显的未成年人禁止进入标志，或者允许未成年人进入的，由文化行政 部门责令改正、给予警告、责令停业整顿、没收违法所得，处以罚款，并对直接负责的主管人员和其他直 接责任人员处以罚款；情节严重的，由工商行政部门吊销营业执照。另外，考生需了解新的法律规定，《中 华人民共和国未成年人保护法》（2020 年修订）第五十九条规定，学校、幼儿园周边不得设置烟、酒、彩 票销售网点。禁止向未成年人销售烟、酒、彩票或者兑付彩票奖金。烟、酒和彩票经营者应当在显著位置 设置不向未成年人销售烟、酒或者彩票的标志；对难以判明是不是未成年人的，应当要求其出示身份证件。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 2 任何人不得在学校、幼儿园和其他未成年人集中活动的公共场所吸烟、饮酒。第一百二十三条规定，相关 经营者违反本法第五十八条、第五十九条第一款、第六十条规定的，由文化和旅游、市场监督管理、烟草 专卖、公安等部门按照职责分工责令限期改正，给予警告，没收违法所得，可以并处五万元以下罚款；拒 不改正或者情节严重的，责令停业整顿或者吊销营业执照、吊销相关许可证，可以并处五万元以上五十万 元以下罚款。故本题选C。' },
+{ cat:'yicuo', t:'KE1-5', s:'YiCuo100', txt:'[KE1] #5\n\n下列选项中，与“大学生——志愿者”的逻辑关系不一致的是（ ）。 A.“英文书”和“教材” B.“铅笔”和“画笔” C.“老年人”和“科学家” D.“医生”和“护士”\n\n5.【答案】D 【解析】本题考查类比推理。题干中“大学生——志愿者”是交叉关系，A、B、C 项均为交叉关系，D 项“医生”和“护士”是并列关系。故本题选D。' },
+{ cat:'yicuo', t:'KE1-6', s:'YiCuo100', txt:'[KE1] #6\n\n教师何某时常在微信朋友圈暗示学生家长送礼，还在家长群里展示家长送的礼物，造成了不良影响。 依据《中华人民共和国教师法》，当地教育行政部门可对何某采取的措施是（ ）。 A.给予行政处分或者解聘 B.给予行政拘留或者罚款 C.责令退还礼物，加倍罚款 D.责令停课，永久取消教师资格 易错100 题中小幼科一 让每一个孩子都能遇到好老师 2\n\n6.【答案】A 【解析】本题考查教育法律法规。《中华人民共和国教师法》第三十七条规定，教师有下列情形之一的， 由所在学校、其他教育机构或者教育行政部门给予行政处分或者解聘：（一）故意不完成教育教学任务给教 育教学工作造成损失的；（二）体罚学生，经教育不改的；（三）品行不良、侮辱学生，影响恶劣的。题干 中教师何某品行不良，造成了不良影响，可以给予行政处分或解聘。故本题选A。' },
+{ cat:'yicuo', t:'KE1-7', s:'YiCuo100', txt:'[KE1] #7\n\n某次体育课上，因老师迟迟未到，班长刘某便组织同学到操场踢足球。在踢球时，学生宋某突然昏 倒在地，经抢救无效死亡。经调查得知，宋某患有先天性心脏病而学校事先并不知晓。在这一事故中，应 依法承担责任的是（ ）。 A.学校和宋某的监护人 B.学校和刘某的监护人 C.刘某和宋某的监护人 D.刘某的监护人和宋某的监护人\n\n7.【答案】A 【解析】本题考查教育法律法规。《学生伤害事故处理办法》第九条第（四）项规定，因“学校组织学 生参加教育教学活动或者校外活动，未对学生进行相应的安全教育，并未在可预见的范围内采取必要的安 全措施的”造成的学生伤害事故，学校应当依法承担相应的责任。第十条第（三）项规定，因“学生或者 其监护人知道学生有特异体质，或者患有特定疾病，但未告知学校的”情形造成学生伤害事故，学生或者 未成年学生监护人应当依法承担相应的责任。题干中，体育课上老师迟迟未到，班长组织活动发生的伤害 事故，学校应该承担责任。宋某患有先天性心脏病而学校事先并不知晓，所以宋某或其监护人应当承担责 任。故本题选A。' },
+{ cat:'yicuo', t:'KE1-8', s:'YiCuo100', txt:'[KE1] #8\n\n在教育测量中，题目难度计算常用极端分组法。现共有200 人回答了某道试题，总分排名最前面的 54 人中有45 人答对，总分排名最后的54 人中有9 人答对，则这道题的难度是（ ）。 A.0.83 B.0.58 C.0.50 D.0.32\n\n8.【答案】C 【解析】本题考查教育测量中的难度。极端分组法是项目分析的一种方法。先将受测者依照测验总分 的高低次序排列；然后划出人数相等的高分组和低分组，一般取样本中处于两端27%的个案为两极端组； 再分别求出两组在每一题目上的通过率。所以题干中这道题的难度应为（45/54+9/54）/2=0.5。故本题选 C。' },
+{ cat:'yicuo', t:'KE1-9', s:'YiCuo100', txt:'[KE1] #9\n\n下列关于素质教育的表述中，不正确的是（ ）。 A.素质教育更要重视德育 B.素质教育主要适用于基础教育 C.素质教育应遵循教育规律 D.素质教育不要求学生平均发展\n\n9.【答案】B 【解析】本题考查素质教育观。关于素质教育，必须明确其内涵和外延。素质教育重视德智体美劳教 育，而且德育为先，五育并举，更加重视德育，A 选项正确；素质教育应当贯穿于幼儿教育、中小学教育、 易错100 题中小幼科一 让每一个孩子都能遇到好老师 3 职业教育、成人教育、高等教育等各级各类教育，应当贯穿于学校教育、家庭教育和社会教育等各个方面。 所以素质教育不仅主要适用于基础教育，也适用于其他阶段的教育，B 选项错误；素质教育应该遵循教育 规律，促进学生健康发展，C 选项正确；素质教育要求促进学生全面发展和个性发展，并没要求平均发展， D 选项正确。故本题选B。' },
+{ cat:'yicuo', t:'KE1-10', s:'YiCuo100', txt:'[KE1] #10\n\n每周五，崔老师都会带领老师们研讨并反思学校教学中出现的问题，经常通过电子邮件、电话和登 门拜访等形式向大学教授请教，或是与校外名师共同探讨，以找到解决问题的方法。该做法体现的教师专 业发展途径是（ ）。 A.校本研修 B.自主学习 C.行动研究 D.专业支援\n\n10.【答案】A 【解析】本题考查教师专业发展途径。教师专业发展途径包括：（1）校本导向，包括校本研修、校本 培训等；（2）注重研究，包括行动研究、叙事研究等；（3）注重合作，倡导高校与中小学的合作、建立学 习共同体、同伴互助等；（4）强调反思，包括反思性实践、反思性教学、建立教学档案袋等。校本研修是 基于学校，为了学校，发展学校的研修，需要多角度、多方面地整合力量，创造良好的校本研修生态环境， 让教师在专家引领、同伴互助、个体反思实践中实现专业发展。题干中强调崔老师带领各位老师研讨问题、 以各种形式向专业人士请教，正是体现了校本研修的概念。故本题选A。' },
+{ cat:'yicuo', t:'KE1-11', s:'YiCuo100', txt:'[KE1] #11\n\n《中华人民共和国宪法》规定，上级监察委员会对下级监察委员会的工作进行（ ）。 A.监督 B.监察 C.领导 D.指导\n\n11.【答案】C 【解析】本题考查《中华人民共和国宪法》。《中华人民共和国宪法》第一百二十五条规定，中华人民 共和国国家监察委员会是最高监察机关。国家监察委员会领导地方各级监察委员会的工作，上级监察委员 会领导下级监察委员会的工作。上级监察委员会对下级监察委员会的工作进行领导。故本题选C。' },
+{ cat:'yicuo', t:'KE1-12', s:'YiCuo100', txt:'[KE1] #12\n\n王老师在教学中总是尝试新的教学方法。在音乐课上，王老师鼓励同学们给经典音乐重新填词，评 选“最美歌词”和“最具创意奖”，同学们对音乐课的兴趣大增。下列选项中是孔子所说，且与王老师做法 相符的是（ ）。 A.“吾生也有涯，而知也无涯” B.“学而不已，阖棺乃止” C.“古人于为学，终生与之俱” D.“朝闻道，夕死可矣”\n\n12.【答案】B 【解析】本题考查终身学习。A 项出自庄子《养生主》，意思是说人生是有限的，但知识是无限的（没 有边界的）；B 项出自汉代韩婴《韩诗外传》，意思是说学习没有完结的时候，直到死去才算停止，是孔子 的言论。C 项出自《梁启超：在政治与学术之间》，是梁启超教育子女的语句，意思是说古人对于治学求学， 是坚持不懈，终身追求的目标。D 项出自《论语·里仁第四》，意思是说早上明白了仁义之道，晚上为它去 死也可以。题干中王老师尝试探索新的教学方法，体现的是终身学习的理念。符合题目要求的，只能选择 B 项。故本题选B。' },
+{ cat:'yicuo', t:'KE1-13', s:'YiCuo100', txt:'[KE1] #13\n\n下列现象，不是因地球公转而产生的是（ ）。 A.昼夜的变化 B.四季的变化 易错100 题中小幼科一 让每一个孩子都能遇到好老师 3 C.日食 D.月食\n\n13.【答案】A 【解析】本题考查地理常识。地球公转就是地球按一定轨道围绕太阳转动。地球公转产生的现象有四 季的变化、日食、月食等现象，而昼夜交替的变化是地球自转引起的。故本题选A。' },
+{ cat:'yicuo', t:'KE1-14', s:'YiCuo100', txt:'[KE1] #14\n\n在Word 的编辑状态下，选择整个表格，执行“表格”菜单中的“删除行”命令，对其结果表述正 确的是（ ）。 A.表格中一行被删除 B.整个表格被删除 C.表格中一列被删除 D.表格没有被删除\n\n14.【答案】B 【解析】本题考查Word 的应用。在Word 的编辑状态下，如果选中了整个表格，然后执行删除行命令， 会使整个表格被删除。故本题选B。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 4' },
+{ cat:'yicuo', t:'KE1-15', s:'YiCuo100', txt:'[KE1] #15\n\n初一语文单元测验中，王老师发现某学生抄袭了一道1 分的题目。阅卷时，他在这个学生的试卷上 打分为“90-1”，该生拿到试卷后非常惭愧，要求改为89 分。王老师给他批了一个“89+1”，并对他说：“知 错能改就好，这1 分是对你能认识和改正错误的奖励。”王老师的做法所体现的教师劳动特殊性不包括（ ）。 A.阶段的特殊性 B.任务的特殊性 C.对象的特殊性 D.工具的特殊性\n\n15.【答案】A 【解析】本题考查教师劳动的特殊性。教师劳动的特殊性包括目的的特殊性、对象的特殊性、手段（工 具）的特殊性、过程的特殊性、内容（任务）的特殊性和“产品”的特殊性。题干中王老师给考试抄袭1 分题目的学生打分“90-1”和“89+1”，既客观给予学生分数，又教育学生要诚信和知错能改，这体现了劳 动任务的特殊性。王老师使用加减1 分的方式，保护了学生的自尊心，体现了劳动对象的特殊性。使用加 减1 分的方式本身也是劳动工具手段的特殊性。A 项说法错误且跟题干无关。故本题选A。' },
+{ cat:'yicuo', t:'KE1-16', s:'YiCuo100', txt:'[KE1] #16\n\n找规律填数字是一个很有趣的活动，特别锻炼观察和思考能力。下列选项中，填入数列“101、169、 305、577、（ ）、2209”空缺处的数字，正确的是（ ）。 A.1118 B.1119 C.1120 D.1121\n\n16.【答案】D 【解析】本题考查数字推理。将题干中原数列每一项作差，得到的数列为68，136，272， （544）， （1088）， 是一个公比为2 的等比数列，原数列括弧处应填的数据为：577+544=1121，1121+1088=2209。印证了原数 列最后一个数字。说明我们找的规律是正确的。故本题选D。' },
+{ cat:'yicuo', t:'KE1-17', s:'YiCuo100', txt:'[KE1] #17\n\n下列表述，与“‘并非’只有本地人当经理，才能把企业搞好”的判断一致的是（ ）。 A.要想把企业搞好，必须由本地人当经理 B.只要把企业搞好了，谁来当经理都可以 C.不由本地人当经理，也可以把企业搞好 D.不由本地人当经理，就不能把企业搞好\n\n17.【答案】C 【解析】本题考查逻辑推理。题干翻译完后是：—（企业搞好推出本地人当经理）即：—（P 推出q）， 而—（P 推出q）等价于（P 且—q），翻译过来就是：企业搞好了，不是本地人当经理；再进一步就是，不 由本地人当经理，也能把企业搞好。故本题选C。' },
+{ cat:'yicuo', t:'KE1-18', s:'YiCuo100', txt:'[KE1] #18\n\n李老师坚持写“作业札记”，其中记录了学生做作业过程中的一些有趣的、特殊的现象，并据此分 析学生在完成作业中的心理变化，然后再将自己的判断结果作为设计、布置、批改和反馈作业的重要依据， 从学生观的角度分析，该教师的做法（ ）。 A.注重了学生发展的差异性 B.发挥了教学的专业自主性 C.注重了学生发展的主体性 D.提升了布置作业的有效性\n\n18.【答案】A 【解析】本题考查“以人为本”的学生观。李老师通过“作业札记”，记录学生有趣、特殊的具体作业 问题，并据此分析学生不同的心理变化，再做具体反馈，体现了教师注重学生发展的差异，注重因材施教。 而B、D 两项都不是从学生观角度分析所得，C 项则没能在题目中体现。故本题选A。' },
+{ cat:'yicuo', t:'KE1-19', s:'YiCuo100', txt:'[KE1] #19\n\n某中学违规向学生收取补课费。依据《中华人民共和国教育法》，责令该校退还所收费用的机关是 （ ）。 A.教育行政部门 B.工商管理部门 C.纪检部门 D.公安部门 易错100 题中小幼科一 让每一个孩子都能遇到好老师 4\n\n19.【答案】A 【解析】本题考查《中华人民共和国教育法》。《中华人民共和国教育法》第七十八条规定，学校及其 他教育机构违反国家有关规定向受教育者收取费用的，由教育行政部门或者其他有关行政部门责令退还所 收费用；对直接负责的主管人员和其他直接责任人员，依法给予处分。故本题选A。' },
+{ cat:'yicuo', t:'KE1-20', s:'YiCuo100', txt:'[KE1] #20\n\n量子概念的提出，第一次把能量的不连续性引入对自然过程的深入认识，对其后量子理论的进一步 发展起到了重要作用。这一概念的提出者是（ ）。 A.普朗克 B.洛伦兹 C.爱因斯坦 D.麦克斯韦\n\n20.【答案】A 【解析】本题考查西方科学家的成就。德国物理学家普朗克是量子力学的创始人，他于1894 年起，开 始研究黑体辐射问题，发现普朗克辐射定律，并在论证过程中提出了能量子概念和普朗克常数，由于这一 发现，普朗克获得了1918 年诺贝尔物理学奖；B 选项，洛伦兹是近代卓越的理论物理学家、数学家，经典 电子论的创立者；C 选项，爱因斯坦是犹太裔物理学家，创立了广义相对论，为核能的开发也奠定了理论 基础；D 选项，麦克斯韦是英国物理学家、数学家，经典电动力学的创始人，统计物理学的奠基人之一。 故本题选A。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 5' },
+{ cat:'yicuo', t:'KE1-21', s:'YiCuo100', txt:'[KE1] #21\n\n中学生邹某上课时玩手机游戏，班主任王老师发现后，当场删除了邹某的游戏账号和他购买的游戏 装备，并告诫邹某不要在上课时玩游戏。课后，王老师将手机返还给了邹某，王老师的做法（ ）。 A.合法，教师有权批评和管教学生 B.不合法，侵犯了邹某的财产权 C.合法，教师有权没收学生的手机 D.不合法，侵犯了邹某的隐私权\n\n21.【答案】B 【解析】本题考查财产权。邹某的游戏账号和他购买的游戏装备属于邹某的私人财产，邹某对其具有 相应的财产权。因此，教师随意删除邹某的游戏账号和购买的游戏装备，是不合法行为，侵犯了邹某的财 产权。故本题选B。' },
+{ cat:'yicuo', t:'KE1-22', s:'YiCuo100', txt:'[KE1] #22\n\n某中学规定，凡主动参加所在地区教研室组织的教研活动的教师，在职称晋升评优评选中予以优先 考虑。该学校的做法（ ）。 A.合法，有利于教师科学研究权的落实和保障 B.合法，有利于教师教学自由权的落实和保障 C.不合法，侵犯了其他教师享受平等待遇的权利 D.不合法，违反了教师考核评价的客观公正原则\n\n22.【答案】A 【解析】本题考查教师法的相关规定。《中华人民共和国教师法》第二十二条规定，学校或者其他教育 机构应当对教师的政治思想、业务水平、工作态度和工作成绩进行考核。A 项，科学研究权是指教师从事 科学研究、学术交流，参加专业的学术团体，在学术活动中充分发表意见的权利。题干中，对于积极参与 当地组织的教研活动的老师，在教师的职称晋升、评优评先中予以优先考虑。对注重教育教学质量和专业 技能成长的教师，对表现优异、工作态度积极的老师给予一定的奖励，这种做法可以提高教师参与教学研 究、科学研究等方面的主动性、积极性，有利于教师科学研究权的保障和落实。A 项说法正确。B 项，教学 自由权在题干中并未涉及，故排除。C 项，学校的做法侵犯了教师平等享有待遇的权利，题干中并未体现， 故排除。D 项，题干中强调的是对表现优异的老师适当在考核中加以“优先考虑”，并未违背教师评价的客 观公正原则。B、C、D 项，均不符合题意。故本题选A。' },
+{ cat:'yicuo', t:'KE1-23', s:'YiCuo100', txt:'[KE1] #23\n\n李丽同学的爸爸跟学校校长是好朋友，班主任知道后，主动给李丽调整了座位，在课堂教学中给李 丽更多的机会回答问题，并让其担任班长。班主任的行为（ ）。 A.有利于促进家校合作 B.有利于履行班主任职责 C.影响了其他学生的成长 D.影响了校长的廉洁从教\n\n23.【答案】C 【解析】本题考查教师职业道德规范。题干中的班主任因为学生李丽的父亲和校长的关系好，就主动 给予其更多的机会，并让其担任班长。班主任没有做到公正待生的师德要求，影响了其他学生的成长。故 本题选C。' },
+{ cat:'yicuo', t:'KE1-24', s:'YiCuo100', txt:'[KE1] #24\n\n于老师总是根据学生不同的学习基础设计课堂提问和练习。这表明于老师（ ）。 A.遵循教学规律，实现学生全面发展 B.关注学生差异，促进全体学生发展 C.注重分层教学，促进学生均衡发展 D.注重循序渐进，实现师生教学相长\n\n24.【答案】B 【解析】本题考查“以人为本”的学生观。于老师根据学生不同的学习基础设计课堂提问和练习，体 现了他关注学生的个体差异，B 项正确。教学规律是教学过程中客观存在的，并不会因为学生的认知水平 不同而变化，不是题干所强调的重点，所以A 项错误。分层教学是教师根据学生现有的知识、能力水平和 潜力倾向把学生科学地分成几组水平相近的群体并区别对待，题干所述并不属于分组教学，所以C 项错误。 循序渐进是要求教学要按照学科的逻辑系统和学生认知发展的顺序进行，题干中，于老师根据学生认知发 展的程度进行教学，与顺序无关，所以D 项错误。故本题选B。' },
+{ cat:'yicuo', t:'KE1-25', s:'YiCuo100', txt:'[KE1] #25\n\n在中班绘画活动中，李老师将自己画好的“小汽车”贴在墙上，要求孩子们照着画。李老师看了小 明的画后严厉地说：“小汽车怎么可能有翅膀？去前面看我画的，照着画！”关于李老师的做法，下列评价 不恰当的是（ ）。 A.忽视了对幼儿的天性保护 B.忽视了对幼儿权利的尊重 C.忽视了对幼儿的正确引导 D.忽视了对幼儿特长的培养 易错100 题中小幼科一 让每一个孩子都能遇到好老师 5\n\n25.【答案】D 【解析】本题考查素质教育观。素质教育是促进幼儿个性发展的教育，是以培养幼儿创新精神和实践 能力为重点的教育。题干中李老师要求幼儿照着自己画好的“汽车”画画，忽视了幼儿的想象力和创造力， 不利于保护幼儿的天性和个性，没有做到对幼儿权利的尊重，也没有正确引导幼儿。题干中不涉及幼儿特 易错100 题中小幼科一 让每一个孩子都能遇到好老师 6 长培养的问题。故本题选D。' },
+{ cat:'yicuo', t:'KE1-26', s:'YiCuo100', txt:'[KE1] #26\n\n公办幼儿园教师黄某曾有轻微体罚幼儿的行为，园长对其进行了批评教育。没过多久，黄某又再次 同样体罚幼儿。对于黄某，可由所在教育行政部门依法给予（ ）。 A.行政处罚 B.行政处分 C.撤销教师资格 D.刑事处罚\n\n26.【答案】B 【解析】本题考查《中华人民共和国教师法》。《中华人民共和国教师法》第三十七条规定，教师有下 列情形之一的，由所在学校、其他教育机构或者教育行政部门给予行政处分或者解聘：（一）故意不完成教 育教学任务给教育教学工作造成损失的；（二）体罚学生，经教育不改的；（三）品行不良、侮辱学生，影 响恶劣的。教师有前款第（二）项、第（三）项所列情形之一，情节严重，构成犯罪的，依法追究刑事责 任。题干中所述情形属于体罚幼儿屡教不改。故本题选B。' },
+{ cat:'yicuo', t:'KE1-27', s:'YiCuo100', txt:'[KE1] #27\n\n《中华人民共和国宪法》规定，中华人民共和国人民检察院是（ ）。 A.国家的法律监督机关 B.国家的法律监察机关 C.国家的法律检察机关 D.国家的法律检查机关\n\n27.【答案】A 【解析】本题考查《中华人民共和国宪法》。《中华人民共和国宪法》第一百三十四条规定，中华人民 共和国人民检察院是国家的法律监督机关。故本题选A。' },
+{ cat:'yicuo', t:'KE1-28', s:'YiCuo100', txt:'[KE1] #28\n\n下列选项中，与“医生——护士”的逻辑关系相同的是（ ）。 A.“军人”和“军医” B.“教授”和“助教” C.“校长”和“教师” D.“法警”和“警察”\n\n28.【答案】B 【解析】本题考查类比推理。题干中“医生——护士”是反对关系，即是医生就不是护士，是护士就 不是医生。A 项“军人”和“军医”是包含关系，军人中会看病的是军医。C 项“校长”和“教师”是交叉 关系，有的校长就是教师。D 项“法警”和“警察”是包含关系，“法警”即司法警察，是司法机关所设执 行特定任务的警察。故本题选B。' },
+{ cat:'yicuo', t:'KE1-29', s:'YiCuo100', txt:'[KE1] #29\n\n找规律填数字是一项很有趣的活动，特别锻炼观察和思考能力。下列选项中，填入数列“2、4、12、 52、（ ）、32660”空缺处的数字，正确的是（ ）。 A.624 B.628 C.632 D.636\n\n29.【答案】B 【解析】本题考查数字推理。观察数列发现，从第三项开始，后一项等于前两项相乘加4。即：12=2 ×4+4；52=4×12+4。所以空缺处数字应为12×52+4=628。故本题选B。' },
+{ cat:'yicuo', t:'KE1-30', s:'YiCuo100', txt:'[KE1] #30\n\n某幼儿园职工家属刘某侵占幼儿园的一间园舍，用于经营快递业务。根据《中华人民共和国教育法》， 刘某应承担（ ） A.刑事责任 B.行政责任 C.民事责任 D.违宪责任\n\n30.【答案】C 【解析】本题考查教育法律法规。《中华人民共和国教育法》第七十二条规定，结伙斗殴、寻衅滋事， 扰乱学校及其他教育机构教育教学秩序或者破坏校舍、场地及其他财产的，由公安机关给予治安管理处罚； 构成犯罪的，依法追究刑事责任。侵占学校及其他教育机构的校舍、场地及其他财产的，依法承担民事责 任。题干中，刘某占用幼儿园的园舍经营快递业务，应当承担民事责任。故本题选C。' },
+{ cat:'yicuo', t:'KE1-31', s:'YiCuo100', txt:'[KE1] #31\n\n根据联合国《儿童权利公约》，政府各部门和机构在制定相关政策和落实措施时应首先考虑（ ）。 A.儿童最大利益 B.儿童优先 C.儿童不受任何歧视 D.尊重儿童的原则\n\n31.【答案】A 【解析】本题考查《儿童权利公约》的原则。儿童最大利益原则是指涉及儿童的一切事物和行为，都 应首先考虑以儿童的最大利益为出发点。联合国《儿童权利公约》第三条规定，关于儿童的一切行动，不 论是由公私社会福利机构、法院、行政当局或立法机构执行，均应以儿童的最大利益为一种首要考虑；缔 约国承担确保儿童享有其幸福所必需的保护和照料，考虑到其父母、法定监护人、或任何对其负有法律责 任的个人的权利和义务，并为此采取一切适当的立法和行政措施。故本题选A。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 7' },
+{ cat:'yicuo', t:'KE1-32', s:'YiCuo100', txt:'[KE1] #32\n\n根据《幼儿园工作规程》，下列说法正确的是（ ）。 A.幼儿园规模一般不超过500 人 B.入园幼儿只能由法定监护人接送 C.幼儿园一日活动组织应当动静交替 D.幼儿入园可进行健康检查和认知测查 易错100 题中小幼科一 让每一个孩子都能遇到好老师 6\n\n32.【答案】C 【解析】本题考查《幼儿园工作规程》。《幼儿园工作规程》第十一条规定，幼儿园规模应当有利于幼 儿身心健康，便于管理，一般不超过360 人。A 项错误。第十三条规定，入园幼儿应当由监护人或者其委 托的成年人接送。B 项错误。第十条规定，幼儿入园前，应当按照卫生部门制定的卫生保健制度进行健康 检查，合格者方可入园。幼儿入园除进行健康检查外，禁止任何形式的考试或测查。D 项错误。第二十六 条规定，幼儿一日活动的组织应当动静交替，注重幼儿的直接感知、实际操作和亲身体验，保证幼儿愉快 的、有益的自由活动。C 项正确，故本题选C。' },
+{ cat:'yicuo', t:'KE1-33', s:'YiCuo100', txt:'[KE1] #33\n\n我国医学历史悠久，很早就有了中医学理论，后世不断丰富和发展，产生许多中医学著作。要通过 一本中医学著作了解我国古代药物学，生物学，矿物学，化学等诸多科学领域成就，下列选项中适合的是 （ ）。 A.《黄帝内经》 B.《伤寒杂病论》 C.《千金方》 D.《本草纲目》\n\n33.【答案】D 【解析】本题考查古代医学成就。《黄帝内经》是中国最早的医学典籍，传统医学四大经典著作之一。 是一本综合性的医书，在黄老道家理论上建立了中医学上的“阴阳五行学说”、“脉象学说”、“藏象学说” 等学说，奠定了人体生理、病理、诊断以及治疗的认识基础，被称为医之始祖。《伤寒杂病论》的作者是张 仲景，中国传统医学著作之一。它系统地分析了伤寒的原因、症状、发展阶段和处理方法，创造性地确立 了对伤寒病的“六经分类”的辨证施治原则，奠定了理、法、方、药的理论基础。《千金方》的作者是孙思 邈，是综合性临床医著，被誉为中国最早的临床百科全书。《本草纲目》的作者是李时珍，书中不仅考证了 过去本草学中的若干错误，综合了大量科学资料，提出了较科学的药物分类方法，融入先进的生物进化思 想，并反映了丰富的临床实践，是中国古代汉医集大成者，被誉为“东方药物巨典”。《本草纲目》广泛涉 及医学，药物学，生物学，矿物学，化学，环境与生物，遗传与变异等诸多科学领域，对人类近代科学以 及医学方面影响巨大，是我国医药宝库中的一份珍贵遗产。故本题选D。' },
+{ cat:'yicuo', t:'KE1-34', s:'YiCuo100', txt:'[KE1] #34\n\n1979 年我国第一艘航天测量船投入使用，成为世界上第四个拥有远洋航天测量船的国家，该航天 测量船的名称是（ ）。 A.大洋一号 B.远望一号 C.东方红一号 D.向阳红一号\n\n34.【答案】B 【解析】本题考查科技常识。远望1 号测量船是由中国船舶工业集团公司下属的708 研究所开发和设 计，江南造船（集团）有限责任公司制造的第一代综合性航天远洋测量船，主要担负卫星、飞船和火箭飞 行器全程飞行试验测量和控制任务，圆满完成远程运载火箭、气象卫星、载人飞船等57 次国家级重大科研 试验任务，为国家和民族作出了巨大的贡献，被誉为“航天功勋船”，享有“海上科学城”的美誉，退役后 作为爱国主义和科普教育场所向公众开放。东方红一号是我国第一颗人造卫星；大洋一号是目前中国第一 艘现代化的综合性远洋科学考察船，也是我国远洋科学调查的主力船舶。向阳红一号船是国家海洋局建造 的第一艘水文气象船，也是我国第一艘吨位比较大的气象船。故本题选B。' },
+{ cat:'yicuo', t:'KE1-35', s:'YiCuo100', txt:'[KE1] #35\n\n绘画活动中小班幼儿欢欢总是把色彩涂到轮廓线外面，下午李老师当着全班的面对家长说欢欢很不 认真，总是画错。李老师做法（ ）。 A.错误，忽视了幼儿动作发展 B.错误，不能讽刺挖苦幼儿 C.准确，提高了幼儿的绘画能力 D.正确，应该严格要求幼儿\n\n35.【答案】A 【解析】本题考查幼儿发展的特点。小班幼儿大肌肉动作发展早而精细动作发展的晚，所以总是将颜 色涂到轮廓线外面，李老师的做法是忽视幼儿动作发展规律的表现。故本题选A。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 8' },
+{ cat:'yicuo', t:'KE1-36', s:'YiCuo100', txt:'[KE1] #36\n\n某地区文化执法部门在对当地一家网吧进行巡查时，发现有未成年人正在网吧上网。根据《中华人 民共和国未成年人保护法》的规定，文化执法部门可以对该网吧采取的措施是（ ）。 A.予以关闭，依法吊销营业执照 B.责令改正，依法给予行政处罚 C.予以查封，依法没收违法所得 D.责令停业，依法追究民事责任\n\n36.【答案】B 【解析】本题考查《中华人民共和国未成年人保护法》。《中华人民共和国未成年人保护法》（2012 年 修订）第六十六条规定，在中小学校园周边设置营业性歌舞娱乐场所、互联网上网服务营业场所等不适宜 未成年人活动的场所的，由主管部门予以关闭，依法给予行政处罚。营业性歌舞娱乐场所、互联网上网服 务营业场所等不适宜未成年人活动的场所允许未成年人进入，或者没有在显著位置设置未成年人禁入标志 的，由主管部门责令改正，依法给予行政处罚。题干中，文化执法部门巡查网吧时发现有未成年人正在上 网，应当对其责令改正，依法给予行政处罚。故本题选B。' },
+{ cat:'yicuo', t:'KE1-37', s:'YiCuo100', txt:'[KE1] #37\n\n京剧《贵妃醉酒》经京剧大师梅兰芳倾尽毕生心血精雕细琢，是梅派经典代表剧目之一。它源自于 古代一部戏曲，该戏曲是（ ）。 A.《桃花扇》 B.《南柯梦》 C.《牡丹亭》 D.《长生殿》\n\n37.【答案】D 【解析】本题考查明清戏曲。京剧《贵妃醉酒》又名《百花亭》，是一出单折戏，取材于中国唐朝历史 人物杨贵妃的故事，经过中国著名京剧表演艺术家梅兰芳先生创作、表演而广为人知，是梅派代表剧目之 一。该剧描写的是杨玉环深受唐明皇的荣宠，本是约唐明皇百花亭赴筵，但久候不至，随后知道他早已转 驾西宫，于是羞怒交加，万端愁绪无以排遣，遂命高力士、裴力士添杯奉盏，饮致大醉，后来怅然返宫的 一段情节。该剧源自清初剧作家洪昇创作的传奇《长生殿》。A 选项，《桃花扇》是清代文学家孔尚任创作 的传奇剧本，该剧以侯方域、李香君的悲欢离合为主线，展现了明末南京的社会现实。B 选项，《南柯梦》 改编自“临川四梦”之一的《南柯记》，作者为明朝剧作家汤显祖。该剧讲述了唐朝落魄武官淳于棼的奇幻 之旅。C 选项，《牡丹亭》是明代剧作家汤显祖创作的传奇。该剧描写了官家千金杜丽娘对梦中书生柳梦梅 倾心相爱，竟伤情而死，化为魂魄寻找现实中的爱人，人鬼相恋，最后起死回生，终于与柳梦梅永结同心 的故事。D 选项，《长生殿》作者为清初剧作家洪昇。该剧主要讲述了唐明皇与杨贵妃的故事。故本题选D。' },
+{ cat:'yicuo', t:'KE1-38', s:'YiCuo100', txt:'[KE1] #38\n\n下列选项中，与“车票——票据”逻辑关系相同的是（ ）。 A.飞机票——船票 B.戏票——入场券 C.购水票——门票 D.餐券——优惠券\n\n38.【答案】B 【解析】本题考查类比推理。题干中“车票——票据”属于种属关系，即车票是票据的一种。B 选项， “戏票——入场券”也属于种属关系，即戏票属于入场券的一种。A 项属于反对关系，C、D 项没有必然的 逻辑关系。故本题选B。' },
+{ cat:'yicuo', t:'KE1-39', s:'YiCuo100', txt:'[KE1] #39\n\n为解决新建小区幼儿入园难的问题，某房产开发公司在所建小区引入了一家由某教育发展集团独资 举办的幼儿园。根据《中华人民共和国教育法》的规定，有权确立该幼儿园管理体制的是（ ）。 A.当地人民政府 B.当地教育行政部门 易错100 题中小幼科一 让每一个孩子都能遇到好老师 7 C.该教育发展集团 D.该房产开发公司\n\n39.【答案】C 【解析】本题考查《中华人民共和国教育法》。《中华人民共和国教育法》第三十一条规定，学校及其 他教育机构的举办者按照国家有关规定，确定其所举办的学校或者其他教育机构的管理体制。故本题选C。' },
+{ cat:'yicuo', t:'KE1-40', s:'YiCuo100', txt:'[KE1] #40\n\n如果太阳不发光，那么地球上的人们仍然能够用肉眼直接看到的天体是（ ）。 A.彗星 B.金星 C.流星 D.月亮\n\n40.【答案】C 【解析】本题考查宇宙天体。流星是指运行在星际空间的流星体，通常包括宇宙尘粒和固体块等空间 物质。在接近地球时由于受到地球引力的摄动而被地球吸引，从而进入地球大气层，并与大气摩擦燃烧所 产生的光迹，它不是由于反射了恒星发出的光而被人观察到的，而A、B、D 选项都是需反射恒星发出的光 易错100 题中小幼科一 让每一个孩子都能遇到好老师 9 才能被人看到，其本身不发光。故本题选C。' },
+{ cat:'yicuo', t:'KE1-41', s:'YiCuo100', txt:'[KE1] #41\n\n周老师在活动课中趁孩子自主活动的时候，拿起手机看微信，周老师给部分孩子看手机里面漂亮的 图片及有趣的小视频，周老师的行为（ ）。 A.不正确，不利于公正地对待幼儿 B.不正确，不利于保护幼儿的安全 C.正确，有助于拓宽幼儿的知识面 D.正确，有助于建立师幼关系\n\n41.【答案】B 【解析】本题考查教师职业道德规范。《中小学教师职业道德规范》（2008 年修订）中“关爱学生”要 求教师关心爱护全体学生，尊重学生人格，平等公正对待学生。对学生严慈相济，做学生良师益友。保护 学生安全，关心学生健康，维护学生权益。不讽刺、挖苦、歧视学生，不体罚或变相体罚学生。周老师在 活动课上玩手机，没有尽到相应的管理保护职责，不利于保护幼儿的安全。故本题选B。' },
+{ cat:'yicuo', t:'KE1-42', s:'YiCuo100', txt:'[KE1] #42\n\n下列选项表述的内容里含有“没有学会分享，就不能感受更多快乐”的是（ ）。 A.只要学会分享，就能感受更多快乐 B.即使学会分享，也未必能感受更多快乐 C.没感受更多快乐，是因为没学会分享 D.只有学会分享，才能感受更多快乐\n\n42.【答案】D 【解析】本题考查翻译推理。题干翻译为：“没有学会分享”推出“不能感受更多快乐”，等价于“感 受更多快乐”推出“学会分享”。AC 选项翻译为：“学会分享”推出“感受更多快乐”，与题干相反。B 选项 多了限定词“未必”。只有D 选项“只有……，才……”后推前，翻译为“感受更多快乐”推出“学会分享”， 与题干意思完全相同。故本题选D。' },
+{ cat:'yicuo', t:'KE1-43', s:'YiCuo100', txt:'[KE1] #43\n\n某幼儿园正在开展游戏活动，教师王某活动前反复提醒小朋友注意安全，活动中也一直在旁边组织、 观察、保护，但是意外还是发生，小明在跳跃时摔伤手臂，王某马上将小明送到医院检查，经医生诊断， 小明右手骨折。应对小明所受伤害承担责任的主体是（ ）。 A.幼儿园 B.教师王某 C.小明的监护人 D.幼儿园和小明的监护人\n\n43.【答案】C 【解析】本题考查学生伤害事故的责任。《中华人民共和国侵权责任法》（2009 年通过，2021 年1 月1 日起废止）第三十八条规定，无民事行为能力人在幼儿园、学校或者其他教育机构学习、生活期间受到人 身损害的，幼儿园、学校或者其他教育机构应当承担责任，但能够证明尽到教育、管理职责的，不承担责 任。《中华人民共和国民法典》（2021 年1 月1 日起施行）第一千一百九十九条规定，无民事行为能力人在 幼儿园、学校或者其他教育机构学习、生活期间受到人身损害的，幼儿园、学校或者其他教育机构应当承 担侵权责任；但是，能够证明尽到教育、管理职责的，不承担侵权责任。在活动中，教师王某尽到了看管 责任，因此此次事故属于意外事故，学校方不存在过错，应由幼儿的监护人承担责任。故本题选C。' },
+{ cat:'yicuo', t:'KE1-44', s:'YiCuo100', txt:'[KE1] #44\n\n人的身体里布满血管。下列关于人体血管的表述，不正确的是（ ）。 A.人体内的血管分为动脉、静脉和毛细血管 B.毛细血管是极细微血管，连接动脉静脉 C.动脉是将血液送到心室的血管 D.静脉是引导血液流回心房的血管\n\n44.【答案】C 【解析】本题考查医学常识。动脉是由心室发出的血管。动脉在行径中不断分支，越分越细，小动脉 最后移行为毛细血管，而不是将血液送到心室的血管，故C 选项表述错误。A 选项，血管按构造功能不同， 分为动脉、静脉和毛细血管三种。B 选项，毛细血管是管径最细，分布最广的血管。它是连接微动脉和微 静脉的血管。D 选项，静脉是指起自毛细血管，从全身各器官组织运送血液返回心脏的血管体。故本题选C。' },
+{ cat:'yicuo', t:'KE1-45', s:'YiCuo100', txt:'[KE1] #45\n\n某幼儿园教师钱某实名举报了园长的违法乱纪行为，园长知晓后，找社会人员殴打钱某，致使钱某 重伤，对该园长的行为应依法（ ）。 A.给予其行政处罚 B.追究其刑事责任 C.给予其行政处分 D.追究其治安责任 易错100 题中小幼科一 让每一个孩子都能遇到好老师 8\n\n45.【答案】B 【解析】本题考查《中华人民共和国教师法》。《中华人民共和国教师法》第三十五条规定，侮辱、殴 打教师的，根据不同情况，分别给予行政处分或者行政处罚；造成损害的，责令赔偿损失；情节严重，构 成犯罪的，依法追究刑事责任。本题中园长找人殴打钱某，并且造成钱某重伤，已经违反了《中华人民共 和国刑法》，故应依法追究园长刑事责任。故本题选B。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 10' },
+{ cat:'yicuo', t:'KE1-46', s:'YiCuo100', txt:'[KE1] #46\n\n学生刘某因家庭经济困难无法按规定完成义务教育。依据《中华人民共和国未成年人保护法》，对 于刘某的受教育权利，具有保障责任的是（ ）。 A.刘某的监护人 B.当地教育机构 C.儿童福利机构 D.当地人民政府\n\n46.【答案】D 【解析】本题考查《中华人民共和国未成年人保护法》。《中华人民共和国未成年人保护法》（2012 年 修订）第二十八条规定，各级人民政府应当保障未成年人受教育的权利，并采取措施保障家庭经济困难的、 残疾的和流动人口中的未成年人等接受义务教育。《中华人民共和国未成年人保护法》（2020 年修订）第八 十三条规定，各级人民政府应当保障未成年人受教育的权利，并采取措施保障留守未成年人、困境未成年 人、残疾未成年人接受义务教育。故本题选D。' },
+{ cat:'yicuo', t:'KE1-47', s:'YiCuo100', txt:'[KE1] #47\n\n薛老师习惯运用PPT 进行教学。某节课上他自始至终不停地呈现PPT 内容进行讲解，不管学生是否 明白其所表达之意。关于薛老师的做法，下列表述不恰当的是（ ）。 A.忽视了教学的本质 B.忽视了教师的中心地位 C.忽视了教学的目标 D.忽视了学生的主体地位\n\n47.【答案】B 【解析】本题考查“以人为本”的学生观。课堂教学的本质是通过课堂的教学实现教与学的统一，从 而达到教学的目的，根本体现为教师的教与学生的学。此外，在教育教学过程中，学生是学习的主体，教 师是学生学习的引导者、促进者。题干中薛老师过多注重呈现PPT，没有关注到学生的需求，忽视了教学 的本质，忽视了教学的目标，也忽视了学生的主体地位、中心地位。故本题选B。' },
+{ cat:'yicuo', t:'KE1-48', s:'YiCuo100', txt:'[KE1] #48\n\n小周因为考试成绩不好被同学们视为差生，班主任刘老师对全班同学说：“小周这次考试的成绩是 差了点，但在我看来他很不错，他一向都认真做值日，做事很踏实。”关于刘老师的做法，下列说法不正确 的是（ ）。 A.注重学生发展的阶段性 B.注重评价学生的多元性 C.注重学生发展的全面性 D.注重教育学生的示范性\n\n48.【答案】A 【解析】本题考查教师职业理念。个体发展的阶段性是指个体在不同的年龄阶段表现出身心发展不同 的总体特征及主要矛盾，面临着不同的发展任务。题干中并没有体现学生发展的阶段性特点。A 项错误， 符合题意。素质教育强调发展性评价、激励性评价，注重评价标准的多元化。题干中班主任刘老师没有把 成绩作为评价学生的唯一标准，对小周的评价是从值日、做事等多角度进行的，体现了评价学生的多元性。 B 项正确，不符合题意。素质教育强调促进学生的全面发展。题干中刘老师能够客观地看待小周的考试成 绩，也能发现他身上认真、踏实的优点，这体现了刘老师注重学生发展的全面性。C 项正确，不符合题意。 教师教育学生的示范性，除了指教师自己带头言传身教，还指教师注意在班级内树立典型，尤其是优秀榜 样，通过榜样示范的力量去教育引导学生。题干中刘老师通过小周身上优秀的品质教育学生应该学习别人 身上的优点，应该客观正确地看待他人。D 项正确，不符合题意。故本题选A。' },
+{ cat:'yicuo', t:'KE1-49', s:'YiCuo100', txt:'[KE1] #49\n\n特级教师李老师经常去听年轻教师的课，并给予指导。一次，听孙老师上课时，李老师发现孙老师 对某个知识点的讲解存在偏差，便当场打断教学予以纠正，这说明李老师（ ）。 A.帮扶心切，严慈相济 B.甘为人梯，示范失当 C.教学严谨，循循善诱 D.严于律己，缺乏尊重\n\n49.【答案】B 【解析】本题考查《中小学教师职业道德规范》。《中小学教师职业道德规范》（2008 年修订）中“爱 岗敬业”要求教师勤恳敬业，甘为人梯，乐于奉献。“为人师表”要求教师坚守高尚情操，知荣明耻，严于 律己，以身作则。团结协作，尊重同事。题干中李老师认真指导年轻教师的行为是其敬业、甘为人梯的表 现，也体现了他对年轻教师的帮助协作，但是在孙老师讲课出现错误时，他直接打断纠正的行为简单粗暴， 并不恰当，应该选用更加委婉、尊重的方式。故本题选B。' },
+{ cat:'yicuo', t:'KE1-50', s:'YiCuo100', txt:'[KE1] #50\n\n玲玲的圆珠笔不见了，赵老师让同学们在教室里帮玲玲寻找。当发现圆珠笔在婷婷课桌的抽屉里时， 赵老师劈头盖脸地把婷婷批评了一通。对于赵老师的做法，下列说法不正确的是（ ）。 A.缺乏公正对待学生的意识 B.未能做到教育的即时性 C.缺乏换位思考的教育立场 D.未能恰当保护婷婷权益\n\n50.【答案】B 【解析】本题考查教师职业道德规范。《中小学教师职业道德规范》（2008 年修订）中“关爱学生”要 易错100 题中小幼科一 让每一个孩子都能遇到好老师 11 求教师关心爱护全体学生，尊重学生人格，平等公正对待学生。题干中面对玲玲丢失圆珠笔，赵老师立即 处理，做到了教育的即时性。但当发现圆珠笔在婷婷课桌的抽屉里时，没有认真了解情况，平等公正对待 婷婷；没有尊重婷婷隐私，也没有换位思考，教育工作方法有待提升。故本题选B。' },
+{ cat:'yicuo', t:'KE1-51', s:'YiCuo100', txt:'[KE1] #51\n\n“初伏日在夏至第三庚”，意思是三伏中入伏的第一天是在夏至后的第三个庚日，据此判断，下列 选项中距离初伏最近的是（ ）。 A.大暑 B.立秋 C.处暑 D.秋分\n\n51.【答案】A 【解析】本题考查二十四节气。初伏是关于日历法的一种说法，按中国的日历法来说，是真正暑天的 开始。古代用天干、地支合并记载时间，三庚中的“庚”字即是天干中的数字。“甲、乙、丙、丁、戊、己、 庚、辛、壬、癸”10 个天干中的第7 个字，庚日每10 天重复一次。初伏日在夏至第三庚，也就是大约30 天以后。夏至一般在每年公历6 月21 日—22 日之间。大暑在每年公历7 月22—24 日之间，立秋在每年公 历8 月7 日—9 日之间，处暑在每年公历8 月22 日—24 日之间，秋分在每年公历9 月22—24 日之间。因 此，距初伏最近的是大暑。故本题选A。' },
+{ cat:'yicuo', t:'KE1-52', s:'YiCuo100', txt:'[KE1] #52\n\n陈老师说不是每个学生都能考上大学，学习上暂时落后并不代表永远落后，我绝不放弃任何学生， 下列说法不恰当的是（ ）。 A.陈老师重视学生发展的阶段性 B.陈老师重视学生发展的不平衡性 C.陈老师重视学生发展的差异性 D.陈老师重视学生发展的顺序性 易错100 题中小幼科一 让每一个孩子都能遇到好老师 9\n\n52.【答案】D 【解析】本题考查个体身心发展规律。个体身心发展的个别差异性，是指个体之间的身心发展以及个 体身心发展的不同方面之间，存在发展程度和速度的不同。人的先天素质、环境和教育以及自身的主观能 动性的不同，决定了人的身心发展存在着个别差异。它要求教育工作做到“因材施教” “一把钥匙开一把锁”， 使每个学生都能迅速地切实地提高。题干中强调“每个学生”体现了差异性。阶段性是指个体在不同的年 龄阶段表现出身心发展不同的总体特征及主要矛盾，面临着不同的发展任务。不平衡性是指在连续不断的 发展过程中，个体身心发展的速度并不是完全与时间一致的匀速运动，在不同的年龄阶段，其发展的速度 和水平是有明显差异的。题干中“暂时落后不代表永远落后”体现了阶段性和不平衡性。顺序性指儿童从 出生到成人，他们的身心发展是一个由低级到高级，由量变到质变的连续不断的过程。它要求教学做到“循 序渐进”，题干中并未体现。故本题选D。' },
+{ cat:'yicuo', t:'KE1-53', s:'YiCuo100', txt:'[KE1] #53\n\n学校安排优秀教师刘老师和新入职的邓老师“师徒结对”，刘老师悉心指导，邓老师也是主动向刘 老师请教，经常观摩刘老师上课，并在教学设计、教学方法甚至教学语言上尽量模仿刘老师，但教学效果 并不佳，其原因是（ ）。 A.邓老师缺乏自我反思 B.邓老师没有得到专业引领 C.刘老师指导有所保留 D.刘老师的教学示范性不强\n\n53.【答案】A 【解析】本题考查教师职业道德规范。新课程下的教师行为观强调教师在对待自我上，应当做到反思 与终身学习发展。因此，教师应该有终身学习的意识，不断反思，提高自己的知识水平及业务能力。邓老 师观摩学习的做法都是正确的，但学到别人的东西应该通过反思内化为自己的东西。故本题选A。' },
+{ cat:'yicuo', t:'KE1-54', s:'YiCuo100', txt:'[KE1] #54\n\n青年教师王老师想要提高教学水平，主动向特级教师李老师学习，经常跟班听课，王老师上课时， 尽管教学设计、教学方法，甚至教学语言都与李老师相仿，但教学效果就是不佳。下列分析不恰当的是（ ）。 A.王老师只注重了模仿，忽视了对自己的教学反思 B.王老师不重视专业学习，专业知识与技能不扎实 C.王老师一味模仿李老师，未形成自己的教学风格 D.王老师不重视班级学情，忽视了学生个体差异性\n\n54.【答案】B 【解析】本题考查教师专业发展。B 选项的说法与题干中王老师积极主动学习、不断努力提高的行为 不符，而且题干中也没有涉及王老师的专业知识与技能方面，故B 选项分析不正确。A、C、D 选项均是其 教学效果不佳的主要原因。故本题选B。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 12' },
+{ cat:'yicuo', t:'KE1-55', s:'YiCuo100', txt:'[KE1] #55\n\n下列选项中，不属于全国人民代表大会行使的职权是（ ）。 A.领导和管理国防建设事业 B.修改宪法和监督宪法的实施 C.决定特别行政区的设立及其制度 D.审查和批准国家的预算和预算的执行情况的报告\n\n55.【答案】A 【解析】本题考查《中华人民共和国宪法》。《中华人民共和国宪法》第六十二条第（一）、（二）、（十 四）、（十一）项分别规定，全国人民代表大会行使下列职权：（一）修改宪法；（二）监督宪法的实施；（十 四）决定特别行政区的设立及其制度；（十一）审查和批准国家的预算和预算执行情况的报告。因此B、C、 D 选项均为其职权。而A 选项是《中华人民共和国宪法》第八十九条第（十）项所规定的国务院的职权。 故本题选A。' },
+{ cat:'yicuo', t:'KE1-56', s:'YiCuo100', txt:'[KE1] #56\n\n班主任陈老师根据数学成绩将学生分为A、B、C 三类，并为三类学生分别建立综合成长档案。陈老 师的做法（ ）。 A.不恰当，忽视学生的主动发展 B.恰当，注重学生的个性发展 C.不恰当，忽视学生的全面发展 D.恰当，注重学生的可持续发展\n\n56.【答案】C 【解析】本题考查素质教育观。综合成长档案的建立，目的是改变只关注学业成绩的单一总结性的考 试评价方式，着眼于充分全面了解学生，帮助学生认识自我，建立自信，关注个别差异，了解学生发展中 的需求。班主任陈老师以数学成绩作为综合成长档案的划分依据，违背了综合成长档案防止以某一学科或 某科成绩评价学生的初衷，其做法对学生的全面发展和其他教育者开展素质教育工作造成了一定阻碍。故 本题选C。' },
+{ cat:'yicuo', t:'KE1-57', s:'YiCuo100', txt:'[KE1] #57\n\n六年级女生朱某学习不好，经常在课堂上讲话。一天上课，朱某又和同桌男生说话，教师张某批评 朱某说：“你怎么这么贱呀，能不能不招惹男生呀！”朱某听后立刻大哭，用头部在课桌上猛烈撞击，造成 额头出血。关于朱某所受的伤害，下列说法正确的是（ ）。 A.学校承担朱某伤害的主要赔偿责任 B.张某侵犯了朱某的言论自由权 C.朱某家长承担朱某伤害的赔偿责任 D.张某承担朱某伤害的部分赔偿责任\n\n57.【答案】A 【解析】本题考查学生伤害事故的责任。《学生伤害事故处理办法》第九条第（九）项规定，因“学校 教师或者其他工作人员体罚或者变相体罚学生，或者在履行职责过程中违反工作要求、操作规程、职业道 德或者其他有关规定的”造成的学生伤害事故，学校应当依法承担相应的责任。题干中朱某的伤害是由于 教师张某的不当言行造成的，因此，学校应当依法承担朱某的主要赔偿责任。故本题选A。' },
+{ cat:'yicuo', t:'KE1-58', s:'YiCuo100', txt:'[KE1] #58\n\n依据《中华人民共和国教师法》的相关规定，社会力量所办学校教师的待遇（ ）。 A.由教育行政部门确定，但由举办者予以保障 易错100 题中小幼科一 让每一个孩子都能遇到好老师 10 B.由举办者自行确定，但由教育行政部门予以保障 C.由教育行政部门确定并予以保障 D.由举办者自行确定并予以保障\n\n58.【答案】D 【解析】本题考查《中华人民共和国教师法》。《中华人民共和国教师法》第三十二条规定，社会力量 所办学校的教师的待遇，由举办者自行确定并予以保障。故本题选D。' },
+{ cat:'yicuo', t:'KE1-59', s:'YiCuo100', txt:'[KE1] #59\n\n依据《中华人民共和国教师法》的相关规定，教师有下列哪种情形可以由其所在学校予以行政处分 或解聘？（ ） A.故意不完成教学任务造成损失的 B.课余时间无偿为学生补课的 C.教学过程中延长授课时间的 D.学生管理中严厉对待学生的\n\n59.【答案】A 【解析】本题考查《中华人民共和国教师法》。《中华人民共和国教师法》第三十七条规定，教师有下 列情形之一的，由所在学校、其他教育机构或者教育行政部门给予行政处分或者解聘：（一）故意不完成教 育教学任务给教育教学工作造成损失的；（二）体罚学生，经教育不改的；（三）品行不良侮辱学生，影响 恶劣的。教师有前款第（二）项、第（三）项所列情形之一，情节严重，构成犯罪的，依法追究刑事责任。 故本题选A。' },
+{ cat:'yicuo', t:'KE1-60', s:'YiCuo100', txt:'[KE1] #60\n\n班主任王老师在班上开展“悦读悦享”活动，与同学们同读一本书，经常撰写“师读心得”与同学 们分享。下列分析不恰当的是（ ）。 A.王老师注重师生同读互促，率先垂范 B.王老师注重营造读书氛围，激趣启智 C.王老师注重学习，不断提升自我素养 D.王老师注重公正，对同学们一视同仁\n\n60.【答案】D 【解析】本题考查教师职业道德规范。班主任王老师与同学们同读一本书，有助于营造班级的读书氛 围；其行为起到了模范带头作用，给学生做出了表率；同时也可以拓展知识视野、提升自我，故A、B、C 易错100 题中小幼科一 让每一个孩子都能遇到好老师 13 三项分析正确。D 选项中的公正指公平正直、没有偏私，该案例中王老师的行为没有体现其注重公平，对 学生一视同仁，所以与题干无关。故本题选D。' },
+{ cat:'yicuo', t:'KE1-61', s:'YiCuo100', txt:'[KE1] #61\n\n为了保护学生的隐私，某小学规定语文教师不得在课堂上点评学生的作文。该校的做法（ ）。 A.正确，学校有权对教师提出工作要求 B.正确，学校应该满足学生的自尊需求 C.不正确，学校侵犯了教师的专业权利 D.不正确，学校限制了教师的言论自由\n\n61.【答案】C 【解析】本题考查《中华人民共和国教师法》。《中华人民共和国教师法》第七条规定，教师有指导学 生的学习和发展，评定学生的品行和学业成绩的权利。题干中学校的做法不正确，教师点评学生的作文属 于教师的专业权利，所以学校的做法侵犯了教师的专业权利。故本题选C。' },
+{ cat:'yicuo', t:'KE1-62', s:'YiCuo100', txt:'[KE1] #62\n\n下列现象中，属于光的直线传播的是（ ）。 A.做手影游戏 B.照镜子梳妆 C.看到书上的字 D.用近视眼镜矫正视力\n\n62.【答案】A 【解析】本题考查物理知识。A 项正确，做手影游戏是由于光的直线传播形成的。B 项错误，照镜子梳 妆是由于光的反射形成的。C 项错误，看到书上的字是由于光的反射形成的。D 项错误，近视眼镜矫正视力， 属于凸透镜成像，是由于光的折射形成的。故本题选A。' },
+{ cat:'yicuo', t:'KE1-63', s:'YiCuo100', txt:'[KE1] #63\n\n“三五步走遍天下，七八人百万雄兵”“咫尺地五湖四海，几更时万古千秋”，这些诗句是对下列哪 种传统艺术特点的描述？（ ） A.书法 B.绘画 C.戏剧 D.杂技\n\n63.【答案】C 【解析】本题考查艺术鉴赏。根据题干“三五步走遍天下，七八人百万雄兵”“咫尺地五湖四海，几更 时万古千秋”可知是我国戏曲艺术虚拟特点的体现，戏剧用虚拟手段表现戏剧时空场景的更替，C 项正确。 书法是用毛笔书写汉字并具有审美功能的艺术形式，与题意无关，排除A 项。传统绘画形式是用毛笔蘸水、 墨、彩作画于绢或纸上，与题意无关，排除B 项。杂耍是旧时对曲艺、杂技等技艺的合称，与题意无关， 排除D 项。故本题选C。' },
+{ cat:'yicuo', t:'KE1-64', s:'YiCuo100', txt:'[KE1] #64\n\n《地道战》《地雷战》《小兵张嘎》等电影故事脍炙人口，影响着一代代人的成长。它们主要取材于 （ ）。 A.北伐战争 B.抗日战争 C.解放战争 D.抗美援朝 易错100 题中小幼科一 让每一个孩子都能遇到好老师 11\n\n64.【答案】B 【解析】本题考查中国近代史。地道战是在抗日战争时期，在华北平原上抗日军民利用地道打击日本 侵略者的作战方式。地雷战是抗日战争时期中国山东民兵最重要的作战方法之一，地雷是当时最重要的作 战武器。小兵张嘎故事以抗日战争时期的白洋淀为背景，讲述了嘎子梦想参加八路，在抗日烽火中成长的 戏剧故事。由此分析可知，几部作品都以抗日战争为背景。故本题选B。' },
+{ cat:'yicuo', t:'KE1-65', s:'YiCuo100', txt:'[KE1] #65\n\n当人体内有病菌感染时，哪种血细胞的数量会大量增加？（ ） A.红细胞 B.白细胞 C.血小板 D.血红蛋白\n\n65.【答案】B 【解析】本题考查生物细胞。白细胞能吞噬发炎部位的病菌，人体某个部位发炎时，白细胞会大大增 加，具有防御作用。红细胞是血液中数量最多的一种血细胞，同时也是脊椎动物体内通过血液运送氧气的 最主要的媒介，同时还具有免疫功能。血小板是从骨髓成熟的巨核细胞胞浆解脱落下来的小块胞质。巨核 细胞虽然在骨髓的造血细胞中为数最少，仅占骨髓有核细胞总数的0.05%，但其产生的血小板却对机体的 止血功能极为重要。血红蛋白又称血色素，是红细胞的主要组成部分，能与氧结合，运输氧和二氧化碳。 血红蛋白含量能很好地反映贫血程度。因此，当人体内有病菌感染时，白细胞的数量会大量增加，故本题 选B。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 14' },
+{ cat:'yicuo', t:'KE1-66', s:'YiCuo100', txt:'[KE1] #66\n\n使用Word 软件编辑文档，打开“字体”对话框，不能完成的设置是（ ）。 A.字符位置降低2 磅 B.字符间距加宽3 磅 C.首行缩进2 字符 D.字形加粗\n\n66.【答案】C 【解析】本题考查“字体”对话框和“段落”对话框的内容。首行缩进属于“段落”对话框，其他都 属于“字体”对话框。故本题选C。' },
+{ cat:'yicuo', t:'KE1-67', s:'YiCuo100', txt:'[KE1] #67\n\n以下不是PowerPoint 视图方式的是（ ）。 A.大纲视图 B.普通视图 C.幻灯片浏览视图 D.页面视图\n\n67.【答案】D 【解析】本题考查PowerPoint 的视图方式。演示文稿的视图方式包括大纲视图、普通视图、幻灯片浏 览视图、备注页视图以及阅读视图。页面视图不是演示文稿视图方式，是Word 文档的视图方式。故本题选 D。' },
+{ cat:'yicuo', t:'KE1-68', s:'YiCuo100', txt:'[KE1] #68\n\n在PowerPoint 中，幻灯片的切换方式是指（ ）。 A.在编辑幻灯片时切换不同的设计模板 B.在编辑新幻灯片时的过渡形式 C.在幻灯片放映时两张幻灯片间过渡形式 D.在编辑幻灯片时切换不同视图\n\n68.【答案】C 【解析】本题考查幻灯片切换方式。幻灯片切换主要是幻灯片进入下一页的展示效果，是在幻灯片放 映时两张幻灯片间过渡形式。故本题选C。' },
+{ cat:'yicuo', t:'KE1-69', s:'YiCuo100', txt:'[KE1] #69\n\n袁枚《马嵬》：“莫唱当年长恨歌，人间亦自有银河。石壕村里夫妻别，泪比长生殿上多”与诗中提 到作品无关的作家是（ ）。 A.洪昇 B.杜甫 C.关汉卿 D.白居易\n\n69.【答案】C 【解析】本题考查文学常识。《长恨歌》，唐代诗人白居易所作之诗，写的是唐玄宗宠幸杨贵妃而造成 的政治悲剧与爱情悲剧。石壕村出自唐代诗人杜甫《石壕吏》一诗，写在安史之乱中，官吏征兵征役，造 成石壕村中一对老年夫妻惨别的情形。《长生殿》是指洪昇的戏曲。因此，诗中提到了洪昇、杜甫、白居易， 没有提到关汉卿。故本题选C。' },
+{ cat:'yicuo', t:'KE1-70', s:'YiCuo100', txt:'[KE1] #70\n\n下列笔名原名著作对应错误的是（ ）。 A.茅盾——沈德鸿——《子夜》 B.非我——舒庆春——《骆驼祥子》 C.李尧棠——林语堂——《寒夜》 D.曹禺——万家宝——《雷雨》\n\n70.【答案】C 【解析】本题考查中国近代文学。巴金，原名李尧棠，另有笔名有佩竿、极乐、黑浪、春风等，字芾 甘。代表作是《家》《春》《秋》《雾》《雨》《电》《寒夜》等。林语堂原名和乐，后改玉堂，又改语堂，代 表作是《京华烟云》《啼笑皆非》。C 项对应错误。A 项，茅盾，原名沈德鸿，代表作有《子夜》、农村三部 曲（含《春蚕》、《秋收》、《残冬》），A 项对应正确。B 项，非我，即老舍，原名舒庆春，除笔名非我、老舍 外，还有絜青、鸿来等，代表作有《骆驼祥子》《四世同堂》，剧本《茶馆》《龙须沟》，B 项对应正确。D 项， 曹禺，原名万家宝，中国杰出的现代话剧剧作家，代表作有《雷雨》《日出》《原野》等，D 项对应正确。 故本题选C。' },
+{ cat:'yicuo', t:'KE1-71', s:'YiCuo100', txt:'[KE1] #71\n\n“教师是一把茶壶，学生是一个水杯。教师对学生的教学就是茶壶将茶杯灌满。”壶与杯的教育理 论（ ）。 A.合理，体现教师的教和学生的学有机统一 B.不合理，教师要从传授知识的角色向教育促进者的角色转变 C.合理，体现了教师对学生的无私奉献 D.不合理，教师应该终身学习，只有一壶水还不够 易错100 题中小幼科一 让每一个孩子都能遇到好老师 12\n\n71.【答案】B 【解析】本题考查教师角色观。“壶与杯”的教育理论认为教师是茶壶，学生是茶杯。教师是知识的拥 有者，学生只是被动地接受知识，教学过程是向学生传授、灌输知识的过程。“壶与杯”理论忽视了学生在 学习中的主体地位，已经不符合当代教育观念。新课改下的教师角色观提出，教师应该是学生学习的促进 者，教师要从传授知识的角色向教育促进者的角色转变。故本题选B。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 15' },
+{ cat:'yicuo', t:'KE1-72', s:'YiCuo100', txt:'[KE1] #72\n\n一位科学家的墓碑上篆刻着这样的铭文： “他以神一般的力量，……第一个说明了行星运动和图像。” 这位科学家是（ ）。 A.伽利略 B.牛顿 C.爱因斯坦 D.普朗克\n\n72.【答案】B 【解析】本题考查世界近代科学家。A 项错误，伽利略是意大利数学家、物理学家、天文学家，科学 革命的先驱，伽利略发明了摆针和温度计，在科学上为人类作出过巨大贡献，是近代实验科学的奠基人之 一。伽利略的墓志铭是：“他失明了，因为在自然界已经没有剩下什么他没有看见过的东西了。”B 项正确， 艾萨克•牛顿是英国著名的物理学家，他在1687 年发表的论文《自然定律》里，对万有引力和三大运动定 律进行了描述。这些描述奠定了此后三个世纪里物理世界的科学观点，并成为现代工程学的基础。牛顿的 墓志铭是：“艾萨克•牛顿爵士，安葬在这里。他以超乎常人的智力，第一个证明了行星的运动与形状、彗 星轨道与海洋的潮汐，他孜孜不倦地研究光线的各种不同的折射角、颜色所产生的种种性质。对于自然、 历史和《圣经》，他是一个勤勉、敏锐而忠实的诠释者。他以自己的哲学证明了上帝的庄严，并在他的举止 中表现了福音的纯朴。让人类欢呼曾经存在过这样一位伟大的人类之光。”C 项错误，阿尔伯特•爱因斯坦 是犹太裔物理学家，他提出光子假设，成功解释了光电效应，并创立狭义相对论和广义相对论。爱因斯坦 的墓志铭是：“在美的前沿揭示了一个崭新的世界。”D 项错误，马克斯•普朗克是德国著名的物理学家和量 子力学的重要创始人，普朗克的墓志铭是：h=6.63×10^-34J•S。故本题选B。' },
+{ cat:'yicuo', t:'KE1-73', s:'YiCuo100', txt:'[KE1] #73\n\n在Excel 中，如果单元格A5 的值是单元格A1、A2、A3、A4 的平均值，则不正确的输入公式为（ ）。 A.=AVERAGE（A1，A2，A3，A4） B.=（A1+A2+A3+A4）/4 C.=AVERAGE（A1+A2+A3+A4） D.=AVERAGE（A1:A4）\n\n73.【答案】C 【解析】本题考查Excel 的应用。C 项平均函数内参数格式错误。A、B、D 项均能实现操作。故本题选 C。' },
+{ cat:'yicuo', t:'KE1-74', s:'YiCuo100', txt:'[KE1] #74\n\n世界名画《向日葵》通过粗厚有力的笔触和对比强烈的色彩向观者表达了作者对生命的理解。它是 下列哪位画家的代表作？（ ） A.达•芬奇 B.塞尚 C.毕加索 D.梵高\n\n74.【答案】D 【解析】本题考查艺术常识。A 项错误，达·芬奇，欧洲文艺复兴时期的天才科学家、发明家、画家。 现代学者称他为“文艺复兴时期最完美的代表”，他最大的成就是绘画，他的杰作《蒙娜丽莎》《最后的晚 餐》《岩间圣母》等，体现了他精湛的艺术造诣。B 项错误，保罗·塞尚，法国著名画家，是后期印象派的 主将，西方现代画家称他为“现代艺术之父”“造型之父”或“现代绘画之父”。他对物体体积感的追求和 表现，为“立体派”开启了思路，代表作品有《圣维克多山》《法黎耶肖像》、静物系列等。C 项错误，毕 加索，西班牙画家、雕塑家，是现代艺术的创始人，西方现代派绘画的主要代表。他于1907 年创作的《亚 威农少女》是第一张被认为有立体主义倾向的作品，是一幅具有里程碑意义的著名杰作。代表作品还有《斗 牛士》《格尔尼卡》《和平鸽》《梦》《亚威农少女》等。D 项正确，梵高，荷兰后印象派画家。是后印象主 义的先驱，并深深地影响了20 世纪艺术，尤其是野兽派与表现主义。梵高的作品主要有《星夜》《向日葵》 与《有乌鸦的麦田》等。故本题选D。' },
+{ cat:'yicuo', t:'KE1-75', s:'YiCuo100', txt:'[KE1] #75\n\n某小组10 名学生，在某次语文考试中成绩分别为87、83、86、92、86、76、83、85、79、83。则 这组数据的众数、中位数分别是（ ）。 A.83 84 B.3 83 C.86 84 D.2 86\n\n75.【答案】A 【解析】本题考查众数和中位数。众数是一个次数分布中出现次数最多的那个数。题干中83 出现了3 易错100 题中小幼科一 让每一个孩子都能遇到好老师 16 次，所以众数是83。中位数也称为中数，指位于数据分布正中间位置上的那个数。如果一组数据从小到大 排列，则中位数通常是将这批数据个数一分为二，居于中间的那个数。题干中的中位数为（83+85）/2=84。 故本题选A。' },
+{ cat:'yicuo', t:'KE1-76', s:'YiCuo100', txt:'[KE1] #76\n\n被称为“西方海上生命线”，连接了波斯湾与印度洋的是（ ）。 A.霍尔木兹海峡 B.莫桑比克海峡 C.白令海峡 D.德雷克海峡\n\n76.【答案】A 【解析】本题考查海峡分界线。A 项，霍尔木兹海峡连接了波斯湾与印度洋，被称为“西方海上生命 线”；B 项，莫桑比克海峡位于非洲大陆东南部与马达加斯加岛之间，是南大西洋和印度洋之间的航运要道， 是世界最长的海峡；C 项，白令海峡连接北冰洋与太平洋，是亚洲与北美洲的分界线，太平洋与北冰洋间 的唯一通道；D 项，德雷克海峡位于南美洲与南极半岛之间，连接大西洋与南太平洋，是南美洲与南极洲 的界线。故本题选A。' },
+{ cat:'yicuo', t:'KE1-77', s:'YiCuo100', txt:'[KE1] #77\n\n在Excel 中，下列说法不正确的是（ ）。 A.可以对建立的图表进行缩放和修改 B.可将单元格中的数据以各种统计图表的形式显示 C.建立图表首先要在工作表中选取图表的数据区 D.工作表中的数据源发生变化时，图表中的对应数据不能自动更新\n\n77.【答案】D 【解析】本题考查Excel 的应用。在Excel 中，工作表中的数据源发生变化时，图表中的对应数据也 会自动更新。故本题选D。' },
+{ cat:'yicuo', t:'KE1-78', s:'YiCuo100', txt:'[KE1] #78\n\n新冠疫情防控期间，各商场、车站、小区等地常使用“测温枪”测量体温，“测温枪”通过识别人 体辐射强度不同的（ ），在不接触人体的情况下测量人体的温度。 A.超声波 B.次声波 C.红外线 D.紫外线\n\n78.【答案】C 【解析】本题考查科学常识。测温枪，学名是“红外线测温仪”或“红外线辐射测温仪”。“测温枪” 通过识别人体辐射强度不同的红外线，在不接触人体的情况下测量人体的温度。A 项，超声波是一种频率 高于20000 赫兹的声波，它的方向性好，穿透能力强，易于获得较集中的声能，在水中传播距离远，可用 于测距、测速、清洗、焊接、碎石、杀菌消毒等。B 项，次声波是频率小于20 赫兹的声波。次声波不容易 衰减，不易被水和空气吸收。而次声波的波长往往很长，因此能绕开某些大型障碍物发生衍射。D 项，紫 外线是电磁波谱中波长为400nm—10nm 辐射的总称，不能引起人们的视觉。它是频率比蓝紫光高的不可见 光。紫外线可以用来灭菌，过多的紫外线进入人体内会导致皮肤癌。故本题选C。' },
+{ cat:'yicuo', t:'KE1-79', s:'YiCuo100', txt:'[KE1] #79\n\n东晋时期的道教学者、著名炼丹家、医药学家（ ）所著的《抱朴子》是现存的主要道教典籍。 A.张陵 B.魏伯阳 易错100 题中小幼科一 让每一个孩子都能遇到好老师 13 C.葛洪 D.陶弘景\n\n79.【答案】C 【解析】本题考查道教典籍。张陵，东汉五斗米道创立者。后改名张道陵，敬为张天师。客居于蜀， 学道于鹄鸣山，著有《太平洞极经》，A 项不符合题意。魏伯阳，东汉时期黄老道家、炼丹理论家，道教丹 鼎派的理论奠基人。其所著的《周易参同契》，是现存最早系统阐述炼丹理论的著作，B 项不符合题意。葛 洪，东晋道教理论家、著名炼丹家和医药学家，世称小仙翁。所著《抱朴子》继承和发展了东汉以来的炼 丹法术，对之后道教炼丹术的发展具有很大影响，为研究中国炼丹史以及古代化学史提供了宝贵的史料，C 项符合题意。陶弘景，南北朝著名医药学家。著有《本草经集注》，他是我国医药学史上对本草学进行系统 整理，并加以创造性地发挥的第一人，D 项不符合题意。故本题选C。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 17' },
+{ cat:'yicuo', t:'KE1-80', s:'YiCuo100', txt:'[KE1] #80\n\n三年级某班数学老师在考试的时候把发给同学们的卷子拿成了六年级的数学卷子，是测不出学生的 数学水平的，那么这个测验是没有（ ）的。 A.信度 B.效度 C.难度 D.区分度\n\n80.【答案】B 【解析】本题考查教育测量。效度即有效性，它是指测量工具或手段能够准确测出所需测量的事物的 程度。测量结果与要考察的内容越吻合，则效度越高；反之，则效度越低。题干中三年级的学生做六年级 的试卷，显然测验没有效度。故本题选B。' },
+{ cat:'yicuo', t:'KE1-81', s:'YiCuo100', txt:'[KE1] #81\n\n某日下午，小学生金某刚从网吧出来正好碰到班主任老师。班主任老师拉着他的耳朵，连拖带拽把 他带到了办公室并对他进行罚站。对班主任老师的处罚，下列哪项不恰当？（ ） A.情节严重的，依法给予处分 B.由其所在单位责令改正 C.由主管部门责令改正 D.由公安机关予以行政拘留\n\n81.【答案】D 【解析】本题考查《中华人民共和国未成年人保护法》。《中华人民共和国未成年人保护法》（2020 年 修订）第二十七条规定，学校、幼儿园的教职员工应当尊重未成年人人格尊严，不得对未成年人实施体罚、 变相体罚或者其他侮辱人格尊严的行为。第一百一十九条规定，学校、幼儿园、婴幼儿照护服务等机构及 其教职员工违反本法第二十七条、第二十八条、第三十九条规定的，由公安、教育、卫生健康、市场监督 管理等部门按照职责分工责令改正；拒不改正或者情节严重的，对直接负责的主管人员和其他直接责任人 员依法给予处分。题干中班主任老师对金某进行罚站体罚，违反了相关法律规定，对班主任老师的处罚不 包括由公安机关予以行政拘留，D 项符合题意。故本题选D。' },
+{ cat:'yicuo', t:'KE1-82', s:'YiCuo100', txt:'[KE1] #82\n\n依据《中华人民共和国未成年人保护法》，对未成年人社会保护不包括（ ）。 A.学校、幼儿园周边不得设置烟、酒、彩票销售网点 B.禁止胁迫、诱骗、利用未成年人乞讨 C.幼儿园、校外培训机构不得对学龄前未成年人进行小学课程教育 D.国家鼓励科研机构和科技类社会组织对未成年人开展科学普及活动 二、材料分析题\n\n82.【答案】C 【解析】本题考查对未成年人的社会保护。《中华人民共和国未成年人保护法》（2020 年修订）第四章 “社会保护”第五十九条规定，学校、幼儿园周边不得设置烟、酒、彩票销售网点。营业性歌舞娱乐场所、 酒吧、互联网上网服务营业场所等不适宜未成年人活动场所的经营者，不得允许未成年人进入；游艺娱乐 场所设置的电子游戏设备，除国家法定节假日外，不得向未成年人提供。经营者应当在显著位置设置未成 年人禁入、限入标志；对难以判明是否是未成年人的，应当要求其出示身份证件。该法第五十四条第三款 规定，禁止胁迫、诱骗、利用未成年人乞讨。该法第四十四条第四款规定，国家鼓励科研机构和科技类社 会组织对未成年人开展科学普及活动。A、B、D 项都属于社会保护的内容。该法第三章“学校保护”第三 十三条第三款规定，幼儿园、校外培训机构不得对学龄前未成年人进行小学课程教育。C 项属于学校保护 内容。故本题选C。 二、材料分析题 83.【参考答案】 材料中张老师的教育行为是恰当的，符合素质教育观的要求，具体表现在： （1）素质教育是面向全体学生的教育。教师要关注到所有学生，公平公正地对待学生，不偏袒或歧视 个别学生。材料中张老师没有因为明明结巴的朗读而区别对待，而是一视同仁，尊重学生，引导学生思考， 做到了面向全体学生。 （2）素质教育是促进学生个性发展的教育。教育要尊重学生的个性差异，做到因材施教。材料中张老 易错100 题中小幼科一 让每一个孩子都能遇到好老师 18 师并没有斥责明明的“捣乱”，而是尊重学生的想法，通过耐心询问和引导讨论，帮助大家了解明明的想法， 促进了学生的个性发展。 （3）素质教育是培养学生创新精神和实践能力为重点的教育。教师不仅要重视培养学生的自主探索意 识，也要保护学生的创新精神和实践能力。材料中张老师敢于打破常规，把学生不一样的解释带入课程， 有利于激发学生的探索意识和创新精神。 （4）从教学的方法上看，素质教育强调启发式、探究式教学，促进学生生动、活泼地学习。材料中张 老师听了明明的回答后，积极引导学生讨论，充分调动学生兴趣，并顺势启发学生阅读思考和解决问题。 总之，张老师的教育行为践行了素质教育观的相关要求，是值得我们学习的。 84.【参考答案】 材料中李老师的做法践行了素质教育观的要求，具体分析如下： （1）从素质教育的内涵上看，①素质教育是面向全体幼儿的教育。②素质教育是促进幼儿全面发展的 教育。③素质教育是促进幼儿个性发展的教育。④素质教育是以培养幼儿创新精神和实践能力为重点的教 育。材料中，李老师发现洋洋吃饭不认真、挑食的问题，并没有置之不理，而是采取了一系列措施，如讲 故事，使用童趣的语言鼓励幼儿科学进餐，鼓励洋洋吃绿色蔬菜，帮助洋洋改善了偏食的现象，促进了幼 儿全面健康发展。 （2）幼儿素质教育要求教师在保教活动中从小事抓起，做到保教结合。材料中，李老师在饭前或休息 时间也经常给孩子们讲一些有关偏食的坏处的故事，在餐饮环节用富有感染力的语言引导幼儿就餐，帮助 幼儿养成了良好的餐饮习惯，做到了保教结合。 （3）幼儿素质教育要求以游戏为基本活动，以导为主，以教为辅，尊重幼儿在学习中的主体地位。材 料中，李老师采取的措施，调动了幼儿的积极性，让幼儿自己认识到挑食的坏处，学会了正确吃饭，使洋 洋偏食的现象几乎没有了，而且吃饭速度也提高了很多。 （4）幼儿素质教育要发挥一日生活整体教育功能，提高幼儿的综合能力。要注重幼儿兴趣的培养，强 化幼儿习惯的养成，重视幼儿智力的开发。材料中，李老师的引导教育方式，不仅帮助幼儿养成了良好的 餐饮习惯，而且提高了动手吃饭的能力。 综上所述，李老师的教育行为值得我们学习。 85.【参考答案】 这位教师的做法符合“以人为本”的学生观的要求，具体表现在： （1）学生是发展中的人，要用发展的观点认识学生。学生具有巨大的发展潜能，应该充分信任学生； 学生处于发展过程中，应该鼓励帮助学生；材料中这位教师坚信学生处于发展过程中，具有巨大的发展潜 易错100 题中小幼科一 让每一个孩子都能遇到好老师 19 力，所以积极采取措施，缓解紧张的氛围，让略有口吃的学生建立了自信，朗读得越来越好，获得了同学 们的认可。 （2）学生是独特的人。每个学生都有自身的独特性，与成人之间存在着巨大的差异。要因材施教。材 料中这位略有口吃的同学作文优秀、但又易紧张，教师能针对他这一特点因材施教，机智化解，既关心了 学生的心理健康，又促进了学生的长远发展。 （3）学生是具有独立意义的人。他们是学习的主体，有自己的意愿、知识和思想，要尊重学生的主体 地位。材料中这位教师能够体会学生当时的恐惧、尴尬和慌张，并且通过巧妙引导，充分尊重学生的人格 和主观能动性，帮助学生克服了紧张心理。 综上，材料中教师积极践行“以人为本”的学生观，关注到每个学生的心理，促进了学生的健康发展， 值得我们学习和借鉴。 86.【参考答案】 王老师的做法打击了学生的自尊心和自信心，违背了“以人为本”的学生观的要求，具体体现如下： （1）学生是发展中的人，要用发展的观点认识学生。学生的身心发展是有规律的，应该遵循教育规律 特点开展教学；学生具有巨大的发展潜能，应该充分信任学生；学生处于发展过程中，应该鼓励帮助学生； 学生的发展是全面的发展，应该促进学生全面发展。材料中王老师意识到田田的学习问题后，并没有根据 学生发展规律去鼓励帮助学生，而是批评和责备田田，阻碍了孩子的发展。 （2）学生是独特的人。每个学生都有自身的独特性，与成人之间存在着巨大的差异，要因材施教。材 料中田田虽然有不足之处，但是他语言表达方面比较突出，思维清晰，反应敏捷，王老师未能根据他的实 际情况采取针对性教育措施。 （3）学生是具有独立意义的人。他们是学习的主体，有自己的意愿、知识和思想，要尊重学生的主体 地位，调动学生的主观能动性。材料中王老师面对田田存在的问题，没有想办法调动孩子的学习积极性， 而是简单粗暴的批评，还把责任推给家长，忽视了学生学习主体地位。 总之，王老师的行为不可取，我们要引以为戒。 87.【参考答案】 材料中该老师的教育行为符合“育人为本”的儿童观的要求，具体分析如下： （1）儿童是发展中的人，具有巨大的潜能和被塑造与自我塑造的潜力，我们应该用发展的眼光看待儿 童。材料中，我看到昊昊不喜欢吃青菜时，自己大口大口吃给他看，并引导他只要吃一点菜，就奖励咸菜 给他，昊昊爽快地吃了蔬菜，在接下来的一段时间里，昊昊食欲大增，体现了儿童是发展中的人，具有巨 大的发展潜能。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 20 （2）儿童是独特的人，我们应因材施教。儿童期有自身的价值，我们应该给儿童一个幸福而有意义的 童年。材料中，昊昊每当我走到他身边时，他为了得到我的表扬，就使劲地吃饭，不吃菜，于是我就坐到 他旁边引导他吃蔬菜，通过自己做榜样和用咸菜做奖励，使昊昊愿意吃蔬菜，体现了儿童是独特的人，应 当因材施教。 （3）儿童是学习的主体，是具有能动性的教育对象。我们应该尊重儿童的主体性，调动儿童学习的主 动性和积极性。材料中，昊昊不愿意吃蔬菜时，我没有批评训斥他，而是跟他约定，只要他吃一点，就给 他奖励，昊昊于是十分高兴，爽快地吃了自己的蔬菜，体现了儿童是学习的主体，具有自身的能动性。 综上所述，教师在教育过程中，应当遵循儿童自身发展的规律，践行“育人为本”的儿童观的相关要 求。 88.【参考答案】 材料中杨老师的教育行为是正确的，符合新课程下幼儿教师观的要求，具体表现在： （1）幼儿教师是幼儿一日生活的支持者、引导者和组织者。教师既要成为幼儿活动的支持者，也要发 挥教师的主导作用。材料中，杨老师关注幼儿一日生活中的冲突，并不断学习探索，通过理论与实践的积 累，逐渐找到方法，减少了幼儿之间的冲突。 （2）幼儿教师是幼儿全面发展的培养者和研究者。教师在工作中要使德、智、体、美、劳相互渗透、 相互交织，要把全面发展的教育与素质教育结合起来，使教育呈现一个统一的完整的过程。材料中，杨老 师不仅关注幼儿的身体健康，也关注其心理健康和社会交往能力，能够促进幼儿的全面发展。 （3）幼儿教师是幼儿健康心理的培育者。具有健全心理的人，才是真正健康的人。材料中，杨老师解 决了幼儿之间的冲突，能够促进幼儿的心理健康发展。 （4）幼儿教师是教育信息的开发与应用者，课程的建设者。幼儿教师不仅能开发和应用信息，还应该 能够建设课程。材料中，杨老师查阅多方资料，撰写了《杨老师教你应对幼儿冲突50 招》，并为家长做专 题讲座，体现了园本课程的建设。 （5）幼儿教师是幼儿社会沟通的中介者。教师应尊重儿童，理解孩子的内心世界，学会运用谈话的技 巧。材料中，杨老师能够减少幼儿之间以及幼儿家长之间的冲突，说明杨老师具备与幼儿及其家长有效沟 通的方法，也能够发展幼儿的社会沟通能力。 （6）幼儿教师是社区资源的整合者。幼儿教师必须学会和家长、社区沟通，整合各种有用的资源为儿 童发展做好服务。材料中，杨老师定期在幼儿园为家长做专题讲座，还经常与家长沟通幼儿的情况，这种 良性的沟通和交流方式为解决幼儿间冲突营造了良好的氛围。 综上所述，杨老师的做法践行了正确的教师观的要求，值得我们肯定和学习。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 21 89.【参考答案】 材料中董老师的教育行为是正确的，符合新课程下教师观的相关要求，主要体现在： （1）教师角色观： ①教师是教育教学的研究者。教师不仅是教学者还应该是研究者，要精通教学理论和分析教学理论， 并可以独立完成教育行动研究。材料中董老师作为老教师，仍在教学上去琢磨如何让学生学得很好，通过 观察了解学情，制定不同纸片，体现了其对于教育教学的研究和思考。 ②教师是终身学习的践行者。教师应该将终身教育理念落到实处，时时刻刻注意对于自身的反思，促 进自身的不断发展。材料中董老师作为老教师不断学习、对自己提出更高要求，体现了其具有终身学习的 意识，并时刻践行。 ③教师是学生学习的促进者。当前学生的学习方式正向探究式、研究式学习转变，这就要求教师必须 向教育促进者的角色转变。材料中，董老师在分析学生认知规律和学习特点的基础上想出来的使用小纸片 将知识进行分类，帮助学生梳理知识的框架，促进学生的发展。 （2）教师角色观： ①在对待自我上，新课程强调反思与终身学习发展。材料中董老师对于教学，强调不仅要观察可以怎 么做，还需要去琢磨为什么这样做，体现了其不断反思教学，收获成长。 ②在对待与其他教育者的关系上，新课程强调合作。材料中王老师在向董老师请教时董老师都耐心讲 解，促进了同事间的交流与合作。 综上所述，董老师充分践行了新课程下教师观的要求，真正做到了关心学生，帮助学生。这是十分值 得我们学习的。 90.【参考答案】 材料中张老师的教育行为是正确的，体现了教师职业道德规范的相关要求，具体表现在： （1）关爱学生。要求教师关心爱护全体学生，尊重学生人格，平等公正对待学生。对学生严慈相济， 做学生良师益友。保护学生安全，关心学生健康，维护学生权益。不讽刺、挖苦、歧视学生，不体罚或变 相体罚学生。材料中张老师并没有因为这名女生打断课堂而批评、责备，反而轻拍女生的肩膀，示意不要 紧张，并将紧张的氛围轻松地处理掉，体现了张老师对学生的关爱。 （2）教书育人。要求教师遵循教育规律，实施素质教育。循循善诱，诲人不倦，因材施教。培养学生 良好品行，激发学生创新精神，促进学生全面发展。材料中张老师在面对课堂突发事件时，没有惊慌与不 知所措，而是耐心疏导，使学生克服了对虫子的恐惧，进而维护了课堂秩序。此外，还通过由同学们一起 决定处理害虫的方法，充分发挥了学生在解决问题中的主观能动性。这体现了张老师的教书育人。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 22 总之，张老师能够运用教育机智妥善处理课堂突发事件，认真践行教师职业道德的相关要求。 作为一名教师，在教育教学过程中应做到：（1）面对突发事件时，应沉着冷静对待，因势利导、随机 应变、掌握分寸、对症下药。（2）教育教学过程中时刻将知识性与思想性相结合，把教育性原则落实到具 体教学之中。（3）教育教学过程中要充分发挥学生的主观能动性和教师的主导作用。（4）教师在日常的教 学中也应通过教学实践、反思等提升自己的素质。作为一名教师，在教育教学过程中只有具备以上几点才 能更好地促进学生的发展。 91.【参考答案】 材料中孙老师的行为违背了《中小学教师职业道德规范》（2008 年修订）的要求，是不正确的。 （1）终身学习。要求教师崇尚科学精神，树立终身学习理念，拓宽知识视野，更新知识结构。潜心钻 研业务，勇于探索创新，不断提高专业素养和教育教学水平。材料中孙老师，在工作几年之后就认为自己 的经验、知识与能力已经足以应付，没有必要继续深入钻研教学，违背了终身学习的要求。 （2）为人师表。要求教师坚守高尚情操，知荣明耻，严于律己，以身作则。衣着得体，语言规范，举 止文明。关心集体，团结协作，尊重同事，尊重家长。作风正派，廉洁奉公。自觉抵制有偿家教，不利用 职务之便谋取私利。材料中孙老师在家里办课外补习班，收取学生的补课费，还要求学生在自己这里购买 学习资料和学习工具，这些行为，违背了为人师表的要求。 （3）爱国守法。要求教师热爱祖国，热爱人民，拥护中国共产党领导，拥护社会主义。全面贯彻国家 教育方针，自觉遵守教育法律法规，依法履行教师职责权利。不得有违背党和国家方针政策的言行。材料 中孙老师在家里补课，已经违反了相关的法律的规定，没有做到爱国守法。 （4）关爱学生。要求教师关心爱护全体学生，尊重学生人格，平等公正对待学生。对学生严慈相济， 做学生的良师益友。保护学生安全，关心学生健康，维护学生权益。不讽刺、挖苦、歧视学生。不体罚或 变相体罚学生。材料中孙老师常常将课堂教学与课后辅导联系起来，这样做会侵犯未参加课后辅导班学生 的受教育权，没能做到平等对待学生，违背了关爱学生的要求。 综上所述，孙老师的行为违背了教师职业道德规范的相关要求，在以后的教学行为中应避免这种现象 的发生。 92.【参考答案】 中小学教师职业道德规范要求教师做到爱国守法、爱岗敬业、关爱学生、教书育人、为人师表和终身 学习，因此李老师应做到以下几个方面来帮助小钰： （1）爱岗敬业。要求教师志存高远，勤恳敬业，乐于奉献。对工作高度负责，认真备课上课，认真辅 导学生。材料中小钰身世坎坷，以致于出现各种心理和行为问题，李老师应该多方了解小钰的问题，做小 易错100 题中小幼科一 让每一个孩子都能遇到好老师 23 钰的交流对象，尽职尽责地帮助小钰。 （2）关爱学生。要求教师关心爱护全体学生，尊重学生人格，平等公正对待学生。对学生严慈相济， 做学生良师益友。保护学生安全，关心学生健康，维护学生权益。材料中小钰自幼被多次领养，内心缺乏 温暖与关爱，被他人嘲笑，未得到尊重，李老师应该从自己做起，带领全班幼儿尊重小钰，帮助她树立自 信，同时更应该给予小钰关心关爱，让小钰感受到老师和班集体的爱。 （3）教书育人。要求教师循循善诱，诲人不倦，因材施教。培养学生良好品行，激发学生创新精神， 促进学生全面发展。材料中小钰沟通交流存在问题，语言表达能力发展慢，害怕他人接近，李老师应该耐 心教导小钰，循循善诱，诲人不倦，同时也应解决小钰沟通、语言存在的问题，促进小钰的全面发展。 （4）为人师表。要求教师严于律己，以身作则。关心集体，团结协作，尊重同事，尊重家长。材料中 小钰养父母开饭店生意忙，无暇顾及小钰，所以李老师应该以身作则，帮助小钰，同时联合小钰的养父母 以及幼儿园的同事，一起团结协作，共同对小钰进行教育。 （5）终身学习。要求教师崇尚科学精神，树立终身学习理念，拓宽知识视野，更新知识结构。材料中 李老师需要针对小钰的表现，多学习心理矫治、特殊儿童培养等方面的知识，以科学的教育方法对小钰进 行教育。 总之，李老师需要综合家庭等多方力量，不断提升自身能力，对小钰进行关爱和教育。 93.【参考答案】 （1）因为事物矛盾双方之间的辩证运动是在时间中展开的，时间是参与事件的重要因素，此一时的事 物矛盾运动和彼一时的矛盾运动是不同的，我们需要根据事物不同的矛盾运动来采取不同的措施解决问题， 所以辩证思维必须讲究“时机”，追求“时中”。 （2）文中追求“时中”：指一方面是要“合乎时宜”，二是要“随时变通”，也就是强调做任何事情都 应相时而动，顺势而行。而绝不是做任何事情，都搞折中，也不是简单的“中间地带”。所以，这一思想对 我们的实践具有重要的价值和作用。 辩证思维是我们人类对于事物本身运动、发展、变化规律的概括和总结，是指导我们做事的指南针和 航向标，我们必须坚持。材料中的韩昭侯正是违背了这一做事的原则，在错误的时机修建了高门，应验了 谋士屈宜臼的话。 在实践中，首先，我们应具有辩证思维，注重时间性，能够相时而动，顺势而行；然后再按照这一思 维的要求，遵循事物发展的规律，相机而行事，这样才能取得好结果。 94.【参考答案】 （1）往往是通过审美活动加以实现的。原因是生产力和生产关系的利刃斩断了人与自然、人与社会的 易错100 题中小幼科一 让每一个孩子都能遇到好老师 24 原始纽带。而审美活动可以短暂的实现这种弥合。 （2）认识内容的多少并不是艺术价值的关键所在，而在于给人想象的空间和情感的慰藉，是对遭受异 化痛苦的人们所进行的精神关怀。古今中外凡是超越民族和地域从而具有永恒价值的艺术品，无不具有形 而上的“终极关怀”。梵·高的名画《星夜》给遭受异化痛苦的人们以精神关怀和情感的慰藉，表现了人类 的挣扎与奋斗精神，具有永恒的艺术价值。 95.【参考答案】 （1）礼是整个中国人世界里一切风俗行为的准则，标志着中国的特殊性。中国是文明礼仪之邦，礼仪 与文明是相统一的，礼仪是文明的载体，文明是礼仪的内涵，没有了礼仪，文明也就无所依附。 （2）①在甲骨文中，“豊”的顶部就像两串美玉，底部就像有支架的建鼓。合起来就是击鼓奏乐，用 美玉敬奉祖先和神灵。上升到定义，就是履行敬神祈福的仪式。 ②“礼”在古代被看作是核心价值观，用来调整社会关系，具有制度属性和法律属性，是社会的典章 制度和道德规范，即所谓“礼法”。“礼”的本意是“别尊卑，等贵贱”，其本质是对奴隶主中不同等级的人 所享有不同礼遇的规定。先秦诸子都强调“礼”的作用在于维持建立在等级制度和亲属关系上的社会差异。 孔子遵从的就是周朝的典章礼制，这是他的政治理想。 ③现代的“礼”，主要体现在外交与社交领域。是根据时间、场合和对象制订的，并不需要时时、处处、 人人都去掌握。外交上有个术语叫“国际惯例”，社交场合的“礼”也是约定俗成的惯例。大到国家和社团， 小到街邻和家庭，“礼”无处不在。 三、写作题 96.【参考答案】 第一步：审题。 本题属于材料作文，要求论说文，角度自选，立意自定，标题自拟，字数不少于800 字。 第二步：立意。 本题可通过概括材料法进行立意。本题由两则材料组成，材料一出自南宋诗人陆游的《示子遹》，是陆 游给他儿子陆遹写的一首诗，他通过诗文告诫儿子：写诗不可只流于表面光鲜亮丽的辞藻，在诗文上有所 造诣的诗人，往往需要苦心钻研生活，不断的积累经验和在生活中历练，这便是“诗外工夫”，只有有了这 样的功夫，才可能真正写好诗；材料二中提出了一个值得深思的现象，即专攻文章的学者往往并不出色， 反而是那些反思生命本源的哲学家或为人民谋福的政治家却更能写出优秀的文章。这也体现了，要想写好 文章，成为写文章的大家，不能仅仅关注于写文章本身，而应涉猎更广，要扩大眼界、放大格局，当然也 要基于实践、学以致用。因为，一部优秀的文学作品，往往是扎根于现实的。我们常说，艺术来源于生活 易错100 题中小幼科一 让每一个孩子都能遇到好老师 25 而高于生活，当我们对生活有了足够多的观察与反思，写出来的文章才可能更受读者的欢迎和喜爱。 综合两个材料的核心，本题可从精专来源于广博，艺术来源于生活来立意，也可以从跨界或学以致用 的角度进行创作。 可参考的标题有：从“博学”角度来写，《打破知识的藩篱》《博观约取》《厚积薄发》《做新时代的斜 杠青年》《既要一专，更要多能》《要专业，更要广博》《学习要敢吃杂粮》《学习要全面发展》《素质教育正 当时》；从“跨界”角度来写，《学习也要跨界》《走出专业的牢笼》《不被专业捆住手脚》《没有无用的学问》； 从“学以致用”角度写：《脚踏实地，仰望星空》《立足现实，下笔生花》《佳作系于生活》《知行统一》等。 第三步：布局。 开头：文章开头可通过排比式、设问式、引用式、悬念式、阐释式、对比式等方法，顺其自然地提出 中心论点。中心论点既要和材料的内涵一致，也要贴合写作的内容。本文使用比喻排比式开头，增加了文 章文采和语言气势，提出的中心论点是打破知识的藩篱。 中间：结合“打破知识的藩篱”的中心论点，可以进一步展开论述，通过比尔·盖茨、诸葛亮和赵括 三个事例分别论证打破知识藩篱的重要性，深化了文章的中心论点。在论述过程中，考生可以采用举例论 证、道理论证等论证方法，丰富文章结构。 结尾：对分论点进行简单分析，总结概括，需要注意的是结尾部分的论述角度要与开头或中间相符合， 做到首尾呼应。本文最后总结前文，紧扣中心，并发出“广博的学习”的号召。 【参考范文】 打破知识的藩篱 知识像航船的灯塔，指明我们前行的道路；知识像科学家的高倍望远镜，帮助我们看得更高更远；知 识像一座座华丽的宫殿，吸引着我们驻足观赏。古往今来，知识对人类发展的重要性不言而喻，然而，如 果我们一味地只学习一门知识和学问，不懂得广博的学习，打破知识的藩篱，不仅知识会变得索然无味， 人也会狭隘、没有眼界。所以，打破知识的藩篱，才能乘风破浪，勇往直前。 打破知识的藩篱，才能抓住难得的机遇。1973 年，比尔·盖茨以全国优等生的身份进入了哈佛大学商 学院，成为了法律预科班的一名新生。虽说是法律专业的学生，但比尔·盖茨发现自己对电脑尤其感兴趣， 于是那段时间，他经常一连几天废寝忘食地编写程序。后来，他敏锐地感觉到计算机的迅猛发展，他担心 大学毕业之后便会错失一个千载难逢的好机会，于是果断选择退学，并与自己的好友共同创立了微软公司， 曾一度成为全球首富。假若比尔·盖茨仅是专注于法律专业，那这个世界将会失去一位伟大的商人。正是 因为他打破了知识的藩篱，才牢牢地把握住这次机遇，让人生再次扬帆起航。 打破知识的藩篱，才能激发创新的活力。诸葛亮是三国时期蜀汉丞相，是我们熟知的“谋士”。他不仅 易错100 题中小幼科一 让每一个孩子都能遇到好老师 26 是我国古代杰出的政治家、军事家、文学家，还是有名的发明家。军事上，诸葛亮深知，如果仅仅精通战 术，而未有辅助战术的武器，那战争的成功率将大打折扣。于是“发明家”的诸葛亮制作出一种连弩，一 次能射出十支箭，在当时十分先进，成为战场上锋利的进攻武器。诸葛亮所以能制造出这样一种先进的武 器，得益于他对各种知识的广泛涉猎和研究，否则，他不可能有这样的成就。正是因为他打破了知识的藩 篱，才激发出创新的活力，为人生的轨迹注入了新鲜血液。 打破知识的藩篱，才能成就人生的辉煌。战国时期，赵国名将赵奢之子赵括，自小熟读兵书，谈及军 事时头头是道，能够以一己之力胜过群舌辩论，但他却局限于纸上的夸夸其谈，而不能跳出书来联系实际， 不能灵活应变战场态势，最终在长平之战中惨败于秦，不仅让自己身死沙场，赵国损失几十万军队，也给 当时战国形势带来深远影响。可见，如果我们执拗于知识的藩篱，不能跳出去看到现实的世界，结果是何 等悲惨！我们要以纸上谈兵的赵括为前车之鉴，要勇于打破知识的藩篱，这样我们才能在人生之路，一展 宏图，创造不败的辉煌。 打破知识的藩篱是人生的一种境界。只有打破知识的藩篱，我们才能抓住难得的机遇，扬帆起航；只 有打破知识的藩篱，我们才能激发创新的活力，注入新鲜血液；只有打破知识的藩篱，我们才能成就人生 的辉煌，一展宏图！正如古人所说：“汝果欲学诗，工夫在诗外。”星星使天空绚烂夺目，博学使人增长才 干。趁着这大好年华，打破藩篱，学习广博的知识吧！ 97.【参考答案】 第一步：审题。 本题属于材料作文，要求论说文，角度自选，立意自定，标题自拟，字数不少于800 字。 第二步：立意。 本题可通过提炼观点法进行立意。材料围绕“右立左行”规则展开讨论，第一种观点强调安全重于效 率，为了安全要改变规则；第二种观点强调效率，强调规则，从中能得出规则的制定是为效率服务的，但 也提出了解决安全问题的措施，所以是比较中肯的观点。第三种观点是强调规则。其实在本质上，“安全” 和“效率”的问题犹如一个硬币的两面，我们应该都去追求，只重视安全，不重视效率不可取；只重视效 率不重视安全，就失去了发展的终极目的，也是不可取的。 一般的考生会选择第二个观点，这是比较辩证稳妥的。如果想要标新立异，可以选择第一个或者第三 个观点来写，只是需要充分的说理论证来让人信服。 第三步：布局。 开头：文章开头可通过排比式、设问式、引用式、悬念式、阐释式、对比式等方法，顺其自然地提出 中心论点。中心论点既要和材料的内涵一致，也要贴合写作的内容。本文使用排比式开头，引出“要与安 易错100 题中小幼科一 让每一个孩子都能遇到好老师 27 全同行”的中心论点。 中间：采用并列式结构，设置了三个比喻分论点，论述安全对人生、生命的重要意义。在整个论述过 程中，采用比喻论证、道理论证等多种论证方法，结构清晰，语言优美。 结尾：一般是对分论点进行简单分析，总结概括，需要注意的是结尾部分的论述角度要与开头或中间 相符合，做到首尾呼应。本文最后回扣现实，总结重申论点。 【参考范文】 与安全同行 一滴眼泪，可以氤氲盛唐的哀伤；一个微笑，可以掩饰昔日的心痛；一个眼神，可以传达彼此的心跳； 一个错过，却可以毁灭可贵的一生。 人的一生最重要的莫过于生命，生命的源泉孕育于安全，它是人类重要的生命保障。每一次安全轻轻 地走来，你可曾想过让它进入你的视线里，有多少人可曾编织过一次邂逅画面，让它悄悄地走进你的心里； 当安全轻轻地离去，你是否停留过脚步多看它一眼，又有多少人停住脚步忍着泪挽留它。很多时候，安全 地离去，都会道一声后会无期，而人类，却转身远走，勾勒出一幕幕蔚然成伤的画面。 假若，生命是一首优美的诗歌，那么，安全就是诗歌里的韵律。安全给予人类幸福的家庭生活，为人 类创造很多次彼此重逢抑或团圆的机会；安全赋予生命永恒的唯美瞬间，为恋人搭建一座座相互拥抱或者 相遇的断桥。没有了安全，生命这首小诗也只不过是一句句没有韵味的语言，甚至是段不成句的孤立的文 字，而我们也终将错失平淡安稳的生活和绚丽多姿的人生。 假若，人生是一杯清凉的泉水，那么，安全就是泉水中的香茗。皆云人生如梦，梦醉绿蚁，宋代李清 照《渔家傲》一词里说道：“共赏金尊沉绿蚁，莫辞醉，此花不与群花比。”但谨慎琢磨，梦醉之源泉实为 香茗，这才是人生的真谛，毋庸置疑，安全这杯香茗芳香了苦味人生。没有香茗融合，就没有清香的泉水， 没有安全的同行，就没有美丽的人生，若说安全和人生是一对情侣，那我们将亵渎了安全和人生的关系， 因为安全和人生不仅仅只是一对恋人这样浅淡的关系，恋人分手之后还有很多机会找到彼此的幸福，而安 全和人类分手了，就别对幸福有任何的指望可言。 假若，幸福是一首悠扬的音乐，那么，安全就是构成音乐的音符。没有音符的音段是不能称之为音乐 的，换言之，没有安全的幸福是不能称之为幸福的。一首悠扬的音乐总会让人回味无穷，受益匪浅，但是 没了音符，它就变成了扰人心智，使人心浮气躁的噪音，没了安全的幸福亦是如此。所以，当你通向幸福 的道路时，请别忘了带上安全，让它陪伴你左右，它不仅能消除你心里的寂寞，更能在千万条道路中将你 带往属于幸福的那一条道路。 在现代社会中，高速度、高效率已经成为时代的代名词，但在我们忙于追求效率的时候，频发的安全 易错100 题中小幼科一 让每一个孩子都能遇到好老师 28 事故也为我们一次又一次地敲响了警钟。它告诫我们生命只有一次，人生路上请与安全同行！ 98.【参考答案】 第一步：审题。 本题属于材料作文，要求论说文，角度自选，立意自定，标题自拟，字数不少于1000 字。 第二步：立意。 本题可通过概括材料法和提炼中心法进行立意。材料由两部分组成，第一部分通过董遇的“三余说”， 强调应该利用碎片化时间多多读书，合理把控碎片化时间。第二部分通过齐白石的《三余图》及题识，强 调应该珍惜年华，善用闲暇时光，享受人生之趣。综合两则材料，立意时需围绕善用余时、珍惜时间、努 力实现人生价值等展开。 可参考的标题有：《拾起时间的碎片》《善用余时》《人生之“余”》《一寸光阴一寸金》《珍惜光阴》《用 余暇给生命着色》《用好“碎片”，亦有余年》等。 第三步：布局。 开头：文章开头可通过排比式、设问式、引用式、悬念式、阐释式、对比式等方法，顺其自然地提出 中心论点。中心论点既要和材料的内涵一致，也要贴合写作的内容。本文开头从飞机上的现象入手，通过 问题引发读者的思考，并提出中心论点，即人们要学会利用碎片化时间。 中间：结合中心论点，中间部分进行了进一步的分析论证。首先采用道理论证和举例论证的方式，说 明碎片化时间的合理利用会影响人生轨迹；然后通过道理论证，说明忽视碎片化时间的利用会荒废青春、 蹉跎岁月。通过这两段的正反对比论证后，又进一步说明如何合理利用碎片化时间。在论述过程中，考生 可以采用举例论证、道理论证等论证方法，丰富文章结构。 结尾：一般是对分论点进行简单分析，总结概括，需要注意的是结尾部分的论述角度要与开头或中间 相符合，做到首尾呼应。本文最后引用诗句，采用了排比的方式，重申论点，发出了“利用好一切可利用 的时间”的号召。 【参考范文】 拾起时间的碎片 有人在飞机上发现了这样有意思的现象：同样是30 到40 岁年龄段的乘客，头等舱的乘客多数都在看 书，公务舱的乘客大都在看杂志或者拿出笔记本办公，而经济舱的乘客多数都在聊天、看视频、打游戏或 者睡觉。不同的人度过碎片化时间的方式大不相同，他们的人生轨迹也因此而各异。碎片化的时间对一个 人有什么样的影响？如何拾起这些时间的碎片？是值得我们深思的问题。 你的碎片化时间里，藏着你的人生。华罗庚说：“时间由分秒积成的，善于利用零星时间的人，才会做 易错100 题中小幼科一 让每一个孩子都能遇到好老师 29 出更大的成绩来。”如何利用碎片化时间，能够在很大程度上决定自己的命运轨迹。北宋政治家欧阳修，在 古典文史上文思超群，名篇不断，用他自己的话说，他的文章在“三上”，即“马上、枕上、厕上”。政事 缠身的欧阳修，不放过任何一个马上、枕上、厕上的细碎光阴，他将这些点滴时光用在了读书治学上，这 才有了他“一生勤苦书千卷”，著作千古流传。我们不得不感叹，看似不起眼的五分钟、十分钟、半个小时 的时间里，藏着我们的人生轨迹。 反观，生活中有太多的人一边一味地抱怨工作太多，时间不足，没有时间学绘画、没有时间考证书、 没有时间锻炼、没有时间自我提升……一边又在工作之余刷着抖音、微博，看着没有营养的小视频、玩游 戏、逛淘宝，打着放松身心的口号，让碎片化时间在看似轻松的欢快氛围中溜走，荒废了青春，蹉跎了岁 月。殊不知，时间抛弃你，连一声再见都不会说。 拾起时间的碎片，离不开观念的转变、合理的规划和不懈的坚持。首先，利用碎片化时间，需要我们 转变观念。很多人认为，学习是一定要坐在书桌前，有完整的时间才能进行，但是在互联网和智能手机普 及的今天，学习不再受时间、空间的限制。5 分钟时间，我们可以听一段广播、阅读一篇500 字左右的文 章、背诵5 个英语单词、做一组健身操，要相信日积月累的沉淀，会带来厚积薄发的成长。其次，利用碎 片化时间，需要合理的规划。时间是碎片化的，但可以通过计划化零为整。日本著名作家、精神科医生桦 泽紫苑，在每天繁忙的工作之余规定自己每个月阅读20—30 本书，他通过合理的规划，利用每天上下班的 通勤时间完成阅读，为自己的写作打下了坚实的基础。最后，利用碎片化时间，离不开不懈的坚持。现代 社会，我们面临着各种外在的干扰，图片和短视频的诱惑远远大于学习。这就需要我们坚定执行自己的学 习规划，使碎片化时间成为自己成长路上的助燃剂，逐渐形成自己的优势。 拾起时间的碎片，是陆游的“呼僮不应自升火，待饭未来还读书”，是葛洪的“不饱食以终日，不弃功 于寸阴”，是朱熹的“少年易老学难成，一寸光阴不可轻”。就让我们利用好一切可利用的时间，成就更好 的自己。 99.【参考答案】 第一步：审题。 本题属于材料作文，要求论说文，角度自选，立意自定，标题自拟，字数不少于800 字。 第二步：立意。 本题可通过由果溯因法进行立意。材料中贝多芬指出学生练习曲中“某个和弦不合规则”，学生辩驳， 贝多芬说：“我可以，你不可以。”仔细思考，其实是说老师可以创新，学生必须打好基础，学习规则，不 可好高骛远。从学生“某个和弦不合规则”可知，学生需要打好基本功，学好规则。从“我可以，你不可 以”可知，突破与创新需要建立在扎实的基础之上，等学生基础扎实了，才可以谈得上突破与创新。总之， 易错100 题中小幼科一 让每一个孩子都能遇到好老师 30 考生写作时可从“学好基本功的重要性”“打好基础的重要性”“创新需要有扎实的基础”“不可好高骛远” 等方面进行立意。 可参考的标题有：《做好基本功，是进一步发展的前提》《创新必须建立在坚实的基础之上》《不可好高 骛远》等。 第三步：布局。 开头：文章开头可通过排比式、设问式、引用式、悬念式、阐释式、对比式等方法，顺其自然地提出 中心论点。中心论点既要和材料的内涵一致，也要贴合写作的内容。本文使用比喻排比式开头，增加了文 章文采和语言气势，提出的中心论点是“不可好高骛远，要脚踏实地”。 中间：结合“不可好高骛远，要脚踏实地”的中心论点，可以进一步展开论述。首先用蜗牛做反例说 明好高骛远不能实现人生目标，接着通过比尔·盖茨的名言以及当代年轻人的现实，着重论证好高骛远带 来的恶劣影响，最后用李白、杜甫、苏轼、陶渊明做正例点出脚踏实地可以提升人格高度。在论述过程中， 考生可以采用举例论证、道理论证等论证方法，丰富文章结构。 结尾：一般是对分论点进行简单分析，总结概括，需要注意的是结尾部分的论述角度要与开头或中间 相符合，做到首尾呼应。本文最后主要是首尾呼应的方式，利用排比句升华中心论点。 【参考范文】 好高骛远与脚踏实地 如果你是一棵幼苗，不要企图绿满遍野，而先要紧抓一寸方土；如果你是一个水滴，不要企图汇满江 河，而先要滋润一粒种子；如果你是一粒尘土，不要企图沃养万物，而先要覆盖岩石一角。有远大理想固 然是好事，但切不可好高骛远，而忽略了脚踏实地。 蜗牛想要攀登泰山，却因路途而止步；蜗牛想要濒临黄河，却因路途艰险而放弃。蜗牛的一生都在树 立远大目标，但因为没有付出实际行动，最后只能默默隐匿于草丛中。蜗牛只顾好高骛远，而没有脚踏实 地的付出，因而无法实现自己的宏伟目标。因此，只顾好高骛远，而不注重脚踏实地，将不会实现人生目 标。 比尔·盖茨曾对青年人说过：“高中毕业的你不会一年挣4 万美元。你不会成为一个公司的副总裁，并 拥有一部装有电话的汽车，直到你将此职位和电话都挣到手再说。”年轻气盛的青年人总认为自己实力雄厚， 经验丰富。刚毕业的大学生便认为凭借自己的实力，足以登上高位，赚得高薪。于是在寻找工作时便好高 骛远，舍弃一次又一次机遇。殊不知，任何高层工作都需从基础做起，脚踏实地地走好每一步，才会慢慢 逼近心目中的理想地位。只有把握住每一次机遇，才能给你的成功加码。因此，只顾好高骛远，而不注重 脚踏实地，将会错失一个个走向成功的机遇。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 31 我们惊叹李白的新奇浪漫，敬佩杜甫的沉郁顿挫，羡慕苏轼的旷达乐观，赞扬陶渊明的闲适自得。何 曾想过，他们身上的高尚节操岂是空想的来的？他们生活中的一点一滴，一言一行，一举一动，都是他们 节操的积累与体现。想要成为一个品德高尚的人，不是整天嘴头上嚷嚷就行了的。它需要你的点滴积累， 日益沉淀。好高骛远，却不从生活点滴做起，这样怎可形成你心目中高尚的节操呢？因此，只顾好高骛远， 而不注重脚踏实地，将不会提升人格高度。 是一棵幼苗，就先从一方土做起；是一个水滴，就先从滋润一粒种子做起；是一粒尘土就先从覆盖岩 石一角做起。不要好高骛远，去做自己一下子无法完成的事。这样不仅会挫伤自己的积极性，还会打击自 己的自信心。选定目标，心存高远，脚踏实地，从点滴做起，步步向目标逼近，最终一定会遇见绿野、江 河与万物。 100.【参考答案】 第一步：审题。 本题属于材料作文，要求论说文，角度自选，立意自定，标题自拟，字数不少于1000 字。 第二步：立意。 本题可通过概括材料法进行立意。材料由两部分组成，第一部分讲的是“稻草定律”，告诉我们人的价 值，与自身无关，而是看你与谁在一起。第二部分是对“稻草定理”的反驳，人的价值不应通过攀附他人 来提升，而应该依靠自己的力量，做真实的自己。综合材料，立意可以用多个角度进行：第一，赞同“稻 草定理”，可以从环境决定事物（人）的价值、如何增加人的附加值这两个方面来立意。第二，反对“稻草 定理”，可以从依附他人不可取、人的价值取决于自我的品质这两点来立意。第三，辩证地来看，人既要有 自身的价值，同时又要学会适当地利用外界事物为自己的价值添砖加瓦。当然结合考试背景，考生也可以 从教师角色的角度来写。 可参考的标题有：《用对了，才有价值》《价值由己定》《价值与位置》等。 第三步：布局。 开头：文章开头可通过排比式、设问式、引用式、悬念式、阐释式、对比式等方法，顺其自然地提出 中心论点。中心论点既要和材料的内涵一致，也要贴合写作的内容。本文使用引用式开头，联系了材料， 阐明了观点，提出的中心论点是价值由己定，无需依附他人。 中间：结合“价值由己定”的中心论点，可以进一步展开论述，通过人生、企业、国家三个维度来进 行论证，首先通过小仲马不依靠父亲名气的事例来说明人生价值由己定，再通过华为公司不依靠美国芯片 的事例来说明企业成就由己定，最后通过正反对比论证，国家要依靠人民才能取得辉煌，反之可能一败涂 地。在论述过程中，考生可以采用举例论证、道理论证等论证方法，丰富文章结构。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 32 结尾：一般是对分论点进行简单分析，总结概括，需要注意的是结尾部分的论述角度要与开头或中间 相符合，做到首尾呼应。本文最后主要是用了排比句，加上结合卢梭的名言，得出结论，无论是人生、企 业还是国家，价值都由己定。 【参考范文】 价值由己定 “稻草定律”说，人的价值有时像一根稻草，与自身价值无关，而取决于你与谁在一起。但倘若一个 人无法决定自己的价值，而要依附他人，那么他永远都是被动的一方，无法操控大局。价值应该由自己决 定，才能把自身的经历变作无穷的财富。 人生价值由己定。我们都说站在巨人的肩膀上能让我们站得更高，看得更远，但小仲马却不想坐在父 亲的肩头摘苹果，而是依靠自己的力量来向世界证明自己的价值。小仲马是法国著名作家大仲马的儿子， 起初，他寄出的稿子总是碰壁，父亲便对小仲马说：“如果你能在寄稿时，随稿给编辑先生附上一封短信， 或者只是一句话，说‘我是大仲马的儿子’，或许情况就会好多了。”但年轻的小仲马不但拒绝以父亲的盛 名做自己事业的敲门砖，而且不露声色地给自己取了十几个其他姓氏的笔名。最终他依靠自己的长篇小说 《茶花女》在文坛上占据了一席之地。 企业成就由己定。众所周知，我国这两年科技领域发展并不顺利，再加上2020 年五月，美国突然发布 芯片禁令，给华为公司带来了前所未有的芯片危机。但好在华为没有过分依赖于美国的芯片，也没有放弃 研发，而是加大了对海思芯片研发的投入，凭借着一己之力抵挡住了一波又一波的制裁打压。华为早在2012 年成立了诺亚方舟实验室自主研发操作系统，历经9 年的研发，2021 年6 月鸿蒙系统问世，同时华为还发 布了多款搭载鸿蒙系统的新产品。此举开启了万物互联互通的大门，打破了西方国家的垄断，从某种程度 上来说还大大提升了我国对美国的博弈能力。相信华为在未来，定能更上一层楼。 国家辉煌由己定。1840 年鸦片战争以后，国家蒙辱、人民蒙难、文明蒙尘，中华民族遭受了前所未有 的劫难。为了拯救民族危亡，仁人志士奔走呐喊，太平天国运动、戊戌变法、义和团运动、辛亥革命接连 而起，各种救国方案轮番出台，但因为没有很好的依靠自己的人民，这些救国运动最后都以失败告终。十 月革命一声炮响，给中国送来了马克思列宁主义，中国共产党应运而生。全国人民在我党的带领下实现了 新民主主义革命的伟大成就、社会主义革命和建设的伟大成就、改革开放和社会主义现代化建设的伟大成 就、新时代中国特色社会主义的伟大成就。这些辉煌的成就都离不开人民，人民才是历史的创造者，是真 正的英雄。 世间万物都有自己的价值。蝉儿用自己的歌声，直白地打破夏的静谧；花儿用自己的色彩，绚丽地点 缀春的盛装；星儿用自己的微光，精妙地勾勒夜的天幕。它们用自己的存在，诠释了自己的价值。卢梭说 易错100 题中小幼科一 让每一个孩子都能遇到好老师 33 过：“人的价值是由人自己决定的”。其实，何止是人，企业，国家亦是如此，只有相信价值由己定，才能 真正披荆斩棘，创造属于自己的天地！' },
+{ cat:'yicuo', t:'KE1-83', s:'YiCuo100', txt:'[KE1] #83\n\n材料： 在讲解《坐井观天》这篇课文时，张老师问哪位同学愿意读课文，明明主动举手。但他将课文里的“天 不过井口那么大”这句话读成了：“天，不，不过，井，井口，那，那么大。”他的结巴逗得全班同学哈哈 大笑，学习委员说：“明明，你怎么又捣乱呢？” 张老师愣了一下，问故作结巴的明明：“你为什么要这样读啊？”明明说：“因为青蛙长时间待在井底， 没有人和它讲话，时间长了，它就连话也说不好了。” 听了明明的回答，张老师灵机一动，大声问：“大家觉得明明的回答有道理吗？”同学们七嘴八舌地议 论开了：“有一点道理”“怎么可能呢？” 看到同学们对这个问题那么感兴趣，张老师说： “现在请大家默读课文，体会一下青蛙到底是怎么想的。” 5 分钟后，张老师让同学们带着感情朗读课文，这一次同学们把课文读得有声有色。 问题： 请结合材料，从教育观的角度，评析张老师的教育行为。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 14\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-84', s:'YiCuo100', txt:'[KE1] #84\n\n材料： 中午进餐的时间到了，今天的午餐是白米饭、虾仁炒蚕豆和青菜豆腐汤。孩子们洗完手在自己的座位 上开始吃饭，教室里一片寂静，只听到碗勺相碰的声音。这时，李老师发现洋洋小朋友刚吃了三口，就和 同桌的小朋友说起了悄悄话。发现老师在注意他，就又吃了一口饭，含在嘴里，坐着发呆，约两分钟后， 再慢吞吞地喝一口汤，吃一口饭，菜几乎没动。这顿饭他足足吃了一个多小时才把米饭吃完，菜全剩在碗 里，理由是“我不喜欢吃”。 如何纠正洋洋偏食的不良习惯呢？针对洋洋的实际情况，李老师在这几方面做了尝试： （1）故事熏陶法。首先给所有小朋友讲了一个故事，故事说的是一个小弟弟因为就餐习惯不好，被一 只大公鸡啄得到处跑的故事。让小朋友们懂得就餐要有一个良好的行为习惯，不能像小弟弟那样。在饭前 或休息时间也经常给孩子们讲一些有关偏食的坏处的故事。 （2）语言指导法。用儿童化的、富有感染力的语言来指导和鼓励幼儿科学进餐。例如，“米饭和青菜 做朋友，放在嘴里一起嚼，味道会更好。” “你的牙齿比大老虎还要厉害。大老虎会嚼肉肉，你会不会啊？”…… （3）循序渐进法。洋洋不吃绿色蔬菜，开始给他少盛点，吃完给予鼓励和表扬，以后逐渐增加，让他 慢慢地逐渐适应，不感到很痛苦。 经过几个月的努力，洋洋有了很大的进步。吃饭的时候偏食的现象几乎没有了，而且吃饭速度也提高 了很多。每次吃完还会大声地告诉老师：“我今天都吃完了”，带着很自豪的样子。 问题： 请从教育观的角度，对材料中老师的做法进行分析。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 15\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-85', s:'YiCuo100', txt:'[KE1] #85\n\n材料： 某教师在文章中曾经写到在一次作文评讲课上，让一个男生上讲台朗读，结果这位略有口吃的学生遭 到了哄笑。 “台下的同学们紧紧注视着他，课堂里死寂一片。沉默中，我突然从后悔自责中省悟，我不是也有过 临场时的恐惧和冷场时手足无措的尴尬吗？然而是自信战胜了一切。有时候一次小小的成功能够激活一个 人的巨大的自信，可一次难忘的失败也往往可以摧毁一个人仅有的一点自信。眼前这个男孩难道会陷入后 一种情形吗？不，绝不能。我终于微笑着开口了，‘既然他不太习惯在众目睽睽之下说话，那索性我们大家 都趴在桌上，不看，只用耳朵听吧！’我带头走到教室最后，背对讲台站定，同学们也纷纷趴下头来。终于， 我的背后传来了羞怯的声音。那的确是一篇好文章，写的是他和父亲间的故事。因为动情的缘故，我听到 他的声音渐渐响了起来，停顿也不多了，有的地方甚至可以说是声情并茂了，我知道他已渐渐进入了状态， 涌上心头的阵阵窃喜使我禁不住悄悄回头看看他。我竟然发现台下早已经有不少学生抬起头，默默地、赞 许地注视着他。朗读结束后，教室里响起一阵热烈的掌声。我知道，这掌声不仅仅是给予这篇作文的。” 问题： 结合材料，请从学生观的角度评析这位教师的做法。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-86', s:'YiCuo100', txt:'[KE1] #86\n\n材料： 9 岁的田田是一个很聪明的孩子，特别是语言表达方面比较突出，思维清晰，反应敏捷。平时喜欢做 手工和小种植。在学校里有时与同学有小纠纷，他总说是别人的错而不反思自己的问题，在学习上不愿意 花精力投入。家长对孩子的管理是粗放和随意的，管得紧一点时，孩子表现就好一些，学习方面也不至于 问题太多；疏于管理时，就会出现作业完不成，且出错还很多的情况。 周一下午，王老师检查周末作业，发现田田的作业又未完成，特别是很简单的题都没做完，且出错很 多；作文寥寥草草，篇幅也不够。这样的情形已经出现好几次了。王老师非常生气。课堂上王老师很激动 地当着全班同学的面严厉地批评了田田，指责他太懒，作业多次做不完，太不像话！要求他下课不许玩， 必须把作业补完！ 易错100 题中小幼科一 让每一个孩子都能遇到好老师 16 晚上，王老师收到田田家长发来的短信，说孩子今天放学回家情形低落，因老师在全班同学面前指责 他懒，完不成作业，他很难过。孩子晚上不吃饭，情绪反应很强烈，甚至说不想活了。还表达了作为家长 的担心和恳求。王老师看完短信，回复家长：自己的孩子要好好管教，不要光指望老师。 问题： 请从学生观角度，评析材料中老师的教学行为。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-87', s:'YiCuo100', txt:'[KE1] #87\n\n材料： 昊昊小朋友最近感冒了，总是不好好吃午饭，每当我走到他身边时，他为了得到我的表扬，就使劲地 吃饭，不吃菜。于是中午用餐时，我坐在他旁边，看着他吃饭，希望他可以多吃点菜。我说：“今天青菜很 香，来尝一尝。”昊昊不情愿地说：“我不喜欢吃。”我夹起青菜，大口大口地吃给他看，昊昊有点心动了， 学着我的样子夹起一点青菜，可是刚嚼了几下就又吐了出来。看到这种情况，我十分担心，不吃菜怎么行 呢？我对他说：“只要你吃一点菜，老师就给你咸菜做奖励，好吗？”昊昊十分高兴，爽快地吃了自己的一 口菜，我信守承诺给了他一小块咸菜。在接下来的一段时间里，每次午餐我都给昊昊“加餐”，有时也会给 其他小朋友加餐，不知不觉中，孩子们都食欲大增。 问题： 请结合材料，从儿童观角度，评析该老师的教育行为。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 17\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-88', s:'YiCuo100', txt:'[KE1] #88\n\n材料： 杨老师带班不久就遇到一件麻烦事。午餐时，强强被小斌打了，杨老师立刻打电话通知双方家长，没 想到双方家长来后都认为自己的孩子没有错，吵得不可开交，最后竟然动起手来……幼儿冲突的问题并没 有得到解决，类似这样的事杨老师又遇到过很多，很是头疼。 为有效处理幼儿冲突问题，杨老师主动向有经验的老师请教，还查阅了许多幼儿心理发展方面的书籍， 咨询幼儿教育专家，了解幼儿心理发展知识，探寻幼儿冲突行为的诱因，寻求破解良策。经过长期理论和 实践的积淀，杨老师逐渐成为处理幼儿冲突方面的专家，并出版了《杨老师教你应对幼儿冲突50 招》。 为妥善处理孩子之间冲突，杨老师定期在幼儿园为家长做专题讲座，还经常与家长沟通幼儿的情况。 其所在幼儿园孩子之间冲突逐渐减少，家长之间因孩子冲突而产生的矛盾也逐渐消失了。 问题： 请结合材料，从教师观的角度，评析杨老师的教育行为。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-89', s:'YiCuo100', txt:'[KE1] #89\n\n材料： 董老师和王老师是师徒关系。有一次上课时，王老师发现一个细节：董老师从头到尾都拿着教科书， 而且授课过程中还时不时瞄上几眼。经过观察，王老师发现师傅瞄的并不是教科书本身的内容，而是她事 先就粘贴在书中的小纸片。通常，董老师会在分析这篇课文的单词或句型时看一眼，在讲到有关课文的文 化背景时看一眼，又或是在讲评学生作业时看一眼。这些纸片上都记的啥呢？ 课后，得到董老师允许，王老师翻看了师傅所使用的教科书中的小纸片，发现这些纸片主要分为三类： 绿色纸片是知识拓展类，黄色纸片是考点讲解类，蓝色纸片是错题分析类。王老师向董老师请教：“这样的 小纸片密密麻麻，会不会不利于教学知识的系统梳理？”董老师回答道到：“不会呀，这是在分析学生认知 规律和学习特点的基础上想出来的方法。其中，知识拓展类纸片可以帮助学生解决知识的连贯性、整体性 问题，考点讲解类纸片可以帮助学生解决知识的理解性、应用性问题，错题分析类纸片可以帮助学生解决 知识的巩固性、综合性问题。所以，咱们的教学不仅要观察可以怎么做，还需要去琢磨为什么这样做。” 易错100 题中小幼科一 让每一个孩子都能遇到好老师 18 问题： 请结合材料，从教师观的角度，评析董老师的教育行为。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-90', s:'YiCuo100', txt:'[KE1] #90\n\n材料： 在一次语文课上，张老师正讲得神采飞扬，学生也听得津津有味。忽然听到一声尖叫，一名女生神色 惊慌地站了起来。学生的目光齐聚到这位女生身上。原来，从她的上衣口袋中，爬出一只毛毛虫。这时， 张老师从容镇静地走到女生面前，轻轻拍了拍她的肩膀，示意她不要紧张，让她坐下，然后拿起掉在地上 的虫子，轻轻举起，语气轻松地说：“同学们看，只不过是一只小虫子，很普通的小虫子，它是专门吃瓜果 蔬菜的害虫，今天又跑到这里来吓唬我们的同学，你们说，我们应该如何处理它？“踩死它！踩死它！”同 学们异口同声，于是轻轻一踩，一场风波就此结束。 问题： 请从教师职业道德角度，评析材料中张老师的教育行为。张老师处置这次突发事件的方式对你有怎样 的启示？\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-91', s:'YiCuo100', txt:'[KE1] #91\n\n材料： 师范大学毕业后，孙斌凭借自己的努力成为了一名语文教师。工作前几年，为了适应教学工作，他向 其他同事学习，教学水平逐渐提高，教学效果得到了家长们的认可。这时，他认为教学工作并不神秘，自 己的经验、知识与能力已经足以应付，没有必要继续深入钻研教学。 一天，几位学生的家长找到孙老师，希望他能在课后帮助孩子补习，孙老师认为这事有利于提高学生 易错100 题中小幼科一 让每一个孩子都能遇到好老师 19 成绩就答应了。补习结束时，家长们为了感谢孙老师，给了他一笔可观的补课费，孙老师推辞不过只好接 受。 自此以后，越来越多的学生找孙老师补课，其他班级甚至其他学校的学生也来找他。为了保证补习效 果，孙老师常常将课堂教学与课后辅导联系起来，还专门编印了系列学习资料，仅收取成本费和辛苦费。 随着参与辅导学生的规模的扩大，孙老师家里的空间已不足以容纳。 于是，他在小区里专门租了地方方便学生参与辅导。为了节省学生购买学习资料和学习工具的费用， 孙老师还要求学生统一从自己这里购买。家长对孙老师的辅导非常满意，还给他送了锦旗。 问题： 请结合材料，从教师职业道德的角度，评析孙老师的教育行为。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-92', s:'YiCuo100', txt:'[KE1] #92\n\n材料： 这段时间幼儿园李老师一直被一件事情困扰着。李老师发现，班上新来的小钰和别的小朋友不一样。 她见到陌生人就会惊恐地往后躲，在幼儿园里不与同伴交流，不爱运动，拒绝参加班里组织的任何活动， 总是自己默默地坐在小椅子上不让小朋友接近她，谁要跟她说话，她就嗷嗷叫，害怕得瑟瑟发抖。 通过多方了解，李老师得知小钰出生后就被人领养，后来，生父与养父发生纠纷，为了摆脱生父的纠 缠，养父就带着她东躲西藏，3 岁时又将她转给现在的养父母，现在的养父母开了一家饭店，为了生意， 基本无暇顾及她，任她自己玩耍，饭店的服务员经常嘲弄她不会说话，使得她害怕成年人，拒绝与人交往， 没有交流对象，语言表达能力发展很慢。 面对如此情况，该怎么办呢？ 问题： 请结合材料，按照教师职业道德的要求为李老师出谋划策。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 20\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-93', s:'YiCuo100', txt:'[KE1] #93\n\n材料： 民族文化的独特性和优越性，不仅体现于显性的世界观和价值观，而且根植于隐性的思维模式中。在 人类文明的进程中，中华文明之所以延续得如此绵长，在很大程度上得益于我们这个民族独特的方法论和 辩证法原则，得益于中国人思考问题的方式和解决问题的路径。辩证矛盾思维即是其中之一。 辩证矛盾思维特别注重时间性。既然矛盾双方之间的辩证运动是在时间中展开的，时间就不是可有可 无的，而必须是参与事件的重要因素。因此，辩证思维特别看重“时机”，追求“时中”。 “时中”一词最早出现于《周易》“蒙”卦的《彖传》：“蒙，亨。以亨行，时中也。”意思是说，蒙卦 表示希望亨通，所以，以通来行事，是符合“蒙”这个时机的。可见，所谓“时中”，主要有两方面的含义： 一是要“合乎时宜”，二是要“随时变通”。中而非时，不谓之中。同样，时而不中，更不谓之中了。 《资治通鉴》中记载了这么一个故事，说韩国的国君韩昭侯准备修建一个高门，但他的谋士屈宜臼却 奉劝他不要这么做。屈宜臼说：“如果你非要修建这个高门，恐怕你还等不到这个高门修建完，就要死了。 为什么呢？因为时机不对。国君在自己家修建一个高一点的门楼，搞得气派一些，有错吗？没有错。当年 我们国强民富的时候，你如果修建一个高门，肯定没有问题。可是今天的情况已经不一样了，秦国去年刚 刚攻占了我们的宜阳城，我国元气大伤，你偏偏要在这个时候修建高门，势必会使百姓离心，将士散德， 韩国的败落就不可避免了。”结果，韩昭侯没有听屈宜臼的劝告，而屈宜臼的预言也应验了，高门还没有修 好，韩昭侯就去世了。 当然，这只是一个小故事，但其中蕴含的道理却非常深刻。正如屈宜臼说的那句话：“吾所谓时者，非 时日也。夫人固有利、不利时。”意思是说，我所说的时间，不是客观的时间，而是参与到事情当中来的时 间。在合适的时间做一件事情，效果会很好；在不合适的时间做同一件事情，往往会很糟。这正是“举事 而不时，力虽尽而功不成”的道理。 正因为此，中国文化对时间非常敏感，强调做任何事情都要相时而动，顺势而行。 《中庸》中说：“君子之中庸也，君子而时中；小人之中庸也，小人而无忌惮也。”宋代学者朱熹在注 释“时中”时也说：“盖中无定体，随时而在，是乃平常之理也。”即是指，“中庸”，是因“时”而“中” 的，并非骑墙、折中，更不是简单、僵化的“中间地带”。“时中”又是何其之难！因为它在实践中很难把 握，你不可能一劳永逸地抓住它，然后照本宣科地去实践。但是，认识到这种困难并不是坏事，因为你一 旦明白了“时中”的艰难，就会有一种危机感。而这种危机感又会让你在行为中谨小慎微、如履薄冰，相 易错100 题中小幼科一 让每一个孩子都能遇到好老师 21 时顺势，减少犯错。 （摘编自祝和军《中国传统文化中的辩证思维》） 问题： （1）辩证矛盾思维为何特别注重时间性？请结合文本，简要概括。 （2）追求“时中”，对个体而言有何价值和作用？请结合文本，简要分析。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-94', s:'YiCuo100', txt:'[KE1] #94\n\n材料： ①从形而上的层面上讲，审美也是一种终极关怀。我们知道，人的独立意识，产生于人与自然、人与 社会的历史性分裂。这种分裂是文明的结果，同时也带来了文明的问题。于是，生的孤独、爱的寂寞、死 的烦恼，便成为一切文明社会中所不可避免的精神疾患。为了解除这些疾患，人们不仅追求物质的满足， 而且需要精神的慰藉，这也便是“终极关怀”的动因所在。 ②大致说来，人类的终极关怀主要有三种方式：一种是给多样的现实世界以统一之本体存在的哲学承 诺，一种是给有限的个体生命以无限之价值意义的宗教承诺，一种是给异化的现实人生以多样之审美观的 艺术承诺。随着人类文明的发展，哲学之本体论和宗教之形而上学纷纷面临着学理上的危机，在这种情况 下，艺术便需要自觉地承担起为人类提供终极关怀的历史使命。 ③一般认为，艺术的价值十分重要，这其中既有认识论的内容，也有伦理学的成分。而在我们看来， 认识内容的多少并不是艺术价值的关键所在，否则，徐悲鸿笔下那幅不太合乎解剖学原理的《奔马》便不 会价值连城了；伦理成分的强弱也不是艺术价值的关键所在，否则，贝多芬谱写的那首不太具有道德色彩 的《月光》便不会被千古称颂了。说到底，艺术之所以为艺术，不在于认识，不在于教化，而在于给人想 象的空间和情感的慰藉，是对遭受异化痛苦的人们所进行的精神关怀。相对而言，我们可以将这种精神关 怀分为初级和终极两种类型。所谓“初级关怀”，是对人们生活情绪的放松、抚慰、宣泄，并通过这种形式 使其恢复到健康状态。比如我们在一天的辛苦劳作之后，到影院中去观赏一部惊心动魄的美国大片，到歌 厅里去唱几首脍炙人口的流行歌曲，虽然没有什么强烈的精神波澜、深刻的灵魂触动，但总归是一种精神 享受。所谓“终极关怀”，则是对人们生存意义的感悟、理解、追问，并通过这种形式使其获得一种精神的 易错100 题中小幼科一 让每一个孩子都能遇到好老师 22 升华。比如我们在孤独、寂寞或遇到情感危机的时候去音乐厅欣赏一部交响乐，去歌剧院观看一部悲剧， 虽然不见得开心、解闷儿，但常常会有一种心灵的触动、情感的慰藉。对于不同层次、不同状态、不同境 遇中的欣赏者来说，这两种艺术各有其存在的理由。但是，就艺术自身的价值而言，后者显然要比前者更 有意义。 ④一部优秀的艺术品，哪怕是些平平常常的事物，也总能上升到“终极关怀”的高度加以理解。譬如 唐代大诗人白居易年轻时写的那首五言律诗《赋得古原草送别》，从字面上看，通俗易懂，仿佛没有什么深 奥的道理，但它之所以被人们千古传颂，自有其“终极关怀”的重要意义。那“一岁一枯荣”的生命历程， 就像代代不息的人生一样，在宿命的轮回中不断燃起新的希望。一首40 个汉字的短诗如此，一场戏剧、一 部电影、一篇小说更是如此。古今中外凡是超越民族和地域从而具有永恒价值的艺术品，无不具有形而上 的“终极关怀”。 ⑤与西方社会相比，中国古代的哲学本体论并不发达，宗教也并不占据意识形态的主导地位，因此古 人的“终极关怀”往往是通过审美活动加以实现的，这种“代偿功能”也正是中国古典艺术特别发达的原 因所在。我们知道，文明的人类之所以陷入异化的痛苦，乃是因为生产力和生产关系的利刃斩断了人与自 然、人与社会的原始纽带。因此作为治疗异化痛苦的古典艺术，最常用的方式是将人与自然、人与社会的 断裂重新弥合起来，从而将短暂的现实人生与永恒的自然存在联系起来，将有限的个体生命与无限的族类 生活联系起来。 （选自《中国审美文化简史》，有删改） 问题： （1）如果一个时代的宗教与哲学不发达，那么人类的终极关怀主要会以什么形式实现呢？为什么？ （2）结合文中的观点，谈谈你对下面这段话的理解。 荷兰画家梵·高的名画《星夜》所描绘的景象与现实世界的星夜不同，画面上11 颗星星聚集在月亮周 围翻滚着，像炽热燃烧的火球。评论家说，这幅画象征着人类的挣扎与奋斗精神。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 23\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-95', s:'YiCuo100', txt:'[KE1] #95\n\n材料： “礼”，这个笔画简单的字眼，解释起来却有些复杂。这世上本来没有“礼”，只是因为集体生存、社 会发展的需要，才产生了“礼”的仪式，造出了“礼”的汉字。“礼”字的繁体是“禮”，本字为“豊”，一 看便知与祭祀有关。在甲骨文中，“豊”的顶部就像两串美玉，底部就像有支架的建鼓。合起来就是击鼓奏 乐，用美玉敬奉祖先和神灵。上升到定义，就是履行敬神祈福的仪式。 《礼记》云：“经礼三百，曲礼三千”，可见礼仪数量之多。其实，这么多“礼”是根据时间、场合和 对象制订的，并不需要时时、处处、人人都去掌握。外交上有个术语叫“国际惯例”，社交场合的“礼”也 是约定俗成的惯例，大家都按惯例行事，就习以为常了。在今人字典里，“礼”也分虚实两类，虚的如礼节、 礼仪、礼貌、礼俗等，实的如礼品、礼金、礼服、礼花等。还包括与“礼”相关的人事和行为，如礼宾、 礼遇、礼聘、礼让等。大到国家和社团，小到街邻和家庭，“礼”无处不在。钱穆先生曾说中国文化的特质 是“礼”，西方语言中没有“礼”的同义词；它是整个中国人世界里一切习俗行为的准则，标志着中国的特 殊性。我们常说，中国是文明礼仪之邦，因为礼仪与文明是相统一的，礼仪是文明的载体，文明是礼仪的 内涵，没有了礼仪，文明也就无所依附。 现代的“礼”，主要体现在外交与社交领域，而“礼”在古代还被看作是核心价值观，用来调整社会关 系，具有制度属性和法律属性，是社会的典章制度和道德规范，即所谓“礼法”。“礼”的本意是“别尊卑， 等贵贱”，其本质是对奴隶主中不同等级的人所享有不同礼遇的规定。先秦诸子都强调“礼”的作用在于维 持建立在等级制度和亲属关系上的社会差异，这也正是“礼”的本质内涵。每个人都要按照自己的社会地 位去选择合乎身份的“礼”，否则就是非“礼”。 鲁迅有个著名的立论叫“礼教吃人”。他所抨击的“礼教”，兴起于封建社会，其实质是封建礼法。有 人把“礼教吃人”与孔子联系起来，那是记错了账。孔子曰：“敦礼教，远罪疾，则民寿矣。”孔子倡导的 礼教与封建礼法有着本质的区别。封建卫道士从孔子那里取火，不是去爱人而是害人，这关孔子什么事？ “礼”经夏、殷、周三代沿革，到周公的时代已经比较完善。因此孔子说，“郁郁乎文哉，吾从周”。 孔子遵从的就是周朝的典章礼制，这是他的政治理想。从某种意义上说，孔子是为“礼”而生并为“礼” 奋斗了一生。孔子为何给儿子取名孔鲤，“鲤”者，礼也。他让儿子自小就要学诗、学礼，并说，“不学诗， 无以言”“不学礼，无以立”。“诗”和“礼”是古人教育后代最基本的功课，所以有“诗礼传家”之说。有 的学者把文化分成观念形态、制度形态和物质形态，而在中国传统文化中，礼是把价值观念、制度设计、 物质载体统合在一起，并且包含了风俗习惯的文化形态。还有学者认为，文明产生在国家之前，礼仪产生 在文字之前，文化的传承不仅依靠语言、文字，还依靠礼仪。中国文化作为唯一没有间断的原生文化，是 易错100 题中小幼科一 让每一个孩子都能遇到好老师 24 以礼为标志和根源的。 （摘编自王兆贵《言之有“礼”》） 问题： （1）文章为什么说在我国“礼仪是文明的载体”？请简要概括。 （2）请根据文章，简要分析“礼”的发展进程及其存在意义。 三、写作题\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-96', s:'YiCuo100', txt:'[KE1] #96\n\n阅读下面的文字，按要求作文。 材料一： 有一位古代诗人说：“汝果欲学诗，工夫在诗外。” 材料二： 有一位现代出版界的人士说：“真正的大文章家，以政治家、思想家为多，而专攻文章，以文为业的反 而少。” 综合上述材料所引发的思考和感悟，写一篇论说文。 要求： 用规范的现代汉语写作；角度自选，立意自定，标题自拟；不少于800 字。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 25\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-97', s:'YiCuo100', txt:'[KE1] #97\n\n阅读下面的材料，按要求作文。 近日，南京地铁运营公司发布检修数据，发现95%的自动扶梯右侧梯级链磨损严重。这再次引发公众 对于自动扶梯“右立左行”规则的反思。 有人认为：安全重于效率，为了安全应该改变“右立左行”的规则。 有人认为：在效率至上的年代，高效就是一切。磨损严重就要加强检修，别把问题甩给大众。 有人认为：没有哪一法律允许在高速路拥挤时，废除应急车道来提高效率，规则的存在是有道理的。 综合上述材料所引发的联想和感悟，写一篇论说文。 要求： 用规范的现代汉语写作；角度自选，立意自定，标题自拟；字数不少于800 字。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-98', s:'YiCuo100', txt:'[KE1] #98\n\n阅读下面的材料，按要求作文。 汉朝董遇有“三余”说：“冬者岁之余，夜者日之余，阴雨者时之余也。”大意是，冬天是一年的余暇， 夜晚是一天的余暇，阴雨是平时的余暇，这些时间正可以用来读书。 画家齐白石曾以“余”“鱼”同音，作《三余图》并题识：三余者，昔人故事。余字不能画，借鱼之形， 取其音。白石有三余，曰：画者工之余；诗者睡之余；寿者劫之余。 易错100 题中小幼科一 让每一个孩子都能遇到好老师 26 综合上述材料所引发的思考和感悟，写一篇论说文。 要求： 用国家通用语言文字写作；角度自选，立意自定，标题自拟；不少于1000 字。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-99', s:'YiCuo100', txt:'[KE1] #99\n\n阅读下面的材料，按要求作文。 有一位学生，将自己创作的练习曲送给老师评阅，老师指出其中某个和弦不合规则。学生说：“老师， 您的作品也是这样用的。”老师干脆利落地回答：“我可以，你不可以。”这位老师是贝多芬。 综合上述材料所引发的思考和感悟，写一篇论说文。 要求： 用国家通用语言文字写作；角度自选，立意自定，标题自拟；不少于800 字。\n\n(no analysis)' },
+{ cat:'yicuo', t:'KE1-100', s:'YiCuo100', txt:'[KE1] #100\n\n阅读下面的材料，按要求作文。 朋友圈流传着一个“稻草定律”：路边的一根稻草如果没人理会，它永远只是一根稻草。但如果卖白菜 的人用它捆绑白菜，它的价值就与白菜一样；卖螃蟹的人拿它去捆绑螃蟹，它就与螃蟹的价值一样了。人 的价值有时也像一根稻草，与自身无关，就看你与谁在一起。但也有人觉得“稻草定律”并非人生宝典， 稻草不管在什么时候都是稻草，螃蟹不管在什么时候都是螃蟹。螃蟹的美味是稻草永远不会具有的。稻草 不应通过攀附他人来提升自己的价值，稻草的价值在于它是稻米成长的母体，而它孕育的稻米的价值也是 易错100 题中小幼科一 让每一个孩子都能遇到好老师 27 螃蟹所不具备的。 综合上述材料所引发的思考和感悟，写一篇论说文。 要求： 用国家通用语言文字写作；角度自选，立意自定，标题自拟；不少于1000 字。\n\n(no analysis)' },
+];
+
+  // ================================================================
+  //  用户自定义内容管理（localStorage 持久化）
+  // ================================================================
+  const STORAGE_KEY = 'jzzuowen_user_sections';
+
+  // 从 localStorage 加载用户添加的内容
+  function loadUserSections() {
+    try {
+      let saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        let userSections = JSON.parse(saved);
+        if (Array.isArray(userSections) && userSections.length > 0) {
+          // 用户添加的内容插到数组最前面（最新添加的最先读）
+          sections.unshift(...userSections);
+        }
+      }
+    } catch(e) {
+      console.error('加载用户内容失败:', e);
+    }
+  }
+
+  // 保存用户内容到 localStorage
+  function saveUserSections(userSections) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userSections));
+      return true;
+    } catch(e) {
+      console.error('保存用户内容失败:', e);
+      return false;
+    }
+  }
+
+  // 获取当前用户内容（只获取用户添加的，不包括内置的）
+  function getUserSections() {
+    try {
+      let saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        let userSections = JSON.parse(saved);
+        if (Array.isArray(userSections)) return userSections;
+      }
+    } catch(e) {}
+    return [];
+  }
+
+  // 添加用户内容
+  function addUserContent() {
+    let cat = document.getElementById('addCategory').value.trim() || '自定义';
+    let title = document.getElementById('addTitle').value.trim();
+    let text = document.getElementById('addText').value.trim();
+
+    if (!title) {
+      alert('请输入标题');
+      document.getElementById('addTitle').focus();
+      return;
+    }
+    if (!text) {
+      alert('请输入内容');
+      document.getElementById('addText').focus();
+      return;
+    }
+
+    // 创建新章节
+    let newSection = {
+      cat: cat,
+      t: '📝 ' + title,
+      s: '自定义内容 · ' + new Date().toLocaleDateString('zh-CN'),
+      txt: text,
+      userAdded: true
+    };
+
+    // 获取现有用户内容
+    let userSections = getUserSections();
+    // 添加到最前面
+    userSections.unshift(newSection);
+    // 保存
+    if (saveUserSections(userSections)) {
+      // 插入到 sections 数组最前面
+      sections.unshift(newSection);
+
+      // 重建目录
+      buildTOC();
+
+      // 清空表单
+      document.getElementById('addTitle').value = '';
+      document.getElementById('addText').value = '';
+
+      // 跳转到新添加的内容并开始播放
+      jumpToIdx(0);
+
+      // 显示提示
+      document.getElementById('statusPill').textContent = '已添加: ' + title + ' ✓';
+      setTimeout(function() {
+        if (playing) {
+          document.getElementById('statusPill').textContent = '正在播放...';
+        }
+      }, 2000);
+    } else {
+      alert('保存失败，可能存储空间不足');
+    }
+  }
+
+  // 清除所有用户内容
+  function clearAllUserContent() {
+    let userSections = getUserSections();
+    if (userSections.length === 0) {
+      alert('没有自定义内容可清除');
+      return;
+    }
+    if (confirm('确定要删除全部 ' + userSections.length + ' 条自定义内容吗？')) {
+      localStorage.removeItem(STORAGE_KEY);
+      // 重新加载页面（简单可靠）
+      location.reload();
+    }
+  }
+
+  // 删除单条用户内容
+  function deleteUserSection(idx) {
+    let sec = sections[idx];
+    if (!sec || !sec.userAdded) {
+      alert('只能删除自定义内容');
+      return;
+    }
+    if (confirm('确定删除"' + cleanTitle(sec.t) + '"吗？')) {
+      // 从 sections 中删除
+      sections.splice(idx, 1);
+      // 更新 localStorage
+      let userSections = getUserSections();
+      // 找到对应的条目删除（通过标题和内容匹配）
+      let matchIdx = userSections.findIndex(s => s.t === sec.t && s.txt === sec.txt);
+      if (matchIdx >= 0) {
+        userSections.splice(matchIdx, 1);
+        saveUserSections(userSections);
+      }
+      // 重建目录
+      buildTOC();
+      // 如果当前在播放这一节，跳到第一节
+      if (curIdx === idx) {
+        stopCur();
+        playing = false; paused = false;
+        updatePauseBtn();
+        renderSec(0);
+      } else if (curIdx > idx) {
+        curIdx--;
+      }
+    }
+  }
+
+  // 页面加载时先加载用户内容
+  loadUserSections();
+
+  const TOTAL = sections.length;
+
+  // ================================================================
+  //  TTS - 双引擎（Edge TTS 高质量 + Web Speech 备用）
+  // ================================================================
+  let synth = window.speechSynthesis, utter = null, zhVoice = null;
+  let playing = false, paused = false, curIdx = 0;
+  let playToken = 0; // ★ 防止旧播放回调干扰新播放
+
+  // 引擎状态: 'edge' = Edge TTS高质量, 'web' = 浏览器内置语音
+  let ttsEngine = 'web';
+  let edgeVoices = [];
+  let edgeServerUrl = '';
+
+  // 检测 Edge TTS 服务器地址
+  function detectServerUrl() {
+    if (location.protocol === 'http:' || location.protocol === 'https:') {
+      return location.origin;
+    }
+    // 文件模式，尝试本地服务器
+    return 'http://127.0.0.1:5555';
+  }
+
+  // 检测 Edge TTS 服务器是否可用
+  async function checkEdgeTTSServer() {
+    edgeServerUrl = detectServerUrl();
+    try {
+      let resp = await fetch(edgeServerUrl + '/api/health', {timeout: 3000});
+      if (resp.ok) {
+        let data = await resp.json();
+        if (data.status === 'ok' && data.engine === 'edge-tts') {
+          ttsEngine = 'edge';
+          return true;
+        }
+      }
+    } catch(e) {}
+    ttsEngine = 'web';
+    return false;
+  }
+
+  // 加载 Edge TTS 语音列表
+  async function loadEdgeVoices() {
+    try {
+      let resp = await fetch(edgeServerUrl + '/api/voices');
+      let data = await resp.json();
+      edgeVoices = data.voices || [];
+    } catch(e) {
+      edgeVoices = [];
+    }
+  }
+
+  // 更新引擎状态显示
+  function updateEngineBadge() {
+    let badge = document.getElementById('engineBadge');
+    let text = document.getElementById('engineText');
+    let pitchRow = document.getElementById('pitchRow');
+    if (ttsEngine === 'edge') {
+      badge.className = 'engine-badge edge';
+      text.textContent = 'Edge TTS 高质量语音 ✅';
+      pitchRow.style.display = 'block';
+    } else {
+      badge.className = 'engine-badge web';
+      text.textContent = '浏览器语音（开启服务器获得更好音质）';
+      pitchRow.style.display = 'block';
+    }
+  }
+
+  // 构建语音选择列表
+  function buildVoiceList() {
+    let sel = document.getElementById('voiceSel');
+    sel.innerHTML = '';
+    if (ttsEngine === 'edge' && edgeVoices.length > 0) {
+      // 按风格分组
+      let cats = {};
+      edgeVoices.forEach(v => {
+        let c = v.style || '其他';
+        if (!cats[c]) cats[c] = [];
+        cats[c].push(v);
+      });
+      // 优先显示新闻风格
+      let order = ['新闻直播', '新闻沉稳', '自然亲切', '温暖自然', '温柔沉稳', '知性沉稳', '冷静沉稳', '活泼明亮', '温暖甜美', '沉稳男声', '成熟男声', '清朗男声'];
+      let shown = {};
+      order.forEach(cat => {
+        if (cats[cat]) {
+          let label = document.createElement('div');
+          label.className = 'voice-cat-label';
+          label.textContent = '─ ' + cat + ' ─';
+          sel.appendChild(label);
+          cats[cat].forEach(v => {
+            let o = document.createElement('option');
+            o.value = v.id;
+            o.textContent = v.icon + ' ' + v.name + '（' + v.gender + '）' + (v.desc ? ' · ' + v.desc : '');
+            sel.appendChild(o);
+          });
+          shown[cat] = true;
+        }
+      });
+      // 其他未分类
+      Object.keys(cats).forEach(cat => {
+        if (!shown[cat]) {
+          let label = document.createElement('div');
+          label.className = 'voice-cat-label';
+          label.textContent = '─ ' + cat + ' ─';
+          sel.appendChild(label);
+          cats[cat].forEach(v => {
+            let o = document.createElement('option');
+            o.value = v.id;
+            o.textContent = v.icon + ' ' + v.name + '（' + v.gender + '）';
+            sel.appendChild(o);
+          });
+        }
+      });
+      // 默认选第一个（新闻直播风格）
+      sel.value = edgeVoices[0].id;
+    } else {
+      // Web Speech API 语音
+      let vs = synth.getVoices().filter(v => v.lang && (v.lang.startsWith('zh')||v.lang.startsWith('cmn')));
+      if (!vs.length) {
+        sel.innerHTML = '<option value="">无可用中文语音</option>';
+        return;
+      }
+      vs.sort((a,b)=>scoreVoice(b)-scoreVoice(a)).forEach(function(v){
+        let o = document.createElement('option');
+        o.value = synth.getVoices().indexOf(v);
+        o.textContent = displayVoiceName(v);
+        sel.appendChild(o);
+      });
+      if (!zhVoice) { zhVoice = vs[0]; sel.value = synth.getVoices().indexOf(zhVoice); }
+    }
+  }
+  function scoreVoice(v){let n=(v.name||'').toLowerCase(),s=0;if(n.includes('online')||n.includes('natural')||n.includes('xiaoxiao'))s+=100;if(n.includes('microsoft'))s+=50;if(v.lang==='zh-CN')s+=20;return s;}
+  function displayVoiceName(v){let n=(v.name||'').toLowerCase(),t='🔊 ';if(n.includes('xiaoxiao')||n.includes('online'))t='✨ ';return t+v.name.replace('Microsoft ','MS ').replace(' (Natural)','').replace(' (Online)','')+' ['+v.lang+']';}
+
+  // 初始化语音系统
+  async function initTTS() {
+    let hasEdge = await checkEdgeTTSServer();
+    if (hasEdge) {
+      await loadEdgeVoices();
+    }
+    updateEngineBadge();
+    buildVoiceList();
+
+    // 同时加载 Web Speech 语音作为备用
+    if (synth.onvoiceschanged) {
+      synth.onvoiceschanged = function() {
+        if (ttsEngine === 'web') buildVoiceList();
+      };
+    }
+    // Web Speech 语音可能延迟加载
+    setTimeout(function(){ if(ttsEngine==='web') buildVoiceList(); }, 300);
+    setTimeout(function(){ if(ttsEngine==='web') buildVoiceList(); }, 1200);
+  }
+
+  // 获取当前选中的语音
+  function getCurrentVoice() {
+    let sel = document.getElementById('voiceSel');
+    if (ttsEngine === 'edge') {
+      return sel.value || 'zh-CN-YunyangNeural';
+    } else {
+      let idx = parseInt(sel.value);
+      let voices = synth.getVoices();
+      return (idx >= 0 && voices[idx]) ? voices[idx] : null;
+    }
+  }
+
+  function getSpeed(){ return parseFloat(document.getElementById('speedSel').value); }
+  function getPitch(){ return parseInt(document.getElementById('pitchSlider').value); }
+  function getVolume(){ return parseInt(document.getElementById('volSlider').value) / 100; }
+
+  // 音调/音量滑块事件
+  document.getElementById('pitchSlider').addEventListener('input', function() {
+    document.getElementById('pitchVal').textContent = this.value;
+  });
+  document.getElementById('volSlider').addEventListener('input', function() {
+    document.getElementById('volVal').textContent = this.value + '%';
+  });
+
+  // ================================================================
+  //  Edge TTS: 文本分句 + 音频播放
+  // ================================================================
+  function splitSentences(text) {
+    // 按句号、问号、感叹号、换行分割
+    let parts = [];
+    let cur = '';
+    for (let i = 0; i < text.length; i++) {
+      cur += text[i];
+      if ('\n。！？!?\n'.includes(text[i])) {
+        // 包含分隔符后面的空格
+        while (i + 1 < text.length && text[i+1] === ' ') { cur += text[i+1]; i++; }
+        parts.push({text: cur.trim(), start: i - cur.length + 1, end: i + 1});
+        cur = '';
+      }
+    }
+    if (cur.trim()) {
+      parts.push({text: cur.trim(), start: text.length - cur.length, end: text.length});
+    }
+    return parts;
+  }
+
+  // Edge TTS: 高亮当前句子
+  function hlSentence(start, end) {
+    let spans = rBody.querySelectorAll('span[data-i]');
+    for (let sp of spans) {
+      let i = parseInt(sp.getAttribute('data-i'));
+      if (i < start) sp.className = 'w-read';
+      else if (i >= start && i < end) sp.className = 'w-now';
+      else sp.className = 'w-next';
+    }
+    // 滚动到当前句子
+    let tgt = rBody.querySelector('.w-now');
+    if (tgt) {
+      let tr = tgt.getBoundingClientRect(), cr = rBody.getBoundingClientRect();
+      if (tr.top < cr.top + 80 || tr.bottom > cr.bottom - 80) {
+        tgt.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
+    }
+  }
+
+  // Edge TTS: 获取音频并播放
+  let edgeAudio = null;
+  let edgeSentenceIdx = 0;
+  let edgeSentences = [];
+
+  function speakEdgeTTS(text, onEnd) {
+    edgeSentences = splitSentences(text);
+    edgeSentenceIdx = 0;
+
+    if (edgeSentences.length === 0) {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    // 如果只有一句，直接播放
+    if (edgeSentences.length === 1) {
+      playEdgeSentence(0, onEnd);
+      return;
+    }
+
+    // 多句：逐句播放
+    playEdgeSentence(0, function() {
+      edgeSentenceIdx++;
+      playNextEdgeSentence(onEnd);
+    });
+  }
+
+  function playNextEdgeSentence(onEnd) {
+    if (edgeSentenceIdx >= edgeSentences.length) {
+      allRead();
+      if (onEnd) onEnd();
+      return;
+    }
+    playEdgeSentence(edgeSentenceIdx, function() {
+      edgeSentenceIdx++;
+      playNextEdgeSentence(onEnd);
+    });
+  }
+
+  function playEdgeSentence(idx, onSentenceEnd) {
+    let s = edgeSentences[idx];
+    if (!s || !s.text) {
+      if (onSentenceEnd) onSentenceEnd();
+      return;
+    }
+
+    // 高亮当前句子
+    hlSentence(s.start, s.end);
+
+    // 构建请求参数
+    let voice = getCurrentVoice();
+    let rate = getSpeed();
+    // Web Speech rate (0.75-1.3) → Edge TTS rate percentage
+    let edgeRate = Math.round((rate - 1) * 100);
+    let rateStr = (edgeRate >= 0 ? '+' : '') + edgeRate + '%';
+    // Pitch (-10 to 10) → Edge TTS pitch Hz
+    let pitch = getPitch();
+    let pitchStr = (pitch >= 0 ? '+' : '') + pitch + 'Hz';
+
+    let loadingEl = document.getElementById('ttsLoading');
+
+    // 请求音频
+    fetch(edgeServerUrl + '/api/tts', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        text: s.text,
+        voice: voice,
+        rate: rateStr,
+        pitch: pitchStr
+      })
+    }).then(function(resp) {
+      if (!resp.ok) throw new Error('TTS请求失败');
+      return resp.blob();
+    }).then(function(blob) {
+      let url = URL.createObjectURL(blob);
+      if (edgeAudio) {
+        edgeAudio.pause();
+        edgeAudio.src = '';
+      }
+      edgeAudio = new Audio(url);
+      edgeAudio.volume = getVolume();
+      edgeAudio.onended = function() {
+        URL.revokeObjectURL(url);
+        loadingEl.classList.remove('show');
+        if (onSentenceEnd) onSentenceEnd();
+      };
+      edgeAudio.onerror = function() {
+        URL.revokeObjectURL(url);
+        loadingEl.classList.remove('show');
+        if (onSentenceEnd) onSentenceEnd();
+      };
+      loadingEl.classList.add('show');
+      edgeAudio.play().catch(function(e) {
+        console.error('播放失败:', e);
+        loadingEl.classList.remove('show');
+        // 自动播放被拦截，显示提示
+        document.getElementById('autoplayHint').classList.add('show');
+      });
+    }).catch(function(err) {
+      console.error('Edge TTS错误:', err);
+      loadingEl.classList.remove('show');
+      // Edge TTS 失败，切换到 Web Speech
+      if (ttsEngine === 'edge') {
+        console.log('切换到 Web Speech 备用引擎');
+        ttsEngine = 'web';
+        updateEngineBadge();
+        buildVoiceList();
+        speakWebSpeech(edgeSentences.map(s => s.text).join(''), onSentenceEnd);
+      } else {
+        if (onSentenceEnd) onSentenceEnd();
+      }
+    });
+  }
+
+  // ================================================================
+  //  Web Speech API 播放
+  // ================================================================
+  function speakWebSpeech(txt, onEnd) {
+    if (synth.speaking) synth.cancel();
+    utter = null;
+    let u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'zh-CN';
+    let v = getCurrentVoice();
+    if (v && typeof v !== 'string') u.voice = v;
+    u.rate = getSpeed();
+    // 音调：滑块 -10~10 映射到 0.5~1.5
+    u.pitch = 1 + getPitch() * 0.05;
+    u.volume = getVolume();
+    u.onboundary = function(e) { if (e.charIndex !== undefined) hl(e.charIndex, e.charLength || 1); };
+    u.onend = function() { allRead(); if (onEnd) onEnd(); };
+    u.onerror = function() { if (onEnd) onEnd(); };
+    utter = u;
+    synth.speak(u);
+  }
+
+  // ================================================================
+  //  侧栏控制
+  // ================================================================
+  function toggleSidebar(){
+    let sb = document.getElementById('sidebar');
+    let ov = document.getElementById('sidebarOverlay');
+    let tg = document.getElementById('sidebarToggle');
+    if(sb.classList.contains('open')){
+      closeSidebar();
+    }else{
+      sb.classList.add('open');
+      ov.classList.add('show');
+      tg.classList.add('active');
+    }
+  }
+  function closeSidebar(){
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.getElementById('sidebarToggle').classList.remove('active');
+  }
+
+  // ================================================================
+  //  构建章节目录（侧栏内）
+  // ================================================================
+  function buildTOC(){
+    let tl = document.getElementById('tocList'), cur='';
+    tl.innerHTML = '';
+    for(let i=0;i<sections.length;i++){
+      let s=sections[i];
+      if(s.cat!==cur){
+        cur=s.cat;
+        let l=document.createElement('div'); l.className='toc-cat-label';
+        l.textContent={'教综':'📘 教综','学科英语':'🔤 学科英语','主题':'📖 主题','名言':'💬 名言','好词':'✨ 好词','好句':'🎯 好句','模板':'📝 模板','自定义':'📝 自定义'}[cur]||cur;
+        tl.appendChild(l);
+      }
+      let b=document.createElement('button');
+      b.className='toc-item'+(i===0?' on':'');
+      let tag = s.userAdded ? ' <span class="user-content-tag">自定义</span>' : '';
+      b.innerHTML='<span class="toc-num">'+(i+1)+'</span><span>'+cleanTitle(s.t)+tag+'</span>';
+      b.dataset.idx=i;
+      b.onclick=function(){jumpToIdx(parseInt(this.dataset.idx));};
+      // 自定义内容添加删除按钮
+      if(s.userAdded){
+        let delBtn = document.createElement('button');
+        delBtn.className = 'toc-delete';
+        delBtn.textContent = '删除';
+        delBtn.onclick = function(e){
+          e.stopPropagation();
+          deleteUserSection(parseInt(b.dataset.idx));
+        };
+        b.appendChild(delBtn);
+      }
+      tl.appendChild(b);
+    }
+  }
+  function cleanTitle(t){return t.replace(/[🌳🔑🪞❤️📖🌈💡⚖️🔆🕯️🏮🌟🎓🇨🇳✨🎯🔗📝🏁📊]/g,'').trim();}
+
+  // ================================================================
+  //  渲染
+  // ================================================================
+  let rBody = document.getElementById('readingBody');
+
+  function renderSec(i){
+    let sec=sections[i]; curIdx=i;
+    document.getElementById('dispTitle').textContent=sec.t;
+    document.getElementById('dispSubtitle').textContent=sec.s;
+    document.getElementById('statusPill').textContent=(i+1)+'/'+TOTAL+' · '+cleanTitle(sec.t);
+    document.getElementById('progFill').style.width=((i+1)/TOTAL*100)+'%';
+
+    let txt=sec.txt, html='';
+    for(let j=0;j<txt.length;j++){
+      let ch=txt[j];
+      if(ch==='\n') html+='<br>';
+      else if(ch===' ') html+='<span class="w-next" data-i="'+j+'">&nbsp;</span>';
+      else html+='<span class="w-next" data-i="'+j+'">'+esc(ch)+'</span>';
+    }
+    rBody.innerHTML=html;
+    rBody.scrollTop=0;
+    // 同步目录高亮
+    document.querySelectorAll('.toc-item').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.idx)===i));
+  }
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function hl(ci,cl){
+    let spans=rBody.querySelectorAll('span[data-i]'), end=ci+(cl||1), tgt=null;
+    for(let sp of spans){
+      let i=parseInt(sp.getAttribute('data-i'));
+      if(i<ci) sp.className='w-read';
+      else if(i>=ci&&i<end){sp.className='w-now';tgt=sp;}
+      else sp.className='w-next';
+    }
+    if(tgt){
+      let tr=tgt.getBoundingClientRect(), cr=rBody.getBoundingClientRect();
+      if(tr.top<cr.top+80||tr.bottom>cr.bottom-80){
+        tgt.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    }
+  }
+  function allRead(){rBody.querySelectorAll('span[data-i]').forEach(s=>s.className='w-read');}
+
+  // ================================================================
+  //  播放引擎 - 双引擎调度
+  // ================================================================
+  function speak(txt,onEnd){
+    // ★ 双引擎调度：Edge TTS 或 Web Speech API
+    if(ttsEngine === 'edge'){
+      speakEdgeTTS(txt, onEnd);
+    }else{
+      speakWebSpeech(txt, onEnd);
+    }
+  }
+  function stopCur(){
+    playToken++; // ★ 作废所有pending回调
+    // 停止 Web Speech
+    if(synth.speaking) synth.cancel();
+    utter=null;
+    // 停止 Edge TTS Audio
+    if(edgeAudio){
+      edgeAudio.pause();
+      edgeAudio.src='';
+    }
+    document.getElementById('ttsLoading').classList.remove('show');
+  }
+
+  // ---- 自动播放 ----
+  function startAutoPlay(){
+    playing=true; paused=false;
+    updatePauseBtn();
+    document.getElementById('autoplayHint').classList.remove('show');
+    document.getElementById('statusPill').textContent='正在播放...';
+    playFrom(0);
+    onStartPlay();
+  }
+
+  function retryPlay(){
+    document.getElementById('autoplayHint').classList.remove('show');
+    startAutoPlay();
+  }
+
+  // ★ 跳转到指定节并续播
+  function jumpToIdx(idx){
+    stopCur();
+    // 无论之前是否在播放，都从选定节开始播放并续播下一段
+    playing = true; paused = false;
+    updatePauseBtn();
+    document.getElementById('autoplayHint').classList.remove('show');
+    document.getElementById('statusPill').textContent = '正在播放...';
+    playFrom(idx);
+    onStartPlay();
+  }
+
+  // 从指定节开始自动播放（保留兼容）
+  function startAutoPlay_from(idx){
+    playing=true; paused=false;
+    updatePauseBtn();
+    playFrom(idx);
+  }
+
+  function playFrom(i){
+    if(i>=TOTAL){
+      playing=false;
+      document.getElementById('statusPill').textContent='播放完成 ✓';
+      updatePauseBtn();
+      return;
+    }
+    let myToken = ++playToken; // ★ 本次播放的令牌
+    renderSec(i);
+    setTimeout(function(){
+      if(myToken!==playToken) return; // 被新播放取代了，放弃
+      speak(sections[i].txt, function(){
+        if(myToken!==playToken) return; // 旧回调，忽略
+        if(playing && !paused){
+          setTimeout(function(){
+            if(myToken!==playToken) return; // 旧回调，忽略
+            playFrom(i+1);
+          }, 500);
+        }
+      });
+    }, 450);
+  }
+
+  function togglePause(){
+    if(!playing) return;
+    if(paused){
+      paused=false;
+      // 恢复播放
+      if(ttsEngine === 'edge' && edgeAudio){
+        edgeAudio.play();
+      }else{
+        synth.resume();
+      }
+    }else{
+      paused=true;
+      // 暂停播放
+      if(ttsEngine === 'edge' && edgeAudio){
+        edgeAudio.pause();
+      }else{
+        synth.pause();
+      }
+    }
+    updatePauseBtn();
+  }
+
+  function updatePauseBtn(){
+    let icon=document.getElementById('pcPauseIcon');
+    let label=document.getElementById('pcPauseLabel');
+    if(!playing){
+      icon.textContent='▶️'; label.textContent='已完成';
+    }else if(paused){
+      icon.textContent='▶️'; label.textContent='继续';
+    }else{
+      icon.textContent='⏸️'; label.textContent='暂停';
+    }
+  }
+
+  function stopAll(){
+    stopCur();
+    playing=false; paused=false;
+    updatePauseBtn();
+    document.getElementById('statusPill').textContent='已停止';
+    onStopPlay();
+  }
+
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(function(){});
+    }else{
+      document.exitFullscreen();
+    }
+  }
+
+  // ---- 键盘 ----
+  document.addEventListener('keydown',function(e){
+    if(e.key===' '&&e.target.tagName!=='SELECT'){e.preventDefault();if(playing)togglePause();}
+    if(e.key==='Escape'){
+      if(document.fullscreenElement)document.exitFullscreen();
+      closeSidebar();
+    }
+  });
+
+  // ---- 初始化 + 自动播放 ----
+  buildTOC();
+  renderSec(0);
+
+  // ================================================================
+  //  ★★★ 熄屏保活系统（核心！防止手机熄屏后停止播放）★★★
+  // ================================================================
+  // 方案1: Wake Lock API - 请求屏幕保持唤醒
+  let wakeLock = null;
+  async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('Wake Lock 已获取（屏幕保持唤醒）');
+        // 失去锁时自动重新请求
+        wakeLock.addEventListener('release', function() {
+          console.log('Wake Lock 被释放，尝试重新获取...');
+          if (playing) requestWakeLock();
+        });
+      } catch(e) {
+        console.log('Wake Lock 获取失败:', e.message);
+      }
+    }
+  }
+
+  // 方案2: 静音心跳音频 - 播放一个几乎无声音的音频循环
+  // 防止浏览器在熄屏时暂停JavaScript音频处理
+  let keepAliveAudio = null;
+  function startKeepAliveAudio() {
+    if (keepAliveAudio) return;
+    // 创建一个极短的静音WAV（1秒，用base64编码）
+    let silentWav = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    keepAliveAudio = new Audio(silentWav);
+    keepAliveAudio.loop = true;
+    keepAliveAudio.volume = 0.01; // 极低音量，几乎听不到
+    keepAliveAudio.play().catch(function(e) {
+      console.log('心跳音频启动失败:', e.message);
+    });
+    console.log('心跳音频已启动（防止熄屏暂停）');
+  }
+  function stopKeepAliveAudio() {
+    if (keepAliveAudio) {
+      keepAliveAudio.pause();
+      keepAliveAudio = null;
+      console.log('心跳音频已停止');
+    }
+  }
+
+  // 方案3: Web Speech 防暂停定时器
+  // 移动端浏览器在熄屏后可能暂停speechSynthesis
+  // 每5秒检查一次，如果应该播放但被暂停了，自动resume
+  let keepAliveTimer = null;
+  function startKeepAliveTimer() {
+    if (keepAliveTimer) return;
+    keepAliveTimer = setInterval(function() {
+      if (playing && !paused) {
+        // Web Speech: 检查是否被浏览器暂停
+        if (ttsEngine === 'web' && synth.speaking && synth.paused) {
+          console.log('检测到语音被暂停，自动恢复...');
+          synth.resume();
+        }
+        // Edge TTS: 检查音频是否被暂停
+        if (ttsEngine === 'edge' && edgeAudio && edgeAudio.paused) {
+          console.log('检测到音频被暂停，自动恢复...');
+          edgeAudio.play().catch(function(){});
+        }
+        // 重新请求 Wake Lock
+        if (!wakeLock) requestWakeLock();
+      }
+    }, 5000);
+  }
+  function stopKeepAliveTimer() {
+    if (keepAliveTimer) {
+      clearInterval(keepAliveTimer);
+      keepAliveTimer = null;
+    }
+  }
+
+  // 开始播放时启动保活
+  function onStartPlay() {
+    requestWakeLock();
+    startKeepAliveAudio();
+    startKeepAliveTimer();
+  }
+  // 停止播放时停止保活
+  function onStopPlay() {
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
+    stopKeepAliveAudio();
+    stopKeepAliveTimer();
+  }
+
+  // ★ 页面加载后：先检测TTS引擎，再自动播放
+  async function tryAutoStart(){
+    // 初始化TTS引擎（检测Edge TTS服务器）
+    await initTTS();
+
+    // 尝试触发浏览器自动播放权限
+    try{
+      let testU=new SpeechSynthesisUtterance('');
+      testU.volume=0;
+      synth.speak(testU);
+      synth.cancel();
+    }catch(e){}
+
+    setTimeout(function(){
+      startAutoPlay();
+      setTimeout(function(){
+        // 检查是否实际在播放
+        let isPlaying = (ttsEngine === 'edge') ? (edgeAudio && !edgeAudio.paused) : synth.speaking;
+        if(!isPlaying && playing && !paused){
+          document.getElementById('autoplayHint').classList.add('show');
+        }
+        // ★ 播放成功后启动保活系统
+        if (isPlaying) onStartPlay();
+      },1500);
+    },800);
+  }
+
+  // 页面隐藏/恢复时的处理（熄屏恢复后自动继续播放）
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      // 页面恢复可见，检查播放状态
+      if (playing && !paused) {
+        if (ttsEngine === 'web' && synth.speaking && synth.paused) {
+          synth.resume();
+        }
+        if (ttsEngine === 'edge' && edgeAudio && edgeAudio.paused) {
+          edgeAudio.play().catch(function(){});
+        }
+        requestWakeLock();
+      }
+    }
+  });
+
+  // 启动
+  tryAutoStart();
+</script>
+</body>
+</html>
