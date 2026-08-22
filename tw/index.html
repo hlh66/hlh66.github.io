@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔗 TCP 网络工具 · 洪老师</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding: 30px 20px;
+}
+.container { max-width: 1000px; margin: 0 auto; }
+
+/* 返回按钮 */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8ea0f0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  transition: color 0.25s;
+}
+.back-link:hover { color: #fff; }
+
+/* 顶部标题 */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header .icon-big {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.header p {
+  font-size: 0.95rem;
+  color: #8888aa;
+}
+
+/* 工具卡片网格 */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.tool-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(102,126,234,0.4);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.tool-card .tc-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.tool-card h3 {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.tool-card .tc-desc {
+  font-size: 0.82rem;
+  color: #9090aa;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+.tool-card .tc-labels {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.tool-card .tc-label {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(102,126,234,0.15);
+  color: #8ea0f0;
+}
+.tool-card .tc-label.l-red { background: rgba(239,83,80,0.15); color: #ef5350; }
+.tool-card .tc-label.l-green { background: rgba(102,187,106,0.15); color: #66bb6a; }
+.tool-card .tc-label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
+.tool-card .tc-label.l-cyan { background: rgba(38,198,218,0.15); color: #26c6da; }
+.tool-card .tc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  transition: all 0.25s;
+}
+.tool-card:hover .tc-btn {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.35);
+}
+
+/* 分区标题 */
+.section-title {
+  font-size: 1rem;
+  color: #fff;
+  margin: 30px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 在线工具区 */
+.online-tools {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 30px;
+}
+.online-tools h2 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tool-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s;
+  border: 1px solid transparent;
+}
+.tool-link:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(102,126,234,0.3);
+}
+.tool-link .tl-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tool-link .tl-icon { font-size: 1.4rem; }
+.tool-link .tl-name { font-size: 0.9rem; color: #e0e0e0; font-weight: 600; }
+.tool-link .tl-desc { font-size: 0.75rem; color: #707080; }
+.tool-link .tl-arrow {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: #505060;
+  font-size: 0.8rem;
+}
+.footer a { color: #667eea; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .tool-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="./index.html">← 返回导航首页</a>
+
+  <div class="header">
+    <div class="icon-big">🔗</div>
+    <h1>TCP 网络工具</h1>
+    <p>TCP/UDP 网络调试 · 端口扫描 · 连接测试 · 网络诊断</p>
+  </div>
+
+  <!-- 在线 TCP 工具 -->
+  <div class="online-tools">
+    <h2>🌐 在线 TCP 工具</h2>
+
+    <a class="tool-link" href="https://tool.chinaz.com/port" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">🔍</span>
+        <div>
+          <div class="tl-name">站长工具 · 端口扫描</div>
+          <div class="tl-desc">在线扫描指定IP的开放端口</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://www.cman.jp/network/support/port.html" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">🚪</span>
+        <div>
+          <div class="tl-name">CMAN · 端口检查</div>
+          <div class="tl-desc">检查指定端口是否对外开放</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://ping.eu/port-chk/" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">📡</span>
+        <div>
+          <div class="tl-name">Ping.eu · Port Check</div>
+          <div class="tl-desc">在线TCP端口连通性测试</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://www.yougetsignal.com/tools/open-ports/" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">🔌</span>
+        <div>
+          <div class="tl-name">YouGetSignal · 端口转发检查</div>
+          <div class="tl-desc">检测路由器端口转发是否生效</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://canyouseeme.org/" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">👁️</span>
+        <div>
+          <div class="tl-name">CanYouSeeMe.org</div>
+          <div class="tl-desc">开放端口检测，验证端口对外可见性</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://www.ip138.com/" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">🌍</span>
+        <div>
+          <div class="tl-name">IP138 · IP查询</div>
+          <div class="tl-desc">查询本机公网IP及地理位置</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+
+    <a class="tool-link" href="https://tool.lu/ip/" target="_blank">
+      <div class="tl-info">
+        <span class="tl-icon">📍</span>
+        <div>
+          <div class="tl-name">工具云 · IP详情</div>
+          <div class="tl-desc">查看本机IP、UA、网络环境详情</div>
+        </div>
+      </div>
+      <span class="tl-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- 网络诊断工具 -->
+  <div class="section-title"><span>🩺</span> 网络诊断工具</div>
+  <div class="tool-grid">
+
+    <a class="tool-card" href="https://www.ping.cn/" target="_blank">
+      <div class="tc-icon">🏓</div>
+      <div class="tc-labels"><span class="tc-label l-cyan">在线</span></div>
+      <h3>Ping.cn 综合Ping</h3>
+      <p class="tc-desc">全国多节点Ping测试，延迟可视化，支持TCP Ping。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+    <a class="tool-card" href="https://www.boce.com/" target="_blank">
+      <div class="tc-icon">📊</div>
+      <div class="tc-labels"><span class="tc-label l-cyan">在线</span></div>
+      <h3>拨测 · 网站测速</h3>
+      <p class="tc-desc">全国多节点网站测速、TCP连通性、DNS解析、路由追踪。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+    <a class="tool-card" href="https://site.ip138.com/" target="_blank">
+      <div class="tc-icon">🔎</div>
+      <div class="tc-labels"><span class="tc-label l-cyan">在线</span></div>
+      <h3>域名解析查询</h3>
+      <p class="tc-desc">查询域名A/AAAA/CNAME/MX等DNS记录，支持历史解析记录。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+    <a class="tool-card" href="https://17ce.com/" target="_blank">
+      <div class="tc-icon">⚡</div>
+      <div class="tc-labels"><span class="tc-label l-cyan">在线</span></div>
+      <h3>17ce · 网站测速</h3>
+      <p class="tc-desc">全国200+节点网站测速，TCP连接时间、首字节时间、下载速度。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+    <a class="tool-card" href="https://port.ping0.cc/" target="_blank">
+      <div class="tc-icon">🚪</div>
+      <div class="tc-labels"><span class="tc-label l-cyan">在线</span></div>
+      <h3>Ping0 · 端口测试</h3>
+      <p class="tc-desc">在线TCP/UDP端口测试，支持批量检测多个端口。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+    <a class="tool-card" href="https://www.ssllabs.com/ssltest/" target="_blank">
+      <div class="tc-icon">🔒</div>
+      <div class="tc-labels"><span class="tc-label l-green">SSL</span></div>
+      <h3>SSL Labs · SSL检测</h3>
+      <p class="tc-desc">检测HTTPS证书链、TLS版本、加密套件配置是否安全。</p>
+      <span class="tc-btn">打开 →</span>
+    </a>
+
+  </div>
+
+  <!-- 常用命令速查 -->
+  <div class="online-tools">
+    <h2>⌨️ TCP 常用命令速查</h2>
+    <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:16px;font-family:Consolas,monospace;font-size:0.85rem;line-height:1.8;color:#a0d0a0;overflow-x:auto;">
+<pre style="margin:0;"># 查看TCP连接状态 (Linux/Mac)
+netstat -tlnp
+ss -tlnp
+
+# 查看指定端口占用
+lsof -i :8080
+netstat -tlnp | grep 8080
+
+# TCP端口连通性测试
+nc -zv host port
+telnet host port
+
+# Windows 查看端口
+netstat -ano | findstr :8080
+
+# 测试TCP连接 (Python)
+python -c "import socket; s=socket.socket(); s.settimeout(3); s.connect(('host',port)); print('OPEN'); s.close()"
+
+# curl 测试TCP
+curl -v telnet://host:port</pre>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>📄 <a href="./index.html">返回导航首页</a> · 更新日期：2026-08-19</p>
+  </div>
+
+</div>
+</body>
+</html>
