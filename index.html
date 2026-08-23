@@ -3,486 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📚 洪老师 - 个人导航</title>
+<title>🎓 洪老师的数学乐园</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
-  min-height: 100vh;
-  color: #e0e0e0;
-  padding: 30px 20px;
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Microsoft YaHei','PingFang SC',sans-serif;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+  min-height:100vh;color:#fff;
 }
-.container { max-width: 1000px; margin: 0 auto; }
-/* === 顶部头像区 === */
-.header {
-  text-align: center;
-  margin-bottom: 40px;
+.container{max-width:900px;margin:0 auto;padding:30px 20px}
+
+/* 头部 */
+.header{text-align:center;padding:40px 20px 30px}
+.avatar{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,#fff,#f0eaff);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:42px;margin-bottom:18px;
+  box-shadow:0 6px 30px rgba(0,0,0,.2);
 }
-.avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 30px rgba(102,126,234,0.3);
+.header h1{font-size:2.2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:8px}
+.header .subtitle{font-size:1.08em;opacity:.92}
+
+/* 主卡片区 */
+.main-cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:30px 0}
+.main-card{
+  background:rgba(255,255,255,.95);border-radius:22px;
+  padding:32px 28px;width:340px;text-align:center;
+  text-decoration:none;color:inherit;
+  transition:all .4s cubic-bezier(.175,.885,.32,1.275);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+  border:3px solid transparent;position:relative;overflow:hidden;
 }
-.header h1 {
-  font-size: 1.8rem;
-  color: #fff;
-  margin-bottom: 6px;
+.main-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
 }
-.header p {
-  font-size: 0.95rem;
-  color: #8888aa;
+.main-card:nth-child(1)::before{background:linear-gradient(90deg,#FF6B6B,#FFE66D)}
+.main-card:nth-child(2)::before{background:linear-gradient(90deg,#4ECDC4,#44A08D)}
+.main-card:hover{
+  transform:translateY(-10px) scale(1.03);
+  box-shadow:0 16px 48px rgba(0,0,0,.25);
+  color:#333;
 }
-/* === 搜索框 === */
-.search-box {
-  max-width: 500px;
-  margin: 20px auto 30px;
-  display: flex;
-  position: relative;
+.main-card:hover .card-icon{transform:scale(1.15) rotate(-5deg)}
+.card-icon{
+  font-size:3.8em;display:block;margin-bottom:14px;
+  transition:transform .3s;
 }
-.search-box input {
-  width: 100%;
-  padding: 12px 20px 12px 44px;
-  border-radius: 25px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-  font-size: 0.95rem;
-  outline: none;
-  transition: all 0.3s;
+.card-title{
+  font-size:1.35em;font-weight:bold;color:#333;margin-bottom:10px;
 }
-.search-box input::placeholder { color: #666680; }
-.search-box input:focus {
-  border-color: rgba(102,126,234,0.6);
-  background: rgba(255,255,255,0.1);
-  box-shadow: 0 0 20px rgba(102,126,234,0.15);
+.card-desc{
+  font-size:.92em;color:#777;line-height:1.55;margin-bottom:18px;
 }
-.search-box .icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  opacity: 0.5;
+.card-btn{
+  display:inline-block;padding:12px 32px;border-radius:25px;
+  font-weight:bold;font-size:.98em;transition:all .3s;
 }
-/* === 标签栏 === */
-.tag-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 36px;
+.main-card:nth-child(1) .card-btn{
+  background:linear-gradient(135deg,#f093fb,#f5576c);color:white;
 }
-.tag {
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.25s;
-  background: rgba(255,255,255,0.06);
-  color: #9999bb;
-  border: 1px solid rgba(255,255,255,0.08);
-  user-select: none;
+.main-card:nth-child(2) .card-btn{
+  background:linear-gradient(135deg,#667eea,#764ba2);color:white;
 }
-.tag:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.tag.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 2px 12px rgba(102,126,234,0.3);
+.card-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+
+/* 底部信息 */
+.info-section{
+  background:rgba(255,255,255,.12);border-radius:18px;
+  padding:24px;margin-top:36px;text-align:center;
+  backdrop-filter:blur(10px);
 }
-/* === 卡片网格 === */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+.info-section p{font-size:.9em;opacity:.85;line-height:1.7}
+.info-section a{color:#FFE66D;text-decoration:none;border-bottom:1px dashed #FFE66D}
+.info-section a:hover{color:#fff;border-bottom-color:#fff}
+
+/* 页脚 */
+.footer{text-align:center;padding:28px;font-size:.82em;opacity:.7}
+
+/* 装饰动画 */
+.floating{
+  position:fixed;font-size:24px;opacity:.08;
+  animation:float linear infinite;pointer-events:none;z-index:0;
 }
-.card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 24px;
-  transition: all 0.3s;
-  display: flex;
-  flex-direction: column;
+@keyframes float{
+  0%{transform:translateY(-50px) rotate(0deg);opacity:0}
+  10%{opacity:.08}90%{opacity:.08}
+  100%{transform:translateY(105vh) rotate(360deg);opacity:0}
 }
-.card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(102,126,234,0.4);
-  background: rgba(255,255,255,0.07);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-}
-.card-icon {
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-.card h3 {
-  font-size: 1.05rem;
-  color: #fff;
-  margin-bottom: 6px;
-}
-.card .desc {
-  font-size: 0.82rem;
-  color: #9090aa;
-  line-height: 1.5;
-  margin-bottom: 14px;
-  flex-grow: 1;
-}
-.card .labels {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.card .label {
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: rgba(102,126,234,0.15);
-  color: #8ea0f0;
-}
-.card .label.l-red { background: rgba(239,83,80,0.15); color: #ef5350; }
-.card .label.l-green { background: rgba(102,187,106,0.15); color: #66bb6a; }
-.card .label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
-.card .label.l-cyan { background: rgba(38,198,218,0.15); color: #26c6da; }
-.card .btn-row {
-  display: flex;
-  gap: 8px;
-}
-.card .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-decoration: none;
-  transition: all 0.25s;
-}
-.card .btn.primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-}
-.card .btn.primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(102,126,234,0.35);
-}
-.card .btn.secondary {
-  background: rgba(255,255,255,0.08);
-  color: #bbb;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.card .btn.secondary:hover {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-}
-/* === 分区标题 === */
-.section-title {
-  font-size: 1rem;
-  color: #fff;
-  margin: 30px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-title .icon { font-size: 1.1rem; }
-/* === 底部 === */
-.footer {
-  text-align: center;
-  margin-top: 50px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  color: #505060;
-  font-size: 0.8rem;
-}
-.footer a { color: #667eea; text-decoration: none; }
-.footer a:hover { text-decoration: underline; }
-/* === 响应式 === */
-@media (max-width: 600px) {
-  .card-grid { grid-template-columns: 1fr; }
-  .header h1 { font-size: 1.4rem; }
+
+@media(max-width:600px){
+  .main-cards{flex-direction:column;align-items:center}
+  .main-card{width:100%;max-width:360px}
+  .header h1{font-size:1.7em}
 }
 </style>
 </head>
 <body>
+
+<!-- 飘落装饰 -->
+<div id="floaters"></div>
+
 <div class="container">
+
+  <!-- 头部 -->
   <div class="header">
-    <div class="avatar">📚</div>
-    <h1>洪老师 · 个人导航</h1>
-    <p>教学资源 · AI工具 · 开发项目 · 实用链接</p>
+    <div class="avatar">👨‍🏫</div>
+    <h1>洪老师的数学乐园</h1>
+    <p class="subtitle">北师大版 · 二年级数学 · 学习资源导航</p>
   </div>
-  <div class="search-box">
-    <span class="icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="搜索网页标题或描述..." oninput="filterSearch()">
+
+  <!-- 两大入口 -->
+  <div class="main-cards">
+
+    <!-- 二年级数学乐园 -->
+    <a href="/2s/" class="main-card" target="_blank">
+      <span class="card-icon">🎓</span>
+      <div class="card-title">二年级数学乐园</div>
+      <p class="card-desc">📺 同步课程视频<br>🎮 趣味数学游戏<br>🎬 动画演示讲解<br>📝 练习试卷资源<br><br>🔢 北师大版 · 上册 · 8个单元全覆盖</p>
+      <span class="card-btn">进入学习 →</span>
+    </a>
+
+    <!-- 更多资源（私人导航） -->
+    <a href="/l/" class="main-card" target="_blank">
+      <span class="card-icon">📚</span>
+      <div class="card-title">更多资源</div>
+      <p class="card-desc">🛠️ 教师备课工具<br>🤖 AI辅助教学<br>💻 开发项目<br>🔗 实用工具链接<br><br>🔒 教师专用 / 家长参考</p>
+      <span class="card-btn">查看更多 →</span>
+    </a>
+
   </div>
-  <div class="tag-bar" id="tagBar">
-    <span class="tag active" onclick="filterTag(this,'all')">🌐 全部</span>
-    <span class="tag" onclick="filterTag(this,'教学')">📚 教学</span>
-    <span class="tag" onclick="filterTag(this,'AI')">🤖 AI</span>
-    <span class="tag" onclick="filterTag(this,'工具')">🔧 工具</span>
-    <span class="tag" onclick="filterTag(this,'开发')">💻 开发</span>
-    <span class="tag" onclick="filterTag(this,'资源')">📁 资源</span>
+
+  <!-- 说明信息 -->
+  <div class="info-section">
+    <p>🌟 <strong>二年级数学乐园</strong> 收录了北师大版二年级上册的全部学习资源</p>
+    <p>包含 B站同步课视频、在线数学游戏网站、动画演示工具、练习试卷下载等</p>
+    <p style="margin-top:10px;">适合 ✦ 学生自学 &nbsp;·&nbsp; ✦ 家长辅导 &nbsp;·&nbsp; ✦ 教师备课参考</p>
   </div>
-  <div class="card-grid" id="cardGrid">
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">📚</span> 教学资源</div>
-    <div class="card" data-tags="教学 资源" data-search="二年级 数学 北师大 上册 视频 游戏 动画 练习">
-      <div class="card-icon">🎓</div>
-      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
-      <h3>二年级数学乐园（北师大版·上册）</h3>
-      <p class="desc">北师大版二年级数学上册资源导航站，含B站同步课视频、数学游戏网站、动画演示、练习资源等，8个单元全覆盖。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="/2s/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">📝</span> 教资备考</div>
-    <div class="card" data-tags="教学 资源" data-search="易错 100题 刷题 朗读 科一 科二 教资">
-      <div class="card-icon">✏️</div>
-      <div class="labels"><span class="label l-green">教学</span><span class="label">资源</span></div>
-      <h3>易错100题 - 朗读刷题版</h3>
-      <p class="desc">教资科一+科二易错100题，带答案解析，支持语音朗读，手机电脑都能用。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="/yc/" target="_blank">开始刷题 →</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">🌍</span> 公网址点</div>
-    <div class="card" data-tags="开发 资源" data-search="cloudflare pages 导航 主站">
-      <div class="card-icon">🚀</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
-      <h3>Cloudflare Pages 站</h3>
-      <p class="desc">Cloudflare Pages 托管的个人站点，全球CDN加速，备用入口。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://hlh66.pages.dev/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 工具" data-search="frp 内网穿透 uk remote 穿透">
-      <div class="card-icon">🔌</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
-      <h3>FRP 内网穿透</h3>
-      <p class="desc">通过 FRP 穿透到内网服务，UK节点中转，端口57017。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="http://uk.frp.one:57017/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 资源" data-search="平板 flask 导航站 fucku 洪林华">
-      <div class="card-icon">📱</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
-      <h3>平板导航站 (Flask)</h3>
-      <p class="desc">平板服务器 Flask 导航站，含微信页面、教资素材、定时任务等。公网域名访问。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="http://hlh66.fucku.top/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="工具 开发" data-search="微信扫码登录 v100 vip s0">
-      <div class="card-icon">📱</div>
-      <div class="labels"><span class="label l-cyan">工具</span><span class="label">开发</span></div>
-      <h3>微信扫码登录 (s0.v100.vip)</h3>
-      <p class="desc">微信扫码登录系统，支持网页端微信扫码、截图跳转等功能。HBuilderX打包APK版本参考。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://s0.v100.vip/" target="_blank">打开 →</a>
-        <a class="btn secondary" href="https://s0.v100.vip:10989/wx/login.html" target="_blank">登录页</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">🏠</span> 个人服务</div>
-    <div class="card" data-tags="工具 AI" data-search="ai赋能备课指令模板">
-      <div class="card-icon">📖</div>
-      <div class="labels"><span class="label">教学</span><span class="label l-red">AI</span></div>
-      <h3>AI赋能备课指令模板</h3>
-      <p class="desc">AI辅助备课的指令模板，紫色渐变风格，含具体指令示例，帮助教师用AI提升备课效率。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="/ai/" target="_blank">查看 →</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">🤖</span> AI 工具</div>
-    <div class="card" data-tags="AI 工具" data-search="agnes ai 小爱 api">
-      <div class="card-icon">💬</div>
-      <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
-      <h3>Agnes AI (小爱API)</h3>
-      <p class="desc">Agnes 2.0 Flash 模型，OpenAI兼容接口，用于飞书机器人、opencode等场景。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://apihub.agnes-ai.cn/v1/chat/completions" target="_blank">API地址</a>
-      </div>
-    </div>
-    <div class="card" data-tags="AI 工具" data-search="智谱 glm bigmodel 清言">
-      <div class="card-icon">🔮</div>
-      <div class="labels"><span class="label l-red">AI</span><span class="label l-cyan">工具</span></div>
-      <h3>智谱AI (GLM)</h3>
-      <p class="desc">智谱BigModel平台，GLM-4.7-flash、AutoGLM等模型，支持视频生成、手机自动化。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://open.bigmodel.cn/api/paas/v4" target="_blank">API地址</a>
-      </div>
-    </div>
-    <div class="card" data-tags="AI 工具" data-search="deepseek">
-      <div class="card-icon">🧠</div>
-      <div class="labels"><span class="label l-red">AI</span></div>
-      <h3>DeepSeek</h3>
-      <p class="desc">DeepSeek AI大模型，支持深度思考和对话生成。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://www.deepseek.com" target="_blank">官网</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">💻</span> 开发项目</div>
-    <div class="card" data-tags="开发 工具" data-search="github 仓库 笔记 notes">
-      <div class="card-icon">🐙</div>
-      <div class="labels"><span class="label l-orange">开发</span></div>
-      <h3>GitHub 笔记仓库</h3>
-      <p class="desc">个人笔记Git仓库，三端同步（Gitee + GitHub + 飞书Wiki）。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://github.com/hlh66/notes" target="_blank">查看 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 资源" data-search="gitee 笔记 同步">
-      <div class="card-icon">🟢</div>
-      <div class="labels"><span class="label l-orange">开发</span></div>
-      <h3>Gitee 笔记仓库</h3>
-      <p class="desc">Gitee镜像仓库，国内访问更快，手机端Obsidian同步源。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://gitee.com/alin489/nn" target="_blank">查看 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 工具" data-search="网页合集 web-pages github pages">
-      <div class="card-icon">🌐</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
-      <h3>网页合集 (web-pages)</h3>
-      <p class="desc">HTML网页合集仓库，带标签导航首页，GitHub Pages托管。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://hlh66.github.io/web-pages/" target="_blank">查看 →</a>
-        <a class="btn secondary" href="https://github.com/hlh66/web-pages" target="_blank">仓库</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 资源" data-search="obsidian 知识库 gitee 笔记">
-      <div class="card-icon">📓</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
-      <h3>Obsidian 知识库</h3>
-      <p class="desc">Obsidian Vault，通过Gitee同步，手机端可查看。含教育教学、技术项目等分类。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://gitee.com/alin489/obsidian-vault" target="_blank">Gitee仓库</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">🛠️</span> 网络工具页面</div>
-    <div class="card" data-tags="开发 工具" data-search="tcp 网络工具 端口 调试">
-      <div class="card-icon"> 🔗</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label l-cyan">工具</span></div>
-      <h3>TCP 网络工具</h3>
-      <p class="desc">TCP网络调试工具页面，端口扫描、连接测试、网络诊断等。</p>
-      <div class="btn-row">
-        <a class="btn primary" href=".//tw/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="开发 资源" data-search="netternal internal 内部 网络">
-      <div class="card-icon"> 🌐</div>
-      <div class="labels"><span class="label l-orange">开发</span><span class="label">资源</span></div>
-      <h3>Nternal 网络资源</h3>
-      <p class="desc">Nternal 网络资源页面，内部服务与穿透节点汇总。</p>
-      <div class="btn-row">
-        <a class="btn primary" href=".//nt/" target="_blank">打开 →</a>
-      </div>
-    </div>
-    <div class="section-title" style="grid-column:1/-1"><span class="icon">🔗</span> 实用链接</div>
-    <div class="card" data-tags="资源" data-search="飞书 wiki 笔记 文档">
-      <div class="card-icon">📕</div>
-      <div class="labels"><span class="label">资源</span></div>
-      <h3>飞书 Wiki 笔记</h3>
-      <p class="desc">飞书Wiki整理版笔记，每日从飞书文档提取整理，含待办/规则/账号/设备等模块。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://haezdegprxl.feishu.cn/wiki/E99SwvC5riwkNFk1t2mcG2Ssnth" target="_blank">查看 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="资源" data-search="飞书 原文 每日 笔记">
-      <div class="card-icon">📖</div>
-      <div class="labels"><span class="label">资源</span></div>
-      <h3>飞书原文（每日笔记）</h3>
-      <p class="desc">飞书文档原文，每天记录的原始内容，前200行会被提取整理。</p>
-      <div class="btn-row">
-        <a class="btn primary" href="https://haezdegprxl.feishu.cn/docx/VcFmdYHVbokmTqx5uoacTVWgnbg" target="_blank">查看 →</a>
-      </div>
-    </div>
-    <div class="card" data-tags="工具 资源" data-search="夸克 网盘 文件">
-      <div class="card-icon">☁️</div>
-      <div class="labels"><span class="label l-cyan">工具</span><span class="label">资源</span></div>
-      <h3>夸克网盘</h3>
-      <p class="desc">夸克网盘分享文件夹，含考研资料、教学资源等。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://pan.quark.cn/s/9475b4d67c4546f3a1b2786633321385" target="_blank">打开</a>
-      </div>
-    </div>
-    <div class="card" data-tags="教学 资源" data-search="板书 网站 gogoupup">
-      <div class="card-icon">🎨</div>
-      <div class="labels"><span class="label l-green">教学</span></div>
-      <h3>板书网站</h3>
-      <p class="desc">在线板书制作工具网站。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="https://www.gogoupup.com/" target="_blank">打开</a>
-      </div>
-    </div>
-    <div class="card" data-tags="教学 资源" data-search="知网 论文 卡号">
-      <div class="card-icon">📄</div>
-      <div class="labels"><span class="label l-green">教学</span></div>
-      <h3>知网论文</h3>
-      <p class="desc">知网论文下载，卡号登录方式。</p>
-      <div class="btn-row">
-        <a class="btn secondary" href="http://3.shutong2.com" target="_blank">打开</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer">
-    <p>📄 GitHub Pages · <a href="https://github.com/hlh66/hlh66.github.io">查看仓库</a> · 更新日期：2026-08-19</p>
-  </div>
+
 </div>
+
+<!-- 页脚 -->
+<div class="footer">
+  <p>🎓 洪老师数学乐园 · 2026年制作</p>
+  <p style="margin-top:5px;">让数学变得更有趣！</p>
+</div>
+
 <script>
-// 标签筛选
-function filterTag(el, tag) {
-  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.card').forEach(c => {
-    if (tag === 'all' || c.dataset.tags.includes(tag)) {
-      c.style.display = '';
-    } else {
-      c.style.display = 'none';
-    }
-  });
-  // 显示/隐藏分区标题
-  document.querySelectorAll('.section-title').forEach(st => {
-    let next = st.nextElementSibling;
-    let hasVisible = false;
-    while (next && !next.classList.contains('section-title')) {
-      if (next.style.display !== 'none') { hasVisible = true; break; }
-      next = next.nextElementSibling;
-    }
-    st.style.display = hasVisible ? '' : 'none';
-  });
-}
-// 搜索过滤
-function filterSearch() {
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  document.querySelectorAll('.card').forEach(c => {
-    const text = (c.dataset.search || '') + ' ' + c.textContent.toLowerCase();
-    if (!q || text.includes(q)) {
-      c.style.display = '';
-    } else {
-      c.style.display = 'none';
-    }
-  });
-  // 更新分区标题可见性
-  document.querySelectorAll('.section-title').forEach(st => {
-    let next = st.nextElementSibling;
-    let hasVisible = false;
-    while (next && !next.classList.contains('section-title')) {
-      if (next.style.display !== 'none') { hasVisible = true; break; }
-      next = next.nextElementSibling;
-    }
-    st.style.display = hasVisible ? '' : 'none';
-  });
-}
+// 飘落装饰
+(function(){
+  const symbols=['➕','✖️','÷','🔢','⭐','🔷','🔶','🟡','🔵','🟢','🔴','⭕','△','○','🌟','💫'];
+  const container=document.getElementById('floaters');
+  for(let i=0;i<15;i++){
+    const el=document.createElement('div');
+    el.className='floating';
+    el.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+    el.style.left=Math.random()*100+'vw';
+    el.style.fontSize=(Math.random()*18+14)+'px';
+    el.style.animationDuration=(Math.random()*12+10)+'s';
+    el.style.animationDelay=(-Math.random()*12)+'s';
+    container.appendChild(el);
+  }
+})();
 </script>
+
 </body>
 </html>
