@@ -11,161 +11,203 @@ body{
   background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
   min-height:100vh;color:#fff;
 }
-.container{max-width:900px;margin:0 auto;padding:30px 20px}
+.container{max-width:960px;margin:0 auto;padding:25px 18px}
 
 /* 头部 */
-.header{text-align:center;padding:40px 20px 30px}
+.header{text-align:center;padding:35px 20px 22px}
 .avatar{
-  width:90px;height:90px;border-radius:50%;
+  width:85px;height:85px;border-radius:50%;
   background:linear-gradient(135deg,#fff,#f0eaff);
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:42px;margin-bottom:18px;
-  box-shadow:0 6px 30px rgba(0,0,0,.2);
+  font-size:40px;margin-bottom:16px;
+  box-shadow:0 6px 28px rgba(0,0,0,.2);animation:pulse 3s ease infinite;
 }
-.header h1{font-size:2.2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:8px}
-.header .subtitle{font-size:1.08em;opacity:.92}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.header h1{font-size:2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:6px}
+.header .subtitle{font-size:1em;opacity:.9}
 
-/* 主卡片区 */
-.main-cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:30px 0}
-.main-card{
-  background:rgba(255,255,255,.95);border-radius:22px;
-  padding:32px 28px;width:340px;text-align:center;
-  text-decoration:none;color:inherit;
-  transition:all .4s cubic-bezier(.175,.885,.32,1.275);
-  box-shadow:0 8px 32px rgba(0,0,0,.15);
-  border:3px solid transparent;position:relative;overflow:hidden;
-}
-.main-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:6px;
-}
-.main-card:nth-child(1)::before{background:linear-gradient(90deg,#FF6B6B,#FFE66D)}
-.main-card:nth-child(2)::before{background:linear-gradient(90deg,#4ECDC4,#44A08D)}
-.main-card:hover{
-  transform:translateY(-10px) scale(1.03);
-  box-shadow:0 16px 48px rgba(0,0,0,.25);
-  color:#333;
-}
-.main-card:hover .card-icon{transform:scale(1.15) rotate(-5deg)}
-.card-icon{
-  font-size:3.8em;display:block;margin-bottom:14px;
+/* 主入口大卡片 */
+.hero-card{
+  background:rgba(255,255,255,.96);border-radius:22px;
+  padding:36px 28px;text-align:center;margin-bottom:22px;
+  box-shadow:0 10px 40px rgba(0,0,0,.15);
+  position:relative;overflow:hidden;border-top:5px solid;
+  border-image:linear-gradient(90deg,#FF6B6B,#FFE66D,#4ECDC4) 1;
   transition:transform .3s;
 }
-.card-title{
-  font-size:1.35em;font-weight:bold;color:#333;margin-bottom:10px;
-}
-.card-desc{
-  font-size:.92em;color:#777;line-height:1.55;margin-bottom:18px;
-}
-.card-btn{
-  display:inline-block;padding:12px 32px;border-radius:25px;
-  font-weight:bold;font-size:.98em;transition:all .3s;
-}
-.main-card:nth-child(1) .card-btn{
+.hero-card:hover{transform:translateY(-5px)}
+.hero-icon{font-size:3.5em;display:block;margin-bottom:12px}
+.hero-title{font-size:1.4em;font-weight:bold;color:#333;margin-bottom:8px}
+.hero-desc{font-size:.92em;color:#666;line-height:1.55;margin-bottom:16px}
+.hero-btn{
+  display:inline-block;padding:13px 38px;border-radius:28px;
+  font-weight:bold;font-size:1em;text-decoration:none;transition:all .3s;
   background:linear-gradient(135deg,#f093fb,#f5576c);color:white;
 }
-.main-card:nth-child(2) .card-btn{
-  background:linear-gradient(135deg,#667eea,#764ba2);color:white;
-}
-.card-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.hero-btn:hover{transform:scale(1.07);box-shadow:0 6px 20px rgba(245,87,108,.4)}
 
-/* 底部信息 */
-.info-section{
-  background:rgba(255,255,255,.12);border-radius:18px;
-  padding:24px;margin-top:36px;text-align:center;
-  backdrop-filter:blur(10px);
+/* 单元快速导航 */
+.unit-bar{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0;
 }
-.info-section p{font-size:.9em;opacity:.85;line-height:1.7}
-.info-section a{color:#FFE66D;text-decoration:none;border-bottom:1px dashed #FFE66D}
-.info-section a:hover{color:#fff;border-bottom-color:#fff}
+.unit-chip{
+  padding:8px 18px;background:rgba(255,255,255,.2);border-radius:20px;
+  font-size:.85em;cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,.3);
+  text-decoration:none;color:white;
+}
+.unit-chip:hover{background:rgba(255,255,255,.35);transform:translateY(-2px)}
+
+/* 内容区块 */
+.section{
+  background:rgba(255,255,255,.1);border-radius:18px;
+  padding:20px 24px;margin-bottom:16px;
+  backdrop-filter:blur(8px);
+}
+.section-title{
+  font-size:1.08em;font-weight:bold;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* 资源卡片网格 */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.res-card{
+  background:rgba(255,255,255,.95);border-radius:14px;
+  padding:16px;text-align:center;text-decoration:none;color:inherit;
+  transition:all .3s;border-left:4px solid transparent;
+}
+.res-card:hover{transform:translateX(5px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.res-card .r-icon{font-size:2em;display:block;margin-bottom:6px}
+.res-card .r-name{font-size:.9em;font-weight:500;color:#333}
+.res-card .r-desc{font-size:.75em;color:#888;margin-top:3px}
+
+/* 每日推荐 */
+.daily-tip{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border-radius:14px;padding:18px 22px;margin-bottom:16px;
+  border:1px solid rgba(255,255,255,.15);
+}
+.daily-tip p{font-size:.92em;line-height:1.65}
+.daily-tip strong{color:#FFE66D}
 
 /* 页脚 */
-.footer{text-align:center;padding:28px;font-size:.82em;opacity:.7}
+.footer{text-align:center;padding:20px;font-size:.8em;opacity:.6}
 
-/* 装饰动画 */
-.floating{
-  position:fixed;font-size:24px;opacity:.08;
-  animation:float linear infinite;pointer-events:none;z-index:0;
-}
-@keyframes float{
-  0%{transform:translateY(-50px) rotate(0deg);opacity:0}
-  10%{opacity:.08}90%{opacity:.08}
-  100%{transform:translateY(105vh) rotate(360deg);opacity:0}
-}
+/* 飞入装饰 */
+.floating{position:fixed;font-size:22px;opacity:.08;animation:f linear infinite;pointer-events:none;z-index:0}
+@keyframes f{0%{transform:translateY(-50px) rotate(0);opacity:0}10%{opacity:.08}90%{opacity:.08}100%{transform:translateY(105vh) rotate(360deg);opacity:0}}
 
 @media(max-width:600px){
-  .main-cards{flex-direction:column;align-items:center}
-  .main-card{width:100%;max-width:360px}
-  .header h1{font-size:1.7em}
+  .header h1{font-size:1.6em}.hero-card{padding:26px 20px}
+  .res-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 }
 </style>
 </head>
 <body>
-
-<!-- 飘落装饰 -->
 <div id="floaters"></div>
 
 <div class="container">
 
-  <!-- 头部 -->
-  <div class="header">
-    <div class="avatar">👨‍🏫</div>
-    <h1>洪老师的数学乐园</h1>
-    <p class="subtitle">北师大版 · 二年级数学 · 学习资源导航</p>
-  </div>
+<!-- 头部 -->
+<div class="header">
+  <div class="avatar">👨‍🏫</div>
+  <h1>洪老师的数学乐园</h1>
+  <p class="subtitle">北师大版 · 二年级上册 · 让数学变得更有趣 ✨</p>
+</div>
 
-  <!-- 两大入口 -->
-  <div class="main-cards">
+<!-- 主入口：二年级数学乐园 -->
+<div class="hero-card">
+  <span class="hero-icon">🎓</span>
+  <div class="hero-title">二年级数学乐园</div>
+  <p class="desc">北师大版二年级上册 · 全册8个单元资源导航<br>视频课程 · 趣味游戏 · 动画演示 · 练习试卷</p>
+  <a class="hero-btn" href="/2s/" target="_blank">进入学习 →</a>
+</div>
 
-    <!-- 二年级数学乐园 -->
-    <a href="/2s/" class="main-card" target="_blank">
-      <span class="card-icon">🎓</span>
-      <div class="card-title">二年级数学乐园</div>
-      <p class="card-desc">📺 同步课程视频<br>🎮 趣味数学游戏<br>🎬 动画演示讲解<br>📝 练习试卷资源<br><br>🔢 北师大版 · 上册 · 8个单元全覆盖</p>
-      <span class="card-btn">进入学习 →</span>
+<!-- 8个单元快速跳转 -->
+<div class="unit-bar">
+  <a class="unit-chip" href="/2s/" target="_blank">🔢 第1单元 加减法</a>
+  <a class="unit-chip" href="/2s/" target="_blank">🛒 第2单元 购物</a>
+  <a class="unit-chip" href="/2s/" target="_blank">✨ 第3单元 乘法</a>
+  <a class="unit-chip" href="/2s/" target="_blank">🔄 第4单元 图形变化</a>
+  <a class="unit-chip" href="/2s/" target="_blank">⭐ 第5单元 口诀(2-5)</a>
+  <a class="unit-chip" href="/2s/" target="_blank">📏 第6单元 测量</a>
+  <a class="unit-chip" href="/2s/" target="_blank">🍎 第7单元 除法</a>
+  <a class="unit-chip" href="/2s/" target="_blank">🌟 第8单元 口诀(6-9)</a>
+</div>
+
+<!-- 热门资源 -->
+<div class="section">
+  <div class="section-title">🔥 热门资源直达</div>
+  <div class="res-grid">
+    <a class="res-card" href="https://www.bilibili.com/video/BV17L8M6FEvd" target="_blank" style="border-left-color:#00A1D6">
+      <span class="r-icon">📺</span>
+      <div class="r-name">完整同步课（27集）</div>
+      <div class="r-desc">清北学霸院 · B站免费</div>
     </a>
-
-    <!-- 更多资源（私人导航） -->
-    <a href="/l/" class="main-card" target="_blank">
-      <span class="card-icon">📚</span>
-      <div class="card-title">更多资源</div>
-      <p class="card-desc">🛠️ 教师备课工具<br>🤖 AI辅助教学<br>💻 开发项目<br>🔗 实用工具链接<br><br>🔒 教师专用 / 家长参考</p>
-      <span class="card-btn">查看更多 →</span>
+    <a class="res-card" href="https://www.abcya.com/games/category/math" target="_blank" style="border-left-color:#43e97b">
+      <span class="r-icon">🎮</span>
+      <div class="r-name">ABCya 数学游戏</div>
+      <div class="r-desc">数百款免费数学小游戏</div>
     </a>
-
+    <a class="res-card" href="https://www.mathplayground.com/" target="_blank" style="border-left-color:#FF9800">
+      <span class="r-icon">🎯</span>
+      <div class="r-name">Math Playground</div>
+      <div class="r-desc">专业数学游戏平台</div>
+    </a>
+    <a class="res-card" href="https://toytheater.com/category/math/" target="_blank" style="border-left-color:#f5576c">
+      <span class="r-icon">🎪</span>
+      <div class="r-name">Toy Theater 数学玩具</div>
+      <div class="r-desc">计数器/几何板等互动工具</div>
+    </a>
   </div>
+</div>
 
-  <!-- 说明信息 -->
-  <div class="info-section">
-    <p>🌟 <strong>二年级数学乐园</strong> 收录了北师大版二年级上册的全部学习资源</p>
-    <p>包含 B站同步课视频、在线数学游戏网站、动画演示工具、练习试卷下载等</p>
-    <p style="margin-top:10px;">适合 ✦ 学生自学 &nbsp;·&nbsp; ✦ 家长辅导 &nbsp;·&nbsp; ✦ 教师备课参考</p>
+<!-- 每日数学小知识 -->
+<div class="daily-tip">
+  <p>💡 <strong>今日小知识：</strong>乘法口诀是二年级最重要的内容！2-5的口诀在第5单元学，6-9的口诀在第8单元学。记住：口诀不用死记硬背，多玩数学游戏自然就会啦！🎮</p>
+</div>
+
+<!-- 使用说明 -->
+<div class="section">
+  <div class="section-title">📖 如何使用？</div>
+  <div class="res-grid">
+    <div class="res-card" style="border-left-color:#667eea">
+      <span class="r-icon">👦</span>
+      <div class="r-name">学生自学</div>
+      <div class="r-desc">看视频→玩游戏→做练习</div>
+    </div>
+    <div class="res-card" style="border-left-color:#f093fb">
+      <span class="r-icon">👨‍👩‍👧</span>
+      <div class="r-name">家长辅导</div>
+      <div class="r-desc">找对应单元资源陪孩子学</div>
+    </div>
+    <div class="res-card" style="border-left-color:#43e97b">
+      <span class="r-icon">👩‍🏫</span>
+      <div class="r-name">老师备课</div>
+      <div class="r-desc">参考视频和课件设计教案</div>
+    </div>
   </div>
+</div>
 
 </div>
 
-<!-- 页脚 -->
 <div class="footer">
-  <p>🎓 洪老师数学乐园 · 2026年制作</p>
-  <p style="margin-top:5px;">让数学变得更有趣！</p>
+  <p>🎓 洪老师数学乐园 · 2026年制作 · 北师大版二年级上册</p>
 </div>
 
 <script>
-// 飘落装饰
+// 飞入装饰
 (function(){
-  const symbols=['➕','✖️','÷','🔢','⭐','🔷','🔶','🟡','🔵','🟢','🔴','⭕','△','○','🌟','💫'];
-  const container=document.getElementById('floaters');
-  for(let i=0;i<15;i++){
-    const el=document.createElement('div');
-    el.className='floating';
-    el.textContent=symbols[Math.floor(Math.random()*symbols.length)];
-    el.style.left=Math.random()*100+'vw';
-    el.style.fontSize=(Math.random()*18+14)+'px';
-    el.style.animationDuration=(Math.random()*12+10)+'s';
-    el.style.animationDelay=(-Math.random()*12)+'s';
-    container.appendChild(el);
+  const s=['➕','✖️','÷','🔢','⭐','🔷','🟡','🔵','🟢','🔴','⭕','△','○','🌟'];
+  const c=document.getElementById('floaters');
+  for(let i=0;i<12;i++){
+    const e=document.createElement('div');e.className='floating';
+    e.textContent=s[Math.floor(Math.random()*s.length)];
+    e.style.left=Math.random()*100+'vw';
+    e.style.fontSize=(Math.random()*16+14)+'px';
+    e.style.animationDuration=(Math.random()*10+10)+'s';
+    e.style.animationDelay=(-Math.random()*10)+'s';c.appendChild(e);
   }
 })();
 </script>
-
 </body>
 </html>
