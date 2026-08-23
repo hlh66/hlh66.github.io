@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 二年级数学乐园 · 北师大版上册</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* 头部 */
+        .header { text-align: center; padding: 35px 20px 25px; }
+        .header h1 { font-size: 2.4em; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { color: rgba(255,255,255,0.9); font-size: 1.1em; margin-top: 8px; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
+
+        /* Tab切换 */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .tab-btn {
+            padding: 10px 22px; border: 2px solid rgba(255,255,255,0.6);
+            background: transparent; color: white; border-radius: 25px;
+            cursor: pointer; font-size: 0.95em; transition: all 0.3s;
+        }
+        .tab-btn.active, .tab-btn:hover { background: white; color: #667eea; border-color: white; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+        /* 卡片通用 */
+        .card {
+            background: white; border-radius: 16px; padding: 22px;
+            margin-bottom: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .card-title {
+            font-size: 1.25em; color: #333; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* 单元卡片网格 */
+        .units-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+        .unit-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 16px; padding: 20px; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .unit-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.18); border-color: #667eea; }
+        .unit-icon { font-size: 2.4em; margin-bottom: 8px; }
+        .unit-num { font-size: 0.82em; color: #999; }
+        .unit-name { font-size: 1.15em; font-weight: bold; color: #333; margin: 4px 0 6px; }
+        .unit-desc { font-size: 0.85em; color: #777; line-height: 1.4; margin-bottom: 10px; }
+        .unit-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+        .tag { padding: 3px 9px; border-radius: 10px; font-size: 0.72em; }
+        .tag-v { background: #E3F2FD; color: #1565C0; }
+        .tag-g { background: #FCE4EC; color: #C62828; }
+        .tag-a { background: #E8F5E9; color: #2E7D32; }
+        .tag-p { background: #FFF3E0; color: #E65100; }
+
+        /* 资源链接列表 */
+        .resource-list { display: flex; flex-direction: column; gap: 10px; }
+        .res-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; background: #f8f9fa; border-radius: 12px;
+            text-decoration: none; color: inherit; transition: all 0.25s;
+            border-left: 4px solid transparent;
+        }
+        .res-item:hover { background: #eef2ff; border-left-color: #667eea; transform: translateX(5px); }
+        .res-icon { font-size: 1.8em; min-width: 40px; text-align: center; }
+        .res-info { flex: 1; }
+        .res-name { font-size: 1em; font-weight: 500; color: #333; }
+        .res-desc { font-size: 0.82em; color: #888; margin-top: 2px; }
+        .res-badge { 
+            padding: 4px 10px; border-radius: 12px; font-size: 0.72em; font-weight: bold;
+            white-space: nowrap;
+        }
+        .badge-bili { background: #00A1D6; color: white; }      /* B站 */
+        .badge-web { background: #43e97b; color: #222; }       /* 网站 */
+        .badge-app { background: #f5576c; color: white; }     /* APP/小程序 */
+        .badge-pdf { background: #FF9800; color: white; }     /* PDF/文档 */
+
+        /* 分类标题 */
+        .section-header {
+            font-size: 1.05em; font-weight: bold; color: #667eea;
+            margin: 16px 0 10px; padding-left: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* 搜索框 */
+        .search-box { display: flex; justify-content: center; margin-bottom: 18px; }
+        .search-box input {
+            width: 100%; max-width: 450px; padding: 12px 22px;
+            border: none; border-radius: 50px; font-size: 1em;
+            outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 单元详情页 */
+        .unit-detail { display: none; }
+        .unit-detail.active { display: block; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 20px; background: #667eea; color: white;
+            border: none; border-radius: 20px; cursor: pointer;
+            font-size: 0.95em; margin-bottom: 15px; transition: all 0.3s;
+        }
+        .back-btn:hover { background: #764ba2; }
+
+        /* 页脚 */
+        .footer { text-align: center; padding: 25px; color: rgba(255,255,255,0.8); font-size: 0.88em; }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .units-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+            .res-item { padding: 12px 14px; }
+            .res-badge { display: none; }
+        }
+
+        /* 推荐横幅 */
+        .banner {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 16px; padding: 20px; margin-bottom: 18px;
+            color: white; text-align: center;
+        }
+        .banner h3 { font-size: 1.2em; margin-bottom: 8px; }
+        .banner p { font-size: 0.92em; opacity: 0.95; }
+        .banner-links { display: flex; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+        .banner-links a {
+            padding: 8px 20px; background: rgba(255,255,255,0.25); color: white;
+            border-radius: 20px; text-decoration: none; font-size: 0.9em;
+            transition: all 0.3s; border: 1px solid rgba(255,255,255,0.4);
+        }
+        .banner-links a:hover { background: white; color: #f5576c; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🎓 二年级数学乐园</h1>
+    <p class="subtitle">北师大版 · 上册 | 资源导航站（视频·游戏·动画·练习）</p>
+</div>
+
+<div class="container">
+
+<!-- Tab导航 -->
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('home')">🏠 首页</button>
+    <button class="tab-btn" onclick="switchTab('videos')">📺 视频课堂</button>
+    <button class="tab-btn" onclick="switchTab('games')">🎮 数学游戏</button>
+    <button class="tab-btn" onclick="switchTab('animation')">🎬 动画演示</button>
+    <button class="tab-btn" onclick="switchTab('practice')">📝 练习资源</button>
+    <button class="tab-btn" onclick="switchTab('tools')">🛠️ 教师工具</button>
+</div>
+
+
+<!-- ==================== 首页 ==================== -->
+<div id="tab-home" class="tab-content active">
+
+    <!-- 热门推荐 -->
+    <div class="banner">
+        <h3>🔥 热门推荐 · 一键直达</h3>
+        <p>精选最优质的北师大版二年级数学资源，点击即可使用</p>
+        <div class="banner-links">
+            <a href="https://www.bilibili.com/video/BV17L8M6FEvd" target="_blank">📺 完整同步课(27集)</a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学乘法口诀动画" target="_blank">🎬 口诀动画</a>
+            <a href="#tab-games" onclick="switchTab('games')">🎮 趣味游戏</a>
+            <a href="https://www.zxxk.com/" target="_blank">📝 试卷下载</a>
+        </div>
+    </div>
+
+    <!-- 搜索 -->
+    <div class="search-box">
+        <input type="text" placeholder="🔍 搜索单元、知识点..." id="searchInput" oninput="filterUnits()">
+    </div>
+
+    <!-- 8个单元 -->
+    <div class="units-grid" id="unitsGrid">
+        <!-- 第1单元 加减法 -->
+        <div class="unit-card" data-unit="加减法 连加连减 混合运算" onclick="showUnit(1)">
+            <div class="unit-icon">🔢</div>
+            <div class="unit-num">第1单元</div>
+            <div class="unit-name">加减法</div>
+            <div class="unit-desc">100以内连加连减、混合运算、应用题</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频8+</span><span class="tag tag-g">游戏3</span><span class="tag tag-a">动画2</span>
+            </div>
+        </div>
+        <!-- 第2单元 购物 -->
+        <div class="unit-card" data-unit="购物 人民币 认钱" onclick="showUnit(2)">
+            <div class="unit-icon">🛒</div>
+            <div class="unit-num">第2单元</div>
+            <div class="unit-name">购物（人民币）</div>
+            <div class="unit-desc">认识人民币、简单计算、模拟购物</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频6+</span><span class="tag tag-g">游戏2</span><span class="tag tag-a">动画2</span>
+            </div>
+        </div>
+        <!-- 第3单元 数一数与乘法 -->
+        <div class="unit-card" data-unit="乘法 几个几 同数相加" onclick="showUnit(3)">
+            <div class="unit-icon">✨</div>
+            <div class="unit-num">第3单元</div>
+            <div class="unit-name">数一数与乘法</div>
+            <div class="unit-desc">同数相加→乘法、乘法的意义</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频7+</span><span class="tag tag-g">游戏3</span><span class="tag tag-a">动画3</span>
+            </div>
+        </div>
+        <!-- 第4单元 图形的变化 -->
+        <div class="unit-card" data-unit="平移 旋转 折纸 图形变换" onclick="showUnit(4)">
+            <div class="unit-icon">🔄</div>
+            <div class="unit-num">第4单元</div>
+            <div class="unit-name">图形的变化</div>
+            <div class="unit-desc">平移、旋转、折纸、图形拼组</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频5+</span><span class="tag tag-g">游戏3</span><span class="tag tag-a">动画3</span>
+            </div>
+        </div>
+        <!-- 第5单元 2~5的乘法口诀 -->
+        <div class="unit-card" data-unit="乘法口诀 2的口诀 3的口诀 4的口诀 5的口诀" onclick="showUnit(5)">
+            <div class="unit-icon">⭐</div>
+            <div class="unit-num">第5单元</div>
+            <div class="unit-name">2~5的乘法口诀</div>
+            <div class="unit-desc">2、3、4、5的口诀背诵与应用</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频10+</span><span class="tag tag-g">游戏4</span><span class="tag tag-a">动画3</span>
+            </div>
+        </div>
+        <!-- 第6单元 测量 -->
+        <div class="unit-card" data-unit="测量 厘米 米 长度 尺子" onclick="showUnit(6)">
+            <div class="unit-icon">📏</div>
+            <div class="unit-num">第6单元</div>
+            <div class="unit-name">测量</div>
+            <div class="unit-desc">厘米和米的认识、测量方法</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频6+</span><span class="tag tag-g">游戏2</span><span class="tag tag-a">动画2</span>
+            </div>
+        </div>
+        <!-- 第7单元 分一分与除法 -->
+        <div class="unit-card" data-unit="除法 平均分 分一分" onclick="showUnit(7)">
+            <div class="unit-icon">🍎</div>
+            <div class="unit-num">第7单元</div>
+            <div class="unit-name">分一分与除法</div>
+            <div class="unit-desc">平均分、除法的初步认识</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频7+</span><span class="tag tag-g">游戏2</span><span class="tag tag-a">动画2</span>
+            </div>
+        </div>
+        <!-- 第8单元 6~9的乘法口诀 -->
+        <div class="unit-card" data-unit="6的口诀 7的口诀 8的口诀 9的口诀 九九乘法表" onclick="showUnit(8)">
+            <div class="unit-icon">🌟</div>
+            <div class="unit-num">第8单元</div>
+            <div class="unit-name">6~9的乘法口诀</div>
+            <div class="unit-desc">6、7、8、9的口诀与应用</div>
+            <div class="unit-tags">
+                <span class="tag tag-v">视频10+</span><span class="tag tag-g">游戏3</span><span class="tag tag-a">动画2</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== 视频课堂 ==================== -->
+<div id="tab-videos" class="tab-content">
+
+    <div class="card">
+        <h2 class="card-title">📺 完整同步课程（B站）</h2>
+        <p style="color:#666;font-size:0.92em;margin-bottom:14px;">点击直接跳转到B站播放，无需注册登录即可观看</p>
+        <div class="resource-list">
+            <a href="https://www.bilibili.com/video/BV17L8M6FEvd" target="_blank" class="res-item">
+                <span class="res-icon">📺</span>
+                <div class="res-info"><div class="res-name">【27集全】北师大版二年级上册同步课程</div><div class="res-desc">清北学霸院 · 2026最新版 · 每节课对应教材</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV1dKu76eEHN" target="_blank" class="res-item">
+                <span class="res-icon">🎬</span>
+                <div class="res-info"><div class="res-name">【27集全】北师大版二上完整课程</div><div class="res-desc">中小学课堂 · 系统讲解全部课时</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV14X4y1U72a" target="_blank" class="res-item">
+                <span class="res-icon">👩‍🏫</span>
+                <div class="res-info"><div class="res-name">北师大版二上教学视频（含课件教案）</div><div class="res-desc">bluehouse123 · 配套PPT和教案可下载</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV1noTi6xEdh" target="_blank" class="res-item">
+                <span class="res-icon">📚</span>
+                <div class="res-info"><div class="res-name">2026新版·二上同步精讲+练习题+测试</div><div class="res-desc">幼小初高学习课堂 · 视频+练习配套</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV1aWNM64Ewc" target="_blank" class="res-item">
+                <span class="res-icon">✨</span>
+                <div class="res-info"><div class="res-name">2026新改版·二上二下预习课程</div><div class="res-desc">幼小初高全科动画 · 动画风格讲解</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV1sAn3zkERY" target="_blank" class="res-item">
+                <span class="res-icon">🏫</span>
+                <div class="res-info"><div class="res-name">新北师大版二上同步精讲（含课件）</div><div class="res-desc">学习第一站 · 配套课件教案试卷</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.bilibili.com/video/BV1St4y167hR/" target="_blank" class="res-item">
+                <span class="res-icon">📖</span>
+                <div class="res-info"><div class="res-name">小学数学北师大版二上（dc008）</div><div class="res-desc">dc008名师 · 75万播放 · 含课件PPT</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🔍 B站搜索关键词（点击搜索更多）</h2>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=北师大版二年级数学上册第一单元加减法" target="_blank" class="res-item">
+                <span class="res-icon">🔢</span>
+                <div class="res-info"><div class="res-name">第1单元 加减法 相关视频</div><div class="res-desc">连加连减、混合运算教学视频</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=北师大版二年级数学上册第二单元购物人民币" target="_blank" class="res-item">
+                <span class="res-icon">🛒</span>
+                <div class="res-info"><div class="res-name">第2单元 购物/人民币 相关视频</div><div class="res-desc">认识钱币、购物计算讲解</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=北师大版二年级数学上册第三单元乘法初步认识" target="_blank" class="res-item">
+                <span class="res-icon">✨</span>
+                <div class="res-info"><div class="res-name">第3单元 数一数与乘法 相关视频</div><div class="res-desc">乘法意义、同数相加变乘法</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=北师大版二年级数学上册第四单元图形的变化平移旋转" target="_blank" class="res-item">
+                <span class="res-icon">🔄</span>
+                <div class="res-info"><div class="res-name">第4单元 图形的变化 相关视频</div><div class="res-desc">平移、旋转、折纸、拼图</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学乘法口诀动画儿歌" target="_blank" class="res-item">
+                <span class="res-icon">⭐</span>
+                <div class="res-info"><div class="res-name">乘法口诀 动画/儿歌/记忆法</div><div class="res-desc">口诀背诵技巧、动画记忆</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学测量厘米米" target="_blank" class="res-item">
+                <span class="res-icon">📏</span>
+                <div class="res-info"><div class="res-name">测量 厘米和米 相关视频</div><div class="res-desc">尺子的使用、长度单位换算</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学除法平均分" target="_blank" class="res-item">
+                <span class="res-icon">🍎</span>
+                <div class="res-info"><div class="res-name">分一分与除法 相关视频</div><div class="res-desc">平均分的概念、除法初步</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学易错题讲解" target="_blank" class="res-item">
+                <span class="res-icon">💡</span>
+                <div class="res-info"><div class="res-name">易错题 / 易错点 讲解</div><div class="res-desc">常见错误分析、避坑指南</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🎪 数学动画 / 科普视频</h2>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=小学数学趣味动画" target="_blank" class="res-item">
+                <span class="res-icon">🎬</span>
+                <div class="res-info"><div class="res-name">小学数学趣味动画合集</div><div class="res-desc">用动画讲数学概念，孩子爱看</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=螺丝钉 数学" target="_blank" class="res-item">
+                <span class="res-icon">🔩</span>
+                <div class="res-info"><div class="res-name">《螺丝钉》数学相关剧集</div><div class="res-desc">俄罗斯科普动画，涉及数学物理知识</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=数学荒岛历险记" target="_blank" class="res-item">
+                <span class="res-icon">🏝️</span>
+                <div class="res-info"><div class="res-name">《数学荒岛历险记》</div><div class="res-desc">国产数学冒险动画片</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=数字小精灵 数学" target="_blank" class="res-item">
+                <span class="res-icon">🧚</span>
+                <div class="res-info"><div class="res-name">《数字小精灵》/ 数字怪兽</div><div class="res-desc">用角色故事教数学概念</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== 数学游戏 ==================== -->
+<div id="tab-games" class="tab-content">
+
+    <div class="card">
+        <h2 class="card-title">🎮 在线数学游戏网站（免费）</h2>
+        <p style="color:#666;font-size:0.92em;margin-bottom:14px;">这些都是专业的儿童数学游戏网站，点击直接打开就能玩</p>
+        <div class="resource-list">
+            <a href="https://www.abcya.com/games/category/math" target="_blank" class="res-item">
+                <span class="res-icon">🎮</span>
+                <div class="res-info"><div class="res-name">ABCya! 数学游戏专区</div><div class="res-desc">美国知名教育游戏网站，数百款数学游戏，按年级分类</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.mathplayground.com/" target="_blank" class="res-item">
+                <span class="res-icon">🎯</span>
+                <div class="res-info"><div class="res-name">Math Playground</div><div class="res-desc">专业数学游戏平台，含加减法、乘法、逻辑等</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.coolmathgames.com/" target="_blank" class="res-item">
+                <span class="res-icon">❄️</span>
+                <div class="res-info"><div class="res-name">Cool Math Games</div><div class="res-desc">全球最大的免费在线数学游戏网站之一</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.funbrain.com/games/math" target="_blank" class="res-item">
+                <span class="res-icon">🧠</span>
+                <div class="res-info"><div class="res-name">FunBrain 数学游戏</div><div class="res-desc">适合小学各年级的数学互动游戏</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.sheppardsoftware.com/math.htm" target="_blank" class="res-item">
+                <span class="res-icon">🐾</span>
+                <div class="res-info"><div class="res-name">Sheppard Software 数学</div><div class="res-desc">丰富的数学小游戏，界面简洁适合低年级</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.turtlediary.com/games/math.html" target="_blank" class="res-item">
+                <span class="res-icon">🐢</span>
+                <div class="res-info"><div class="res-name">Turtle Diary 数学游戏</div><div class="res-desc">可爱的动物主题数学游戏，适合一二年级</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🇨🇳 国内数学游戏资源</h2>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=二年级数学互动游戏" target="_blank" class="res-item">
+                <span class="res-icon">📱</span>
+                <div class="res-info"><div class="res-name">B站搜索：二年级数学互动游戏</div><div class="res-desc">可以找到H5小游戏、Flash游戏等</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://www.17zuoye.com/" target="_blank" class="res-item">
+                <span class="res-icon">📖</span>
+                <div class="res-info"><div class="res-name">一起作业网（翼课网）</div><div class="res-desc">国内最大的中小学数学练习平台，有游戏化练习</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.xes.cn/" target="_blank" class="res-item">
+                <span class="res-icon">🎯</span>
+                <div class="res-info"><div class="res-name">学而思网校</div><div class="res-desc">有免费的数学思维训练和互动课程</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://h5.ddkt.cn/" target="_blank" class="res-item">
+                <span class="res-icon">📲</span>
+                <div class="res-info"><div class="res-name">叮咚课堂 H5游戏</div><div class="res-desc">AI互动数学小游戏，适合课后练习</div></div>
+                <span class="res-badge badge-app">H5</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=乘法口诀游戏 小程序" target="_blank" class="res-item">
+                <span class="res-icon">⭐</span>
+                <div class="res-info"><div class="res-name">微信小程序：乘法口诀游戏</div><div class="res-desc">在微信里搜"乘法口诀"有很多免费小程序游戏</div></div>
+                <span class="res-badge badge-app">小程序</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🎲 具体游戏推荐（按知识点）</h2>
+        
+        <div class="section-header">➕ 加减法游戏</div>
+        <div class="resource-list">
+            <a href="https://www.mathplayground.com/addition_games.html" target="_blank" class="res-item">
+                <span class="res-icon">➕</span>
+                <div class="res-info"><div class="res-name">Math Playground - 加法游戏合集</div><div class="res-desc">多种加法游戏：数线加法、快速加法挑战等</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.abcya.com/games/math_facts" target="_blank" class="res-item">
+                <span class="res-icon">🧮</span>
+                <div class="res-info"><div class="res-name">ABCya - Math Facts（算术事实）</div><div class="res-desc">加减法速算练习，有计时模式</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.sheppardsoftware.com/mathgames/fruitshoot/AdditionFruitShoot.htm" target="_blank" class="res-item">
+                <span class="res-icon">🍎</span>
+                <div class="res-info"><div class="res-name">水果射击加法游戏</div><div class="res-desc">射中正确答案的水果，有趣又练加法</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+        </div>
+
+        <div class="section-header">✖️ 乘法口诀游戏</div>
+        <div class="resource-list">
+            <a href="https://www.mathplayground.com/multiplication_games.html" target="_blank" class="res-item">
+                <span class="res-icon">✖️</span>
+                <div class="res-info"><div class="res-name">Math Playground - 乘法游戏合集</div><div class="res-desc">乘法赛车、乘法城堡等多种游戏</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.abcya.com/games/math_stack" target="_blank" class="res-item">
+                <span class="res-icon">🥞</span>
+                <div class="res-info"><div class="res-name">ABCya - Math Stack（叠叠乐）</div><div class="res-desc">答对题目堆叠方块，非常上瘾</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.coolmathgames.com/0-multiplication-game" target="_blank" class="res-item">
+                <span class="res-icon">🎮</span>
+                <div class="res-info"><div class="res-name">Cool Math - 经典乘法游戏</div><div class="res-desc">经典网页乘法练习游戏</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=乘法口诀大闯关 游戏" target="_blank" class="res-item">
+                <span class="res-icon">🏆</span>
+                <div class="res-info"><div class="res-name">B站搜索：乘法口诀闯关游戏</div><div class="res-desc">中文口诀游戏视频/演示</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+
+        <div class="section-header">🛒 人民币/购物游戏</div>
+        <div class="resource-list">
+            <a href="https://www.abcya.com/games/money_counting_coins_us" target="_blank" class="res-item">
+                <span class="res-icon">💰</span>
+                <div class="res-info"><div class="res-name">ABCya - 数钱游戏</div><div class="res-desc">识别硬币和纸币，学习数钱（美元版，原理相同）</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.sheppardsoftware.com/mathgames/makingchange/MakingChangeGame.htm" target="_blank" class="res-item">
+                <span class="res-icon">🛒</span>
+                <div class="res-info"><div class="res-name">找零钱游戏</div><div class="res-desc">模拟商店购物找零，培养金钱概念</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=人民币购物游戏 小学" target="_blank" class="res-item">
+                <span class="res-icon">🏪</span>
+                <div class="res-info"><div class="res-name">B站搜索：人民币购物游戏</div><div class="res-desc">中文版的购物模拟游戏</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+
+        <div class="section-header">🧩 图形/空间游戏</div>
+        <div class="resource-list">
+            <a href="https://www.abcya.com/games/shapes_geometry" target="_blank" class="res-item">
+                <span class="res-icon">🔷</span>
+                <div class="res-info"><div class="res-name">ABCya - 形状几何游戏</div><div class="res-desc">图形认知、拼图、七巧板等</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.mathplayground.com/pattern_blocks.html" target="_blank" class="res-item">
+                <span class="res-icon">🧩</span>
+                <div class="res-info"><div class="res-name">Math Playground - 图形积木</div><div class="res-desc">自由拼搭各种图案，理解图形组合</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+            <a href="https://www.tangram-builder.com/" target="_blank" class="res-item">
+                <span class="res-icon">🦅</span>
+                <div class="res-info"><div class="res-name">七巧板在线（Tangram Builder）</div><div class="res-desc">经典的七巧板拼图游戏，锻炼空间感</div></div>
+                <span class="res-badge badge-web">英文</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== 动画演示 ==================== -->
+<div id="tab-animation" class="tab-content">
+
+    <div class="card">
+        <h2 class="card-title">🎬 数学动画演示资源</h2>
+        <p style="color:#666;font-size:0.92em;margin-bottom:14px;">动态展示数学概念，帮助学生直观理解抽象知识</p>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=二年级数学乘法意义动画几个几" target="_blank" class="res-item">
+                <span class="res-icon">✨</span>
+                <div class="res-info"><div class="res-name">乘法意义动画（几个几 → 乘法）</div><div class="res-desc">从加法到乘法的演变过程动画演示</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=计数器动画演示 小学数学" target="_blank" class="res-item">
+                <span class="res-icon">🔢</span>
+                <div class="res-info"><div class="res-name">计数器动画演示</div><div class="res-desc">位值概念、进位退位的可视化</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=平移旋转动画演示 小学" target="_blank" class="res-item">
+                <span class="res-icon">🔄</span>
+                <div class="res-info"><div class="res-name">平移和旋转动画演示</div><div class="res-desc">图形变换的动态效果展示</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=乘法口诀表动画 动态演示" target="_blank" class="res-item">
+                <span class="res-icon">⭐</span>
+                <div class="res-info"><div class="res-name">乘法口诀表动画</div><div class="res-desc">动态生成九九乘法表的动画</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=平均分 除法动画演示" target="_blank" class="res-item">
+                <span class="res-icon">🍎</span>
+                <div class="res-info"><div class="res-name">平均分/除法动画演示</div><div class="res-desc">把物品平均分成若干份的过程动画</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=尺子测量动画 厘米米" target="_blank" class="res-item">
+                <span class="res-icon">📏</span>
+                <div class="res-info"><div class="res-name">尺子测量动画</div><div class="res-desc">如何正确使用尺子测量的步骤动画</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🌐 国际优秀数学可视化工具</h2>
+        <div class="resource-list">
+            <a href="https://www.geogebra.org/m/emvqvqrp" target="_blank" class="res-item">
+                <span class="res-icon">📊</span>
+                <div class="res-info"><div class="res-name">GeoGebra 数学可视化工具</div><div class="res-desc">全球最强大的免费数学工具，可以做几何、代数、统计动画</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+            <a href="https://toytheater.com/category/math/" target="_blank" class="res-item">
+                <span class="res-icon">🎪</span>
+                <div class="res-info"><div class="res-name">Toy Theater 数学玩具</div><div class="res-desc">大量交互式数学小工具：计数器、分数条、几何板等</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+            <a href="https://www.nctm.org/Classroom-Resources/Illuminations/Interactives/" target="_blank" class="res-item">
+                <span class="res-icon">💡</span>
+                <div class="res-info"><div class="res-name">NCTM Illuminations 交互工具</div><div class="res-desc">美国数学教师协会官方出品的高质量数学互动工具</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+            <a href="https://www.mathlearningcenter.org/resources/apps" target="_blank" class="res-item">
+                <span class="res-icon">📱</span>
+                <div class="res-info"><div class="res-name">Math Learning Center 应用</div><div class="res-desc">免费数学学习APP：几何板、数线、十格阵等</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+            <a href="https://polyup.com/" target="_blank" class="res-item">
+                <span class="res-icon">🔷</span>
+                <div class="res-info"><div class="res-name">Polyup 数学建模</div><div class="res-desc">通过搭建"机器"来探索数学规律，很有趣</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== 练习资源 ==================== -->
+<div id="tab-practice" class="tab-content">
+
+    <div class="card">
+        <h2 class="card-title">📝 试卷/练习下载</h2>
+        <div class="resource-list">
+            <a href="https://www.zxxk.com/" target="_blank" class="res-item">
+                <span class="res-icon">📚</span>
+                <div class="res-info"><div class="res-name">学科网（zxxk.com）</div><div class="res-desc">中国最大的教育资源库，海量试卷/课件/教案可下载</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.21cnjy.com/" target="_blank" class="res-item">
+                <span class="res-icon">📖</span>
+                <div class="res-info"><div class="res-name">21世纪教育网</div><div class="res-desc">老牌教育资源平台，北师大版资料很全</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.baidu.com/s?wd=北师大版二年级数学上册试卷+ filetype:pdf" target="_blank" class="res-item">
+                <span class="res-icon">🔍</span>
+                <div class="res-info"><div class="res-name">百度搜索：北师大二上试卷 PDF</div><div class="res-desc">直接搜PDF格式试卷，方便打印</div></div>
+                <span class="res-badge badge-web">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学上册单元测试卷讲解" target="_blank" class="res-item">
+                <span class="res-icon">📺</span>
+                <div class="res-info"><div class="res-name">B站搜索：单元测试卷讲解</div><div class="res-desc">跟着视频一起做试卷，边做边学</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">📋 练习类型推荐</h2>
+        
+        <div class="section-header">每课一练（随堂巩固）</div>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=二年级数学上册每课一练" target="_blank" class="res-item">
+                <span class="res-icon">✏️</span>
+                <div class="res-info"><div class="res-name">B站搜索：每课一练</div><div class="res-desc">配合每个课时的基础练习题</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://www.17zuoye.com/" target="_blank" class="res-item">
+                <span class="res-icon">📱</span>
+                <div class="res-info"><div class="res-name">一起作业 - 同步练习</div><div class="res-desc">与教材完全匹配的在线练习系统</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+        </div>
+
+        <div class="section-header">单元测试卷</div>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=北师大版二年级数学上册单元测试" target="_blank" class="res-item">
+                <span class="res-icon">📊</span>
+                <div class="res-info"><div class="res-name">B站搜索：单元测试卷</div><div class="res-desc">每个单元结束后的检测卷</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://www.zxxk.com/soft/land/list-4-1.html" target="_blank" class="res-item">
+                <span class="res-icon">📝</span>
+                <div class="res-info"><div class="res-name">学科网 - 二年级数学试卷区</div><div class="res-desc">按单元/期中/期末分类的完整试卷</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+        </div>
+
+        <div class="section-header">易错题专项</div>
+        <div class="resource-list">
+            <a href="https://search.bilibili.com/all?keyword=二年级数学易错题专项训练" target="_blank" class="res-item">
+                <span class="res-icon">⚠️</span>
+                <div class="res-info"><div class="res-name">B站搜索：易错题专项训练</div><div class="res-desc">针对常见错误的强化练习</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+            <a href="https://search.bilibili.com/all?keyword=二年级数学思维拓展 奥数入门" target="_blank" class="res-item">
+                <span class="res-icon">🧠</span>
+                <div class="res-info"><div class="res-name">B站搜索：思维拓展/奥数入门</div><div class="res-desc">学有余力的学生可以挑战</div></div>
+                <span class="res-badge badge-bili">搜索</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================== 教师工具 ==================== -->
+<div id="tab-tools" class="tab-content">
+
+    <div class="card">
+        <h2 class="card-title">🛠️ 教师备课工具</h2>
+        <div class="resource-list">
+            <a href="https://www.bilibili.com/video/BV1St4y167hR/" target="_blank" class="res-item">
+                <span class="res-icon">📽️</span>
+                <div class="res-info"><div class="res-name">dc008 北师大二上（含课件PPT）</div><div class="res-desc">75万播放，配套课件可下载参考</div></div>
+                <span class="res-badge badge-bili">B站</span>
+            </a>
+            <a href="https://www.zxxk.com/" target="_blank" class="res-item">
+                <span class="res-icon">📁</span>
+                <div class="res-info"><div class="res-name">学科网 - 课件/教案/PPT</div><div class="res-desc">海量现成课件可直接下载修改使用</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.101ppt.com/" target="_blank" class="res-item">
+                <span class="res-icon">📊</span>
+                <div class="res-info"><div class="res-name">101PPT PPT模板</div><div class="res-desc">免费PPT模板和课件素材</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+            <a href="https://www.geogebra.org/classic" target="_blank" class="res-item">
+                <span class="res-icon">📈</span>
+                <div class="res-info"><div class="res-name">GeoGebra 课堂教学工具</div><div class="res-desc">课堂上实时演示数学概念的强大工具</div></div>
+                <span class="res-badge badge-web">工具</span>
+            </a>
+            <a href="https://www.khanacademy.org/math/cc-2nd-grade-math" target="_blank" class="res-item">
+                <span class="res-icon">🎓</span>
+                <div class="res-info"><div class="res-name">可汗学院 二年级数学</div><div class="res-desc">全球最好的免费数学教学资源（英文，可借鉴教学方法）</div></div>
+                <span class="res-badge badge-web">网站</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">📱 AI辅助教学工具</h2>
+        <div class="resource-list">
+            <a href="https://yiyan.baidu.com/" target="_blank" class="res-item">
+                <span class="res-icon">🤖</span>
+                <div class="res-info"><div class="res-name">文心一言（百度AI）</div><div class="res-desc">可以帮你出题、写教案、设计教学活动</div></div>
+                <span class="res-badge badge-web">AI</span>
+            </a>
+            <a href="https://tongyi.aliyun.com/" target="_blank" class="res-item">
+                <span class="res-icon">🧠</span>
+                <div class="res-info"><div class="res-name">通义千问（阿里AI）</div><div class="res-desc">免费AI助手，可生成练习题和教学方案</div></div>
+                <span class="res-badge badge-web">AI</span>
+            </a>
+            <a href="https://chat.deepseek.com/" target="_blank" class="res-item">
+                <span class="res-icon">💬</span>
+                <div class="res-info"><div class="res-name">DeepSeek 深度求索</div><div class="res-desc">国产AI，擅长数学推理和题目解析</div></div>
+                <span class="res-badge badge-web">AI</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+</div><!-- end container -->
+
+<!-- 页脚 -->
+<div class="footer">
+    <p>🎓 二年级数学乐园 · 北师大版上册 | 让数学变得更有趣！</p>
+    <p style="margin-top:6px;">适用于教师备课 ✦ 学生自学 ✦ 家长辅导</p>
+    <p style="margin-top:6px;font-size:0.82em;opacity:0.7;">本站为资源导航站，所有链接均指向第三方平台 | 2026年制作</p>
+</div>
+
+<script>
+// Tab切换
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const tab = document.getElementById('tab-' + tabId);
+    if(tab) tab.classList.add('active');
+    // 找到对应按钮高亮
+    const btns = document.querySelectorAll('.tab-btn');
+    const map = {'home':0,'videos':1,'games':2,'animation':3,'practice':4,'tools':5};
+    if(btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+}
+
+// 搜索单元
+function filterUnits() {
+    const kw = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.unit-card').forEach(card => {
+        card.style.display = (card.dataset.unit || '').includes(kw) ? '' : 'none';
+    });
+}
+
+// 显示单元详情（跳转到视频Tab并提示）
+function showUnit(num) {
+    switchTab('videos');
+    // 可以扩展为显示该单元专属内容
+}
+</script>
+
+</body>
+</html>
