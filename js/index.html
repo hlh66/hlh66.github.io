@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👨‍🏫 教师导航 · 洪老师</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding: 30px 20px;
+}
+.container { max-width: 900px; margin: 0 auto; }
+/* 头部 */
+.header { text-align: center; margin-bottom: 36px; }
+.avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 36px; margin-bottom: 16px;
+  box-shadow: 0 4px 30px rgba(67,233,123,0.3);
+}
+.header h1 { font-size: 1.8rem; color: #fff; margin-bottom: 6px; }
+.header p { font-size: 0.95rem; color: #8888aa; }
+
+/* 卡片网格 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(67,233,123,0.4);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.card-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 8px; }
+.card .desc { font-size: 0.85rem; color: #9090aa; line-height: 1.55; margin-bottom: 14px; flex-grow: 1; }
+.card .labels { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+.card .label {
+  padding: 3px 10px; border-radius: 10px;
+  font-size: 0.72rem; font-weight: 600;
+}
+.label.l-green { background: rgba(67,233,123,0.15); color: #43e97b; }
+.label.l-blue { background: rgba(102,126,234,0.15); color: #8ea0f0; }
+.label.l-orange { background: rgba(255,167,38,0.15); color: #ffa726; }
+.card .btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 9px 22px; border-radius: 10px;
+  font-weight: 600; font-size: 0.88rem;
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: #1a1a2e; text-decoration: none;
+  transition: all 0.25s; align-self: flex-start;
+}
+.card .btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(67,233,123,0.35); }
+
+/* 分区标题 */
+.section-title {
+  font-size: 1rem; color: #fff;
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 8px;
+  grid-column: 1 / -1;
+}
+
+/* 页脚 */
+.footer {
+  text-align: center; margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: #505060; font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="avatar">👨‍🏫</div>
+    <h1>教师导航</h1>
+    <p>洪老师的教学工具与资源入口</p>
+  </div>
+  <div class="card-grid">
+
+    <div class="section-title"><span>📚</span> 教学导航</div>
+
+    <a class="card" href="/bk/" target="_blank">
+      <div class="card-icon">📚</div>
+      <div class="labels"><span class="label l-green">备课</span><span class="label l-blue">导航</span></div>
+      <h3>二年级数学备课导航站</h3>
+      <p class="desc">北师大版二年级上册，8个单元37节课，每节课一键搜索小红书课堂笔记、板书设计、教学视频、教案，备课效率神器。</p>
+      <span class="btn">备课去 →</span>
+    </a>
+
+    <a class="card" href="/2s/" target="_blank">
+      <div class="card-icon">🎓</div>
+      <div class="labels"><span class="label l-green">资源</span><span class="label l-orange">学生</span></div>
+      <h3>二年级数学乐园</h3>
+      <p class="desc">北师大版二年级上册资源导航站，含B站同步课视频、数学游戏网站、动画演示、练习资源等，8个单元全覆盖，学生自学+家长辅导+教师备课都能用。</p>
+      <span class="btn">进入学习 →</span>
+    </a>
+
+  </div>
+  <div class="footer">
+    <p>👨‍🏫 教师导航 · 洪老师 · 2026年制作</p>
+  </div>
+</div>
+</body>
+</html>
