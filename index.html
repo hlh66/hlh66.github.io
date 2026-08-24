@@ -6,94 +6,98 @@
 <title>洪老师的数学乐园 · 导航</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);min-height:100vh;color:#fff}
-.container{max-width:960px;margin:0 auto;padding:25px 18px}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#e2e8f0;
+  background:#0a1628;
+  background-image:
+    linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px),
+    radial-gradient(ellipse at top,#1e3a5f 0%,#0a1628 60%);
+  background-size:40px 40px,40px 40px,100% 100%;
+}
+.container{max-width:960px;margin:0 auto;padding:25px 18px;position:relative;z-index:1}
 
-.header{text-align:center;padding:35px 20px 22px}
-.avatar{width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,#fff,#f0eaff);display:inline-flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:16px;box-shadow:0 6px 28px rgba(0,0,0,.2);animation:pulse 3s ease infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-.header h1{font-size:2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:6px}
-.header .subtitle{font-size:1em;opacity:.9}
+.header{text-align:center;padding:30px 20px 16px}
+.header h1{font-size:2em;background:linear-gradient(135deg,#06b6d4,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;font-weight:800}
+.header .subtitle{font-size:1em;color:#64748b}
 
-.datetime-bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:16px 0}
-.dt-card{background:rgba(255,255,255,.95);border-radius:14px;padding:14px 24px;text-align:center;min-width:140px}
-.dt-card .dt-label{font-size:12px;color:#888;margin-bottom:2px}
-.dt-card .dt-value{font-size:24px;font-weight:bold;color:#333}
-.dt-card .dt-sub{font-size:13px;color:#666;margin-top:2px}
-.dt-card .dt-week{font-size:12px;color:#f5576c;margin-top:3px}
+.datetime-bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.dt-card{background:rgba(15,23,42,.8);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px 22px;text-align:center;min-width:140px}
+.dt-card .dt-label{font-size:11px;color:#475569;margin-bottom:2px}
+.dt-card .dt-value{font-size:22px;font-weight:bold;color:#06b6d4;font-family:Consolas,monospace}
+.dt-card .dt-sub{font-size:12px;color:#64748b;margin-top:2px}
+.dt-card .dt-week{font-size:12px;color:#3b82f6;margin-top:3px;font-weight:600}
 
-.section{background:rgba(255,255,255,.1);border-radius:18px;padding:20px 24px;margin-bottom:16px;backdrop-filter:blur(8px)}
-.section-title{font-size:1.08em;font-weight:bold;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section{background:rgba(15,23,42,.6);border:1px solid rgba(59,130,246,.15);border-radius:16px;padding:18px 22px;margin-bottom:14px}
+.section-title{font-size:1.05em;font-weight:bold;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#93c5fd}
+.section-title::before{content:'';width:4px;height:18px;background:linear-gradient(180deg,#06b6d4,#3b82f6);border-radius:2px}
 
 .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.res-card{background:rgba(255,255,255,.95);border-radius:14px;padding:18px;text-align:center;text-decoration:none;color:inherit;transition:all .3s;border-left:4px solid transparent}
-.res-card:hover{transform:translateX(5px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.res-card .r-icon{font-size:2.2em;display:block;margin-bottom:8px}
-.res-card .r-name{font-size:1em;font-weight:600;color:#333;margin-bottom:4px}
-.res-card .r-desc{font-size:.8em;color:#888;line-height:1.5}
+.res-card{background:rgba(15,23,42,.8);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px;text-align:center;text-decoration:none;color:inherit;transition:all .3s}
+.res-card:hover{border-color:rgba(6,182,212,.5);box-shadow:0 0 20px rgba(6,182,212,.15);transform:translateY(-3px)}
+.res-card .r-icon{font-size:2em;display:block;margin-bottom:8px}
+.res-card .r-name{font-size:1em;font-weight:600;color:#e2e8f0;margin-bottom:4px}
+.res-card .r-desc{font-size:.78em;color:#64748b;line-height:1.5}
 
-.calendar{background:rgba(255,255,255,.95);border-radius:14px;padding:16px;margin:0}
-.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.cal-title{font-size:16px;font-weight:bold;color:#333}
-.cal-nav{cursor:pointer;color:#6b7280;font-size:18px;user-select:none;padding:4px 12px;border-radius:6px;transition:background .2s}
-.cal-nav:hover{background:#f3f4f6}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
-.cal-week{font-size:12px;color:#9ca3af;padding:4px 0;font-weight:600}
-.cal-day{font-size:14px;padding:6px 0;border-radius:8px;color:#374151;transition:all .2s}
-.cal-day:hover{background:#eef2ff}
-.cal-day.today{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;font-weight:bold}
-.cal-day.other{color:#d1d5db}
+.calendar{background:rgba(15,23,42,.6);border:1px solid rgba(59,130,246,.15);border-radius:12px;padding:14px;margin:0}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-title{font-size:15px;font-weight:bold;color:#93c5fd}
+.cal-nav{cursor:pointer;color:#475569;font-size:18px;user-select:none;padding:4px 10px;border-radius:6px;transition:all .2s}
+.cal-nav:hover{color:#06b6d4;background:rgba(6,182,212,.1)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-week{font-size:11px;color:#475569;padding:4px 0;font-weight:600}
+.cal-day{font-size:13px;padding:6px 0;border-radius:6px;color:#94a3b8;transition:all .2s}
+.cal-day:hover{background:rgba(6,182,212,.15);color:#06b6d4}
+.cal-day.today{background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;font-weight:bold}
+.cal-day.other{color:#1e293b}
 
-.progress-wrap{background:rgba(255,255,255,.95);border-radius:14px;padding:16px 18px;margin:0}
-.progress-item{margin-bottom:14px}
+.progress-wrap{background:rgba(15,23,42,.6);border:1px solid rgba(59,130,246,.15);border-radius:12px;padding:14px;margin:0}
+.progress-item{margin-bottom:12px}
 .progress-item:last-child{margin-bottom:0}
-.progress-label{display:flex;justify-content:space-between;font-size:14px;color:#333;margin-bottom:6px;font-weight:500}
-.progress-bar{height:12px;background:#e5e7eb;border-radius:6px;overflow:hidden}
-.progress-fill{height:100%;border-radius:6px;transition:width 1s ease}
-.progress-note{font-size:12px;color:#9ca3af;margin-top:4px}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:#94a3b8;margin-bottom:5px}
+.progress-label span:last-child{color:#475569;font-size:12px}
+.progress-bar{height:10px;background:rgba(15,23,42,.8);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;transition:width 1s ease}
+.progress-note{font-size:11px;color:#475569;margin-top:6px}
 
-.daily-q{background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border-radius:14px;padding:18px 22px;margin-bottom:16px;border:1px solid rgba(255,255,255,.15)}
-.daily-q .dq-label{font-size:12px;color:#FFE66D;font-weight:600;margin-bottom:6px}
-.daily-q .dq-title{font-size:1em;line-height:1.7;color:#fff}
-.daily-q .dq-answer{margin-top:10px;padding:10px 14px;background:rgba(0,0,0,.2);border-radius:8px;font-size:14px;color:#bfdbfe;cursor:pointer;user-select:none;text-align:center;transition:background .2s}
-.daily-q .dq-answer:hover{background:rgba(0,0,0,.35)}
+.daily-q{background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(59,130,246,.05));border:1px solid rgba(6,182,212,.2);border-radius:14px;padding:18px 22px;margin-bottom:14px}
+.daily-q .dq-label{font-size:12px;color:#06b6d4;font-weight:600;margin-bottom:6px}
+.daily-q .dq-title{font-size:1em;line-height:1.7;color:#e2e8f0}
+.dq-btns{display:flex;gap:10px;margin-top:10px}
+.daily-q .dq-answer{flex:1;padding:10px 14px;background:rgba(15,23,42,.6);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:14px;color:#93c5fd;cursor:pointer;text-align:center;transition:all .2s}
+.daily-q .dq-answer:hover{border-color:rgba(6,182,212,.4);background:rgba(6,182,212,.1)}
+.daily-q .dq-next{padding:10px 18px;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);border-radius:8px;font-size:14px;color:#06b6d4;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap}
+.daily-q .dq-next:hover{background:rgba(6,182,212,.25)}
 
-.tip-card{background:rgba(255,255,255,.1);border-radius:14px;padding:16px 20px;margin-bottom:12px;border:1px solid rgba(255,255,255,.1)}
-.tip-card .tip-icon{font-size:1.4em;margin-bottom:6px}
-.tip-card .tip-text{font-size:.92em;line-height:1.65;color:#e2e8f0}
-.tip-card .tip-text strong{color:#FFE66D}
+.tip-card{background:rgba(15,23,42,.5);border:1px solid rgba(59,130,246,.1);border-left:3px solid #06b6d4;border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:10px}
+.tip-card .tip-icon{font-size:1.3em;margin-bottom:4px}
+.tip-card .tip-text{font-size:.9em;line-height:1.65;color:#94a3b8}
+.tip-card .tip-text strong{color:#06b6d4}
 
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:600px){.two-col{grid-template-columns:1fr}.header h1{font-size:1.6em}.res-grid{grid-template-columns:1fr}}
 
-.footer{text-align:center;padding:20px;font-size:.8em;opacity:.6}
-
-.floating{position:fixed;font-size:22px;opacity:.08;animation:f linear infinite;pointer-events:none;z-index:0}
-@keyframes f{0%{transform:translateY(-50px) rotate(0);opacity:0}10%{opacity:.08}90%{opacity:.08}100%{transform:translateY(105vh) rotate(360deg);opacity:0}}
+.footer{text-align:center;padding:20px;color:#334155;font-size:.78em}
 </style>
 </head>
 <body>
-<div id="floaters"></div>
-
 <div class="container">
 
 <div class="header">
-  <div class="avatar">👨‍🏫</div>
   <h1>洪老师的数学乐园</h1>
-  <p class="subtitle">北师大版 · 二年级上册 · 让数学变得更有趣 ✨</p>
+  <p class="subtitle">北师大版 · 二年级上册 · 让数学变得更有趣</p>
 </div>
 
 <div class="datetime-bar" id="dtBar"></div>
 
 <div class="section">
-  <div class="section-title">📚 学习入口</div>
+  <div class="section-title">学习入口</div>
   <div class="res-grid">
-    <a class="res-card" href="/2s/" target="_blank" style="border-left-color:#f5576c">
+    <a class="res-card" href="/2s/" target="_blank">
       <span class="r-icon">🎓</span>
       <div class="r-name">二年级数学乐园</div>
       <div class="r-desc">全册8个单元 · 视频课程 · 趣味游戏<br>动画演示 · 练习试卷</div>
     </a>
-    <a class="res-card" href="/zd/" target="_blank" style="border-left-color:#06b6d4">
+    <a class="res-card" href="/zd/" target="_blank">
       <span class="r-icon">📐</span>
       <div class="r-name">早读视频导航</div>
       <div class="r-desc">北师大版二上 · 全册8单元<br>46个早读视频 · 口诀背诵/换算速记</div>
@@ -103,11 +107,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 
 <div class="two-col">
   <div class="section">
-    <div class="section-title">📅 日历</div>
+    <div class="section-title">日历</div>
     <div class="calendar" id="calendar"></div>
   </div>
   <div class="section">
-    <div class="section-title">📊 学期进度</div>
+    <div class="section-title">学期进度</div>
     <div class="progress-wrap">
       <div class="progress-item">
         <div class="progress-label"><span>第一单元 加与减</span><span>待定</span></div>
@@ -127,21 +131,24 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
       </div>
       <div class="progress-item">
         <div class="progress-label"><span>第六单元 测量</span><span>待定</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,#ec4899,#f43f5e)"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,#8b5cf6,#a855f7)"></div></div>
       </div>
       <div class="progress-item">
         <div class="progress-label"><span>第七单元 分一分与除法</span><span>待定</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,#8b5cf6,#a855f7)"></div></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:linear-gradient(90deg,#ec4899,#f43f5e)"></div></div>
       </div>
-      <div class="progress-note">📝 进度待定，确定后可随时更新</div>
+      <div class="progress-note">进度待定，确定后可随时更新</div>
     </div>
   </div>
 </div>
 
-<div class="daily-q" id="dailyQ">
-  <div class="dq-label">🧮 每日一题</div>
+<div class="daily-q">
+  <div class="dq-label">数学练习 · 第 <span id="dqNum">1</span> 题</div>
   <div class="dq-title" id="dqTitle">加载中...</div>
-  <div class="dq-answer" id="dqAnswer" onclick="revealAnswer()">👉 点击查看答案</div>
+  <div class="dq-btns">
+    <div class="dq-answer" id="dqAnswer" onclick="revealAnswer()">点击查看答案</div>
+    <div class="dq-next" onclick="nextQuestion()">换一题</div>
+  </div>
 </div>
 
 <div class="tip-card">
@@ -173,8 +180,8 @@ function updateDateTime(){
   var s=String(now.getSeconds()).padStart(2,'0');
   var w=days[now.getDay()];
   document.getElementById('dtBar').innerHTML=
-    '<div class="dt-card"><div class="dt-label">📅 今天日期</div><div class="dt-value">'+y+'.'+m+'.'+d+'</div><div class="dt-week">'+w+'</div></div>'+
-    '<div class="dt-card"><div class="dt-label">⏰ 当前时间</div><div class="dt-value">'+h+':'+mi+':'+s+'</div><div class="dt-sub">北京时间</div></div>';
+    '<div class="dt-card"><div class="dt-label">日期</div><div class="dt-value">'+y+'.'+m+'.'+d+'</div><div class="dt-week">'+w+'</div></div>'+
+    '<div class="dt-card"><div class="dt-label">时间</div><div class="dt-value">'+h+':'+mi+':'+s+'</div><div class="dt-sub">北京时间</div></div>';
 }
 updateDateTime();
 setInterval(updateDateTime,1000);
@@ -184,26 +191,22 @@ function renderCal(){
   var y=calDate.getFullYear(),m=calDate.getMonth();
   var months=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
   var first=new Date(y,m,1).getDay();
-  var daysInMonth=new Date(y,m+1,0).getDate();
-  var prevDays=new Date(y,m,0).getDate();
+  var dim=new Date(y,m+1,0).getDate();
+  var pd=new Date(y,m,0).getDate();
   var today=new Date();
-  var isTodayMonth=(today.getFullYear()==y && today.getMonth()==m);
-  var html='<div class="cal-header">'+
-    '<span class="cal-nav" onclick="calNav(-1)">‹</span>'+
-    '<span class="cal-title">'+y+'年 '+months[m]+'</span>'+
-    '<span class="cal-nav" onclick="calNav(1)">›</span></div>'+
-    '<div class="cal-grid">';
-  var weeks=['日','一','二','三','四','五','六'];
-  for(var i=0;i<7;i++)html+='<div class="cal-week">'+weeks[i]+'</div>';
-  for(var i=0;i<first;i++)html+='<div class="cal-day other">'+(prevDays-first+i+1)+'</div>';
-  for(var d=1;d<=daysInMonth;d++){
+  var isTM=(today.getFullYear()==y && today.getMonth()==m);
+  var html='<div class="cal-header"><span class="cal-nav" onclick="calNav(-1)">‹</span><span class="cal-title">'+y+'年 '+months[m]+'</span><span class="cal-nav" onclick="calNav(1)">›</span></div><div class="cal-grid">';
+  var wk=['日','一','二','三','四','五','六'];
+  for(var i=0;i<7;i++)html+='<div class="cal-week">'+wk[i]+'</div>';
+  for(var i=0;i<first;i++)html+='<div class="cal-day other">'+(pd-first+i+1)+'</div>';
+  for(var d=1;d<=dim;d++){
     var cls='cal-day';
-    if(isTodayMonth && d==today.getDate())cls+=' today';
+    if(isTM && d==today.getDate())cls+=' today';
     html+='<div class="'+cls+'">'+d+'</div>';
   }
-  var total=first+daysInMonth;
-  var remain=(7-total%7)%7;
-  for(var i=1;i<=remain;i++)html+='<div class="cal-day other">'+i+'</div>';
+  var tot=first+dim;
+  var rem=(7-tot%7)%7;
+  for(var i=1;i<=rem;i++)html+='<div class="cal-day other">'+i+'</div>';
   html+='</div>';
   document.getElementById('calendar').innerHTML=html;
 }
@@ -222,42 +225,35 @@ var questions=[
   {q:"一本故事书80页，小明每天看9页，看了7天，看了多少页？还剩多少页？",a:"7 × 9 = 63（页）<br>80 - 63 = 17（页）"},
   {q:"1支铅笔2元，买8支需要多少钱？如果付了20元，找回多少？",a:"2 × 8 = 16（元）<br>20 - 16 = 4（元）"},
   {q:"二（1）班有42人，二（2）班有45人，两个班一共多少人？",a:"42 + 45 = 87（人）"},
-  {q:"一根绳子对折再对折后量了一下是3米，这根绳子原来有多长？",a:"对折两次 = 4段<br>3 × 4 = 12（米）"},
+  {q:"一根绳子对折再对折后量了一下是3米，这根绳子原来有多长？",a:"对折两次 = 4段<br>3 × 4 = 12（米）"}
 ];
-var dqToday=new Date();
-var dqIdx=(dqToday.getFullYear()*365+dqToday.getMonth()*31+dqToday.getDate())%questions.length;
+var dqIdx=new Date().getDate()%questions.length;
+var dqCount=1;
 var currentAnswer='';
 function loadDailyQ(){
   var item=questions[dqIdx];
   document.getElementById('dqTitle').innerHTML=item.q;
+  document.getElementById('dqNum').textContent=dqCount;
   currentAnswer=item.a;
-  document.getElementById('dqAnswer').innerHTML='👉 点击查看答案';
-  document.getElementById('dqAnswer').style.color='#bfdbfe';
+  document.getElementById('dqAnswer').innerHTML='点击查看答案';
+  document.getElementById('dqAnswer').style.color='#93c5fd';
+}
+function nextQuestion(){
+  dqIdx=(dqIdx+1)%questions.length;
+  dqCount++;
+  loadDailyQ();
 }
 function revealAnswer(){
   var el=document.getElementById('dqAnswer');
-  if(el.innerHTML.indexOf('👉')>-1){
-    el.innerHTML='✅ '+currentAnswer;
+  if(el.innerHTML.indexOf('点击查看')>-1){
+    el.innerHTML=currentAnswer;
     el.style.color='#4ade80';
   }else{
-    el.innerHTML='👉 点击查看答案';
-    el.style.color='#bfdbfe';
+    el.innerHTML='点击查看答案';
+    el.style.color='#93c5fd';
   }
 }
 loadDailyQ();
-
-(function(){
-  var s=['➕','✖️','÷','🔢','⭐','🔷','🟡','🔵','🟢','🔴','⭕','△','○','🌟'];
-  var c=document.getElementById('floaters');
-  for(var i=0;i<12;i++){
-    var e=document.createElement('div');e.className='floating';
-    e.textContent=s[Math.floor(Math.random()*s.length)];
-    e.style.left=Math.random()*100+'vw';
-    e.style.fontSize=(Math.random()*16+14)+'px';
-    e.style.animationDuration=(Math.random()*10+10)+'s';
-    e.style.animationDelay=(-Math.random()*10)+'s';c.appendChild(e);
-  }
-})();
 </script>
 </body>
 </html>
