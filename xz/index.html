@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📥 下载中心</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Microsoft YaHei','PingFang SC',sans-serif;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+  min-height:100vh;color:#fff;
+}
+.container{max-width:800px;margin:0 auto;padding:25px 18px}
+
+/* 头部 */
+.header{text-align:center;padding:35px 20px 22px}
+.avatar{
+  width:85px;height:85px;border-radius:50%;
+  background:linear-gradient(135deg,#fff,#f0eaff);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:40px;margin-bottom:16px;
+  box-shadow:0 6px 28px rgba(0,0,0,.2);animation:pulse 3s ease infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.header h1{font-size:2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:6px}
+.header .subtitle{font-size:.95em;opacity:.9}
+
+/* 下载卡片 */
+.dl-card{
+  background:rgba(255,255,255,.96);border-radius:16px;
+  padding:20px 24px;margin-bottom:14px;
+  box-shadow:0 6px 24px rgba(0,0,0,.12);
+  display:flex;align-items:center;gap:18px;
+  transition:transform .3s,box-shadow .3s;
+  border-left:5px solid transparent;
+}
+.dl-card:hover{transform:translateY(-4px);box-shadow:0 10px 36px rgba(0,0,0,.18)}
+.dl-icon{
+  font-size:2.8em;flex-shrink:0;
+  width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:14px;background:linear-gradient(135deg,#f0f0f5,#e8e8f0);
+}
+.dl-info{flex-grow:1;min-width:0}
+.dl-name{font-size:1.1em;font-weight:bold;color:#333;margin-bottom:4px}
+.dl-desc{font-size:.85em;color:#888;line-height:1.5}
+.dl-meta{font-size:.75em;color:#aaa;margin-top:4px}
+.dl-btn{
+  flex-shrink:0;padding:12px 24px;border-radius:12px;
+  font-weight:bold;font-size:.95em;text-decoration:none;color:white;
+  background:linear-gradient(135deg,#f093fb,#f5576c);
+  transition:all .3s;white-space:nowrap;
+}
+.dl-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(245,87,108,.4)}
+.dl-btn:active{transform:scale(0.95)}
+
+/* 分类标题 */
+.category{
+  font-size:1.1em;font-weight:bold;margin:24px 0 12px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0;border-bottom:2px solid rgba(255,255,255,.15);
+}
+
+/* 返回按钮 */
+.back-btn{
+  display:inline-block;margin:20px 0;padding:10px 28px;
+  border-radius:22px;background:rgba(255,255,255,.2);
+  color:white;text-decoration:none;font-size:.9em;
+  border:1px solid rgba(255,255,255,.3);transition:all .3s;
+}
+.back-btn:hover{background:rgba(255,255,255,.35);transform:translateY(-2px)}
+
+/* 提示 */
+.tip{
+  background:rgba(255,255,255,.12);border-radius:12px;
+  padding:14px 20px;margin:20px 0;font-size:.85em;line-height:1.6;
+  border:1px solid rgba(255,255,255,.15);
+}
+.tip strong{color:#FFE66D}
+
+/* 页脚 */
+.footer{text-align:center;padding:20px;font-size:.8em;opacity:.6}
+
+/* 空状态 */
+.empty{
+  text-align:center;padding:60px 20px;opacity:.7;
+}
+.empty-icon{font-size:4em;margin-bottom:12px}
+
+@media(max-width:600px){
+  .header h1{font-size:1.6em}
+  .dl-card{flex-direction:column;text-align:center;gap:12px}
+  .dl-btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- 头部 -->
+<div class="header">
+  <div class="avatar">📥</div>
+  <h1>下载中心</h1>
+  <p class="subtitle">点击按钮即可直接下载文件 ✨</p>
+</div>
+
+<!-- 提示 -->
+<div class="tip">
+  💡 <strong>使用说明：</strong>点击右侧「下载」按钮即可直接下载文件到本地。所有文件均已通过安全检查，请放心使用。
+</div>
+
+<!-- 分类：软件工具 -->
+<div class="category">🛠️ 软件工具</div>
+
+<div class="dl-card" style="border-left-color:#f5576c">
+  <div class="dl-icon">💻</div>
+  <div class="dl-info">
+    <div class="dl-name">电脑MQTT远程控制 · 被控端</div>
+    <div class="dl-desc">单文件零依赖，274KB，拷过去就能用。配合主控端可远程执行命令、截图、文件传输。</div>
+    <div class="dl-meta">controlled.exe · 272 KB · Windows可执行文件</div>
+  </div>
+  <a class="dl-btn" href="controlled.exe" download>⬇ 下载</a>
+</div>
+
+<!-- 分类：文档资料 -->
+<div class="category">📄 文档资料</div>
+
+<div class="empty">
+  <div class="empty-icon">📋</div>
+  <p>暂无文档资料</p>
+  <p style="font-size:.85em;margin-top:6px">后续添加的文件会出现在这里</p>
+</div>
+
+<!-- 返回主页 -->
+<div style="text-align:center;margin-top:30px">
+  <a class="back-btn" href="https://hlh66.github.io/">← 返回主页</a>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>📥 下载中心 · 文件直接下载 · hlh66.github.io/xz/</p>
+</div>
+
+</body>
+</html>
