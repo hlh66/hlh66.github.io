@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二年级数学早读视频导航 · 北师大版</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e3a5f,#2563eb,#7c3aed);padding:36px 20px 28px;text-align:center}
+.header h1{font-size:26px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.3)}
+.header .sub{color:#bfdbfe;margin-top:8px;font-size:14px}
+.search-box{margin:18px auto 0;max-width:480px;display:flex;gap:8px}
+.search-box input{flex:1;padding:10px 18px;border:none;border-radius:22px;font-size:14px;background:rgba(255,255,255,0.95);color:#1e293b;outline:none}
+.search-box button{padding:10px 20px;border:none;border-radius:22px;background:#f59e0b;color:#fff;font-size:14px;cursor:pointer;font-weight:600}
+.platform-links{display:flex;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.platform-links a{padding:7px 16px;border-radius:18px;font-size:12px;font-weight:600;text-decoration:none;transition:transform 0.2s}
+.platform-links a:hover{transform:translateY(-2px)}
+.pl-bili{background:#fb7299;color:#fff}
+.pl-xhs{background:#ff2442;color:#fff}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.cat-header{display:flex;align-items:center;gap:10px;margin:24px 0 10px;padding:10px 14px;border-left:4px solid #ef4444;background:#1e293b;border-radius:0 8px 8px 0;flex-wrap:wrap}
+.cat-icon{font-size:20px}
+.cat-name{font-size:16px;font-weight:700;color:#f1f5f9}
+.cat-unit{font-size:12px;color:#64748b}
+.cat-count{margin-left:auto;font-size:12px;color:#64748b}
+.video-row{margin-bottom:8px}
+.v-link{display:block;padding:12px 16px;background:#1e293b;border-radius:10px;text-decoration:none;color:inherit;border:1px solid #334155;transition:all 0.15s}
+.v-link:hover{background:#334155;border-color:#475569;transform:translateX(4px)}
+.v-title{display:block;font-size:15px;color:#e2e8f0;font-weight:500;margin-bottom:4px}
+.v-meta{display:block;font-size:12px;color:#64748b;margin-bottom:4px}
+.v-desc{display:block;font-size:13px;color:#94a3b8;line-height:1.5}
+.no-result{text-align:center;padding:40px;color:#64748b;display:none}
+.footer{text-align:center;padding:24px;color:#475569;font-size:12px;border-top:1px solid #1e293b;margin-top:30px}
+@media(max-width:600px){.header h1{font-size:20px}.v-title{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>📐 二年级数学早读视频导航</h1>
+<div class="sub">北师大版 · 覆盖全册8个单元 · 口诀背诵/换算速记/概念速记/口算速练</div>
+<div class="search-box">
+<input type="text" id="sk" placeholder="搜索关键词，如「人民币」「8的口诀」「厘米」..." oninput="f()">
+<button onclick="clr()">显示全部</button>
+</div>
+<div class="platform-links">
+<a href="https://search.bilibili.com/all?keyword=%E4%BA%8C%E5%B9%B4%E7%BA%A7%E6%95%B0%E5%AD%A6%E4%B8%8A%E5%86%8C+%E6%97%A9%E8%AF%BB+%E8%83%8C%E8%AF%B5+%E5%8F%A3%E8%AF%80&order=click" target="_blank" class="pl-bili">📺 B站搜索更多早读视频</a>
+<a href="https://www.xiaohongshu.com/search_result?keyword=%E4%BA%8C%E5%B9%B4%E7%BA%A7%E6%95%B0%E5%AD%A6%E4%B8%8A%E5%86%8C%E6%97%A9%E8%AF%BB+%E8%83%8C%E8%AF%B5+%E5%8F%A3%E8%AF%80" target="_blank" class="pl-xhs">📕 小红书搜索早读视频</a>
+</div>
+</div>
+<div class="container">
+<div class="no-result" id="nr">没找到匹配的，试试别的关键词</div>
+<div class="cat-header" style="border-left-color:#ef4444;">
+<span class="cat-icon">➕</span>
+<span class="cat-name">加减速算</span>
+<span class="cat-unit">第一单元 加与减</span>
+<span class="cat-count">4个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1NV411z71f/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学：8道口算题，请你来战！</span>
+    <span class="v-meta">四夕老师成长课 · 9380播放 · 01:08</span>
+    <span class="v-desc">快速口算挑战，早读来一组</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1GvyaBREqG/" target="_blank" class="v-link">
+    <span class="v-title">两位数加两位数口算速算技巧</span>
+    <span class="v-meta">樱桃老师小学课堂 · 2180播放 · 00:36</span>
+    <span class="v-desc">口算技巧速记，30秒学会</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1KQSgBcELE/" target="_blank" class="v-link">
+    <span class="v-title">简便计算速算技巧</span>
+    <span class="v-meta">昊昊讲数学 · 1540播放 · 00:24</span>
+    <span class="v-desc">24秒速算口诀</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV172pLz2EP9/" target="_blank" class="v-link">
+    <span class="v-title">乘法本质-加法速算</span>
+    <span class="v-meta">昊昊讲数学 · 1440播放 · 00:44</span>
+    <span class="v-desc">理解乘法本质，44秒速记</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#f59e0b;">
+<span class="cat-icon">💰</span>
+<span class="cat-name">人民币口诀</span>
+<span class="cat-unit">第二单元 购物</span>
+<span class="cat-count">6个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1C5411574c/" target="_blank" class="v-link">
+    <span class="v-title">人民币换算搞不懂？学会方法不会错</span>
+    <span class="v-meta">小学数学蒋老师 · 82万播放 · 05:46</span>
+    <span class="v-desc">人民币换算方法速记，讲透元角分</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Yg411R74W/" target="_blank" class="v-link">
+    <span class="v-title">二年级上册难点：人民币的换算最终版</span>
+    <span class="v-meta">why先生 · 1.3万播放 · 11:37</span>
+    <span class="v-desc">人民币换算难点总结，适合早读过一遍</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Av4y1v7v4/" target="_blank" class="v-link">
+    <span class="v-title">人民币换算口诀：大变小加个0，小变大去个0</span>
+    <span class="v-meta">小航妈妈爱分享 · 1.8万播放 · 00:15</span>
+    <span class="v-desc">15秒换算口诀，背一遍就记住</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1hx4y127e9/" target="_blank" class="v-link">
+    <span class="v-title">元角分必背口诀 小学数学</span>
+    <span class="v-meta">爆单暴富开心快乐 · 1910播放 · 00:17</span>
+    <span class="v-desc">17秒元角分口诀，早读必背</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV19t421W7py/" target="_blank" class="v-link">
+    <span class="v-title">人民币换算口诀 一年级数学下册重难点</span>
+    <span class="v-meta">宇宙中的尘埃2018 · 4780播放 · 00:22</span>
+    <span class="v-desc">22秒换算口诀速记</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1kF4m1A7Za/" target="_blank" class="v-link">
+    <span class="v-title">认识人民币，别傻背？理解购买力是关键</span>
+    <span class="v-meta">呱老师数学 · 5.3万播放 · 02:06</span>
+    <span class="v-desc">不靠死背，理解人民币价值</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#22c55e;">
+<span class="cat-icon">✖️</span>
+<span class="cat-name">乘法概念速记</span>
+<span class="cat-unit">第三单元 数一数与乘法</span>
+<span class="cat-count">2个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1exdcYgE5y/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学上册动画课34讲全解</span>
+    <span class="v-meta">知识课代表-分享版 · 2.6万播放 · 03:07:44</span>
+    <span class="v-desc">从长度探险到乘法王国，动画串讲全册</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1MQ4y1S7fg/" target="_blank" class="v-link">
+    <span class="v-title">7.数一数与乘法 知识点微课</span>
+    <span class="v-meta">生活点滴__ · 1.2万播放 · 04:14</span>
+    <span class="v-desc">4分钟搞懂乘法意义，早读速记</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#06b6d4;">
+<span class="cat-icon">🗣️</span>
+<span class="cat-name">乘法口诀背诵</span>
+<span class="cat-unit">第五单元 2~5乘法口诀</span>
+<span class="cat-count">10个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1DNcMevEUk/" target="_blank" class="v-link">
+    <span class="v-title">《大话西游：乘法口诀动画片》速记</span>
+    <span class="v-meta">精品动画课堂 · 67万播放 · 21:59</span>
+    <span class="v-desc">动画形式串记全部乘法口诀，适合早读循环播放</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1BcatzMEEA/" target="_blank" class="v-link">
+    <span class="v-title">《乘法口诀表》竖着背 横着背</span>
+    <span class="v-meta">爱学百宝箱 · 26.5万播放 · 07:46</span>
+    <span class="v-desc">教孩子两种背诵方法，竖背横背一遍过</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Mr421M78m/" target="_blank" class="v-link">
+    <span class="v-title">九九乘法口诀表(二年级上册重点)</span>
+    <span class="v-meta">宇宙中的尘埃2018 · 6万播放 · 02:37</span>
+    <span class="v-desc">纯口诀朗读，2分钟快速过一遍，最适合早读</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1LU411S7Yz/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学上册《九九乘法口诀表》跟着老师读一读</span>
+    <span class="v-meta">宇宙中的尘埃2018 · 3.5万播放 · 04:35</span>
+    <span class="v-desc">老师带读口诀表，孩子跟着念</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1D142147BU/" target="_blank" class="v-link">
+    <span class="v-title">乘法口诀九九乘法表必记口诀</span>
+    <span class="v-meta">宇宙中的尘埃2018 · 2.8万播放 · 24:58</span>
+    <span class="v-desc">完整口诀朗读+重点提示</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1wL411y7cm/" target="_blank" class="v-link">
+    <span class="v-title">洗脑式背诵乘法口诀表（横背）1分钟单曲循环</span>
+    <span class="v-meta">馒头妈妈分享 · 1.3万播放 · 01:00</span>
+    <span class="v-desc">1分钟循环洗脑背法，早读神器</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1ky411i7Aw/" target="_blank" class="v-link">
+    <span class="v-title">九九乘法表口诀 暑假提前背</span>
+    <span class="v-meta">宇宙中的尘埃2018 · 1.4万播放 · 02:35</span>
+    <span class="v-desc">暑假提前背口诀，开学快人一步</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV13s4y167i6/" target="_blank" class="v-link">
+    <span class="v-title">你追我赶背诵乘法口诀表</span>
+    <span class="v-meta">定逍遥 · 5990播放 · 02:14</span>
+    <span class="v-desc">亲子互动背诵，比赛形式</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1QF411C7Pm/" target="_blank" class="v-link">
+    <span class="v-title">《大话西游：乘法口诀动画片》北师大版</span>
+    <span class="v-meta">小学初中各科学习方法 · 22.7万播放 · 35:04</span>
+    <span class="v-desc">西游记动画串讲全部口诀</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1m54y1U75G/" target="_blank" class="v-link">
+    <span class="v-title">二乘法口诀歌小学二年级</span>
+    <span class="v-meta">元音大师 · 1.7万播放 · 00:24</span>
+    <span class="v-desc">口诀儿歌，短小精悍</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#3b82f6;">
+<span class="cat-icon">🔢</span>
+<span class="cat-name">单句口诀速记</span>
+<span class="cat-unit">第五/八单元 乘法口诀</span>
+<span class="cat-count">6个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV19AYyesEvM/" target="_blank" class="v-link">
+    <span class="v-title">37.8的乘法口诀</span>
+    <span class="v-meta">阮木 · 3万播放 · 04:37</span>
+    <span class="v-desc">8的口诀单独速记</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1FH4y1B7Ru/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学上册 2、3、4的乘法口诀</span>
+    <span class="v-meta">乌龟慢跑1 · 5.7万播放 · 37:45</span>
+    <span class="v-desc">2/3/4口诀集中背诵</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1ct411r792/" target="_blank" class="v-link">
+    <span class="v-title">小学数学二年级上册《2、3、4的乘法口诀》</span>
+    <span class="v-meta">可可读课本 · 1.6万播放 · 05:08</span>
+    <span class="v-desc">跟读形式背诵2/3/4口诀</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV12t411B7Br/" target="_blank" class="v-link">
+    <span class="v-title">小学数学二年级上册《7的乘法口诀》</span>
+    <span class="v-meta">可可读课本 · 1.4万播放 · 18:54</span>
+    <span class="v-desc">7的口诀跟读背诵</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Rt411r7nA/" target="_blank" class="v-link">
+    <span class="v-title">小学数学二年级上册《8的乘法口诀》</span>
+    <span class="v-meta">可可读课本 · 1.5万播放 · 23:08</span>
+    <span class="v-desc">8的口诀跟读背诵</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV11u411J7pk/" target="_blank" class="v-link">
+    <span class="v-title">乘加、乘减6的乘法口诀</span>
+    <span class="v-meta">沙漠搬运工 · 2.8万播放 · 09:24</span>
+    <span class="v-desc">6的口诀+乘加乘减速记</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#ec4899;">
+<span class="cat-icon">📏</span>
+<span class="cat-name">测量换算口诀</span>
+<span class="cat-unit">第六单元 测量</span>
+<span class="cat-count">4个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1G54y1C7hj/" target="_blank" class="v-link">
+    <span class="v-title">人教版二年级 米和厘米换算</span>
+    <span class="v-meta">bili_50778736609 · 2.1万播放 · 03:26</span>
+    <span class="v-desc">3分钟搞懂米和厘米换算</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1SWUjBDEdz/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学不卡壳！74集同步课堂 厘米换算</span>
+    <span class="v-meta">动画学霸 · 87万播放 · 20:27</span>
+    <span class="v-desc">厘米换算+乘法口诀动画速懂</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1nGB5Y1EvU/" target="_blank" class="v-link">
+    <span class="v-title">小学数学-3年级上 毫米厘米分米米单位换算</span>
+    <span class="v-meta">ぎょうてんいっかげん · 1.1万播放 · 02:50</span>
+    <span class="v-desc">长度单位换算速记，2分钟过一遍</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV14z4y157DJ/" target="_blank" class="v-link">
+    <span class="v-title">单位换算对于小学阶段其实很难</span>
+    <span class="v-meta">是萌萌老师呀 · 5.6万播放 · 08:52</span>
+    <span class="v-desc">所有单位换算方法总结</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#f97316;">
+<span class="cat-icon">➗</span>
+<span class="cat-name">除法概念速记</span>
+<span class="cat-unit">第七单元 分一分与除法</span>
+<span class="cat-count">6个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1y5shz6EKm/" target="_blank" class="v-link">
+    <span class="v-title">除法的初步认识 平均分</span>
+    <span class="v-meta">冉宝成长笔记 · 6691播放 · 02:05</span>
+    <span class="v-desc">2分钟搞懂平均分概念，早读速记</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1aN41177Ac/" target="_blank" class="v-link">
+    <span class="v-title">什么时候列除法算式？打好基础真的很重要</span>
+    <span class="v-meta">是萌萌老师呀 · 2.1万播放 · 05:32</span>
+    <span class="v-desc">除法概念讲解，什么时候用除法</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1qG411v7Y9/" target="_blank" class="v-link">
+    <span class="v-title">每列一道除法算式都应知其所以然</span>
+    <span class="v-meta">是萌萌老师呀 · 1.2万播放 · 04:20</span>
+    <span class="v-desc">除法算式意义速记</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1yW421w7oS/" target="_blank" class="v-link">
+    <span class="v-title">平均分超级易错题</span>
+    <span class="v-meta">教室后门的守望者_ · 6.4万播放 · 01:14</span>
+    <span class="v-desc">1分钟搞懂平均分易错点</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1wb411i7yj/" target="_blank" class="v-link">
+    <span class="v-title">01 除法复习1：对平均分的认识</span>
+    <span class="v-meta">学校螺丝钉 · 1万播放 · 06:44</span>
+    <span class="v-desc">除法复习速记，平均分概念</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1s94y1R7k2/" target="_blank" class="v-link">
+    <span class="v-title">北师大版数学二年级上册乘法+除法口诀入门</span>
+    <span class="v-meta">于嗟夐兮 · 1.5万播放 · 14:49</span>
+    <span class="v-desc">乘除法口诀入门，一次过</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#8b5cf6;">
+<span class="cat-icon">⚡</span>
+<span class="cat-name">口算速练</span>
+<span class="cat-unit">综合口算</span>
+<span class="cat-count">2个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1zH4EzNEmw/" target="_blank" class="v-link">
+    <span class="v-title">两位数乘两位数速算</span>
+    <span class="v-meta">昊昊讲数学 · 2480播放 · 01:23</span>
+    <span class="v-desc">速算技巧，适合早读快速过</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1bZ421N78E/" target="_blank" class="v-link">
+    <span class="v-title">二年级上册数学表内乘法口算4000道</span>
+    <span class="v-meta">晗晗麻麻有宝藏 · 1.8万播放 · 00:19</span>
+    <span class="v-desc">口算练习题打印资源，每天练一页</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#14b8a6;">
+<span class="cat-icon">💡</span>
+<span class="cat-name">背诵方法</span>
+<span class="cat-unit">背诵技巧</span>
+<span class="cat-count">3个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1bh4y1578H/" target="_blank" class="v-link">
+    <span class="v-title">乘法口诀背不熟怎么办？3个扑克游戏来搞定</span>
+    <span class="v-meta">呱老师数学 · 2万播放 · 02:05</span>
+    <span class="v-desc">游戏化背诵方法，边玩边记</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Lh4y1y7ps/" target="_blank" class="v-link">
+    <span class="v-title">暑假5天牢记乘法口诀，详细规划学练结合</span>
+    <span class="v-meta">呱老师数学 · 1.4万播放 · 02:15</span>
+    <span class="v-desc">5天背诵计划，每天背什么清清楚楚</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1VRgNz7EgQ/" target="_blank" class="v-link">
+    <span class="v-title">九月份上二年级的孩子，乘法口诀一定要提前背诵</span>
+    <span class="v-meta">枝食分子 · 1.3万播放 · 01:33</span>
+    <span class="v-desc">提前背诵建议+方法</span>
+  </a>
+</div>
+<div class="cat-header" style="border-left-color:#64748b;">
+<span class="cat-icon">📝</span>
+<span class="cat-name">全册知识点汇总</span>
+<span class="cat-unit">全册总复习</span>
+<span class="cat-count">3个</span>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1th41157N6/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学公式汇总！记忆背诵！</span>
+    <span class="v-meta">呼叫土豆老师 · 2340播放 · 00:46</span>
+    <span class="v-desc">全册公式46秒速记，早读必过</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1Yr8FzJEfA/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学知识要点汇总！暑期复习必备</span>
+    <span class="v-meta">学之二三事 · 310播放 · 00:14</span>
+    <span class="v-desc">全册知识要点，打印背诵</span>
+  </a>
+</div>
+<div class="video-row">
+  <a href="https://www.bilibili.com/video/BV1exdcYgE5y/" target="_blank" class="v-link">
+    <span class="v-title">二年级数学上册动画课34讲全解</span>
+    <span class="v-meta">知识课代表-分享版 · 2.6万播放 · 03:07:44</span>
+    <span class="v-desc">全册动画串讲，从加减速算到乘除法</span>
+  </a>
+</div>
+<div class="footer">
+<p>二年级数学早读视频导航 · 北师大版 · 覆盖全册8个单元</p>
+<p>点击链接直接跳转哔哩哔哩播放 · 46个精选早读视频</p>
+</div>
+</div>
+<script>
+function f(){
+var q=document.getElementById('sk').value.toLowerCase().trim();
+var rows=document.querySelectorAll('.video-row');
+var vis=0;
+rows.forEach(function(r){
+var t=r.textContent.toLowerCase();
+if(q===''||t.indexOf(q)>-1){r.style.display='';vis++}else{r.style.display='none'}
+});
+document.querySelectorAll('.cat-header').forEach(function(h){
+var p=h;
+var hasVis=false;
+while((p=p.nextElementSibling)&&p.classList.contains('video-row')){
+if(p.style.display!=='none'){hasVis=true;break}
+}
+h.style.display=hasVis?'':'none';
+});
+document.getElementById('nr').style.display=vis===0?'block':'none';
+}
+function clr(){document.getElementById('sk').value='';f()}
+</script>
+</body>
+</html>
