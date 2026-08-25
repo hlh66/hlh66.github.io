@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎙️ 小智 AI 完整版 V2</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,"Microsoft YaHei","Segoe UI",sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a1a2e,#0d0d2b);min-height:100vh;color:#fff;padding:20px}
+        .container{max-width:800px;margin:0 auto}
+        h1{font-size:28px;font-weight:700;background:linear-gradient(90deg,#4a9eff,#a855f7);-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;margin-bottom:6px}
+        .subtitle{color:#888;font-size:14px;margin-top:5px;text-align:center}
+        
+        /* 状态栏 */
+        .status-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;padding:14px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:18px}
+        .st-item{display:flex;align-items:center;gap:8px;font-size:13px}
+        .st-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;animation:pulse 2s infinite}
+        .st-dot.on{animation:none;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)}
+        @keyframes pulse{50%{opacity:.4}}
+        
+        /* 控制按钮 */
+        .ctrl-bar{display:flex;gap:12px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+        .btn{padding:14px 32px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:1px;min-width:140px}
+        .btn:disabled{opacity:.35;cursor:not-allowed}
+        .btn-mic{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}.btn-mic:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 20px rgba(34,197,94,.4)}
+        .btn-chat{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}.btn-chat:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 20px rgba(58,123,246,.4)}
+        .btn-stop{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+        
+        /* 音量条 */
+        .vol-section{margin:12px 0 18px}
+        .vol-label{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:6px}
+        .vol-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+        .vol-fill{height:100%;background:linear-gradient(90deg,#22c55e,#84cc16);width:0%;transition:width .1s;border-radius:4px}
+        .vol-fill.alert{background:linear-gradient(90deg,#ef4444,#f97316)}
+        
+        /* 聊天区 */
+        .chat-box{background:rgba(30,30,60,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;height:380px;display:flex;flex-direction:column;gap:10px;margin-bottom:18px;overflow-y:auto}
+        .chat-msg{padding:10px 14px;border-radius:10px;word-break:break-all;line-height:1.6;font-size:14px;max-height:120px;overflow-y:auto}
+        .msg-user{background:rgba(59,130,246,.12);border-left:3px solid #4a9eff}
+        .msg-ai{background:rgba(139,92,246,.08);border-left:3px solid #7c3aed}
+        .msg-sys{background:rgba(100,149,237,.08);border-left:3px solid #6b7280}
+        .msg-time{font-size:11px;color:#666;margin-top:4px}
+        
+        /* 表情 */
+        .emoji-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+        .emoji-btn{padding:8px 16px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);cursor:pointer;font-size:22px;transition:all .15s}
+        .emoji-btn:hover{background:rgba(255,255,255,.12);transform:scale(1.1)}
+        
+        /* 结果区 */
+        .result-area{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);border-radius:12px;padding:16px;margin-bottom:18px;min-height:70px}
+        .res-text{font-size:17px;line-height:1.7;color:#e0d0ff;word-break:break-all;white-space:pre-wrap}
+        .res-time{font-size:11px;color:#888;margin-top:6px}
+        
+        /* 工具 */
+        .tool-row{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+        .tbtn{padding:8px 18px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:transparent;color:#888;cursor:pointer;font-size:13px;transition:all .2s}
+        .tbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+        
+        /* 日志 */
+        .log-area{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;margin-top:18px;max-height:160px;overflow-y:auto;font-family:'Cascadia Code','Consolas',monospace;font-size:12px;line-height:1.6}
+        .log-entry{color:#888;margin-bottom:2px}.log-entry.err{color:#ef4444}.log-entry.ok{color:#22c55e}.log-entry.info{color:#60a5fa}
+        
+        /* Toast */
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(30,30,40,.95);backdrop-filter:blur(10px);border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:14px 28px;color:#fff;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+        .toast.show{opacity:1}
+        
+        /* TTS 状态 */
+        .tts-status{display:none;align-items:center;gap:8px;padding:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;margin:10px 0;font-size:13px;color:#f59e0b}
+        .tts-status.show{display:flex}
+        .tts-icon{font-size:20px;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎙️ 小智 AI 完整版 V2</h1>
+        <div class="subtitle">STT识别 · TTS语音合成 · 智能对话 · 表情反馈</div>
+    </div>
+
+    <!-- 状态 -->
+    <div class="status-bar">
+        <div class="st-item"><span class="st-dot" id="dotOta"></span> OTA</div>
+        <div class="st-item"><span class="st-dot" id="dotWs"></span> WebSocket</div>
+        <div class="st-item"><span class="st-dot" id="dotMic"></span> 麦克风</div>
+        <div class="st-item"><span class="st-dot" id="dotTts"></span> TTS</div>
+    </div>
+
+    <!-- 控制 -->
+    <div class="ctrl-bar">
+        <button class="btn btn-mic" id="btnMic" onclick="startMic()">🎤 开始录音</button>
+        <button class="btn btn-stop" id="btnStop" onclick="stopMic()" disabled style="display:none">⏹️ 停止录音</button>
+        <button class="btn btn-chat" id="btnChat" onclick="sendChat()">💬 发送消息</button>
+    </div>
+
+    <!-- 音量 -->
+    <div class="vol-section">
+        <div class="vol-label"><span>实时音量</span><span id="volVal">0%</span></div>
+        <div class="vol-bar"><div class="vol-fill" id="volFill"></div></div>
+    </div>
+
+    <!-- TTS 状态 -->
+    <div class="tts-status" id="ttsStatus">
+        <span class="tts-icon">🔊</span><span id="ttsText">TTS 就绪</span>
+    </div>
+
+    <!-- 聊天区 -->
+    <div class="chat-box" id="chatBox">
+        <div class="chat-msg msg-sys">
+            <div>👋 你好！我是小智AI，可以帮你：</div>
+            <div class="msg-time">系统</div>
+            <div style="margin-top:6px;font-size:12px;color:#aaa;">• 语音转文字（点击录音说话）<br>• 文字聊天（输入框发送）<br>• 发送表情（下方按钮）</div>
+        </div>
+    </div>
+
+    <!-- 输入框 + 表情 -->
+    <div style="display:flex;gap:10px;margin-bottom:18px;">
+        <input type="text" id="chatInput" placeholder="输入消息..." style="flex:1;padding:12px 16px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.04);color:#fff;font-size:15px;outline:none;" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()" style="min-width:auto;padding:12px 28px;">发送 💬</button>
+    </div>
+    <div class="emoji-row">
+        <button class="emoji-btn" onclick="sendEmoji('😊')">😊</button>
+        <button class="emoji-btn" onclick="sendEmoji('😂')">😂</button>
+        <button class="emoji-btn" onclick="sendEmoji('👍')">👍</button>
+        <button class="emoji-btn" onclick="sendEmoji('❤️')">❤️</button>
+        <button class="emoji-btn" onclick="sendEmoji('🎉')">🎉</button>
+        <button class="emoji-btn" onclick="sendEmoji('🤔')">🤔</button>
+        <button class="emoji-btn" onclick="sendEmoji('💡')">💡</button>
+        <button class="emoji-btn" onclick="sendEmoji('🎵')">🎵</button>
+    </div>
+
+    <!-- 结果显示 -->
+    <div class="result-area" id="resultArea">
+        <div class="res-text" id="resText" style="color:#666;font-style:italic;">等待输入...</div>
+        <div class="res-time" id="resTime"></div>
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="tool-row">
+        <button class="tbtn" onclick="clearAll()">🗑️ 清空</button>
+        <button class="tbtn" onclick="copyAll()">📋 复制全部</button>
+        <button class="tbtn" onclick="exportTxt()">💾 导出</button>
+    </div>
+
+    <!-- 日志 -->
+    <div class="log-area" id="logArea"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== 状态 ==========
+var isRecording = false;
+var audioCtx = null;
+var analyser = null;
+var mr = null;
+var stream = null;
+var chunks = [];
+var volTimer = null;
+
+// DOM 元素
+var dotOta = document.getElementById('dotOta');
+var dotWs = document.getElementById('dotWs');
+var dotMic = document.getElementById('dotMic');
+var dotTts = document.getElementById('dotTts');
+var btnMic = document.getElementById('btnMic');
+var btnStop = document.getElementById('btnStop');
+var btnChat = document.getElementById('btnChat');
+var volFill = document.getElementById('volFill');
+var volVal = document.getElementById('volVal');
+var chatBox = document.getElementById('chatBox');
+var chatInput = document.getElementById('chatInput');
+var resText = document.getElementById('resText');
+var resTime = document.getElementById('resTime');
+var resultArea = document.getElementById('resultArea');
+var logArea = document.getElementById('logArea');
+var toastEl = document.getElementById('toast');
+var ttsStatus = document.getElementById('ttsStatus');
+var ttsText = document.getElementById('ttsText');
+
+// ========== 工具函数 ==========
+function log(msg, t) {
+    var e = document.createElement('div');
+    e.className = 'log-entry' + (t ? ' ' + t : '');
+    e.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    logArea.appendChild(e);
+    logArea.scrollTop = logArea.scrollHeight;
+}
+
+function toast(m) {
+    toastEl.textContent = m;
+    toastEl.classList.add('show');
+    setTimeout(function() { toastEl.classList.remove('show'); }, 3000);
+}
+
+function esc(t) {
+    var d = document.createElement('d');
+    d.textContent = t;
+    return d.innerHTML;
+}
+
+// ========== 麦克风 ==========
+async function startMic() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+        });
+        audioCtx = new AudioContext({ sampleRate: 16000 });
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        var src = audioCtx.createMediaStreamSource(stream);
+        src.connect(analyser);
+        
+        mr = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+        chunks = [];
+        mr.ondataavailable = function(e) {
+            if (e.data.size > 0) chunks.push(e.data);
+        };
+        mr.onstop = processAudio;
+        
+        isRecording = true;
+        btnMic.style.display = 'none';
+        btnStop.style.display = 'inline-block';
+        btnStop.disabled = false;
+        dotMic.className = 'st-dot on';
+        log('✅ 麦克风已开启', 'ok');
+        toast('🎤 正在监听...');
+        startVolCheck();
+    } catch(e) {
+        log('❌ ' + e.message, 'err');
+        toast('❌ 错误: ' + e.message);
+    }
+}
+
+function stopMic() {
+    if (!isRecording) return;
+    if (mr && mr.state !== 'inactive') mr.stop();
+    stream.getTracks().forEach(function(t) { t.stop(); });
+    
+    isRecording = false;
+    btnMic.style.display = 'inline-block';
+    btnStop.style.display = 'none';
+    dotMic.className = 'st-dot';
+    stopVolCheck();
+    updateVol(0);
+    log('⏹️ 已停止', 'info');
+    toast('⏹️ 录音已停止');
+}
+
+function startVolCheck() {
+    var da = new Uint8Array(analyser.frequencyBinCount);
+    volTimer = setInterval(function() {
+        if (!isRecording) return;
+        analyser.getByteTimeDomainData(da);
+        var s = 0;
+        for (var i = 0; i < da.length; i++) {
+            var n = (da[i] - 128) / 128;
+            s += n * n;
+        }
+        var rms = Math.sqrt(s / da.length);
+        updateVol(rms);
+    }, 80);
+}
+
+function stopVolCheck() {
+    if (volTimer) clearInterval(volTimer);
+}
+
+function updateVol(v) {
+    var p = Math.round(v * 100);
+    volFill.style.width = p + '%';
+    volVal.textContent = p + '%';
+    if (p > 30) {
+        volFill.classList.add('alert');
+    } else {
+        volFill.classList.remove('alert');
+    }
+}
+
+// ========== 处理音频 ==========
+async function processAudio() {
+    try {
+        var blob = new Blob(chunks, { type: 'audio/webm' });
+        var wav = await convertToWav(blob);
+        var fd = new FormData();
+        fd.append('audio', wav, 'recording.wav');
+        
+        log('📤 发送 STT...', 'info');
+        var r = await fetch('/api/stt', { method: 'POST', body: fd });
+        var d = await r.json();
+        
+        if (d.success && d.text) {
+            showResult(d.text, d.time);
+            addChatMsg(d.text, 'ai');
+            speakText(d.text);
+        } else {
+            throw new Error(d.error || '失败');
+        }
+    } catch(e) {
+        log('❌ 处理失败: ' + e.message, 'err');
+        toast('❌ ' + e.message);
+    }
+    
+    // 重置
+    if (!isRecording) startMic();
+}
+
+// ========== WebM → WAV 转换 ==========
+function writeStr(view, offset, str) {
+    for (var i = 0; i < str.length; i++) {
+        view.setUint8(offset + i, str.charCodeAt(i));
+    }
+}
+
+async function convertToWav(blob) {
+    var ab = await blob.arrayBuffer();
+    var ac = new AudioContext({ sampleRate: 16000 });
+    var buf = await ac.decodeAudioData(ab);
+    
+    var n = buf.numberOfChannels;
+    var sr = buf.sampleRate;
+    var data = buf.getChannelData(0);
+    var bps = 16;
+    var bs = bps / 2;
+    var ba = n * bs;
+    var dl = data.length * bs;
+    var bl = 44 + dl;
+    
+    var v = new DataView(new ArrayBuffer(bl));
+    
+    // 写入 WAV 头
+    writeStr(v, 0, 'RIFF');
+    v.setUint32(4, bl - 8, true);
+    writeStr(v, 8, 'WAVE');
+    writeStr(v, 12, 'fmt ');
+    v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true);
+    v.setUint16(22, n, true);
+    v.setUint32(24, sr, true);
+    v.setUint32(28, sr * ba, true);
+    v.setUint32(32, ba, true);
+    v.setUint16(34, bps, true);
+    writeStr(v, 36, 'data');
+    v.setUint32(40, dl, true);
+    
+    // 写入 PCM 数据
+    var o = 44;
+    for (var i = 0; i < data.length; i++) {
+        var s = Math.max(-1, Math.min(1, data[i]));
+        v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        o += 2;
+    }
+    
+    ac.close();
+    return new Blob([v], { type: 'audio/wav' });
+}
+
+// ========== 聊天 ==========
+async function sendChat() {
+    var text = chatInput.value.trim();
+    if (!text) { toast('请输入内容'); return; }
+    
+    addChatMsg(text, 'user');
+    chatInput.value = '';
+    
+    try {
+        var r = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
+        var d = await r.json();
+        
+        if (d.success && d.text) {
+            showResult(d.text, d.time);
+            addChatMsg(d.text, 'ai');
+            speakText(d.text);
+        }
+    } catch(e) {
+        log('❌ 聊天失败: ' + e.message, 'err');
+        toast('❌ ' + e.message);
+    }
+}
+
+function sendEmoji(e) {
+    addChatMsg(e, 'user');
+    setTimeout(async function() {
+        try {
+            var r = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: e })
+            });
+            var d = await r.json();
+            if (d.success && d.text) {
+                addChatMsg(d.text, 'ai');
+                speakText(d.text);
+            }
+        } catch(err) {
+            // ignore
+        }
+    }, 300);
+}
+
+function addChatMsg(text, type) {
+    var d = document.createElement('div');
+    d.className = 'chat-msg msg-' + type;
+    d.innerHTML = '<div>' + esc(text) + '</div><div class="msg-time">' + new Date().toLocaleTimeString() + '</div>';
+    chatBox.appendChild(d);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ========== 结果展示 ==========
+function showResult(text, time) {
+    resText.innerHTML = '<span style="color:#c4b5fd">' + esc(text) + '</span>';
+    resTime.textContent = time || new Date().toLocaleTimeString();
+}
+
+// ========== TTS 语音合成 ==========
+function speakText(text) {
+    if (!text) return;
+    if ('speechSynthesis' in window) {
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN';
+        u.rate = 1.1;
+        u.pitch = 1;
+        u.volume = 1;
+        
+        ttsStatus.classList.add('show');
+        ttsText.textContent = '正在播放...';
+        
+        u.onend = function() {
+            ttsStatus.classList.remove('show');
+            ttsText.textContent = 'TTS 就绪';
+        };
+        
+        speechSynthesis.speak(u);
+    }
+}
+
+// ========== 工具 ==========
+function clearAll() {
+    chatBox.innerHTML = '';
+    addChatMsg('已清空', 'sys');
+    resText.innerHTML = '<span style="color:#666;font-style:italic;">等待输入...</span>';
+    log('🗑️ 已清空', 'ok');
+}
+
+function copyAll() {
+    var msgs = document.querySelectorAll('.chat-msg');
+    var t = [];
+    for (var i = 0; i < msgs.length; i++) {
+        var txt = msgs[i].innerText;
+        if (txt) t.push(txt);
+    }
+    navigator.clipboard.writeText(t.join('\n')).then(function() {
+        toast('📋 已复制');
+    });
+}
+
+function exportTxt() {
+    var msgs = document.querySelectorAll('.chat-msg');
+    var t = [];
+    for (var i = 0; i < msgs.length; i++) {
+        var txt = msgs[i].innerText;
+        if (txt) t.push(txt);
+    }
+    var b = new Blob([t.join('\n')], { type: 'text/plain;charset=utf-8' });
+    var u = URL.createObjectURL(b);
+    var a = document.createElement('a');
+    a.href = u;
+    a.download = 'xiaozhi_' + Date.now() + '.txt';
+    a.click();
+    URL.revokeObjectURL(u);
+    toast('💾 已导出');
+}
+
+// ========== 初始化 ==========
+log('🚀 小智AI V2 加载完成');
+log('💡 提示：点「开始录音」说话 或 直接打字聊天');
+</script>
+</body>
+</html>
