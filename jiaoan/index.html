@@ -3,393 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二年级数学·下册 | 教案导航</title>
+    <title>📚 二上数学教案导航 v2 · 北师大2025新教材</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        /* 头部 */
-        .header {
-            text-align: center; color: white; padding: 30px 20px;
-            background: rgba(255,255,255,0.1); border-radius: 16px;
-            margin-bottom: 24px; backdrop-filter: blur(10px);
-        }
-        .header h1 { font-size: 2.2em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .header p { opacity: 0.9; font-size: 1.05em; }
-        .header .badge {
-            display: inline-block; background: #ffd700; color: #333;
-            padding: 4px 14px; border-radius: 20px; font-size: 0.85em;
-            font-weight: bold; margin-top: 10px;
-        }
-
-        /* 搜索栏 */
-        .search-bar {
-            display: flex; gap: 12px; margin-bottom: 24px;
-        }
-        .search-bar input {
-            flex: 1; padding: 14px 20px; border: none; border-radius: 12px;
-            font-size: 16px; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-        .search-bar button {
-            padding: 14px 28px; background: #ff6b6b; color: white;
-            border: none; border-radius: 12px; font-size: 16px; cursor: pointer;
-            font-weight: bold; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-        .search-bar button:hover { transform: scale(1.05); }
-
-        /* 统计栏 */
-        .stats {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px; margin-bottom: 24px;
-        }
-        .stat-card {
-            background: white; padding: 18px; border-radius: 12px;
-            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .stat-card:hover { transform: translateY(-4px); }
-        .stat-num { font-size: 2em; font-weight: bold; color: #667eea; }
-        .stat-label { color: #666; font-size: 0.9em; margin-top: 4px; }
-
-        /* 主内容区 */
-        .main-content {
-            display: grid; grid-template-columns: 280px 1fr; gap: 24px;
-        }
-        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
-
-        /* 左侧目录 */
-        .sidebar {
-            background: white; border-radius: 16px; padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: fit-content;
-            max-height: calc(100vh - 200px); overflow-y: auto; position: sticky; top: 20px;
-        }
-        .sidebar h3 { color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
-        .unit-list { list-style: none; }
-        .unit-item {
-            padding: 12px 14px; margin-bottom: 6px; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s; font-size: 0.95em;
-            background: #f8f9fa; border-left: 4px solid transparent;
-        }
-        .unit-item:hover { background: #e8f0fe; border-left-color: #667eea; }
-        .unit-item.active { background: #667eea; color: white; border-left-color: #ffd700; }
-        .unit-badge { float: right; background: #ffd700; color: #333; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: bold; }
-
-        /* 右侧详情 */
-        .detail-panel {
-            background: white; border-radius: 16px; padding: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 500px;
-        }
-        .detail-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;
-        }
-        .detail-header h2 { color: #333; font-size: 1.5em; }
-        .detail-header .unit-tag {
-            background: #667eea; color: white; padding: 6px 14px;
-            border-radius: 20px; font-size: 0.85em;
-        }
-
-        /* 课程列表 */
-        .lesson-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
-        }
-        .lesson-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px; padding: 16px; cursor: pointer;
-            transition: all 0.3s; border: 2px solid transparent; position: relative;
-        }
-        .lesson-card:hover {
-            transform: translateY(-4px); box-shadow: 0 8px 25px rgba(102,126,234,0.25);
-            border-color: #667eea;
-        }
-        .lesson-num {
-            position: absolute; top: -8px; right: -8px;
-            background: #ff6b6b; color: white; width: 28px; height: 28px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 0.85em; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .lesson-title { font-weight: bold; color: #333; margin-bottom: 6px; font-size: 1em; }
-        .lesson-keywords { font-size: 0.82em; color: #666; line-height: 1.5; }
-        .lesson-keywords span {
-            display: inline-block; background: #e8f0fe; color: #667eea;
-            padding: 2px 8px; border-radius: 6px; margin: 2px 2px 0 0;
-        }
-        .lesson-file {
-            margin-top: 8px; font-size: 0.78em; color: #999;
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        /* 关键词标签 */
-        .keyword-filter {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
-        }
-        .kw-tag {
-            padding: 6px 14px; border-radius: 20px; background: #f0f0f0;
-            cursor: pointer; font-size: 0.88em; transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-        .kw-tag:hover, .kw-tag.active { background: #667eea; color: white; border-color: #667eea; }
-
-        /* 空状态 */
-        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
-        .empty-state .icon { font-size: 4em; margin-bottom: 16px; }
-
-        /* 页脚 */
-        .footer {
-            text-align: center; color: rgba(255,255,255,0.8); padding: 20px;
-            margin-top: 30px; font-size: 0.9em;
-        }
+        body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); min-height: 100vh; color: #333; }
+        .sticky-nav { position: sticky; top: 0; z-index: 999; background: linear-gradient(135deg, rgba(245,158,11,.18), rgba(239,68,68,.12)); backdrop-filter: blur(10px); border-bottom: 2px solid rgba(245,158,11,0.4); padding: 10px 20px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .sticky-nav-inner { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; padding: 8px 20px; border-radius: 25px; font-size: 0.88em; font-weight: 600; box-shadow: 0 4px 16px rgba(245,158,11,0.4); animation: navPulse 2s infinite; }
+        @keyframes navPulse { 0%,100%{box-shadow:0 4px 16px rgba(245,158,11,.4)} 50%{box-shadow:0 4px 24px rgba(245,158,11,.7)} }
+        .sticky-nav-time { font-size: 1.1em; font-weight: 700; font-variant-numeric: tabular-nums; color: #fff; }
+        .sticky-nav-week { font-size: 0.9em; opacity: 0.95; }
+        .nav-countdown { background: rgba(255,255,255,.2); padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 600; }
+        .header { text-align: center; padding: 28px 20px 18px; color: white; }
+        .header h1 { font-size: 1.9em; text-shadow: 0 3px 10px rgba(0,0,0,0.4); margin-bottom: 5px; }
+        .header .subtitle { font-size: 0.92em; opacity: 0.85; margin-bottom: 4px; }
+        .header .ver { display: inline-block; background: rgba(255,255,255,0.18); padding: 3px 12px; border-radius: 15px; font-size: 0.76em; margin-top: 6px; }
+        .header .hint { font-size: 0.8em; opacity: 0.5; margin-top: 8px; }
+        .container { max-width: 1150px; margin: 0 auto; padding: 0 16px 30px; }
+        .toolbar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+        .toolbar input { flex: 1; min-width: 200px; padding: 11px 20px; border: none; border-radius: 25px; font-size: 0.95em; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.25); }
+        .toolbar button { padding: 10px 18px; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: white; border-radius: 22px; cursor: pointer; font-size: 0.85em; transition: all 0.25s; }
+        .toolbar button:hover { background: white; color: #302b63; }
+        .week-bar { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding: 8px 4px; scroll-behavior: smooth; }
+        .week-chip { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; font-size: 0.78em; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(.4,0,.2,1); white-space: nowrap; color: white; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.2); }
+        .week-chip:hover { background: rgba(255,255,255,0.28); transform: translateY(-2px); }
+        .week-chip.active { background: rgba(255,255,255,0.32); transform: translateY(-2px); }
+        .week-chip.current { background: linear-gradient(135deg, #f59e0b, #ef4444) !important; color: white !important; border-color: #fca5a5 !important; font-size: 0.9em !important; padding: 10px 20px !important; transform: scale(1.15) !important; box-shadow: 0 4px 20px rgba(245,158,11,.5), 0 0 30px rgba(245,158,11,.3); z-index: 10; position: relative; animation: chipGlow 2s infinite; }
+        .week-chip.current .w-date { opacity: 1; font-weight: bold; }
+        .week-chip.current::after { content: '📍 本周'; position: absolute; top: -10px; right: 8px; background: #ef4444; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 10px; border-radius: 8px 10px 0 8px; box-shadow: 0 2px 8px rgba(239,68,68,.4); animation: tagBounce 1s infinite; }
+        @keyframes chipGlow { 0%,100%{box-shadow:0 4px 20px rgba(245,158,11,.5),0 0 30px rgba(245,158,11,.3)} 50%{box-shadow:0 4px 28px rgba(245,158,11,.7),0 0 36px rgba(245,158,11,.45)} }
+        @keyframes tagBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+        .week-chip .w-date { opacity: 0.7; font-weight: normal; margin-left: 4px; }
+        .unit-card { background: rgba(255,255,255,0.96); border-radius: 16px; margin-bottom: 13px; overflow: hidden; box-shadow: 0 5px 22px rgba(0,0,0,0.18); transition: all 0.3s; }
+        .unit-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+        .unit-head { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 13px; transition: background 0.25s; user-select: none; position: relative; overflow: hidden; }
+        .unit-head::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; }
+        .u1 .unit-head::before { background: linear-gradient(180deg,#f59e0b,#d97706); } .u2 .unit-head::before { background: linear-gradient(180deg,#3b82f6,#2563eb); }
+        .u3 .unit-head::before { background: linear-gradient(180deg,#10b981,#059669); } .u4 .unit-head::before { background: linear-gradient(180deg,#ef4444,#dc2626); }
+        .u5 .unit-head::before { background: linear-gradient(180deg,#8b5cf6,#7c3aed); } .u6 .unit-head::before { background: linear-gradient(180deg,#06b6d4,#0891b2); }
+        .u7 .unit-head::before { background: linear-gradient(180deg,#f97316,#ea580c); } .u8 .unit-head::before { background: linear-gradient(180deg,#14b8a6,#0d9488); }
+        .uX .unit-head::before { background: linear-gradient(180deg,#64748b,#475569); }
+        .unit-head:hover { background: #fafbff; }
+        .unit-icon { font-size: 1.8em; min-width: 44px; text-align: center; }
+        .unit-info { flex: 1; }
+        .unit-num { font-size: 0.72em; color:#aaa; font-weight:700; letter-spacing:1px; }
+        .unit-name { font-size: 1.1em; font-weight:bold; color:#222; margin-top:2px; }
+        .unit-desc { font-size: 0.8em; color:#999; margin-top:2px; }
+        .unit-meta { text-align: right; font-size: 0.72em; color: #bbb; }
+        .unit-week { color: #888; font-weight: 600; }
+        .unit-arrow { font-size: 1.1em; color:#ccc; transition: transform 0.3s; margin-left: 8px; }
+        .unit-card.open .unit-arrow { transform: rotate(90deg); }
+        .lessons-body { display: none; padding: 4px 16px 16px; border-top: 1px solid #eee; background: #fafbfd; }
+        .unit-card.open .lessons-body { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        .lesson-item { background: white; border-radius: 11px; padding: 13px 15px; margin-bottom: 9px; box-shadow: 0 2px 7px rgba(0,0,0,0.04); border-left: 3px solid #e0e0e0; transition: all 0.3s cubic-bezier(.4,0,.2,1); position: relative; }
+        .lesson-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); transform: translateX(3px); }
+        .li-u1 { border-left-color: #f59e0b; } .li-u2 { border-left-color: #3b82f6; } .li-u3 { border-left-color: #10b981; }
+        .li-u4 { border-left-color: #ef4444; } .li-u5 { border-left-color: #8b5cf6; } .li-u6 { border-left-color: #06b6d4; }
+        .li-u7 { border-left-color: #f97316; } .li-u8 { border-left-color: #14b8a6; } .li-uX { border-left-color: #64748b; }
+        .lesson-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+        .lesson-no { background: #f0f0f0; color: #999; font-size: 0.68em; font-weight: 700; padding: 2px 8px; border-radius: 7px; flex-shrink: 0; }
+        .lesson-name { font-size: 0.96em; font-weight: 700; color: #333; transition: all 0.25s; }
+        .lesson-week-tag { font-size: 0.7em; background: #eef2ff; color: #4338ca; padding: 2px 8px; border-radius: 8px; margin-left: auto; flex-shrink: 0; }
+        .lesson-item.now { border: 3px solid #f59e0b !important; border-left: 6px solid #f59e0b !important; background: linear-gradient(135deg, rgba(245,158,11,.12), rgba(251,191,36,.08)) !important; box-shadow: 0 0 24px rgba(245,158,11,.25), inset 0 0 16px rgba(245,158,11,.06); transform: scale(1.04); z-index: 50; padding: 16px 18px !important; margin: 10px 0 !important; }
+        .lesson-item.now::before { content: '📍 本周课'; position: absolute; top: -10px; right: 12px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 12px; border-radius: 10px 12px 8px 8px; box-shadow: 0 2px 10px rgba(239,68,68,.35); animation: nowTagBounce 1.5s infinite; }
+        @keyframes nowTagBounce { 0%,100%{transform:translateY(0)} 50%{transform: translateY(-4px)} }
+        .lesson-item.now .lesson-name { color: #b45309 !important; font-size: 1.05em !important; }
+        .lesson-item.now .lesson-week-tag { background: linear-gradient(135deg, #f59e0b, #f97316) !important; color: white !important; font-weight: 700 !important; padding: 4px 12px !important; animation: weekTagPulse 1.5s infinite; }
+        @keyframes weekTagPulse { 0%,100%{box-shadow:0 0 6px rgba(0,0,0,.15)} 50%{box-shadow:0 0 12px rgba(249,115,40,.3)} }
+        .resource-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .res-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 18px; text-decoration: none; font-size: 0.78em; font-weight: 600; transition: all 0.25s cubic-bezier(.4,0,.2,1); border: 1.5px solid transparent; cursor: pointer; }
+        .res-btn:hover { transform: translateY(-2px) translateX(3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: white !important; }
+        .rb-xhs-note  { background:#fff0f5; color:#e11d48; border-color:#fda4af; } .rb-xhs-note:hover{background:#e11d48;}
+        .rb-xhs-bs    { background:#eff6ff; color:#2563eb; border-color:#93c5fd; } .rb-xhs-bs:hover{background:#2563eb;}
+        .rb-bili      { background:#fef2f2; color:#dc2626; border-color:#fca5a5; } .rb-bili:hover{background:#dc2626;}
+        .rb-baidu     { background:#f0fdf4; color:#16a34a; border-color:#86efac; } .rb-baidu:hover{background:#16a34a;}
+        .rb-ppt       { background:#fefce8; color:#ca8a04; border-color:#fde047; } .rb-ppt:hover{background:#ca8a04;}
+        .rb-wenku     { background:#faf5ff; color:#9333ea; border-color:#d8b4fe; } .rb-wenku:hover{background:#9333ea;}
+        .rb-youku     { background:#fff7ed; color:#ea580c; border-color:#fdba74; } .rb-youku:hover{background:#ea580c;}
+        .rb-local     { background:#ecfdf5; color:#059669; border-color:#6ee7b7; } .rb-local:hover{background:#059669;}
+        .float-btn { position: fixed; bottom: 28px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; border: none; font-size: 22px; cursor: pointer; z-index: 998; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(245,158,11,.4); transition: all 0.25s; animation: floatBtn 2s infinite; }
+        .float-btn:hover { transform: scale(1.15); }
+        @keyframes floatBtn { 0%,100%{box-shadow:0 4px 20px rgba(245,158,11,.4)} 50%{box-shadow:0 6px 28px rgba(245,158,158,.6)} }
+        .footer { text-align:center; padding:24px 20px; color:rgba(255,255,255,0.4); font-size:0.82em; }
+        @media (max-width: 768px) { .header h1 { font-size: 1.4em; } .unit-head { padding: 12px 14px; } .res-btn { padding: 5px 9px; font-size: 0.73em; } .lesson-item.now { transform: scale(1.01); padding: 14px 14px !important; } .lesson-item.now .lesson-name { font-size: 1em !important; } .week-chip.current { transform: scale(1.08); padding: 9px 16px !important; } }
+        .empty-tip { text-align:center; padding:50px 20px; color:rgba(255,255,255,0.35); }
+        .empty-tip span { font-size:2.5em; display:block; margin-bottom:8px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <!-- 头部 -->
-    <div class="header">
-        <h1>📚 二年级数学·下册 | 教案导航</h1>
-        <p>北师大版 · 熹涌陈佐乾纪念学校 · 快速查找课件与学历案</p>
-        <span class="badge">✅ 共 8 单元 · 32 课时 · 8 份单元学历案</span>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 搜索课程关键词...（如：加减法、方向、长度、时间）" oninput="filterLessons()">
-        <button onclick="filterLessons()">搜索</button>
-    </div>
-
-    <!-- 统计 -->
-    <div class="stats">
-        <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">单元数</div></div>
-        <div class="stat-card"><div class="stat-num">32</div><div class="stat-label">课时数</div></div>
-        <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">单元学历案</div></div>
-        <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">教师版本</div></div>
-    </div>
-
-    <!-- 主内容 -->
-    <div class="main-content">
-        <!-- 左侧目录 -->
-        <div class="sidebar">
-            <h3>📖 目录导航</h3>
-            <ul class="unit-list" id="unitList"></ul>
+<div class="sticky-nav" id="stickyNav">
+    <div class="sticky-nav-inner" id="stickyInner">
+        <span style="font-size:1.1em;">📍</span>
+        <div>
+            <div class="sticky-nav-time" id="clockTime">--:--:--</div>
+            <div class="sticky-nav-week" id="navWeekInfo">加载中...</div>
         </div>
-
-        <!-- 右侧详情 -->
-        <div class="detail-panel" id="detailPanel">
-            <div class="detail-header">
-                <h2 id="currentUnitName">选择左侧单元查看课程</h2>
-                <span class="unit-tag" id="currentUnitTag">欢迎</span>
-            </div>
-            
-            <!-- 关键词筛选 -->
-            <div class="keyword-filter" id="keywordFilter"></div>
-
-            <!-- 课程列表 -->
-            <div class="lesson-grid" id="lessonGrid"></div>
-        </div>
-    </div>
-
-    <!-- 页脚 -->
-    <div class="footer">
-        <p>📁 资料来源：E:\1\二年级数学\参考资料\2024数学第二学期\</p>
-        <p>👨‍🏫 教师：周嘉意 · 李秋裕 | 🏫 学校：熹涌陈佐乾纪念学校</p>
-        <p style="margin-top:8px;opacity:0.7;">© 2026 洪老师教学工具箱 | 最后更新：2026-08-26</p>
+        <div class="nav-countdown" id="navCountdown"></div>
     </div>
 </div>
-
+<div class="header">
+    <h1>📚 二上数学教案资源导航</h1>
+    <p class="subtitle">北师大版 · 2025-2026新教材（第三册）· 全8单元+综合实践</p>
+    <span class="ver">📖 新教材 v2 · 按教学进度表编排 · 智能周次高亮</span>
+    <p class="hint">👇 点击周次快速定位 → 展开单元 → 每节课一键搜索多平台资源</p>
+</div>
+<div class="container">
+    <div class="toolbar">
+        <input type="text" placeholder="🔍 搜索单元 / 课名 / 关键词..." id="searchInput" oninput="filterAll()">
+        <button onclick="expandAll()">📂 全部展开</button>
+        <button onclick="collapseAll()">📁 全部收起</button>
+    </div>
+    <div class="week-bar" id="weekBar"></div>
+    <div id="unitsContainer"></div>
+    <div class="empty-tip" id="emptyTip" style="display:none;"><span>🔍</span>没有找到匹配的课时</div>
+</div>
+<button class="float-btn" onclick="scrollToCurrent()" title="跳到当前周">🎯</button>
+<div class="footer">
+    <p>📚 北师大版二上数学（2025新教材第三册）· 教案资源导航 v2</p>
+    <p style="margin-top:5px;opacity:0.55;">点击按钮跳转各平台搜索结果 | 关键词按新教材课名优化 | 2025-2026学年第一学期</p>
+</div>
 <script>
-// ========== 数据定义 ==========
-const units = [
-    {
-        id: 1, name: "第一单元：加与减", short: "加与减",
-        lessons: [
-            { num: 1, title: "分苹果", keywords: ["减法","10以内","分成"], file: "1 分苹果.ppt" },
-            { num: 2, title: "搭一搭（一）", keywords: ["搭积木","组成","凑十法"], file: "2 搭一搭（一）.ppt" },
-            { num: 3, title: "搭一搭（二）", keywords: ["进位加","不进位"], file: "3 搭一搭（二）.ppt" },
-            { num: 4, title: "分草莓", keywords: ["有余数的除法","平均分"], file: "4 分草莓.ppt" },
-            { num: 5, title: "租船", keywords: ["实际应用","优化","余数"], file: "5 租船.ppt" },
-        ]
-    },
-    {
-        id: 2, name: "第二单元：方向与位置", short: "方向",
-        lessons: [
-            { num: 6, title: "东南西北", keywords: ["方向","方位","地图"], file: "6 东南西北.ppt" },
-            { num: 7, title: "辨认方向", keywords: ["观测点","相对方向"], file: "7 辨认方向.ppt" },
-        ]
-    },
-    {
-        id: 3, name: "第三单元：生活中的大数", short: "大数",
-        lessons: [
-            { num: 8, title: "数一数（一）", keywords: ["千以内的数","数位"], file: "8 数一数（一）.ppt" },
-            { num: 9, title: "数一数（二）", keywords: ["万以内的数","读数写数"], file: "9 数一数（二）.ppt" },
-            { num: 10, title: "拨一拨", keywords: ["计数器","数位顺序"], file: "10 拨一拨.ppt" },
-            { num: 11, title: "比一比", keywords: ["大小比较","位数比较"], file: "11 比一比.ppt" },
-        ]
-    },
-    {
-        id: 4, name: "第四单元：测量", short: "测量",
-        lessons: [
-            { num: 12, title: "有多少个字", keywords: ["估算","数量"], file: "12 有多少个字.ppt" },
-            { num: 13, title: "铅笔有多长", keywords: ["厘米cm","长度单位"], file: "13 铅笔有多长.ppt" },
-            { num: 14, title: "1千米有多长", keywords: ["千米km","距离"], file: "14 1千米有多长.ppt" },
-        ]
-    },
-    {
-        id: 5, name: "第五单元：加与减（二）", short: "加与减二",
-        lessons: [
-            { num: 15, title: "买电器", keywords: ["三位数加减","竖式计算"], file: "15 买电器.ppt" },
-            { num: 16, title: "回收废电池", keywords: ["混合运算","应用题"], file: "16 回收废电池.ppt" },
-        ]
-    },
-    {
-        id: 6, name: "第六单元：认识图形", short: "图形",
-        lessons: [
-            { num: 17, title: "十年的变化", keywords: ["统计","条形图","变化趋势"], file: "17 十年的变化.ppt" },
-            { num: 21, title: "认识角", keywords: ["角","直角锐角钝角"], file: "21 认识角.ppt" },
-            { num: 22, title: "认识直角", keywords: ["直角","三角板"], file: "22 认识直角.ppt" },
-            { num: 23, title: "长方形与正方形", keywords: ["四边形","特征"], file: "23 长方形与正方形.ppt" },
-            { num: 24, title: "平行四边形", keywords: ["对边平行","对边相等"], file: "24 平行四边形.ppt" },
-        ]
-    },
-    {
-        id: 7, name: "第七单元：时、分、秒", short: "时间",
-        lessons: [
-            { num: 18, title: "小小图书馆", keywords: ["借书","三位数退位减"], file: "18 小小图书馆.ppt" },
-            { num: 19, title: "小蝌蚪的成长", keywords: ["连减","混合运算"], file: "19 小蝌蚪的成长.ppt" },
-            { num: 20, title: "算得对吗", keywords: ["验算","逆运算"], file: "20 算得对吗.ppt" },
-            { num: 27, title: "1分有多长", keywords: ["秒","时间单位","秒针"], file: "27 1分有多长.ppt" },
-            { num: 28, title: "淘气的作息时间", keywords: ["作息","时刻表","经过时间"], file: "28 淘气的作息时间.ppt" },
-            { num: 29, title: "上学时间", keywords: ["时间计算","实际问题"], file: "29 上学时间.ppt" },
-        ]
-    },
-    {
-        id: 8, name: "第八单元：调查与记录", short: "调查",
-        lessons: [
-            { num: 25, title: "欣赏与设计", keywords: ["图案设计","平移旋转"], file: "25 欣赏与设计.ppt" },
-            { num: 26, title: "奥运开幕", keywords: ["统计","数据收集"], file: "26 奥运开幕.ppt" },
-            { num: 30, title: ""重复"的奥妙", keywords: ["规律","周期","循环"], file: '30 "重复"的奥妙.ppt' },
-            { num: 31, title: "评选吉祥物", keywords: ["投票","统计","收集数据"], file: "31 评选吉祥物.ppt" },
-            { num: 32, title: "最喜欢的水果", keywords: ["统计表","条形统计图"], file: "32 最喜欢的水果.ppt" },
-        ]
-    }
+var units = [
+    { num: 1, icon: "🔢", name: "加与减（一）", desc: "100以内连加、连减、加减混合运算", weekRange: "第1~3周",
+      lessons: [
+        { title: "开学第一课", week: 1, kw: "北师大二年级上册 开学第一课 数学" },
+        { title: "图书角", week: 1, kw: "北师大二年级上册 图书角 加法" },
+        { title: "摘苹果", week: 1, kw: "北师大二年级上册 摘苹果 连加" },
+        { title: "借阅图书", week: 2, kw: "北师大二年级上册 借阅图书 连减" },
+        { title: "收玉米", week: 2, kw: "北师大二年级上册 收玉米 加减混合" },
+        { title: "跳绳（1）", week: 2, kw: "北师大二年级上册 跳绳 加减混合运算" },
+        { title: "跳绳（2）", week: 2, kw: "北师大二年级上册 跳绳 应用题" },
+        { title: "套圈游戏", week: 3, kw: "北师大二年级上册 套圈游戏 数学游戏" },
+        { title: "第一单元整理复习", week: 3, kw: "北师大二上 第一单元 加与减 整理复习" }
+      ] },
+    { num: 2, icon: "📏", name: "测量", desc: "厘米和米的认识、测量方法、长度估测", weekRange: "第4~5周",
+      lessons: [
+        { title: "数学好玩", week: 4, kw: "北师大二年级上册 数学好玩 综合实践" },
+        { title: "教室有多长", week: 4, kw: "北师大二年级上册 教室有多长 测量 自选单位" },
+        { title: "课桌有多长（认识厘米）", week: 4, kw: "北师大二年级上册 课桌有多长 认识厘米 cm" },
+        { title: "1米有多长（认识米）", week: 5, kw: "北师大二年级上册 1米有多长 认识米 m" },
+        { title: "第二单元整理与复习", week: 5, kw: "北师大二上 第二单元 测量 整理复习 厘米米" }
+      ] },
+    { num: 3, icon: "✨", name: "数一数与乘法", desc: "同数相加引入乘法、乘法的意义", weekRange: "第6~7周",
+      lessons: [
+        { title: "小小清点员", week: 6, kw: "北师大二年级上册 小小清点员 数一数 同数相加" },
+        { title: "儿童乐园（乘法初步认识）", week: 6, kw: "北师大二年级上册 儿童乐园 乘法的初步认识" },
+        { title: "点子图中的乘法", week: 6, kw: "北师大二年级上册 点子图中的乘法 乘法意义" },
+        { title: "动物聚会（乘法应用）", week: 7, kw: "北师大二年级上册 动物聚会 乘法应用 看图列式" },
+        { title: "快乐的动物（倍的认识）", week: 7, kw: "北师大二年级上册 快乐的动物 倍的认识" },
+        { title: "第三单元整理复习", week: 7, kw: "北师大二上 第三单元 数一数与乘法 复习" }
+      ] },
+    { num: 4, icon: "⭐", name: "乘法口诀（一）", desc: "2、3、4、5的乘法口诀编制与应用", weekRange: "第8周",
+      lessons: [
+        { title: "文物中的乘法口诀", week: 8, kw: "北师大二年级上册 文物中的乘法口诀 5的口诀" },
+        { title: "做家务（2的口诀）", week: 8, kw: "北师大二年级上册 做家务 2的乘法口诀" },
+        { title: "需要几个轮子（3的口诀）", week: 8, kw: "北师大二年级上册 需要几个轮子 3的乘法口诀" },
+        { title: "回家路上（口诀应用）", week: 8, kw: "北师大二年级上册 回家路上 乘法口诀应用" },
+        { title: "第四单元整理复习", week: 8, kw: "北师大二上 第四单元 乘法口诀一 复习" }
+      ] },
+    { num: "期", icon: "📝", name: "期中复习", desc: "第1~4单元综合复习", weekRange: "第9周",
+      lessons: [ { title: "期中复习 1-4单元", week: 9, kw: "北师大二上 期中复习 加减法 测量 乘法 口诀" } ] },
+    { num: "践", icon: "🧭", name: "综合实践·方向与路线", desc: "认识东南西北、路线图", weekRange: "第10周",
+      lessons: [
+        { title: "认识东南西北", week: 10, kw: "北师大二年级上册 认识东南西北 方向" },
+        { title: "画校园路线图", week: 10, kw: "北师大二年级上册 画校园路线图 方向与路线" },
+        { title: "路线图展示会", week: 10, kw: "北师大二年级上册 路线图展示会 综合实践" }
+      ] },
+    { num: 5, icon: "🍎", name: "分一分与除法", desc: "平均分、除法初步认识、用口诀求商、倍的应用", weekRange: "第11~13周",
+      lessons: [
+        { title: "分物游戏（平均分）", week: 11, kw: "北师大二年级上册 分物游戏 平均分" },
+        { title: "分水果（平均分两种情况）", week: 11, kw: "北师大二年级上册 分水果 平均分 两种分法" },
+        { title: "分糖果（大数目平均分）", week: 11, kw: "北师大二年级上册 分糖果 大数目平均分 策略" },
+        { title: "分香蕉（除法初步认识）", week: 12, kw: "北师大二年级上册 分香蕉 除法初步认识 除号" },
+        { title: "小熊开店（用口诀求商）", week: 12, kw: "北师大二年级上册 小熊开店 用口诀求商" },
+        { title: "花园（倍的应用）", week: 13, kw: "北师大二年级上册 花园 倍的应用 解决问题" },
+        { title: "第五单元整理复习", week: 13, kw: "北师大二上 第五单元 分一分与除法 复习" }
+      ] },
+    { num: 6, icon: "🔄", name: "图形的运动（一）", desc: "轴对称图形、平移现象", weekRange: "第14周",
+      lessons: [
+        { title: "折一折，做一做（轴对称）", week: 14, kw: "北师大二年级上册 折一折做一做 轴对称图形 对称轴" },
+        { title: "好玩的华容道（平移）", week: 14, kw: "北师大二年级上册 好玩的华容道 平移 数学好玩" }
+      ] },
+    { num: 7, icon: "🌟", name: "乘法口诀（二）", desc: "6、7、8、9的乘法口诀及九九乘法表", weekRange: "第15~16周",
+      lessons: [
+        { title: "有多少张贴画（6的口诀）", week: 15, kw: "北师大二年级上册 有多少张贴画 6的乘法口诀" },
+        { title: "《西游记》中的乘法口诀（7的口诀）", week: 15, kw: "北师大二年级上册 西游记 乘法口诀 7的口诀" },
+        { title: "有多少无人机（8、9的口诀）", week: 16, kw: "北师大二年级上册 有多少无人机 8和9的乘法口诀" },
+        { title: "做个乘法表（九九乘法表）", week: 16, kw: "北师大二年级上册 做个乘法表 九九乘法表 整理" },
+        { title: "第七单元整理复习", week: 16, kw: "北师大二上 第七单元 乘法口诀二 复习" }
+      ] },
+    { num: 8, icon: "🦒", name: "乘除法的应用", desc: "综合运用乘除法解决实际问题", weekRange: "第17~18周",
+      lessons: [
+        { title: "长颈鹿与小鸟", week: 17, kw: "北师大二年级上册 长颈鹿与小鸟 乘除法应用" },
+        { title: "农家小院", week: 18, kw: "北师大二年级上册 农家小院 乘除法综合应用" }
+      ] },
+    { num: "末", icon: "🎯", name: "期末复习与综合实践", desc: "全册综合复习", weekRange: "第19~21周",
+      lessons: [
+        { title: "综合实践", week: 19, kw: "北师大二上 综合实践 参加欢乐购物活动" },
+        { title: "总复习（一）数与代数", week: 20, kw: "北师大二上 总复习 数与代数 加减法 乘除法" },
+        { title: "总复习（二）图形与测量", week: 20, kw: "北师大二上 总复习 图形与测量 轴对称 平移 厘米米" },
+        { title: "总复习（三）综合应用", week: 21, kw: "北师大二上 总复习 综合应用 解决问题" }
+      ] }
 ];
 
-// 所有关键词（用于筛选）
-const allKeywords = [...new Set(units.flatMap(u => u.lessons.flatMap(l => l.keywords)))].sort();
+var weeks = [
+    { w:1,  d:"9.1-9.5",   label:"第1周",  startM:9, startD:1,  endM:9, endD:5 },
+    { w:2,  d:"9.8-9.12",  label:"第2周",  startM:9, startD:8,  endM:9, endD:12 },
+    { w:3,  d:"9.15-9.19", label:"第3周",  startM:9, startD:15, endM:9, endD:19 },
+    { w:4,  d:"9.22-9.26", label:"第4周",  startM:9, startD:22, endM:9, endD:26 },
+    { w:5,  d:"9.28-9.30",label:"第5周",  startM:9, startD:28, endM:9, endD:30 },
+    { w:6,  d:"10.9-10.11",label:"第6周",  startM:10,startD:9,  endM:10,endD:11 },
+    { w:7,  d:"10.13-10.17",label:"第7周",  startM:10,startD:13, endM:10,endD:17 },
+    { w:8,  d:"10.20-10.24",label:"第8周",  startM:10,startD:20, endM:10,endD:24 },
+    { w:9,  d:"10.27-10.31",label:"第9周 期中",startM:10,startD:27, endM:10,endD:31 },
+    { w:10, d:"11.3-11.7", label:"第10周", startM:11,startD:3,  endM:11,endD:7 },
+    { w:11, d:"11.10-11.14",label:"第11周", startM:11,startD:10, endM:11,endD:14 },
+    { w:12, d:"11.17-11.21",label:"第12周", startM:11,startD:17, endM:11,endD:21 },
+    { w:13, d:"11.24-11.28",label:"第13周", startM:11,startD:24, endM:11,endD:28 },
+    { w:14, d:"12.1-12.5", label:"第14周", startM:12,startD:1,  endM:12,endD:5 },
+    { w:15, d:"12.8-12.12",label:"第15周", startM:12,startD:8,  endM:12,endD:12 },
+    { w:16, d:"12.15-12.19",label:"第16周", startM:12,startD:15, endM:12,endD:19 },
+    { w:17, d:"12.22-12.26",label:"第17周", startM:12,startD:22, endM:12,endD:26 },
+    { w:18, d:"12.29-1.2",label:"第18周", startM:12,startD:29, endM:1, endD:2 },
+    { w:19, d:"1.5-1.9",  label:"第19周 期末",startM:1, startD:5,  endM:1, endD:9 },
+    { w:20, d:"1.12-1.16", label:"第20周 总复习",startM:1, startD:12, endM:1, endD:16 },
+    { w:21, d:"1.19-1.23", label:"第21周 总复习",startM:1, startD:19, endM:1, endD:23 }
+];
 
-let currentUnit = null;
+var localBase = "D:\\\\Desktop\\\\【二上数学】北师大版（二年级上册）资料合集\\\\01 课件（第一套）齐全\\\\";
 
-// ========== 初始化 ==========
-function init() {
-    renderUnitList();
-    renderKeywordFilter();
-    // 默认显示第一单元
-    selectUnit(0);
+function buildLinks(title, kw) {
+    var enc = encodeURIComponent;
+    return [
+        { url: "https://www.xiaohongshu.com/search_result?keyword=" + enc(kw + " 公开课 课堂笔记"), cls: "rb-xhs-note", icon: "📕", lbl: "小红书笔记" },
+        { url: "https://www.xiaohongshu.com/search_result?keyword=" + enc(kw + " 板书设计"), cls: "rb-xhs-bs", icon: "✍️", lbl: "板书设计" },
+        { url: "https://search.bilibili.com/all?keyword=" + enc(kw), cls: "rb-bili", icon: "📺", lbl: "B站视频" },
+        { url: "https://www.baidu.com/s?wd=" + enc(kw + " 教案 教学设计"), cls: "rb-baidu", icon: "📝", lbl: "百度教案" },
+        { url: "https://www.baidu.com/s?wd=" + enc(kw + " PPT课件 下载 北师大"), cls: "rb-ppt", icon: "📊", lbl: "PPT课件" },
+        { url: "https://wenku.baidu.com/search?word=" + enc(kw), cls: "rb-wenku", icon: "📚", lbl: "百度文库" },
+        { url: "https://so.youku.com/search_video/q_" + enc(kw), cls: "rb-youku", icon: "🎬", lbl: "优酷视频" },
+        { url: "#", cls: "rb-local", icon: "💾", lbl: "本地课件", isLocal: true, localTitle: title }
+    ];
 }
 
-// 渲染单元列表
-function renderUnitList() {
-    const ul = document.getElementById('unitList');
-    ul.innerHTML = units.map((u, i) => `
-        <li class="unit-item ${i === 0 ? 'active' : ''}" onclick="selectUnit(${i})">
-            ${u.name}
-            <span class="unit-badge">${u.lessons.length}课</span>
-        </li>
-    `).join('');
+function unitCls(num) {
+    var m = {1:"u1",2:"u2",3:"u3",4:"u4",5:"u5",6:"u6",7:"u7",8:"u8"};
+    return m[num] || "uX";
+}
+function liCls(num) {
+    var m = {1:"li-u1",2:"li-u2",3:"li-u3",4:"li-u4",5:"li-u5",6:"li-u6",7:"li-u7",8:"li-u8"};
+    return m[num] || "li-uX";
 }
 
-// 渲染关键词
-function renderKeywordFilter() {
-    const div = document.getElementById('keywordFilter');
-    div.innerHTML = '<span style="color:#666;padding:6px 0;">🏷️ 热门关键词：</span>' + 
-        allKeywords.slice(0, 12).map(kw => 
-            `<span class="kw-tag" onclick="toggleKeyword(this)">${kw}</span>`
-        ).join('');
-}
-
-// 选择单元
-function selectUnit(index) {
-    currentUnit = units[index];
-    
-    // 更新侧边栏高亮
-    document.querySelectorAll('.unit-item').forEach((el, i) => {
-        el.classList.toggle('active', i === index);
-    });
-    
-    // 更新标题
-    document.getElementById('currentUnitName').textContent = currentUnit.name;
-    document.getElementById('currentUnitTag').textContent = `第${currentUnit.id}单元`;
-    
-    renderLessons(currentUnit.lessons);
-}
-
-// 渲染课程卡片
-function renderLessons(lessons) {
-    const grid = document.getElementById('lessonGrid');
-    if (!lessons || lessons.length === 0) {
-        grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>没有找到匹配的课程</p></div>';
-        return;
+(function() {
+    var bar = document.getElementById("weekBar");
+    var html = "";
+    for (var i = 0; i < weeks.length; i++) {
+        var w = weeks[i];
+        html += '<div class="week-chip" onclick="jumpToWeek(' + w.w + ')" data-w="' + w.w + '">' + w.label + ' <span class="w-date">' + w.d + '</span></div>';
     }
-    
-    grid.innerHTML = lessons.map(l => `
-        <div class="lesson-card" onclick="showLessonDetail('${l.title}')">
-            <span class="lesson-num">${l.num}</span>
-            <div class="lesson-title">${l.num}. ${l.title}</div>
-            <div class="lesson-keywords">
-                ${l.keywords.map(k => `<span>${k}</span>`).join('')}
-            </div>
-            <div class="lesson-file">📄 ${l.file}</div>
-        </div>
-    `).join('');
-}
+    bar.innerHTML = html;
+})();
 
-// 搜索/筛选
-function filterLessons() {
-    const query = document.getElementById('searchInput').value.trim().toLowerCase();
-    
-    if (!query && !currentUnit) {
-        selectUnit(0);
-        return;
+(function renderUnits() {
+    var container = document.getElementById("unitsContainer");
+    for (var ui = 0; ui < units.length; ui++) {
+        var unit = units[ui];
+        var uc = unitCls(unit.num);
+        var section = document.createElement("div");
+        section.className = "unit-card " + uc;
+        section.dataset.unitName = (unit.name + " " + unit.desc).toLowerCase();
+        var lessonsHtml = "";
+        for (var li = 0; li < unit.lessons.length; li++) {
+            var l = unit.lessons[li];
+            var lc = liCls(unit.num);
+            var links = buildLinks(l.title, l.kw);
+            var btnsHtml = "";
+            for (var bi = 0; bi < links.length; bi++) {
+                var link = links[bi];
+                if (link.isLocal) {
+                    btnsHtml += '<a href="#" class="res-btn ' + link.cls + '" onclick="alert(\'打开本地课件：' + localBase + '\\n搜索文件名含「' + link.localTitle + '」\');return false;">' + link.icon + ' ' + link.lbl + '</a>';
+                } else {
+                    btnsHtml += '<a href="' + link.url + '" target="_blank" class="res-btn ' + link.cls + '">' + link.icon + ' ' + link.lbl + '</a>';
+                }
+            }
+            var noLabel = (typeof unit.num === "number") ? (unit.num + "-" + (li + 1)) : "";
+            lessonsHtml += '<div class="lesson-item ' + lc + '" data-search="' + (l.title + " " + l.kw).toLowerCase() + '" data-week="' + (l.week || "") + '">' +
+                '<div class="lesson-title-row"><span class="lesson-no">' + noLabel + '</span><span class="lesson-name">' + l.title + '</span><span class="lesson-week-tag">📅 第' + l.week + '周</span></div>' +
+                '<div class="resource-btns">' + btnsHtml + '</div></div>';
+        }
+        var numLabel = (typeof unit.num === "number") ? ("第" + unit.num + "单元") : "";
+        section.innerHTML =
+            '<div class="unit-head" onclick="this.parentElement.classList.toggle(\'open\')"><span class="unit-icon">' + unit.icon + '</span><div class="unit-info"><div class="unit-num">' + numLabel + '</div><div class="unit-name">' + unit.name + '</div><div class="unit-desc">' + unit.desc + ' · 共' + unit.lessons.length + '课时</div></div><div class="unit-meta"><div class="unit-week">' + (unit.weekRange || "") + '</div></div><span class="unit-arrow">▶</span></div>' +
+            '<div class="lessons-body">' + lessonsHtml + '</div>';
+        container.appendChild(section);
     }
-    
-    // 在所有单元中搜索
-    let results = [];
-    units.forEach(u => {
-        const matched = u.lessons.filter(l => 
-            l.title.toLowerCase().includes(query) ||
-            l.keywords.some(k => k.toLowerCase().includes(query)) ||
-            (query && u.name.includes(query))
-        );
-        if (matched.length > 0) results.push(...matched);
-    });
-    
-    // 更新标题
-    document.getElementById('currentUnitName').textContent = 
-        query ? `🔍 搜索"${query}"的结果 (${results.length}课)` : currentUnit.name;
-    document.getElementById('currentUnitTag').textContent = query ? '全局搜索' : `第${currentUnit?.id}单元`;
-    
-    renderLessons(results.length > 0 ? results : []);
+})();
+
+function updateClock() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2,'0');
+    var m = String(now.getMinutes()).padStart(2,'0');
+    var s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clockTime').textContent = h + ':' + m + ':' + s;
+    updateWeekStatus(now);
+}
+setInterval(updateClock, 1000);
+
+function updateWeekStatus(now) {
+    var todayMonth = now.getMonth() + 1;
+    var todayDate = now.getDate();
+    var currentWeekNum = 0;
+    var currentWeekObj = null;
+    var daysUntilWeek = 0;
+
+    for (var i = 0; i < weeks.length; i++) {
+        var w = weeks[i];
+        var inRange = false;
+        if (w.startM === w.endM) {
+            if (todayMonth === w.startM && todayDate >= w.startD && todayDate <= w.endD) inRange = true;
+        } else {
+            if ((todayMonth === w.startM && todayDate >= w.startD) || (todayMonth === w.endM && todayDate <= w.endD)) inRange = true;
+        }
+        if (inRange) { currentWeekNum = w.w; currentWeekObj = w; break; }
+    }
+
+    if (!currentWeekNum) {
+        for (var j = 0; j < weeks.length; j++) {
+            var wf = weeks[j];
+            var ws = new Date(2025, wf.startM - 1, wf.startD);
+            if (ws >= now) { currentWeekNum = wf.w; currentWeekObj = wf; break; }
+        }
+    }
+
+    var weekInfo = "", countdownText = "";
+    if (currentWeekObj) {
+        weekInfo = currentWeekObj.label + "（" + currentWeekObj.d + "）";
+        var weekStart = new Date(2025, currentWeekObj.startM - 1, currentWeekObj.startD);
+        var diffMs = weekStart - now;
+        daysUntilWeek = Math.ceil(diffMs / 86400000);
+        if (daysUntilWeek > 0) countdownText = "距开学还有 " + daysUntilWeek + " 天";
+        else if (daysUntilWeek === 0) countdownText = "🎉 今天开学！";
+        else countdownText = "已开学第 " + (-daysUntilWeek) + " 天";
+    } else {
+        weekInfo = "假期中"; countdownText = "距开学待定";
+    }
+    document.getElementById('navWeekInfo').textContent = "当前：" + weekInfo;
+    document.getElementById('navCountdown').textContent = countdownText;
+
+    var chips = document.querySelectorAll(".week-chip");
+    for (var k = 0; k < chips.length; k++) {
+        var chipW = parseInt(chips[k].dataset.w);
+        if (chipW === currentWeekNum) { chips[k].classList.add("current"); }
+        else { chips[k].classList.remove("current"); }
+    }
+
+    var items = document.querySelectorAll(".lesson-item");
+    for (var m = 0; m < items.length; m++) {
+        var itemW = parseInt(items[m].dataset.week);
+        if (itemW === currentWeekNum) { items[m].classList.add("now"); }
+        else { items[m].classList.remove("now"); }
+    }
+
+    if (currentWeekNum > 0) {
+        var currentItems = document.querySelectorAll(".lesson-item[data-week='" + currentWeekNum + "']");
+        for (var n = 0; n < currentItems.length; n++) {
+            currentItems[n].closest(".unit-card").classList.add("open");
+        }
+    }
 }
 
-// 关键词点击
-function toggleKeyword(el) {
-    el.classList.toggle('active');
-    const kw = el.textContent;
-    document.getElementById('searchInput').value = kw;
-    filterLessons();
+setTimeout(function() {
+    var cards = document.querySelectorAll(".unit-card");
+    for (var i = 0; i < cards.length; i++) cards[i].classList.add("open");
+    updateClock();
+}, 100);
+
+function expandAll() { var c = document.querySelectorAll(".unit-card"); for (var i = 0; i < c.length; i++) c[i].classList.add("open"); }
+function collapseAll() { var c = document.querySelectorAll(".unit-card"); for (var i = 0; i < c.length; i++) c[i].classList.remove("open"); }
+
+function jumpToWeek(w) {
+    var chips = document.querySelectorAll(".week-chip");
+    for (var i = 0; i < chips.length; i++) {
+        if (parseInt(chips[i].dataset.w) === w) chips[i].classList.add("active");
+        else chips[i].classList.remove("active");
+    }
+    var items = document.querySelectorAll(".lesson-item");
+    var found = false;
+    for (var i = 0; i < items.length; i++) {
+        if (parseInt(items[i].dataset.week) === w) {
+            items[i].closest(".unit-card").classList.add("open");
+            items[i].scrollIntoView({ behavior: "smooth", block: "center" });
+            found = true;
+        }
+    }
+    if (!found) alert("第" + w + "周暂未安排具体课时");
 }
 
-// 显示课程详情（可扩展）
-function showLessonDetail(title) {
-    console.log('查看课程:', title);
-    // TODO: 可以在这里打开对应的PPT文件或显示更多信息
+function scrollToCurrent() {
+    var currentChip = document.querySelector(".week-chip.current");
+    if (currentChip) {
+        currentChip.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        var currentUnit = document.querySelector(".lesson-item.now");
+        if (currentUnit) {
+            currentUnit.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    } else {
+        alert("暂无当前周（可能还没到学期）");
+    }
 }
 
-// 启动
-init();
+function filterAll() {
+    var kw = document.getElementById("searchInput").value.toLowerCase().trim();
+    var cards = document.querySelectorAll(".unit-card");
+    var hasVisible = false;
+    for (var ci = 0; ci < cards.length; ci++) {
+        var card = cards[ci];
+        var unitMatch = (card.dataset.unitName || "").indexOf(kw) !== -1;
+        var lessonMatch = false;
+        var items = card.querySelectorAll(".lesson-item");
+        for (var ii = 0; ii < items.length; ii++) {
+            var item = items[ii];
+            var match = !kw || (item.dataset.search || "").indexOf(kw) !== -1;
+            item.style.display = match ? "" : "none";
+            if (match) lessonMatch = true;
+        }
+        if (!kw) { card.style.display = ""; for (var j = 0; j < items.length; j++) items[j].style.display = ""; hasVisible = true; }
+        else if (unitMatch || lessonMatch) { card.style.display = ""; card.classList.add("open"); hasVisible = true; }
+        else { card.style.display = "none"; }
+    }
+    document.getElementById("emptyTip").style.display = hasVisible ? "none" : "block";
+}
 </script>
 </body>
 </html>
