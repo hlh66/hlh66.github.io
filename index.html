@@ -70,7 +70,14 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .tip-card .tip-text strong{color:#0284c7}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:600px){.two-col{grid-template-columns:1fr}.header h1{font-size:1.6em}.res-grid{grid-template-columns:1fr}}
+.schedule-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.schedule-table th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:8px 4px;font-weight:600}
+.schedule-table td{padding:6px 4px;text-align:center;border-bottom:1px solid #e0e7ff;color:#334155}
+.schedule-table td:first-child{background:#f8f9fa;font-weight:600;color:#0284c7}
+.schedule-table .math-cell{background:#e8f0fe;color:#667eea;font-weight:600}
+.schedule-table .sci-cell{background:#fef3c7;color:#b45309}
+.schedule-table .other-cell{color:#94a3b8}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}.header h1{font-size:1.6em}.res-grid{grid-template-columns:1fr}.schedule-table{font-size:11px}}
 
 .footer{text-align:center;padding:20px;color:#94a3b8;font-size:.78em}
 </style>
@@ -113,8 +120,13 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 
 <div class="two-col">
   <div class="section">
-    <div class="section-title">日历</div>
-    <div class="calendar" id="calendar"></div>
+    <div class="section-title">📅 课程表</div>
+    <div class="schedule-table">
+      <table>
+        <thead><tr><th>时间</th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr></thead>
+        <tbody id="scheduleBody"></tbody>
+      </table>
+    </div>
   </div>
   <div class="section">
     <div class="section-title">学期进度</div>
@@ -177,6 +189,33 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 </div>
 
 <script>
+// ========== 课程表数据 ==========
+const scheduleData = [
+  { time: "第1节\n8:20-9:00", mon: "数学(二4)", tue: "体育(二3/二4)", wed: "科学(二1)", thu: "语文/美术(二3)", fri: "数学(二3)" },
+  { time: "第2节\n9:15-9:55", mon: "美术/语文", tue: "数学(二4)", wed: "数学(二3)", thu: "体育(二3/二4)", fri: "体育(二3/二4)" },
+  { time: "第3节\n10:10-10:50", mon: "语文/音乐", tue: "语文(二3/二4)", wed: "美术/语文", thu: "数学(二3)", fri: "语文(二3/二4)" },
+  { time: "第4节\n11:05-11:45", mon: "数学(二3)", tue: "综合实践", wed: "数学(二4)", thu: "数学(二4)", fri: "语文/科学" },
+  { time: "午休\n11:45-12:30", mon: "午托(二3)", tue: "午托(二3)", wed: "午托(二4)", thu: "午托(双周)", fri: "午托(二3)" },
+  { time: "第5节\n14:15-14:55", mon: "科学(二2)", tue: "年级备课", wed: "道法/体育", thu: "音乐/道法", fri: "综合实践" },
+  { time: "第6节\n15:10-15:50", mon: "自习", tue: "集体备课", wed: "自习(二4)", thu: "自习(二3)", fri: "道法(二3/二4)" }
+];
+
+function renderSchedule() {
+  const tbody = document.getElementById('scheduleBody');
+  if (!tbody) return;
+  tbody.innerHTML = scheduleData.map(row => {
+    const cells = [row.mon, row.tue, row.wed, row.thu, row.fri].map(val => {
+      let cls = '';
+      if (val.includes('数学')) cls = 'math-cell';
+      else if (val.includes('科学')) cls = 'sci-cell';
+      else if (!val.includes('(二3)') && !val.includes('(二4)')) cls = 'other-cell';
+      return `<td class="${cls}">${val}</td>`;
+    }).join('');
+    return `<tr><td>${row.time}</td>${cells}</tr>`;
+  }).join('');
+}
+
+// ========== 原有功能 ==========
 function updateDateTime(){
   var now=new Date();
   var days=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
@@ -191,6 +230,7 @@ function updateDateTime(){
 }
 updateDateTime();
 setInterval(updateDateTime,1000);
+renderSchedule();  // 渲染课程表
 
 var calDate=new Date();
 function renderCal(){
