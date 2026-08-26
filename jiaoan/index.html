@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二年级数学·下册 | 教案导航</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* 头部 */
+        .header {
+            text-align: center; color: white; padding: 30px 20px;
+            background: rgba(255,255,255,0.1); border-radius: 16px;
+            margin-bottom: 24px; backdrop-filter: blur(10px);
+        }
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { opacity: 0.9; font-size: 1.05em; }
+        .header .badge {
+            display: inline-block; background: #ffd700; color: #333;
+            padding: 4px 14px; border-radius: 20px; font-size: 0.85em;
+            font-weight: bold; margin-top: 10px;
+        }
+
+        /* 搜索栏 */
+        .search-bar {
+            display: flex; gap: 12px; margin-bottom: 24px;
+        }
+        .search-bar input {
+            flex: 1; padding: 14px 20px; border: none; border-radius: 12px;
+            font-size: 16px; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .search-bar button {
+            padding: 14px 28px; background: #ff6b6b; color: white;
+            border: none; border-radius: 12px; font-size: 16px; cursor: pointer;
+            font-weight: bold; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .search-bar button:hover { transform: scale(1.05); }
+
+        /* 统计栏 */
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white; padding: 18px; border-radius: 12px;
+            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-num { font-size: 2em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; font-size: 0.9em; margin-top: 4px; }
+
+        /* 主内容区 */
+        .main-content {
+            display: grid; grid-template-columns: 280px 1fr; gap: 24px;
+        }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
+
+        /* 左侧目录 */
+        .sidebar {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: fit-content;
+            max-height: calc(100vh - 200px); overflow-y: auto; position: sticky; top: 20px;
+        }
+        .sidebar h3 { color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        .unit-list { list-style: none; }
+        .unit-item {
+            padding: 12px 14px; margin-bottom: 6px; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s; font-size: 0.95em;
+            background: #f8f9fa; border-left: 4px solid transparent;
+        }
+        .unit-item:hover { background: #e8f0fe; border-left-color: #667eea; }
+        .unit-item.active { background: #667eea; color: white; border-left-color: #ffd700; }
+        .unit-badge { float: right; background: #ffd700; color: #333; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: bold; }
+
+        /* 右侧详情 */
+        .detail-panel {
+            background: white; border-radius: 16px; padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 500px;
+        }
+        .detail-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;
+        }
+        .detail-header h2 { color: #333; font-size: 1.5em; }
+        .detail-header .unit-tag {
+            background: #667eea; color: white; padding: 6px 14px;
+            border-radius: 20px; font-size: 0.85em;
+        }
+
+        /* 课程列表 */
+        .lesson-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+        }
+        .lesson-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px; padding: 16px; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent; position: relative;
+        }
+        .lesson-card:hover {
+            transform: translateY(-4px); box-shadow: 0 8px 25px rgba(102,126,234,0.25);
+            border-color: #667eea;
+        }
+        .lesson-num {
+            position: absolute; top: -8px; right: -8px;
+            background: #ff6b6b; color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.85em; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .lesson-title { font-weight: bold; color: #333; margin-bottom: 6px; font-size: 1em; }
+        .lesson-keywords { font-size: 0.82em; color: #666; line-height: 1.5; }
+        .lesson-keywords span {
+            display: inline-block; background: #e8f0fe; color: #667eea;
+            padding: 2px 8px; border-radius: 6px; margin: 2px 2px 0 0;
+        }
+        .lesson-file {
+            margin-top: 8px; font-size: 0.78em; color: #999;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* 关键词标签 */
+        .keyword-filter {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+        }
+        .kw-tag {
+            padding: 6px 14px; border-radius: 20px; background: #f0f0f0;
+            cursor: pointer; font-size: 0.88em; transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .kw-tag:hover, .kw-tag.active { background: #667eea; color: white; border-color: #667eea; }
+
+        /* 空状态 */
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state .icon { font-size: 4em; margin-bottom: 16px; }
+
+        /* 页脚 */
+        .footer {
+            text-align: center; color: rgba(255,255,255,0.8); padding: 20px;
+            margin-top: 30px; font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部 -->
+    <div class="header">
+        <h1>📚 二年级数学·下册 | 教案导航</h1>
+        <p>北师大版 · 熹涌陈佐乾纪念学校 · 快速查找课件与学历案</p>
+        <span class="badge">✅ 共 8 单元 · 32 课时 · 8 份单元学历案</span>
+    </div>
+
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 搜索课程关键词...（如：加减法、方向、长度、时间）" oninput="filterLessons()">
+        <button onclick="filterLessons()">搜索</button>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats">
+        <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">单元数</div></div>
+        <div class="stat-card"><div class="stat-num">32</div><div class="stat-label">课时数</div></div>
+        <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">单元学历案</div></div>
+        <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">教师版本</div></div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <!-- 左侧目录 -->
+        <div class="sidebar">
+            <h3>📖 目录导航</h3>
+            <ul class="unit-list" id="unitList"></ul>
+        </div>
+
+        <!-- 右侧详情 -->
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-header">
+                <h2 id="currentUnitName">选择左侧单元查看课程</h2>
+                <span class="unit-tag" id="currentUnitTag">欢迎</span>
+            </div>
+            
+            <!-- 关键词筛选 -->
+            <div class="keyword-filter" id="keywordFilter"></div>
+
+            <!-- 课程列表 -->
+            <div class="lesson-grid" id="lessonGrid"></div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <p>📁 资料来源：E:\1\二年级数学\参考资料\2024数学第二学期\</p>
+        <p>👨‍🏫 教师：周嘉意 · 李秋裕 | 🏫 学校：熹涌陈佐乾纪念学校</p>
+        <p style="margin-top:8px;opacity:0.7;">© 2026 洪老师教学工具箱 | 最后更新：2026-08-26</p>
+    </div>
+</div>
+
+<script>
+// ========== 数据定义 ==========
+const units = [
+    {
+        id: 1, name: "第一单元：加与减", short: "加与减",
+        lessons: [
+            { num: 1, title: "分苹果", keywords: ["减法","10以内","分成"], file: "1 分苹果.ppt" },
+            { num: 2, title: "搭一搭（一）", keywords: ["搭积木","组成","凑十法"], file: "2 搭一搭（一）.ppt" },
+            { num: 3, title: "搭一搭（二）", keywords: ["进位加","不进位"], file: "3 搭一搭（二）.ppt" },
+            { num: 4, title: "分草莓", keywords: ["有余数的除法","平均分"], file: "4 分草莓.ppt" },
+            { num: 5, title: "租船", keywords: ["实际应用","优化","余数"], file: "5 租船.ppt" },
+        ]
+    },
+    {
+        id: 2, name: "第二单元：方向与位置", short: "方向",
+        lessons: [
+            { num: 6, title: "东南西北", keywords: ["方向","方位","地图"], file: "6 东南西北.ppt" },
+            { num: 7, title: "辨认方向", keywords: ["观测点","相对方向"], file: "7 辨认方向.ppt" },
+        ]
+    },
+    {
+        id: 3, name: "第三单元：生活中的大数", short: "大数",
+        lessons: [
+            { num: 8, title: "数一数（一）", keywords: ["千以内的数","数位"], file: "8 数一数（一）.ppt" },
+            { num: 9, title: "数一数（二）", keywords: ["万以内的数","读数写数"], file: "9 数一数（二）.ppt" },
+            { num: 10, title: "拨一拨", keywords: ["计数器","数位顺序"], file: "10 拨一拨.ppt" },
+            { num: 11, title: "比一比", keywords: ["大小比较","位数比较"], file: "11 比一比.ppt" },
+        ]
+    },
+    {
+        id: 4, name: "第四单元：测量", short: "测量",
+        lessons: [
+            { num: 12, title: "有多少个字", keywords: ["估算","数量"], file: "12 有多少个字.ppt" },
+            { num: 13, title: "铅笔有多长", keywords: ["厘米cm","长度单位"], file: "13 铅笔有多长.ppt" },
+            { num: 14, title: "1千米有多长", keywords: ["千米km","距离"], file: "14 1千米有多长.ppt" },
+        ]
+    },
+    {
+        id: 5, name: "第五单元：加与减（二）", short: "加与减二",
+        lessons: [
+            { num: 15, title: "买电器", keywords: ["三位数加减","竖式计算"], file: "15 买电器.ppt" },
+            { num: 16, title: "回收废电池", keywords: ["混合运算","应用题"], file: "16 回收废电池.ppt" },
+        ]
+    },
+    {
+        id: 6, name: "第六单元：认识图形", short: "图形",
+        lessons: [
+            { num: 17, title: "十年的变化", keywords: ["统计","条形图","变化趋势"], file: "17 十年的变化.ppt" },
+            { num: 21, title: "认识角", keywords: ["角","直角锐角钝角"], file: "21 认识角.ppt" },
+            { num: 22, title: "认识直角", keywords: ["直角","三角板"], file: "22 认识直角.ppt" },
+            { num: 23, title: "长方形与正方形", keywords: ["四边形","特征"], file: "23 长方形与正方形.ppt" },
+            { num: 24, title: "平行四边形", keywords: ["对边平行","对边相等"], file: "24 平行四边形.ppt" },
+        ]
+    },
+    {
+        id: 7, name: "第七单元：时、分、秒", short: "时间",
+        lessons: [
+            { num: 18, title: "小小图书馆", keywords: ["借书","三位数退位减"], file: "18 小小图书馆.ppt" },
+            { num: 19, title: "小蝌蚪的成长", keywords: ["连减","混合运算"], file: "19 小蝌蚪的成长.ppt" },
+            { num: 20, title: "算得对吗", keywords: ["验算","逆运算"], file: "20 算得对吗.ppt" },
+            { num: 27, title: "1分有多长", keywords: ["秒","时间单位","秒针"], file: "27 1分有多长.ppt" },
+            { num: 28, title: "淘气的作息时间", keywords: ["作息","时刻表","经过时间"], file: "28 淘气的作息时间.ppt" },
+            { num: 29, title: "上学时间", keywords: ["时间计算","实际问题"], file: "29 上学时间.ppt" },
+        ]
+    },
+    {
+        id: 8, name: "第八单元：调查与记录", short: "调查",
+        lessons: [
+            { num: 25, title: "欣赏与设计", keywords: ["图案设计","平移旋转"], file: "25 欣赏与设计.ppt" },
+            { num: 26, title: "奥运开幕", keywords: ["统计","数据收集"], file: "26 奥运开幕.ppt" },
+            { num: 30, title: ""重复"的奥妙", keywords: ["规律","周期","循环"], file: '30 "重复"的奥妙.ppt' },
+            { num: 31, title: "评选吉祥物", keywords: ["投票","统计","收集数据"], file: "31 评选吉祥物.ppt" },
+            { num: 32, title: "最喜欢的水果", keywords: ["统计表","条形统计图"], file: "32 最喜欢的水果.ppt" },
+        ]
+    }
+];
+
+// 所有关键词（用于筛选）
+const allKeywords = [...new Set(units.flatMap(u => u.lessons.flatMap(l => l.keywords)))].sort();
+
+let currentUnit = null;
+
+// ========== 初始化 ==========
+function init() {
+    renderUnitList();
+    renderKeywordFilter();
+    // 默认显示第一单元
+    selectUnit(0);
+}
+
+// 渲染单元列表
+function renderUnitList() {
+    const ul = document.getElementById('unitList');
+    ul.innerHTML = units.map((u, i) => `
+        <li class="unit-item ${i === 0 ? 'active' : ''}" onclick="selectUnit(${i})">
+            ${u.name}
+            <span class="unit-badge">${u.lessons.length}课</span>
+        </li>
+    `).join('');
+}
+
+// 渲染关键词
+function renderKeywordFilter() {
+    const div = document.getElementById('keywordFilter');
+    div.innerHTML = '<span style="color:#666;padding:6px 0;">🏷️ 热门关键词：</span>' + 
+        allKeywords.slice(0, 12).map(kw => 
+            `<span class="kw-tag" onclick="toggleKeyword(this)">${kw}</span>`
+        ).join('');
+}
+
+// 选择单元
+function selectUnit(index) {
+    currentUnit = units[index];
+    
+    // 更新侧边栏高亮
+    document.querySelectorAll('.unit-item').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+    });
+    
+    // 更新标题
+    document.getElementById('currentUnitName').textContent = currentUnit.name;
+    document.getElementById('currentUnitTag').textContent = `第${currentUnit.id}单元`;
+    
+    renderLessons(currentUnit.lessons);
+}
+
+// 渲染课程卡片
+function renderLessons(lessons) {
+    const grid = document.getElementById('lessonGrid');
+    if (!lessons || lessons.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>没有找到匹配的课程</p></div>';
+        return;
+    }
+    
+    grid.innerHTML = lessons.map(l => `
+        <div class="lesson-card" onclick="showLessonDetail('${l.title}')">
+            <span class="lesson-num">${l.num}</span>
+            <div class="lesson-title">${l.num}. ${l.title}</div>
+            <div class="lesson-keywords">
+                ${l.keywords.map(k => `<span>${k}</span>`).join('')}
+            </div>
+            <div class="lesson-file">📄 ${l.file}</div>
+        </div>
+    `).join('');
+}
+
+// 搜索/筛选
+function filterLessons() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+    if (!query && !currentUnit) {
+        selectUnit(0);
+        return;
+    }
+    
+    // 在所有单元中搜索
+    let results = [];
+    units.forEach(u => {
+        const matched = u.lessons.filter(l => 
+            l.title.toLowerCase().includes(query) ||
+            l.keywords.some(k => k.toLowerCase().includes(query)) ||
+            (query && u.name.includes(query))
+        );
+        if (matched.length > 0) results.push(...matched);
+    });
+    
+    // 更新标题
+    document.getElementById('currentUnitName').textContent = 
+        query ? `🔍 搜索"${query}"的结果 (${results.length}课)` : currentUnit.name;
+    document.getElementById('currentUnitTag').textContent = query ? '全局搜索' : `第${currentUnit?.id}单元`;
+    
+    renderLessons(results.length > 0 ? results : []);
+}
+
+// 关键词点击
+function toggleKeyword(el) {
+    el.classList.toggle('active');
+    const kw = el.textContent;
+    document.getElementById('searchInput').value = kw;
+    filterLessons();
+}
+
+// 显示课程详情（可扩展）
+function showLessonDetail(title) {
+    console.log('查看课程:', title);
+    // TODO: 可以在这里打开对应的PPT文件或显示更多信息
+}
+
+// 启动
+init();
+</script>
+</body>
+</html>
