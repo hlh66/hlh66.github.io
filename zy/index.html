@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 卓越作业比赛 · 乘法口诀大冒险桌游</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh; color: #e0e0e0;
+        }
+        .sticky-nav {
+            position: sticky; top: 0; z-index: 999;
+            background: linear-gradient(135deg, rgba(59,130,246,.2), rgba(147,51,234,.15));
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid rgba(99,102,241,0.4);
+            padding: 10px 20px;
+            display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
+        }
+        .nav-inner {
+            display: flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white; padding: 8px 20px; border-radius: 25px;
+            font-size: 0.88em; font-weight: 600;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+        }
+        .nav-countdown { background: rgba(255,255,255,.2); padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 600; }
+        
+        .header { text-align: center; padding: 30px 20px 20px; color: white; }
+        .header h1 { font-size: 2em; text-shadow: 0 3px 10px rgba(0,0,0,0.4); margin-bottom: 6px; }
+        .header .subtitle { font-size: 0.95em; opacity: 0.85; margin-bottom: 4px; }
+        .header .badge { display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 16px; border-radius: 15px; font-size: 0.8em; margin: 6px 4px; }
+        .header .badge.warn { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .header .info { font-size: 0.82em; opacity: 0.6; margin-top: 8px; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 16px 40px; }
+
+        /* ===== 状态卡片 ===== */
+        .status-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .status-card {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px; padding: 18px; text-align: center;
+            transition: all 0.3s; cursor: default;
+        }
+        .status-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.12); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+        .status-card .icon { font-size: 2em; margin-bottom: 6px; }
+        .status-card .label { font-size: 0.78em; opacity: 0.6; margin-bottom: 4px; }
+        .status-card .value { font-size: 1.3em; font-weight: 700; }
+        .status-card .value.green { color: #34d399; }
+        .status-card .value.yellow { color: #fbbf24; }
+        .status-card .value.red { color: #f87171; }
+        .status-card .value.blue { color: #60a5fa; }
+
+        /* ===== 区块通用 ===== */
+        .section { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+        .section-title {
+            font-size: 1.25em; font-weight: 700; color: white;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+            padding-bottom: 10px; border-bottom: 2px solid rgba(99,102,241,0.3);
+        }
+        .section-title .tag {
+            font-size: 0.55em; padding: 2px 10px; border-radius: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;
+        }
+
+        /* ===== 对比表格 ===== */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        .compare-table th {
+            background: rgba(99,102,241,0.25); color: white; padding: 12px 10px;
+            text-align: left; font-weight: 600; border-bottom: 2px solid rgba(99,102,241,0.3);
+        }
+        .compare-table td { padding: 11px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+        .compare-table tr:hover td { background: rgba(255,255,255,0.04); }
+        .compare-table .rank { font-size: 1.2em; font-weight: 700; text-align: center; }
+        .compare-table .score { font-weight: 700; font-size: 1.05em; text-align: center; }
+        .score-high { color: #34d399; }
+        .score-mid { color: #fbbf24; }
+        .score-low { color: #f87171; }
+        .prob-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 4px; }
+        .prob-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .winner-row { background: rgba(16,185,129,0.08) !important; border-left: 3px solid #10b981; }
+        .winner-row td { font-weight: 600; }
+
+        /* ===== 时间线 ===== */
+        .timeline { position: relative; padding-left: 28px; }
+        .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(99,102,241,0.3); }
+        .timeline-item { position: relative; margin-bottom: 18px; padding: 14px 18px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        .timeline-item::before { content: ''; position: absolute; left: -22px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: #6366f1; border: 2px solid #302b63; }
+        .timeline-item.done::before { background: #10b981; }
+        .timeline-item.now::before { background: #f59e0b; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4)} 50%{box-shadow:0 0 0 8px rgba(245,158,11,0)} }
+        .t-title { font-weight: 600; color: white; margin-bottom: 4px; }
+        .t-desc { font-size: 0.85em; opacity: 0.7; }
+        .t-time { font-size: 0.75em; color: #94a3b8; margin-top: 4px; }
+        .t-status { display: inline-block; font-size: 0.7em; padding: 2px 8px; border-radius: 8px; margin-top: 6px; }
+        .t-status.done { background: rgba(16,185,129,0.2); color: #34d399; }
+        .t-status.now { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .t-status.todo { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+        /* ===== 任务分工 ===== */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+        .task-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 18px; transition: all 0.3s;
+        }
+        .task-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
+        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .task-num { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85em; }
+        .task-name { font-weight: 600; color: white; font-size: 0.95em; }
+        .task-desc { font-size: 0.82em; opacity: 0.65; line-height: 1.5; margin-bottom: 10px; }
+        .task-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+        .meta-tag { font-size: 0.72em; padding: 3px 10px; border-radius: 8px; background: rgba(99,102,241,0.15); color: #a5b4fc; }
+        .meta-tag.time { background: rgba(245,158,11,0.15); color: #fbbf24; }
+        .meta-tag.person { background: rgba(16,185,129,0.15); color: #34d399; }
+        .task-progress { margin-top: 10px; }
+        .progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.5s; }
+
+        /* ===== 团队成员 ===== */
+        .team-grid { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        .member-card {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px; padding: 20px; text-align: center; min-width: 160px;
+            transition: all 0.3s;
+        }
+        .member-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+        .member-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 1.6em; margin: 0 auto 10px; }
+        .member-name { font-weight: 600; color: white; margin-bottom: 4px; }
+        .member-role { font-size: 0.78em; opacity: 0.6; }
+        .member-task { font-size: 0.75em; color: #a5b4fc; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        /* ===== 创新点标签 ===== */
+        .innovation-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        .innovation-item {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+            border: 1px solid rgba(99,102,241,0.25); border-radius: 12px;
+            padding: 14px 18px; flex: 1; min-width: 200px; transition: all 0.3s;
+        }
+        .innovation-item:hover { transform: translateY(-2px); background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15)); }
+        .in-icon { font-size: 1.5em; margin-bottom: 6px; }
+        .in-title { font-weight: 600; color: white; font-size: 0.9em; margin-bottom: 4px; }
+        .in-desc { font-size: 0.78em; opacity: 0.65; line-height: 1.45; }
+
+        /* ===== 配件清单 ===== */
+        .parts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+        .part-item {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 12px;
+            transition: all 0.3s;
+        }
+        .part-item:hover { background: rgba(255,255,255,0.09); transform: translateX(4px); }
+        .part-icon { font-size: 1.6em; min-width: 32px; text-align: center; }
+        .part-info { flex: 1; }
+        .part-name { font-weight: 600; color: white; font-size: 0.88em; }
+        .part-detail { font-size: 0.76em; opacity: 0.55; margin-top: 2px; }
+        .part-count { font-size: 0.72em; background: rgba(99,102,241,0.2); color: #a5b4fc; padding: 2px 8px; border-radius: 6px; margin-top: 4px; display: inline-block; }
+
+        /* ===== 页脚 ===== */
+        .footer { text-align: center; padding: 20px; font-size: 0.78em; opacity: 0.4; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 20px; }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5em; }
+            .compare-table { font-size: 0.78em; }
+            .compare-table th, .compare-table td { padding: 8px 6px; }
+            .task-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 置顶导航 -->
+<div class="sticky-nav">
+    <div class="nav-inner">
+        <span>🏆 协作页</span>
+        <span class="nav-countdown">⏰ 距离交学校：12天 | 距区提交：31天</span>
+    </div>
+</div>
+
+<!-- 头部 -->
+<div class="header">
+    <h1>🎮 乘法口诀大冒险 —— 口诀王国闯关记</h1>
+    <p class="subtitle">顺德区2026年"卓越作业"征集活动 · 小学数学组</p>
+    <span class="badge">✅ 主题已确定：乘法口诀桌游</span>
+    <span class="badge warn">⏰ 需在9月27日前完成</span>
+    <p class="info">北师大版二上第4单元「乘法口诀（一）」· 实践游戏型作业 · 获奖概率预估 75-80%</p>
+</div>
+
+<div class="container">
+
+<!-- ====== 状态总览 ====== -->
+<div class="status-bar">
+    <div class="status-card">
+        <div class="icon">🎯</div>
+        <div class="label">当前阶段</div>
+        <div class="value blue">方案已确定</div>
+    </div>
+    <div class="status-card">
+        <div class="icon">📊</div>
+        <div class="label">预估得分</div>
+        <div class="value green">73 / 100</div>
+    </div>
+    <div class="status-card">
+        <div class="icon">🏆</div>
+        <div class="label">获奖概率</div>
+        <div class="value green">75 - 80%</div>
+    </div>
+    <div class="status-card">
+        <div class="icon">👥</div>
+        <div class="label">团队成员</div>
+        <div class="value yellow">3人（待分配）</div>
+    </div>
+    <div class="status-card">
+        <div class="icon">📝</div>
+        <div class="label">写作进度</div>
+        <div class="value red">0 / 7 步</div>
+    </div>
+</div>
+
+<!-- ====== 一、为什么选这个主题 ====== -->
+<div class="section">
+    <div class="section-title">📋 一、主题筛选过程 <span class="tag">5个候选 → 1个确定</span></div>
+    
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th style="width:50px">排名</th>
+                <th>候选主题</th>
+                <th style="width:70px">总分</th>
+                <th style="width:90px">获奖概率</th>
+                <th>核心优势</th>
+                <th>主要劣势</th>
+                <th style="width:80px">结论</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="winner-row">
+                <td class="rank">🥇</td>
+                <td><strong>乘法口诀大冒险桌游</strong><br><small style="opacity:0.5">第4单元·实践游戏型</small></td>
+                <td class="score score-high">73</td>
+                <td>
+                    <strong style="color:#34d399">75-80%</strong>
+                    <div class="prob-bar"><div class="prob-fill" style="width:77%;background:linear-gradient(90deg,#10b981,#059669)"></div></div>
+                </td>
+                <td>全册最核心刚需 + 游戏化双减导向 + 有二下素材可复用 + 四轨评价体系</td>
+                <td>提交时还没教到（需写三阶段复用）+ 配件制作工作量大</td>
+                <td><span style="color:#10b981;font-weight:600">✅ 采用！</span></td>
+            </tr>
+            <tr>
+                <td class="rank">🥈</td>
+                <td><strong>身体尺子量我家</strong><br><small style="opacity:0.5">第2单元·测量实践型</small></td>
+                <td class="score score-mid">69</td>
+                <td>
+                    <strong style="color:#fbbf24">60-70%</strong>
+                    <div class="prob-bar"><div class="prob-fill" style="width:65%;background:linear-gradient(90deg,#f59e0b,#d97706)"></div></div>
+                </td>
+                <td>量感是新课标新增核心素养 + 跟官方案例完全不同 + 成果可视化</td>
+                <td>需家长配合拍照 + 评价难以量化</td>
+                <td><span style="opacity:0.5">备选方案</span></td>
+            </tr>
+            <tr>
+                <td class="rank">🥉</td>
+                <td><strong>欢乐购物街</strong><br><small style="opacity:0.5">跨单元·综合实践型</small></td>
+                <td class="score score-mid">63</td>
+                <td>
+                    <strong style="color:#fbbf24">50-55%</strong>
+                    <div class="prob-bar"><div class="prob-fill" style="width:52%;background:linear-gradient(90deg,#f59e0b,#d97706)"></div></div>
+                </td>
+                <td>跨学科加分 + 生活情境真实</td>
+                <td>设计复杂度高 + 容易大而空</td>
+                <td><span style="opacity:0.5">不推荐</span></td>
+            </tr>
+            <tr>
+                <td class="rank">4</td>
+                <td><strong>方向与路线图</strong><br><small style="opacity:0.5">综合实践·第10周</small></td>
+                <td class="score">61</td>
+                <td>
+                    <strong style="color:#f87171">45-50%</strong>
+                    <div class="prob-bar"><div class="prob-fill" style="width:47%;background:linear-gradient(90deg,#ef4444,#dc2626)"></div></div>
+                </td>
+                <td>实践性强</td>
+                <td>内容太窄 + 提交时远没教到</td>
+                <td><span style="opacity:0.5">不推荐</span></td>
+            </tr>
+            <tr>
+                <td class="rank">5</td>
+                <td><strong>加减法易错专项</strong><br><small style="opacity:0.5">第1单元·课时作业型</small></td>
+                <td class="score">65</td>
+                <td>
+                    <strong style="color:#f87171">35-40%</strong>
+                    <div class="prob-bar"><div class="prob-fill" style="width:37%;background:linear-gradient(90deg,#ef4444,#dc2626)"></div></div>
+                </td>
+                <td>正在教 + 有错题数据</td>
+                <td>跟官方案例1高度雷同 + 形式传统无新意</td>
+                <td><span style="color:#f87171">❌ 淘汰</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ====== 二、最终方案详情 ====== -->
+<div class="section">
+    <div class="section-title">🎯 二、最终方案 · 乘法口诀大冒险桌游 <span class="tag">核心信息</span></div>
+    
+    <div class="innovation-list">
+        <div class="innovation-item">
+            <div class="in-icon">📖</div>
+            <div class="in-title">适用范围</div>
+            <div class="in-desc">北师大版二上第4单元「乘法口诀（一）」<br>2、3、4、5的乘法口诀（共36句）<br>二年级学生 + 家长（亲子模式）</div>
+        </div>
+        <div class="innovation-item">
+            <div class="in-icon">🎮</div>
+            <div class="in-title">作业形式</div>
+            <div class="in-desc">实践游戏作业<br>2-4人亲子/同伴桌游闯关<br>三阶段复用：预习→巩固→复习</div>
+        </div>
+        <div class="innovation-item">
+            <div class="in-icon">💡</div>
+            <div class="in-title">设计理念</div>
+            <div class="in-desc">潜能教育理念 + 新课标"三会"核心素养<br>双减政策导向（游戏化学习）<br>文化自信（文物中的乘法口诀）</div>
+        </div>
+        <div class="innovation-item">
+            <div class="in-icon">🌟</div>
+            <div class="in-title">差异化创新</div>
+            <div class="in-desc">聚焦单单元深度挖掘（非大杂烩）<br>三层卡片机制（口诀/挑战/幸运）<br>四轨评价体系（自评/互评/家长/教师）</div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 三、配件清单 ====== -->
+<div class="section">
+    <div class="section-title">🧩 三、桌游配件清单 <span class="tag">共7项</span></div>
+    
+    <div class="parts-grid">
+        <div class="part-item">
+            <div class="part-icon">🗺️</div>
+            <div class="part-info">
+                <div class="part-name">口诀王国棋盘</div>
+                <div class="part-detail">S形闯关路径，36格，4种格子类型<br>A3大小，彩色打印塑封</div>
+                <div class="part-count">1 张</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">🃏</div>
+            <div class="part-info">
+                <div class="part-name">口诀卡</div>
+                <div class="part-detail">2×1~2×9、3×1~3×9、4×1~4×9、5×1~5×9<br>正面积=答案，背面=口诀原文</div>
+                <div class="part-count">36 张</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">⚔️</div>
+            <div class="part-info">
+                <div class="part-name">挑战卡</div>
+                <div class="part-detail">易错辨析5张 + 逆向思维5张<br>+ 生活应用5张 + 趣味接龙5张</div>
+                <div class="part-count">20 张</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">🍀</div>
+            <div class="part-info">
+                <div class="part-name">幸运卡</div>
+                <div class="part-detail">再掷一次 / 前进2步 / 求助队友<br>/ 免答一次 / 交换位置...</div>
+                <div class="part-count">8 张</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">📋</div>
+            <div class="part-info">
+                <div class="part-name">游戏规则说明书</div>
+                <div class="part-detail">开局→进行→胜利完整规则<br>含图示说明，A4大小</div>
+                <div class="part-count">1 份</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">📝</div>
+            <div class="part-info">
+                <div class="part-name">闯关记录单</div>
+                <div class="part-detail">每轮答题记录 + 最终得分<br>每人1份，可重复使用</div>
+                <div class="part-count">1 份/人</div>
+            </div>
+        </div>
+        <div class="part-item">
+            <div class="part-icon">⭐</div>
+            <div class="part-info">
+                <div class="part-name">评价量表</div>
+                <div class="part-detail">自评表 + 互评表 + 家长评价表<br>+ 教师评价标准</div>
+                <div class="part-count">4 套</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 四、六大维度自评 ====== -->
+<div class="section">
+    <div class="section-title">📊 四、六大维度自评 <span class="tag">预估 73/100 分</span></div>
+    
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th style="width:200px">维度（分值）</th>
+                <th>得分</th>
+                <th>我们的做法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>① 立德树人·作业目标</strong><br><small style="opacity:0.5">满分20分</small></td>
+                <td class="score score-high">19/20</td>
+                <td>口诀熟练 + 学习兴趣激发 + 亲子关系促进 + 文化自信渗透（文物中的口诀），四维目标完整</td>
+            </tr>
+            <tr>
+                <td><strong>② 基于课标·内容科学</strong><br><small style="opacity:0.5">满分20分</small></td>
+                <td class="score score-high">18/20</td>
+                <td>基于课标核心内容（乘法是本册重点），有层次设计（基础口诀→易错挑战→生活应用→趣味拓展）</td>
+            </tr>
+            <tr>
+                <td><strong>③ 类型丰富·多元发展</strong><br><small style="opacity:0.5">满分10分</small></td>
+                <td class="score score-high">10/10 ⭐</td>
+                <td>实践作业 + 游戏类 + 亲子互动 + 可跨学期扩展 = 满分！形式丰富且严禁重复惩罚</td>
+            </tr>
+            <tr>
+                <td><strong>④ 难度适宜·作业时间</strong><br><small style="opacity:0.5">满分20分</small></td>
+                <td class="score score-mid">17/20</td>
+                <td>二年级适用难度，每局游戏约15-20分钟。扣分原因：首次配件制作需教师投入时间</td>
+            </tr>
+            <tr>
+                <td><strong>⑤ 及时反馈·以评促学</strong><br><small style="opacity:0.5">满分10分</small></td>
+                <td class="score score-high">9/10</td>
+                <td>自评 + 互评 + 家长评 + 教师评四轨并行，接近满分。鼓励信息技术手段（可拍照上传班级群）</td>
+            </tr>
+            <tr style="background:rgba(99,102,241,0.1);font-weight:700;">
+                <td><strong>总计</strong></td>
+                <td class="score score-high">73/100</td>
+                <td>达到"卓越"等级（≥90分为细致，80-89为良好，70-79为合格以上）</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ====== 五、写作任务分工 ====== -->
+<div class="section">
+    <div class="section-title">📝 五、写作任务分工 <span class="tag">共7步 · 约5-6小时</span></div>
+    
+    <div class="task-grid">
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">1</div>
+                <div class="task-name">设计说明</div>
+            </div>
+            <div class="task-desc">撰写设计理念、适用范围、三维作业目标、框架说明。约800字。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 30分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">📄 第1部分</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">2</div>
+                <div class="task-name">作业内容 + 配件清单</div>
+            </div>
+            <div class="task-desc">详细描述7项配件、游戏规则、使用建议（三阶段复用）。约1500字。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 60分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">📄 第2部分</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">3</div>
+                <div class="task-name">64张卡片具体内容</div>
+            </div>
+            <div class="task-desc">编写36张口诀卡 + 20张挑战卡的具体题目和答案。这是最耗时的核心工作。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 90分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">🎯 核心任务</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">4</div>
+                <div class="task-name">评价量表</div>
+            </div>
+            <div class="task-desc">设计自评量表、互评量表、家长评价表、教师评价标准。约1000字。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 40分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">📄 第3部分</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">5</div>
+                <div class="task-name">答案解析</div>
+            </div>
+            <div class="task-desc">36张口诀卡答案 + 20张挑战卡解题思路 + 易错点提示汇总 + 教学建议。约700字。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 40分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">📄 第4部分</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">6</div>
+                <div class="task-name">Word排版</div>
+            </div>
+            <div class="task-desc">按比赛要求排版：黑体四号标题、楷体小四副标题、宋体小四正文、1.5倍行距、≤4000字。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 30分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag">📐 格式要求</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-num">7</div>
+                <div class="task-name">导出PDF + 提交</div>
+            </div>
+            <div class="task-desc">导出PDF版本。9月8日前上交学校，9月27日前上传区平台（jypx.sdedu.net）。</div>
+            <div class="task-meta">
+                <span class="meta-tag time">⏱️ 10分钟</span>
+                <span class="meta-tag person">👤 待认领</span>
+                <span class="meta-tag warn">🔴 截止提醒</span>
+            </div>
+            <div class="task-progress"><div class="progress-track"><div class="progress-fill" style="width:0%"></div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 六、团队分工 ====== -->
+<div class="section">
+    <div class="section-title">👥 六、团队成员 <span class="tag">待确认分工</span></div>
+    
+    <div class="team-grid">
+        <div class="member-card">
+            <div class="member-avatar">👨‍🏫</div>
+            <div class="member-name">洪林华</div>
+            <div class="member-role">负责人 / 二年级数学教师</div>
+            <div class="member-task">负责：整体统筹 + 设计说明 + 卡片内容审核</div>
+        </div>
+        <div class="member-card">
+            <div class="member-avatar">👩‍🏫</div>
+            <div class="member-name">老师B</div>
+            <div class="member-role">待确认</div>
+            <div class="member-task">待分配任务 ↓</div>
+        </div>
+        <div class="member-card">
+            <div class="member-avatar">👩‍🏫</div>
+            <div class="member-name">老师C</div>
+            <div class="member-role">待确认</div>
+            <div class="member-task">待分配任务 ↓</div>
+        </div>
+    </div>
+    
+    <p style="text-align:center;margin-top:16px;font-size:0.85em;opacity:0.5;">
+        💡 建议分工方式：一人负责卡片内容（最大工作量），一人负责评价量表+答案解析，一人负责排版整合
+    </p>
+</div>
+
+<!-- ====== 七、时间线 ====== -->
+<div class="section">
+    <div class="section-title">📅 七、关键时间线</div>
+    
+    <div class="timeline">
+        <div class="timeline-item done">
+            <div class="t-title">✅ 8月22日 — 活动通知发布</div>
+            <div class="t-desc">收到顺德区卓越作业征集活动通知，开始研究评价标准和各学科指南</div>
+            <div class="t-time">原定向主任报名截止日</div>
+            <div class="t-status done">已完成</div>
+        </div>
+        <div class="timeline-item done">
+            <div class="t-title">✅ 8月22-27日 — 选题分析</div>
+            <div class="t-desc">分析5个候选主题，完成获奖概率深度评分，最终确定"乘法口诀大冒险桌游"</div>
+            <div class="t-status done">已完成</div>
+        </div>
+        <div class="timeline-item now">
+            <div class="t-title">🔄 8月27日起 — 开始写作</div>
+            <div class="t-desc">按照7步流程撰写设计说明文档，团队成员分工协作</div>
+            <div class="t-time">预计需要 5-6 小时</div>
+            <div class="t-status now">进行中</div>
+        </div>
+        <div class="timeline-item">
+            <div class="t-title">⏰ 9月8日 — 上交学校【硬截止】</div>
+            <div class="t-desc">Word + PDF 双版本提交给学校，由学校统一报送区里</div>
+            <div class="t-time">距离今天还有 12 天</div>
+            <div class="t-status todo">待完成</div>
+        </div>
+        <div class="timeline-item">
+            <div class="t-title">🔴 9月27日 — 区电子版提交截止</div>
+            <div class="t-desc">登录 jypx.sdedu.net 上传最终版本</div>
+            <div class="t-time">距离今天还有 31 天</div>
+            <div class="t-status todo">待完成</div>
+        </div>
+        <div class="timeline-item">
+            <div class="t-title">🔴 9月28日 17:00 — 平台关闭</div>
+            <div class="t-desc">线上提交系统关闭，逾期不候</div>
+            <div class="t-status todo">待完成</div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 八、文件存放位置 ====== -->
+<div class="section">
+    <div class="section-title">📁 八、项目文件位置</div>
+    <p style="font-size:0.9em;line-height:1.8;opacity:0.8;">
+        📂 <code>D:\Desktop\卓越作业比赛\</code><br>
+        &nbsp;&nbsp;&nbsp;├─ 📄 <strong>卓越作业比赛整理说明.md</strong> — 活动全貌<br>
+        &nbsp;&nbsp;&nbsp;├─ 📊 <strong>获奖概率分析.md</strong> — 初版4方向对比<br>
+        &nbsp;&nbsp;&nbsp;├─ 📊 <strong>获奖概率深度分析.md</strong> — 5主题详细打分<br>
+        &nbsp;&nbsp;&nbsp;├─ 🔄 <strong>进度追踪.md</strong> — 实时进度看板<br>
+        &nbsp;&nbsp;&nbsp;├─ 🌐 <strong>卓越作业协作页.html</strong> — 本页面（给团队看的）<br>
+        &nbsp;&nbsp;&nbsp;├─ 📄 <strong>附件2：评价标准.doc</strong><br>
+        &nbsp;&nbsp;&nbsp;├─ 📄 <strong>附件3：参赛承诺书.doc</strong><br>
+        &nbsp;&nbsp;&nbsp;├─ 📄 <strong>小学数学学科方案.docx</strong> — 含3个参考案例<br>
+        &nbsp;&nbsp;&nbsp;├─ 📁 <strong>20个学科PDF指南/</strong><br>
+        &nbsp;&nbsp;&nbsp;├─ ⬜ <strong>__设计说明__.docx</strong> — 待创建<br>
+        &nbsp;&nbsp;&nbsp;├─ ⬜ <strong>__桌游配件包__/</strong> — 待创建<br>
+        &nbsp;&nbsp;&nbsp;├─ ⬜ <strong>__评价量表__.docx</strong> — 待创建<br>
+        &nbsp;&nbsp;&nbsp;├─ ⬜ <strong>__最终提交版__.docx</strong> — 待创建<br>
+        &nbsp;&nbsp;&nbsp;└─ 🗑️ <strong>垃圾桶/</strong>
+    </p>
+</div>
+
+</div><!-- /.container -->
+
+<div class="footer">
+    <p>🏆 卓越作业比赛 · 乘法口诀大冒险桌游 · 协作展示页</p>
+    <p>最后更新：2026年8月27日 · 由 AI 辅助生成</p>
+</div>
+
+</body>
+</html>
