@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>游戏⑦ 口诀三国杀 - 乘法口诀大冒险</title>
+<title>娓告垙鈶?鍙ｈ瘈涓夊浗鏉€ - 涔樻硶鍙ｈ瘈澶у啋闄?/title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#eb3349 0%,#f45c43 50%,#f45c43 100%);min-height:100vh;color:#333}
@@ -17,18 +17,18 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
 .card h2{font-size:18px;color:#e74c3c;margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
-/* 三国杀战场 */
+/* 涓夊浗鏉€鎴樺満 */
 .battlefield{background:linear-gradient(180deg,#2c1810,#4a2511);border-radius:16px;padding:25px;position:relative;border:3px solid rgba(255,215,0,0.3)}
-.battlefield::before{content:'⚔️ 三国杀战场 ⚔️';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd700,#f39c12);color:#333;padding:4px 20px;border-radius:12px;font-size:13px;font-weight:bold}
+.battlefield::before{content:'鈿旓笍 涓夊浗鏉€鎴樺満 鈿旓笍';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd700,#f39c12);color:#333;padding:4px 20px;border-radius:12px;font-size:13px;font-weight:bold}
 
-/* 对战双方 */
+/* 瀵规垬鍙屾柟 */
 .duel-sides{display:flex;justify-content:space-around;align-items:flex-start;margin:20px 0;flex-wrap:wrap;gap:20px}
 .duel-player{text-align:center;width:200px}
 .duel-name{font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.5)}
 .duel-hand{display:flex;flex-direction:column;gap:6px;align-items:center}
 .hand-count{color:#aaa;font-size:12px}
 
-/* 出的牌 */
+/* 鍑虹殑鐗?*/
 .played-area{display:flex;justify-content:center;align-items:center;gap:30px;margin:20px 0;min-height:130px}
 .vs-badge{font-size:28px;font-weight:bold;color:#ff6348;text-shadow:0 0 10px rgba(255,99,72,0.5);animation:vsPulse .8s ease-in-out infinite}
 @keyframes vsPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
@@ -43,17 +43,17 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .war-card.winner{animation:winnerGlow .6s ease infinite alternate;box-shadow:0 0 30px rgba(46,213,115,0.7)}
 @keyframes winnerGlow{from{box-shadow:0 0 10px rgba(46,213,115,0.4)}to{box-shadow:0 0 35px rgba(46,213,115,0.9)}}
 
-/* 技能卡展示 */
+/* 鎶€鑳藉崱灞曠ず */
 .skill-cards-row{display:flex;justify-content:center;gap:12px;margin:15px 0;flex-wrap:wrap}
 .skill-card{width:80px;height:105px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:bold;color:#fff;cursor:pointer;transition:all .3s;border:2px solid transparent}
 .skill-card:hover{transform:translateY(-5px) scale(1.05)}
-.skill-card.s1{background:linear-gradient(135deg,#e74c3c,#c0392b)} /* 交换律反击 */
-.skill-card.s2{background:linear-gradient(135deg,#0984e3,#0652DD)} /* 九九护盾 */
-.skill-card.s3{background:linear-gradient(135deg,#f39c12,#e67e22)} /* 得字突袭 */
-.skill-card.s4{background:linear-gradient(135deg,#a55eea,#8854d0)} /* 填空陷阱 */
+.skill-card.s1{background:linear-gradient(135deg,#e74c3c,#c0392b)} /* 浜ゆ崲寰嬪弽鍑?*/
+.skill-card.s2{background:linear-gradient(135deg,#0984e3,#0652DD)} /* 涔濅節鎶ょ浘 */
+.skill-card.s3{background:linear-gradient(135deg,#f39c12,#e67e22)} /* 寰楀瓧绐佽 */
+.skill-card.s4{background:linear-gradient(135deg,#a55eea,#8854d0)} /* 濉┖闄烽槺 */
 .skill-icon{font-size:22px;margin-bottom:4px}
 
-/* 战报 */
+/* 鎴樻姤 */
 .battle-log{background:rgba(0,0,0,0.3);border-radius:10px;padding:12px;min-height:60px;margin-top:15px;color:#ffd700;font-size:14px;line-height:1.7}
 .log-entry{margin-bottom:4px;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -79,120 +79,120 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 <body>
 
 <div class="top-bar">
-  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
-  <h1>⚔️ 游戏⑦ 口诀三国杀</h1>
+  <a class="back-btn" href="/zyzuo/index.html#tab-guide">鈫?杩斿洖瀵艰埅</a>
+  <h1>鈿旓笍 娓告垙鈶?鍙ｈ瘈涓夊浗鏉€</h1>
 </div>
 
 <div class="container">
 
-<span class="badge badge-hard">🔴 挑战篇 · 终极对抗</span>
+<span class="badge badge-hard">馃敶 鎸戞垬绡?路 缁堟瀬瀵规姉</span>
 
-<!-- 演示区 -->
+<!-- 婕旂ず鍖?-->
 <div class="card">
-  <h2>🎬 对战演示</h2>
+  <h2>馃幀 瀵规垬婕旂ず</h2>
   <div class="battlefield">
-    <!-- 技能卡 -->
-    <div style="text-align:center;color:#ffd700;font-size:13px;margin-bottom:8px">⚡ 特殊技能卡（可选使用）</div>
+    <!-- 鎶€鑳藉崱 -->
+    <div style="text-align:center;color:#ffd700;font-size:13px;margin-bottom:8px">鈿?鐗规畩鎶€鑳藉崱锛堝彲閫変娇鐢級</div>
     <div class="skill-cards-row">
-      <div class="skill-card s1"><div class="skill-icon">🗡️</div><div>交换律<br>反击</div></div>
-      <div class="skill-card s2"><div class="skill-icon">🛡️</div><div>九九<br>护盾</div></div>
-      <div class="skill-card s3"><div class="skill-icon">⚡</div><div>得字<br>突袭</div></div>
-      <div class="skill-card s4"><div class="skill-icon">💣</div><div>填空<br>陷阱</div></div>
+      <div class="skill-card s1"><div class="skill-icon">馃棥锔?/div><div>浜ゆ崲寰?br>鍙嶅嚮</div></div>
+      <div class="skill-card s2"><div class="skill-icon">馃洝锔?/div><div>涔濅節<br>鎶ょ浘</div></div>
+      <div class="skill-card s3"><div class="skill-icon">鈿?/div><div>寰楀瓧<br>绐佽</div></div>
+      <div class="skill-card s4"><div class="skill-icon">馃挘</div><div>濉┖<br>闄烽槺</div></div>
     </div>
 
     <div class="duel-sides">
       <div class="duel-player">
-        <div class="duel-name">👦 玩家A</div>
+        <div class="duel-name">馃懄 鐜╁A</div>
         <div class="duel-hand">
-          <div style="color:#aaa;font-size:12px">手牌: <span id="handA">5</span> 张</div>
+          <div style="color:#aaa;font-size:12px">鎵嬬墝: <span id="handA">5</span> 寮?/div>
         </div>
       </div>
       <div class="duel-player">
-        <div class="duel-name">👧 玩家B</div>
+        <div class="duel-name">馃懅 鐜╁B</div>
         <div class="duel-hand">
-          <div style="color:#aaa;font-size:12px">手牌: <span id="handB">5</span> 张</div>
+          <div style="color:#aaa;font-size:12px">鎵嬬墝: <span id="handB">5</span> 寮?/div>
         </div>
       </div>
     </div>
 
     <div class="played-area" id="playedArea">
-      <div style="color:#666;font-size:14px">点击下方按钮开始对战...</div>
+      <div style="color:#666;font-size:14px">鐐瑰嚮涓嬫柟鎸夐挳寮€濮嬪鎴?..</div>
     </div>
 
     <div class="battle-log" id="battleLog"></div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="battleRound()">⚔️ 出牌对战</button>
-      <button class="btn btn-gold" onclick="autoBattle()">▶ 自动对战(5轮)</button>
-      <button class="btn btn-primary" style="background:#666" onclick="resetBattle()">🔄 重置</button>
+      <button class="btn btn-primary" onclick="battleRound()">鈿旓笍 鍑虹墝瀵规垬</button>
+      <button class="btn btn-gold" onclick="autoBattle()">鈻?鑷姩瀵规垬(5杞?</button>
+      <button class="btn btn-primary" style="background:#666" onclick="resetBattle()">馃攧 閲嶇疆</button>
     </div>
   </div>
 </div>
 
-<!-- 规则 -->
+<!-- 瑙勫垯 -->
 <div class="card">
-  <h2>📋 基本规则</h2>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>发牌：</strong>每人发5张手牌</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>出牌：</strong>第一个人出一张（如 3×4=12），下家必须出<strong>得数更大</strong>的牌</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>跳过：</strong>没有更大的牌就跳过一回合</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>获胜：</strong>最后出完牌或跳过次数最少的人获胜</div></div>
+  <h2>馃搵 鍩烘湰瑙勫垯</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鍙戠墝锛?/strong>姣忎汉鍙?寮犳墜鐗?/div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鍑虹墝锛?/strong>绗竴涓汉鍑轰竴寮狅紙濡?3脳4=12锛夛紝涓嬪蹇呴』鍑?strong>寰楁暟鏇村ぇ</strong>鐨勭墝</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>璺宠繃锛?/strong>娌℃湁鏇村ぇ鐨勭墝灏辫烦杩囦竴鍥炲悎</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鑾疯儨锛?/strong>鏈€鍚庡嚭瀹岀墝鎴栬烦杩囨鏁版渶灏戠殑浜鸿幏鑳?/div></div>
 </div>
 
-<!-- 技能卡说明 -->
+<!-- 鎶€鑳藉崱璇存槑 -->
 <div class="card">
-  <h2>⚡ 特殊技能卡</h2>
+  <h2>鈿?鐗规畩鎶€鑳藉崱</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
     <div style="background:#ffe8e8;border-left:4px solid #e74c3c;padding:14px;border-radius:0 10px 10px 0">
-      <div style="font-size:22px">🗡️</div>
-      <div style="font-weight:bold;color:#e74c3c;margin:4px 0">交换律反击</div>
-      <div style="font-size:13px;color:#555;line-height:1.6">打出交换律配对卡（如对方出[3×5]你出[5×3]）可直接反超，无视大小规则！</div>
+      <div style="font-size:22px">馃棥锔?/div>
+      <div style="font-weight:bold;color:#e74c3c;margin:4px 0">浜ゆ崲寰嬪弽鍑?/div>
+      <div style="font-size:13px;color:#555;line-height:1.6">鎵撳嚭浜ゆ崲寰嬮厤瀵瑰崱锛堝瀵规柟鍑篬3脳5]浣犲嚭[5脳3]锛夊彲鐩存帴鍙嶈秴锛屾棤瑙嗗ぇ灏忚鍒欙紒</div>
     </div>
     <div style="background:#e8f4ff;border-left:4px solid #0984e3;padding:14px;border-radius:0 10px 10px 0">
-      <div style="font-size:22px">🛡️</div>
-      <div style="font-weight:bold;color:#0984e3;margin:4px 0">九九护盾</div>
-      <div style="font-size:13px;color:#555;line-height:1.6">本轮免一次不用跟牌，对方继续出但你不需要回应。</div>
+      <div style="font-size:22px">馃洝锔?/div>
+      <div style="font-weight:bold;color:#0984e3;margin:4px 0">涔濅節鎶ょ浘</div>
+      <div style="font-size:13px;color:#555;line-height:1.6">鏈疆鍏嶄竴娆′笉鐢ㄨ窡鐗岋紝瀵规柟缁х画鍑轰絾浣犱笉闇€瑕佸洖搴斻€?/div>
     </div>
     <div style="background:#fff8e1;border-left:4px solid #f39c12;padding:14px;border-radius:0 10px 10px 0">
-      <div style="font-size:22px">⚡</div>
-      <div style="font-weight:bold;color:#e67e22;margin:4px 0">得字突袭</div>
-      <div style="font-size:13px;color:#555;line-height:1.6">喊出完整口诀含"得"字的（如"三五十五"）可额外再摸一张牌！</div>
+      <div style="font-size:22px">鈿?/div>
+      <div style="font-weight:bold;color:#e67e22;margin:4px 0">寰楀瓧绐佽</div>
+      <div style="font-size:13px;color:#555;line-height:1.6">鍠婂嚭瀹屾暣鍙ｈ瘈鍚?寰?瀛楃殑锛堝"涓変簲鍗佷簲"锛夊彲棰濆鍐嶆懜涓€寮犵墝锛?/div>
     </div>
     <div style="background:#f3e8ff;border-left:4px solid #a55eea;padding:14px;border-radius:0 10px 10px 0">
-      <div style="font-size:22px">💣</div>
-      <div style="font-weight:bold;color:#8854d0;margin:4px 0">填空陷阱</div>
-      <div style="font-size:13px;color:#555;line-height:1.6">用填空版卡让对方心算，算错则该张作废，增加难度！</div>
+      <div style="font-size:22px">馃挘</div>
+      <div style="font-weight:bold;color:#8854d0;margin:4px 0">濉┖闄烽槺</div>
+      <div style="font-size:13px;color:#555;line-height:1.6">鐢ㄥ～绌虹増鍗¤瀵规柟蹇冪畻锛岀畻閿欏垯璇ュ紶浣滃簾锛屽鍔犻毦搴︼紒</div>
     </div>
   </div>
 </div>
 
-<!-- 基本信息 -->
+<!-- 鍩烘湰淇℃伅 -->
 <div class="card">
-  <h2>📌 基本信息</h2>
+  <h2>馃搶 鍩烘湰淇℃伅</h2>
   <div class="info-grid">
-    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐⭐⭐ 挑战</div></div>
-    <div class="info-item"><div class="label">适用人数</div><div class="value">2-4人</div></div>
-    <div class="info-item"><div class="label">所需时间</div><div class="value">20-30分钟/局</div></div>
-    <div class="info-item"><div class="label">所需材料</div><div class="value">全部版本混合 + 技能卡</div></div>
-    <div class="info-item"><div class="label">适用场景</div><div class="value">班级竞赛 / 压轴活动 / 小组PK</div></div>
-    <div class="info-item"><div class="label">训练目标</div><div class="value">综合运用 / 策略思维 / 竞技心理</div></div>
+    <div class="info-item"><div class="label">闅惧害绛夌骇</div><div class="value">猸愨瓙猸愨瓙 鎸戞垬</div></div>
+    <div class="info-item"><div class="label">閫傜敤浜烘暟</div><div class="value">2-4浜?/div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏃堕棿</div><div class="value">20-30鍒嗛挓/灞€</div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏉愭枡</div><div class="value">鍏ㄩ儴鐗堟湰娣峰悎 + 鎶€鑳藉崱</div></div>
+    <div class="info-item"><div class="label">閫傜敤鍦烘櫙</div><div class="value">鐝骇绔炶禌 / 鍘嬭酱娲诲姩 / 灏忕粍PK</div></div>
+    <div class="info-item"><div class="label">璁粌鐩爣</div><div class="value">缁煎悎杩愮敤 / 绛栫暐鎬濈淮 / 绔炴妧蹇冪悊</div></div>
   </div>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+  <p>馃幃 涔樻硶鍙ｈ瘈澶у啋闄?路 <a href="/zyzuo/index.html">杩斿洖瀵艰埅</a></p>
 </div>
 
 <script>
 const warDeck = [
-  {e:'1×2',r:2},{e:'2×3',r:6},{e:'3×4',r:12},{e:'4×5',r:20},
-  {e:'5×6',r:30},{e:'3×5',r:15},{e:'4×6',r:24},{e:'5×7',r:35},
-  {e:'6×7',r:42},{e:'4×7',r:28},{e:'5×8',r:40},{e:'6×8',r:48},
-  {e:'3×8',r:24},{e:'4×9',r:36},{e:'5×9',r:45},{e:'6×9',r:54},
-  {e:'7×8',r:56},{e:'8×9',r:72},{e:'5×5',r:25},{e:'6×6',r:36},
+  {e:'1脳2',r:2},{e:'2脳3',r:6},{e:'3脳4',r:12},{e:'4脳5',r:20},
+  {e:'5脳6',r:30},{e:'3脳5',r:15},{e:'4脳6',r:24},{e:'5脳7',r:35},
+  {e:'6脳7',r:42},{e:'4脳7',r:28},{e:'5脳8',r:40},{e:'6脳8',r:48},
+  {e:'3脳8',r:24},{e:'4脳9',r:36},{e:'5脳9',r:45},{e:'6脳9',r:54},
+  {e:'7脳8',r:56},{e:'8脳9',r:72},{e:'5脳5',r:25},{e:'6脳6',r:36},
 ];
-const skills = ['🗡️交换律反击','🛡️九九护盾','⚡得字突袭','💣填空陷阱'];
+const skills = ['馃棥锔忎氦鎹㈠緥鍙嶅嚮','馃洝锔忎節涔濇姢鐩?,'鈿″緱瀛楃獊琚?,'馃挘濉┖闄烽槺'];
 
 let handA = 5, handB = 5;
 let currentMax = 0;
@@ -202,7 +202,7 @@ function battleRound() {
   const ca = warDeck[Math.floor(Math.random() * warDeck.length)];
   const cb = warDeck[Math.floor(Math.random() * warDeck.length)];
   
-  // 随机触发技能
+  // 闅忔満瑙﹀彂鎶€鑳?
   const useSkill = Math.random() > 0.7;
   const skillName = skills[Math.floor(Math.random() * skills.length)];
   
@@ -223,22 +223,22 @@ function battleRound() {
     
     let logText = '';
     if (ca.r > cb.r) {
-      logText = `⚔️ 第${roundNum+1}轮：A出 [${ca.e}=${ca.r}] vs B出 [${cb.e}=${cb.r}] → <span style="color:#3498db">A胜！${ca.r}>${cb.r}</span>`;
+      logText = `鈿旓笍 绗?{roundNum+1}杞細A鍑?[${ca.e}=${ca.r}] vs B鍑?[${cb.e}=${cb.r}] 鈫?<span style="color:#3498db">A鑳滐紒${ca.r}>${cb.r}</span>`;
       handA++; handB--;
       currentMax = ca.r;
     } else if (cb.r > ca.r && cb.r > currentMax) {
-      logText = `⚔️ 第${roundNum+1}轮：A出 [${ca.e}=${ca.r}] vs B出 [${cb.e}=${cb.r}] → <span style="color:#e74c3c">B胜！${cb.r}>${ca.r}</span>`;
+      logText = `鈿旓笍 绗?{roundNum+1}杞細A鍑?[${ca.e}=${ca.r}] vs B鍑?[${cb.e}=${cb.r}] 鈫?<span style="color:#e74c3c">B鑳滐紒${cb.r}>${ca.r}</span>`;
       handA--; handB++;
       currentMax = cb.r;
     } else {
-      logText = `⚔️ 第${roundNum+1}轮：A出 [${ca.e}=${ca.r}] vs B出 [${cb.e}=${cb.r}] → <span style="color:#ffa502">B无法超越，跳过！</span>`;
+      logText = `鈿旓笍 绗?{roundNum+1}杞細A鍑?[${ca.e}=${ca.r}] vs B鍑?[${cb.e}=${cb.r}] 鈫?<span style="color:#ffa502">B鏃犳硶瓒呰秺锛岃烦杩囷紒</span>`;
       handB--;
     }
     if (useSkill) logText += ` <span style="color:#f39c12">[${skillName}]</span>`;
     
     addLog(logText);
   } else {
-    addLog(`⚔️ A没有更大的牌了，<span style="color:#e74c3c">跳过回合</span>`);
+    addLog(`鈿旓笍 A娌℃湁鏇村ぇ鐨勭墝浜嗭紝<span style="color:#e74c3c">璺宠繃鍥炲悎</span>`);
     handA--;
   }
   
@@ -271,16 +271,17 @@ function resetBattle() {
   handA = 5; handB = 5; currentMax = 0; roundNum = 0;
   document.getElementById('handA').textContent = handA;
   document.getElementById('handB').textContent = handB;
-  document.getElementById('playedArea').innerHTML = '<div style="color:#666;font-size:14px">点击下方按钮开始对战...</div>';
+  document.getElementById('playedArea').innerHTML = '<div style="color:#666;font-size:14px">鐐瑰嚮涓嬫柟鎸夐挳寮€濮嬪鎴?..</div>';
   document.getElementById('battleLog').innerHTML = '';
 }
 
 function declareWinner() {
-  if (handA > handB) addLog('🏆 <span style="color:#3498db;font-size:16px">玩家A 获得最终胜利！</span>');
-  else if (handB > handA) addLog('🏆 <span style="color:#e74c3c;font-size:16px">玩家B 获得最终胜利！</span>');
-  else addLog('🤝 <span style="color:#ffa502;font-size:16px">平局！旗鼓相当！</span>');
+  if (handA > handB) addLog('馃弳 <span style="color:#3498db;font-size:16px">鐜╁A 鑾峰緱鏈€缁堣儨鍒╋紒</span>');
+  else if (handB > handA) addLog('馃弳 <span style="color:#e74c3c;font-size:16px">鐜╁B 鑾峰緱鏈€缁堣儨鍒╋紒</span>');
+  else addLog('馃 <span style="color:#ffa502;font-size:16px">骞冲眬锛佹棗榧撶浉褰擄紒</span>');
 }
 </script>
 
 </body>
 </html>
+
