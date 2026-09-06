@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔘 乘法口诀四选一挑战</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .header h1 { font-size: 26px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+
+        /* ====== 状态栏 ====== */
+        .status-bar {
+            display: flex;
+            gap: 16px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 22px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 11px; color: #888; }
+        .stat-value { font-size: 20px; font-weight: bold; }
+        .val-correct { color: #2b8a3e; }
+        .val-wrong { color: #c92a2a; }
+        .val-streak { color: #e67700; }
+        .val-acc { color: #7950f2; }
+
+        /* ====== 主区域 ====== */
+        .quiz-box {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            margin-bottom: 12px;
+        }
+
+        /* 题号 + 进度 */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .quiz-num { font-size: 13px; color: #999; font-weight: bold; }
+        .progress-mini { width: 120px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+        .progress-mini-fill { height: 100%; background: linear-gradient(90deg,#a18cd1,#fbc2eb); border-radius: 3px; transition: width 0.3s; }
+
+        /* 题目 */
+        .question-big {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #f8f0fc, #fce4ec);
+            border-radius: 18px;
+            border: 3px solid #e0b0ff;
+            margin-bottom: 20px;
+        }
+        .q-text { font-size: clamp(36px, 8vw, 56px); font-weight: bold; color: #333; }
+        .q-sub { font-size: 13px; color: #aaa; margin-top: 8px; }
+
+        /* 选项 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 18px;
+            border: 3px solid #eee;
+            border-radius: 16px;
+            background: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: #b197fc;
+            background: #f8f0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(161,152,252,0.2);
+        }
+
+        .option-btn .opt-label {
+            position: absolute;
+            top: 6px; left: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .option-btn.selected { border-color: #7950f2; background: #efdbff; }
+        .option-btn.correct { border-color: #51cf66 !important; background: #d3f9d8 !important; animation: correctPop 0.5s ease; }
+        .option-btn.wrong { border-color: #ff6b6b !important; background: #ffe3e3 !important; animation: shake 0.4s ease; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+
+        @keyframes correctPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+        }
+
+        /* 反馈 */
+        .feedback-area {
+            text-align: center;
+            margin-top: 16px;
+            min-height: 30px;
+        }
+        .feedback-text { font-size: 17px; font-weight: bold; }
+        .feedback-text.correct { color: #2b8a3e; }
+        .feedback-text.wrong { color: #c92a2a; }
+        .mnemonic-show { font-size: 16px; color: #666; margin-top: 4px; letter-spacing: 2px; }
+
+        /* 连击特效 */
+        .streak-badge {
+            position: absolute;
+            top: -8px; right: -8px;
+            font-size: 24px;
+            animation: streakIn 0.4s ease;
+            pointer-events: none;
+        }
+        @keyframes streakIn {
+            from { transform: scale(0) rotate(-20deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 500px;
+            width: 100%;
+        }
+        button {
+            padding: 9px 20px;
+            border: none;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-next { background: linear-gradient(135deg,#74c0fc,#339af0); color:white; }
+        .btn-restart { background: linear-gradient(135deg,#ff8787,#c92a2a); color:white; }
+        .btn-mode { background: linear-gradient(135deg,#ddd,#bbb); color:#555; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* 模式标签 */
+        .mode-tabs {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 6px 14px;
+            border: 2px solid rgba(255,255,255,0.6);
+            background: transparent;
+            color: white;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active { background: white; color: #7950f2; font-weight: bold; }
+        .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.15); }
+
+        /* 结果弹窗 */
+        .result-overlay {
+            display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;
+        }
+        .result-overlay.show { display:flex; }
+        .result-card {
+            background:white;border-radius:24px;padding:32px;text-align:center;
+            max-width:380px;width:90%;animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        @keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+        .result-card h2 { font-size:24px;color:#333;margin-bottom:12px; }
+        .result-emoji { font-size:52px;margin-bottom:8px; }
+        .result-stats { display:flex;gap:12px;justify-content:center;margin-bottom:16px;flex-wrap:wrap; }
+        .rs-item { background:#f8f9fa;padding:10px 16px;border-radius:12px;text-align:center; }
+        .rs-val { font-size:24px;font-weight:bold;color:#7950f2; }
+        .rs-lbl { font-size:11px;color:#888; }
+        .result-msg { font-size:15px;color:#666;margin-bottom:16px; }
+
+        @media(max-width:450px){
+            .quiz-box{padding:18px;}
+            .options-grid{grid-template-columns:1fr;}
+            .option-btn{padding:14px;font-size:24px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🔘 乘法口诀四选一</h1>
+        <p>看题选答案 · 点选ABCD · 快速抢答</p>
+    </div>
+
+    <!-- 模式 -->
+    <div class="mode-tabs">
+        <button class="tab-btn active" onclick="setMode('all')">📚 全部 (45题)</button>
+        <button class="tab-btn" onclick="setMode('easy')">⭐ 基础 (1-5)</button>
+        <button class="tab-btn" onclick="setMode('medium')">⚡ 进阶 (6-9)</button>
+        <button class="tab-btn" onclick="setMode('hard')">🔥 困难关</button>
+        <button class="tab-btn" onclick="setMode('speed10')">⚡ 极速10题</button>
+    </div>
+
+    <!-- 状态 -->
+    <div class="status-bar">
+        <div class="stat-item"><div class="stat-label">✅ 正确</div><div class="stat-value val-correct" id="correctNum">0</div></div>
+        <div class="stat-item"><div class="stat-label">❌ 错误</div><div class="stat-value val-wrong" id="wrongNum">0</div></div>
+        <div class="stat-item"><div class="stat-label">🔥 连击</div><div class="stat-value val-streak" id="streakNum">0</div></div>
+        <div class="stat-item"><div class="stat-label">📊 正确率</div><div class="stat-value val-acc" id="accNum">--</div></div>
+    </div>
+
+    <!-- 答题区 -->
+    <div class="quiz-box" style="position:relative;">
+        <!-- 题头 -->
+        <div class="quiz-header">
+            <span class="quiz-num" id="quizNum">第 1 / 45 题</span>
+            <div class="progress-mini"><div class="progress-mini-fill" id="miniProgress" style="width:2.2%"></div></div>
+        </div>
+
+        <!-- 大题目 -->
+        <div class="question-big">
+            <div class="q-text" id="bigQuestion">7 × 8 = ?</div>
+            <div class="q-sub">点击下方选项作答，或按 A/B/C/D 键</div>
+        </div>
+
+        <!-- 四选项 -->
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <!-- 反馈 -->
+        <div class="feedback-area">
+            <div class="feedback-text" id="fbText"></div>
+            <div class="mnemonic-show" id="mnemonicShow"></div>
+        </div>
+
+        <!-- 连击徽章 -->
+        <div class="streak-badge" id="streakBadge" style="display:none;"></div>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="controls">
+        <button class="btn-next" onclick="nextQuestion()">➡️ 下一题</button>
+        <button class="btn-restart" onclick="restartQuiz()">🔄 重新开始</button>
+    </div>
+
+    <!-- 结果弹窗 -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <div class="result-emoji" id="resEmoji">🏆</div>
+            <h2 id="resTitle">挑战完成！</h2>
+            <div class="result-stats">
+                <div class="rs-item"><div class="rs-val" id="resCorrect">0</div><div class="rs-lbl">正确</div></div>
+                <div class="rs-item"><div class="rs-val" id="resWrong">0</div><div class="rs-lbl">错误</div></div>
+                <div class="rs-item"><div class="rs-val" id="resStreak">0</div><div class="rs-lbl">最高连击</div></div>
+                <div class="rs-item"><div class="rs-val" id="resAcc">0%</div><div class="rs-lbl">正确率</div></div>
+            </div>
+            <p class="result-msg" id="resMsg">太棒了！</p>
+            <button class="btn-next" style="padding:12px 28px;font-size:15px;" onclick="closeResult();restartQuiz();">再玩一次 🔄</button>
+        </div>
+    </div>
+
+<script>
+// ====== 数据 ======
+const ALL_DATA = [
+    {a:1,b:1,r:1,cn:"一一得一"},
+    {a:1,b:2,r:2,cn:"一二得二"},{a:2,b:2,r:4,cn:"二二得四"},
+    {a:1,b:3,r:3,cn:"一三得三"},{a:2,b:3,r:6,cn:"二三得六"},{a:3,b:3,r:9,cn:"三三得九"},
+    {a:1,b:4,r:4,cn:"一四得四"},{a:2,b:4,r:8,cn:"二四得八"},
+    {a:3,b:4,r:12,cn:"三四十二"},{a:4,b:4,r:16,cn:"四四十六"},
+    {a:1,b:5,r:5,cn:"一五得五"},{a:2,b:5,r:10,cn:"二五一十"},
+    {a:3,b:5,r:15,cn:"三五十五"},{a:4,b:5,r:20,cn:"四五二十"},{a:5,b:5,r:25,cn:"五五二十五"},
+    {a:1,b:6,r:6,cn:"一六得六"},{a:2,b:6,r:12,cn:"二六十二"},
+    {a:3,b:6,r:18,cn:"三六十八"},{a:4,b:6,r:24,cn:"四六二十四"},
+    {a:5,b:6,r:30,cn:"五六三十"},{a:6,b:6,r:36,cn:"六六三十六"},
+    {a:1,b:7,r:7,cn:"一七得七"},{a:2,b:7,r:14,cn:"二七十四"},
+    {a:3,b:7,r:21,cn:"三七二十一"},{a:4,b:7,r:28,cn:"四七二十八"},
+    {a:5,b:7,r:35,cn:"五七三十五"},{a:6,b:7,r:42,cn:"六七四十二"},{a:7,b:7,r:49,cn:"七七四十九"},
+    {a:1,b:8,r:8,cn:"一八得八"},{a:2,b:8,r:16,cn:"二八十六"},
+    {a:3,b:8,r:24,cn:"三八二十四"},{a:4,b:8,r:32,cn:"四八三十二"},
+    {a:5,b:8,r:40,cn:"五八四十"},{a:6,b:8,r:48,cn:"六八四十八"},
+    {a:7,b:8,r:56,cn:"七八五十六"},{a:8,b:8,r:64,cn:"八八六十四"},
+    {a:1,b:9,r:9,cn:"一九得九"},{a:2,b:9,r:18,cn:"二九十八"},
+    {a:3,b:9,r:27,cn:"三九二十七"},{a:4,b:9,r:36,cn:"四九三十六"},
+    {a:5,b:9,r:45,cn:"五九四十五"},{a:6,b:9,r:54,cn:"六九五十四"},
+    {a:7,b:9,r:63,cn:"七九六十三"},{a:8,b:9,r:72,cn:"八九七十二"},{a:9,b:9,r:81,cn:"九九八十一"}
+];
+
+const OPT_LABELS = ['A','B','C','D'];
+
+// ====== 状态 ======
+let questions = [];
+let qIndex = 0;
+let correct = 0, wrong = 0, streak = 0, maxStreak = 0;
+let answered = false;
+
+// ====== 模式设置 ======
+function setMode(mode) {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    switch(mode) {
+        case 'easy': questions = ALL_DATA.filter(d => d.b <= 5 && d.a <= d.b); break;
+        case 'medium': questions = ALL_DATA.filter(d => d.b >= 6 || d.r >= 30); break;
+        case 'hard':
+            questions = ALL_DATA.filter(d =>
+                (d.b >= 7 && d.a >= 6) || [56,63,72,54,48].includes(d.r)
+            );
+            break;
+        case 'speed10': 
+            const shuf=[...ALL_DATA].sort(()=>Math.random()-0.5);
+            questions = shuf.slice(0,10);
+            break;
+        default: questions = [...ALL_DATA];
+    }
+    restartQuiz();
+}
+
+// ====== 重置/开始 ======
+function restartQuiz() {
+    correct=0;wrong=0;streak=0;maxStreak=0;qIndex=0;answered=false;
+    updateStats();
+    showQuestion();
+    document.getElementById('resultOverlay').classList.remove('show');
+}
+
+// ====== 显示题目 ======
+function showQuestion() {
+    if (qIndex >= questions.length) { showResult(); return; }
+
+    const q = questions[qIndex];
+    document.getElementById('bigQuestion').textContent = `${q.a} × ${q.b} = ?`;
+    document.getElementById('quizNum').textContent = `第 ${qIndex+1} / ${questions.length} 题`;
+    document.getElementById('miniProgress').style.width = ((qIndex+1)/questions.length*100)+'%';
+
+    // 生成4个选项（1正确+3干扰）
+    const opts = generateOptions(q.r);
+    
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = '';
+    opts.forEach((val, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="opt-label">${OPT_LABELS[i]}</span>${val}`;
+        btn.dataset.value = val;
+        btn.onclick = () => selectOption(btn, val, q);
+        grid.appendChild(btn);
+    });
+
+    // 清空反馈
+    document.getElementById('fbText').textContent = '';
+    document.getElementById('fbText').className = 'feedback-text';
+    document.getElementById('mnemonicShow').textContent = '';
+    document.getElementById('streakBadge').style.display = 'none';
+    answered = false;
+}
+
+// ====== 生成选项 ======
+function generateOptions(correctAnswer) {
+    const opts = new Set([correctAnswer]);
+    while (opts.size < 4) {
+        let fake;
+        // 生成接近的干扰项
+        if (Math.random() > 0.5) {
+            fake = correctAnswer + Math.floor(Math.random()*7) - 3; // ±3
+        } else {
+            fake = Math.floor(Math.random()*81)+1; // 1-81随机
+        }
+        if (fake > 0 && fake !== correctAnswer && fake <= 81) opts.add(fake);
+    }
+    return Array.from(opts).sort(() => Math.random() - 0.5);
+}
+
+// ====== 选择选项 ======
+function selectOption(btn, value, question) {
+    if (answered) return;
+    answered = true;
+
+    // 禁用所有按钮
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+
+    if (value === question.r) {
+        // 正确
+        btn.classList.add('correct');
+        correct++;
+        streak++;
+        if (streak > maxStreak) maxStreak = streak;
+
+        document.getElementById('fbText').textContent = '✅ 正确！太棒了！';
+        document.getElementById('fbText').className = 'feedback-text correct';
+        document.getElementById('mnemonicShow').textContent = question.cn;
+
+        // 连击特效
+        if (streak >= 3) {
+            const badge = document.getElementById('streakBadge');
+            badge.textContent = ['🔥','💥','⚡','🌟'][Math.min(streak-3,3)] + ` ×${streak}`;
+            badge.style.display = 'block';
+            badge.style.animation = 'none';
+            void badge.offsetWidth;
+            badge.style.animation = 'streakIn 0.4s ease';
+        }
+    } else {
+        // 错误
+        btn.classList.add('wrong');
+        // 高亮正确答案
+        document.querySelectorAll('.option-btn').forEach(b => {
+            if (parseInt(b.dataset.value) === question.r) b.classList.add('correct');
+        });
+
+        wrong++;
+        streak = 0;
+
+        document.getElementById('fbText').textContent = `❌ 不对哦，答案是 ${question.r}`;
+        document.getElementById('fbText').className = 'feedback-text wrong';
+        document.getElementById('mnemonicShow').textContent = question.cn;
+    }
+
+    updateStats();
+}
+
+// ====== 下一题 ======
+function nextQuestion() {
+    qIndex++;
+    showQuestion();
+}
+
+// ====== 更新统计 ======
+function updateStats() {
+    document.getElementById('correctNum').textContent = correct;
+    document.getElementById('wrongNum').textContent = wrong;
+    document.getElementById('streakNum').textContent = streak;
+    const total = correct + wrong;
+    document.getElementById('accNum').textContent = total > 0 ? Math.round(correct/total*100)+'%' : '--';
+}
+
+// ====== 结果 ======
+function showResult() {
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round(correct/total*100) : 0;
+
+    document.getElementById('resCorrect').textContent = correct;
+    document.getElementById('resWrong').textContent = wrong;
+    document.getElementById('resStreak').textContent = maxStreak;
+    document.getElementById('resAcc').textContent = acc+'%';
+
+    let emoji, title, msg;
+    if (acc >= 95) { emoji='🏆';title='完美通关！';msg='你是口诀大师！'; }
+    else if (acc >= 85) { emoji='🥇';title='非常棒！';msg='继续保持！'; }
+    else if (acc >= 70) { emoji='🥈';title='不错哦！';msg='多练习会更好！'; }
+    else if (acc >= 50) { emoji='🥉';title='加油！';msg='还需要多加练习~'; }
+    else { emoji='💪';title='继续努力！';msg='别灰心，熟能生巧！'; }
+
+    document.getElementById('resEmoji').textContent = emoji;
+    document.getElementById('resTitle').textContent = title;
+    document.getElementById('resMsg').textContent = msg + ` 正确率${acc}%`;
+    document.getElementById('resultOverlay').classList.add('show');
+}
+
+function closeResult() {
+    document.getElementById('resultOverlay').classList.remove('show');
+}
+
+// ====== 键盘快捷键 ======
+document.addEventListener('keydown', e => {
+    if (answered) {
+        if (e.key === 'Enter' || e.key === ' ') nextQuestion();
+        return;
+    }
+    const keyMap = {'a':0,'b':1,'c':2,'d':3,'A':0,'B':1,'C':2,'D':3,
+                     '1':0,'2':1,'3':2,'4':3};
+    if (keyMap[e.key] !== undefined) {
+        const btns = document.querySelectorAll('.option-btn');
+        if (btns[keyMap[e.key]]) btns[keyMap[e.key]].click();
+    }
+});
+
+// 启动
+setMode('all');
+</script>
+</body>
+</html>
