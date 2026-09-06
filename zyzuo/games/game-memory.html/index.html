@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 乘法口诀记忆翻牌</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .header h1 { font-size: 26px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header p { font-size: 13px; opacity: 0.9; margin-top: 3px; }
+
+        /* ====== 控制栏 ====== */
+        .control-bar {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        .btn-start { background: linear-gradient(135deg,#51cf66,#2b8a3e); }
+        .btn-restart { background: linear-gradient(135deg,#ff8787,#c92a2a); }
+        .btn-hint { background: linear-gradient(135deg,#fcc419,#e67700); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* 难度选择 */
+        .diff-bar {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .diff-btn {
+            padding: 5px 14px;
+            border: 2px solid rgba(255,255,255,0.6);
+            background: transparent;
+            color: white;
+            border-radius: 14px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .diff-btn.active { background: white; color: #339af0; font-weight: bold; }
+        .diff-btn:hover:not(.active) { background: rgba(255,255,255,0.15); }
+
+        /* 状态栏 */
+        .status-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .status-item { 
+            background: rgba(255,255,255,0.95); 
+            padding: 7px 16px; 
+            border-radius: 10px; 
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .status-label { font-size: 10px; color: #888; }
+        .status-val { font-size: 18px; font-weight: bold; color: #333; }
+        .val-moves { color: #e64980; }
+        .val-pairs { color: #2b8a3e; }
+        .val-time { color: #1971c2; }
+
+        /* ====== 游戏区域 ====== */
+        .game-board {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+        }
+
+        .cards-grid {
+            display: grid;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* 单张卡片 */
+        .memory-card {
+            aspect-ratio: 1.5/1;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            perspective: 800px;
+            transition: transform 0.3s;
+        }
+
+        .memory-card:hover:not(.flipped):not(.matched) {
+            transform: translateY(-3px);
+        }
+
+        .card-inner {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .memory-card.flipped .card-inner,
+        .memory-card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid;
+        }
+
+        /* 背面（未翻开）*/
+        .card-back {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #5c7cfa;
+            color: white;
+        }
+        .card-back::after {
+            content: '?';
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: bold;
+        }
+
+        /* 正面（翻开）*/
+        .card-front {
+            background: white;
+            transform: rotateY(180deg);
+            flex-direction: row;
+            gap: 6px;
+            padding: 6px;
+        }
+
+        .front-formula {
+            font-size: clamp(13px, 2.5vw, 18px);
+            font-weight: bold;
+            color: #333;
+        }
+
+        .front-result {
+            font-size: clamp(18px, 3.5vw, 28px);
+            font-weight: bold;
+            color: #e64980;
+            min-width: 32px;
+            text-align: right;
+        }
+
+        /* 已匹配的卡片 */
+        .memory-card.matched {
+            pointer-events: none;
+        }
+        .memory-card.matched .card-front {
+            background: linear-gradient(135deg, #d3f9d8, #b2f2bb);
+            border-color: #51cf66;
+        }
+
+        /* 配对成功动画 */
+        .memory-card.match-flash {
+            animation: matchPulse 0.6s ease;
+        }
+        @keyframes matchPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(81,207,102,0); }
+            50% { box-shadow: 0 0 20px 8px rgba(81,207,102,0.5); }
+        }
+
+        /* 完成弹窗 */
+        .complete-overlay {
+            display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;
+        }
+        .complete-overlay.show{display:flex;}
+        .complete-card{
+            background:white;border-radius:24px;padding:30px;text-align:center;
+            animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        @keyframes popIn{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1}}
+        .complete-card h2{font-size:24px;color:#333;margin-bottom:8px;}
+        .complete-emoji{font-size:52px;margin-bottom:8px;}
+        .complete-stats{display:flex;gap:14px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+        .cs-item{background:#f8f9fa;padding:10px 16px;border-radius:12px;text-align:center;}
+        .cs-val{font-size:22px;font-weight:bold;color:#339af0;}
+        .cs-lbl{font-size:11px;color:#888;}
+        .complete-msg{font-size:15px;color:#666;margin-bottom:16px;}
+
+        @media(max-width:500px){
+            .cards-grid{gap:5px;}
+            .game-board{padding:10px;}
+            .memory-card{border-radius:8px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🃏 乘法口诀记忆翻牌</h1>
+        <p>翻开两张卡片，找到相同得数的配对！</p>
+    </div>
+
+    <!-- 难度 -->
+    <div class="diff-bar">
+        <button class="diff-btn active" onclick="setGrid('4x3')">⭐ 入门 (4×3=12张)</button>
+        <button class="diff-btn" onclick="setGrid('4x4')">⚡ 普通 (4×4=16张)</button>
+        <button class="diff-btn" onclick="setGrid('5x4')">🔥 挑战 (5×4=20张)</button>
+        <button class="diff-btn" onclick="setGrid('6x5')">💀 地狱 (6×5=30张)</button>
+    </div>
+
+    <!-- 控制 -->
+    <div class="control-bar">
+        <button class="btn-start" id="startBtn" onclick="startGame()">▶️ 开始游戏</button>
+        <button class="btn-hint" onclick="showHint()">💡 提示一对</button>
+        <button class="btn-restart" onclick="resetGame()">🔄 重置</button>
+    </div>
+
+    <!-- 状态 -->
+    <div class="status-row">
+        <div class="status-item"><div class="status-label">🎯 步数</div><div class="status-val val-moves" id="moveCount">0</div></div>
+        <div class="status-item"><div class="status-label">✅ 已配对</div><div class="status-val val-pairs" id="pairCount">0</div></div>
+        <div class="status-item"><div class="status-label">⏱️ 用时</div><div class="status-val val-time" id="timeDisplay">0:00</div></div>
+    </div>
+
+    <!-- 游戏板 -->
+    <div class="game-board">
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <!-- 完成 -->
+    <div class="complete-overlay" id="completeOverlay">
+        <div class="complete-card">
+            <div class="complete-emoji" id="compEmoji">🎉</div>
+            <h2>全部配对成功！</h2>
+            <div class="complete-stats">
+                <div class="cs-item"><div class="cs-val" id="compMoves">0</div><div class="cs-lbl">总步数</div></div>
+                <div class="cs-item"><div class="cs-val" id="compPairs">0</div><div class="cs-lbl">配对数</div></div>
+                <div class="cs-item"><div class="cs-val" id="compTime">0:00</div><div class="cs-lbl">用时</div></div>
+                <div class="cs-item"><div class="cs-val" id="compStars">⭐⭐⭐</div><div class="cs-lbl">评级</div></div>
+            </div>
+            <p class="complete-msg" id="compMsg">记忆力超群！</p>
+            <button class="btn-start" style="padding:12px 26px;font-size:14px;" onclick="closeComplete();resetGame();startGame();">再玩一次 🔄</button>
+        </div>
+    </div>
+
+<script>
+// ====== 全部口诀数据 ======
+const ALL_CARDS = [
+    {a:1,b:1,r:1,cn:"一一得一"},
+    {a:1,b:2,r:2,cn:"一二得二"},{a:2,b:2,r:4,cn:"二二得四"},
+    {a:1,b:3,r:3,cn:"一三得三"},{a:2,b:3,r:6,cn:"二三得六"},{a:3,b:3,r:9,cn:"三三得九"},
+    {a:1,b:4,r:4,cn:"一四得四"},{a:2,b:4,r:8,cn:"二四得八"},
+    {a:3,b:4,r:12,cn:"三四十二"},{a:4,b:4,r:16,cn:"四四十六"},
+    {a:1,b:5,r:5,cn:"一五得五"},{a:2,b:5,r:10,cn:"二五一十"},
+    {a:3,b:5,r:15,cn:"三五十五"},{a:4,b:5,r:20,cn:"四五二十"},{a:5,b:5,r:25,cn:"五五二十五"},
+    {a:1,b:6,r:6,cn:"一六得六"},{a:2,b:6,r:12,cn:"二六十二"},
+    {a:3,b:6,r:18,cn:"三六十八"},{a:4,b:6,r:24,cn:"四六二十四"},
+    {a:5,b:6,r:30,cn:"五六三十"},{a:6,b:6,r:36,cn:"六六三十六"},
+    {a:1,b:7,r:7,cn:"一七得七"},{a:2,b:7,r:14,cn:"二七十四"},
+    {a:3,b:7,r:21,cn:"三七二十一"},{a:4,b:7,r:28,cn:"四七二十八"},
+    {a:5,b:7,r:35,cn:"五七三十五"},{a:6,b:7,r:42,cn:"六七四十二"},{a:7,b:7,r:49,cn:"七七四十九"},
+    {a:1,b:8,r:8,cn:"一八得八"},{a:2,b:8,r:16,cn:"二八十六"},
+    {a:3,b:8,r:24,cn:"三八二十四"},{a:4,b:8,r:32,cn:"四八三十二"},
+    {a:5,b:8,r:40,cn:"五八四十"},{a:6,b:8,r:48,cn:"六八四十八"},
+    {a:7,b:8,r:56,cn:"七八五十六"},{a:8,b:8,r:64,cn:"八八六十四"},
+    {a:1,b:9,r:9,cn:"一九得九"},{a:2,b:9,r:18,cn:"二九十八"},
+    {a:3,b:9,r:27,cn:"三九二十七"},{a:4,b:9,r:36,cn:"四九三十六"},
+    {a:5,b:9,r:45,cn:"五九四十五"},{a:6,b:9,r:54,cn:"六九五十四"},
+    {a:7,b:9,r:63,cn:"七九六十三"},{a:8,b:9,r:72,cn:"八九七十二"},{a:9,b:9,r:81,cn:"九九八十一"}
+];
+
+// ====== 网格配置 ======
+const GRID_CONFIGS = {
+    '4x3': { cols: 4, rows: 3, pairs: 6 },
+    '4x4': { cols: 4, rows: 4, pairs: 8 },
+    '5x4': { cols: 5, rows: 4, pairs: 10 },
+    '6x5': { cols: 6, rows: 5, pairs: 15 }
+};
+
+let currentGrid = '4x3';
+let gameCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let isLocked = false;
+let gameStarted = false;
+let startTime = null;
+let timerInterval = null;
+
+// ====== 设置网格大小 ======
+function setGrid(size) {
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    currentGrid = size;
+    resetGame();
+}
+
+// ====== 重置 ======
+function resetGame() {
+    gameStarted = false;
+    flippedCards = [];
+    matchedPairs = 0;
+    moves = 0;
+    isLocked = false;
+
+    if (timerInterval) clearInterval(timerInterval);
+    document.getElementById('moveCount').textContent = '0';
+    document.getElementById('pairCount').textContent = '0';
+    document.getElementById('timeDisplay').textContent = '0:00';
+    document.getElementById('startBtn').textContent = '▶️ 开始游戏';
+
+    prepareCards();
+    renderBoard();
+}
+
+// ====== 准备卡组 ======
+function prepareCards() {
+    const config = GRID_CONFIGS[currentGrid];
+    const pairCount = config.pairs;
+
+    // 随机选取pairCount个不同得数的口诀
+    const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+    
+    // 按得数分组，确保每个得数选2张
+    const byResult = {};
+    shuffled.forEach(c => {
+        if (!byResult[c.r]) byResult[c.r] = [];
+        if (byResult[c.r].length < 2) byResult[c.r].push(c);
+    });
+
+    // 取出需要的对子
+    let selectedPairs = [];
+    const results = Object.keys(byResult).sort(() => Math.random() - 0.5);
+    
+    for (const r of results) {
+        if (selectedPairs.length >= pairCount) break;
+        if (byResult[r].length >= 2) {
+            selectedPairs.push(byResult[r][0], byResult[r][1]);
+        }
+    }
+
+    // 如果不够，补充（同一个得数的不同算式）
+    while (selectedPairs.length < pairCount * 2) {
+        const extra = shuffled.find(c => 
+            selectedPairs.filter(s => s.r === c.r).length < 4 && !selectedPairs.includes(c)
+        );
+        if (extra) selectedPairs.push(extra);
+        else break;
+    }
+
+    // 截断到刚好需要数量
+    selectedPairs = selectedPairs.slice(0, pairCount * 2);
+
+    // 打乱
+    gameCards = selectedPairs.map((card, i) => ({
+        ...card,
+        id: i,
+        matched: false
+    })).sort(() => Math.random() - 0.5);
+}
+
+// ====== 渲染棋盘 ======
+function renderBoard() {
+    const config = GRID_CONFIGS[currentGrid];
+    const grid = document.getElementById('cardsGrid');
+
+    grid.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+    grid.innerHTML = '';
+
+    gameCards.forEach((card, index) => {
+        const el = document.createElement('div');
+        el.className = 'memory-card';
+        el.dataset.index = index;
+
+        el.innerHTML = `
+            <div class="card-inner">
+                <div class="card-face card-back"></div>
+                <div class="card-face card-front">
+                    <span class="front-formula">${card.a}×${card.b}</span>
+                    <span class="front-result">${card.r}</span>
+                </div>
+            </div>
+        `;
+
+        el.onclick = () => flipCard(index);
+        grid.appendChild(el);
+    });
+}
+
+// ====== 开始游戏 ======
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    document.getElementById('startBtn').textContent = '🎮 进行中...';
+}
+
+// ====== 翻牌 ======
+function flipCard(index) {
+    if (!gameStarted || isLocked) return;
+
+    const card = gameCards[index];
+    if (card.matched) return;
+
+    const el = document.querySelectorAll('.memory-card')[index];
+
+    // 如果已经翻开了，忽略
+    if (flippedCards.includes(index)) return;
+
+    // 最多翻两张
+    if (flippedCards.length >= 2) return;
+
+    // 翻开
+    el.classList.add('flipped');
+    flippedCards.push(index);
+
+    // 翻了两张后检查
+    if (flippedCards.length === 2) {
+        moves++;
+        document.getElementById('moveCount').textContent = moves;
+        isLocked = true;
+
+        const [idx1, idx2] = flippedCards;
+        const c1 = gameCards[idx1];
+        const c2 = gameCards[idx2];
+
+        setTimeout(() => {
+            if (c1.r === c2.r) {
+                // 匹配成功！
+                c1.matched = true;
+                c2.matched = true;
+
+                const el1 = document.querySelectorAll('.memory-card')[idx1];
+                const el2 = document.querySelectorAll('.memory-card')[idx2];
+
+                el1.classList.add('matched', 'match-flash');
+                el2.classList.add('matched', 'match-flash');
+
+                matchedPairs++;
+                document.getElementById('pairCount').textContent = matchedPairs;
+
+                setTimeout(() => {
+                    el1.classList.remove('match-flash');
+                    el2.classList.remove('match-flash');
+                }, 600);
+
+                // 检查是否全部完成
+                if (matchedPairs === GRID_CONFIGS[currentGrid].pairs) {
+                    setTimeout(showComplete, 500);
+                }
+            } else {
+                // 不匹配，翻回去
+                const el1 = document.querySelectorAll('.memory-card')[idx1];
+                const el2 = document.querySelectorAll('.memory-card')[idx2];
+
+                el1.classList.remove('flipped');
+                el2.classList.remove('flipped');
+            }
+
+            flippedCards = [];
+            isLocked = false;
+        }, 800);
+    }
+}
+
+// ====== 提示 ======
+function showHint() {
+    if (!gameStarted) return;
+    // 找一对未匹配的，短暂显示
+    const unmatched = gameCards.filter(c => !c.matched);
+    if (unmatched.length >= 2) {
+        // 找相同得数的两张
+        const targetR = unmatched[0].r;
+        const pair = unmatched.filter(c => c.r === targetR);
+        if (pair.length >= 2) {
+            const els = document.querySelectorAll('.memory-card');
+            els[pair[0].id].classList.add('flipped');
+            els[pair[1].id].classList.add('flipped');
+            
+            setTimeout(() => {
+                if (!pair[0].matched) els[pair[0].id].classList.remove('flipped');
+                if (!pair[1].matched) els[pair[1].id].classList.remove('flipped');
+            }, 1200);
+        }
+    }
+}
+
+// ====== 计时器 ======
+function updateTimer() {
+    if (!startTime) return;
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('timeDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ====== 完成 ======
+function showComplete() {
+    clearInterval(timerInterval);
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    const totalPairs = GRID_CONFIGS[currentGrid].pairs;
+    const perfectMoves = totalPairs * 2; // 最少步数
+
+    document.getElementById('compMoves').textContent = moves;
+    document.getElementById('compPairs').textContent = totalPairs;
+    document.getElementById('compTime').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+
+    // 星级评定
+    const ratio = moves / perfectMoves;
+    let stars, msg;
+    if (ratio <= 1.3) { stars = '⭐⭐⭐'; msg = '完美记忆！你是记忆大师！'; }
+    else if (ratio <= 1.6) { stars = '⭐⭐☆'; msg = '非常棒！记忆力很好！'; }
+    else if (ratio <= 2.0) { stars = '⭐☆☆'; msg = '不错哦！继续练习会更好！'; }
+    else { stars = '☆☆☆'; msg = '完成了！多玩几次提升记忆力~'; }
+
+    document.getElementById('compStars').textContent = stars;
+    document.getElementById('compMsg').textContent = msg + ` 用时${m}分${s}秒`;
+    document.getElementById('completeOverlay').classList.add('show');
+}
+
+function closeComplete() {
+    document.getElementById('completeOverlay').classList.remove('show');
+}
+
+// 初始化
+setGrid('4x3');
+</script>
+</body>
+</html>
