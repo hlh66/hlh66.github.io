@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>游戏① 全班举牌 - 乘法口诀大冒险</title>
+<title>娓告垙鈶?鍏ㄧ彮涓剧墝 - 涔樻硶鍙ｈ瘈澶у啋闄?/title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#333}
@@ -13,31 +13,31 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .top-bar h1{font-size:18px;color:#667eea}
 .container{max-width:900px;margin:0 auto;padding:20px}
 
-/* 难度标签 */
+/* 闅惧害鏍囩 */
 .badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;margin-bottom:15px}
 .badge-basic{background:linear-gradient(135deg,#2ed573,#7bed9f)}
 
-/* 卡片 */
+/* 鍗＄墖 */
 .card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
 .card h2{font-size:18px;color:#667eea;margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
-/* 演示区 */
+/* 婕旂ず鍖?*/
 .demo-area{background:linear-gradient(180deg,#f0f4ff,#e8eeff);border-radius:14px;padding:30px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
 .demo-area::before{content:'';position:absolute;top:-50%;right:-50%;width:200px;height:200px;background:radial-gradient(circle,rgba(102,126,234,0.15),transparent);border-radius:50%}
 
-/* 老师角色 */
+/* 鑰佸笀瑙掕壊 */
 .teacher{text-align:center;margin-bottom:20px}
 .teacher-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:36px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:4px solid #fff;box-shadow:0 4px 15px rgba(102,126,234,0.3)}
 .teacher-name{font-weight:bold;color:#555}
 
-/* 投影卡片 */
+/* 鎶曞奖鍗＄墖 */
 .projector-card{background:#fff;border-radius:12px;padding:20px 35px;display:inline-block;font-size:32px;font-weight:bold;color:#333;box-shadow:0 6px 25px rgba(0,0,0,0.12);margin:15px 0;position:relative;animation:cardPulse 2s ease-in-out infinite}
 @keyframes cardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 .projector-card .answer{color:#2ed573;font-size:38px;margin-top:8px;display:none}
 .projector-card.show-answer .answer{display:block}
 .projector-card .question{transition:opacity .3s}
 
-/* 学生区域 */
+/* 瀛︾敓鍖哄煙 */
 .students-area{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px}
 .student{width:60px;text-align:center;cursor:pointer;transition:all .3s}
 .student-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:3px solid #ddd;background:#f8f9fa;transition:all .3s}
@@ -46,7 +46,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .student.correct .student-avatar{border-color:#2ed573;background:#e8ffe8;animation:bounce .5s}
 @keyframes bounce{0%,100%{transform:translateY(-8px)}50%{transform:translateY(-20px)}}
 
-/* 操作按钮 */
+/* 鎿嶄綔鎸夐挳 */
 .btn-row{display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap}
 .btn{padding:10px 24px;border:none;border-radius:25px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
 .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2)}
@@ -55,7 +55,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .btn-warning{background:linear-gradient(135deg,#ffa502,#ffcc00)}
 .btn-info{background:linear-gradient(135deg,#00d2d3,#54a0ff)}
 
-/* 规则步骤 */
+/* 瑙勫垯姝ラ */
 .steps{counter-reset:step}
 .step{display:flex;gap:15px;margin-bottom:15px;align-items:flex-start;padding:12px;background:#f8f9fa;border-radius:10px;transition:all .3s}
 .step:hover{background:#f0f4ff;transform:translateX(5px)}
@@ -64,7 +64,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .step-text{flex:1;font-size:14px;line-height:1.7;color:#555}
 .step-text strong{color:#667eea}
 
-/* 变体玩法 */
+/* 鍙樹綋鐜╂硶 */
 .variant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .variant-card{background:linear-gradient(135deg,#f8f9fa,#fff);border:2px solid #eee;border-radius:12px;padding:15px;text-align:center;transition:all .3s;cursor:pointer}
 .variant-card:hover{border-color:#667eea;transform:translateY(-3px);box-shadow:0 6px 20px rgba(102,126,234,0.15)}
@@ -72,7 +72,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .variant-card h4{font-size:14px;color:#333;margin-bottom:5px}
 .variant-card p{font-size:12px;color:#888;line-height:1.5}
 
-/* 信息卡片 */
+/* 淇℃伅鍗＄墖 */
 .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .info-item{background:#f8f9fa;border-radius:10px;padding:14px;border-left:4px solid #667eea}
 .info-item .label{font-size:12px;color:#888;margin-bottom:4px}
@@ -85,110 +85,110 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 <body>
 
 <div class="top-bar">
-  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
-  <h1>📖 游戏① 全班举牌</h1>
+  <a class="back-btn" href="/zyzuo/index.html#tab-guide">鈫?杩斿洖瀵艰埅</a>
+  <h1>馃摉 娓告垙鈶?鍏ㄧ彮涓剧墝</h1>
 </div>
 
 <div class="container">
 
-<span class="badge badge-basic">🟢 基础篇 · 人人能玩</span>
+<span class="badge badge-basic">馃煝 鍩虹绡?路 浜轰汉鑳界帺</span>
 
-<!-- 演示区 -->
+<!-- 婕旂ず鍖?-->
 <div class="card">
-  <h2>🎬 游戏演示</h2>
+  <h2>馃幀 娓告垙婕旂ず</h2>
   <div class="demo-area">
     <div class="teacher">
-      <div class="teacher-avatar">👩‍🏫</div>
-      <div class="teacher-name">老师展示题目</div>
+      <div class="teacher-avatar">馃懇鈥嶐煆?/div>
+      <div class="teacher-name">鑰佸笀灞曠ず棰樼洰</div>
     </div>
     
     <div class="projector-card" id="projectorCard">
-      <div class="question" id="qText">3 × 5 = ?</div>
-      <div class="answer" id="aText">十五！三五十五！</div>
+      <div class="question" id="qText">3 脳 5 = ?</div>
+      <div class="answer" id="aText">鍗佷簲锛佷笁浜斿崄浜旓紒</div>
     </div>
 
     <div class="students-area" id="studentsArea">
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👦</div><div class="student-name">小明</div></div>
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👧</div><div class="student-name">小红</div></div>
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👦</div><div class="student-name">小刚</div></div>
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👧</div><div class="student-name">小丽</div></div>
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👦</div><div class="student-name">小强</div></div>
-      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">👧</div><div class="student-name">小芳</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懄</div><div class="student-name">灏忔槑</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懅</div><div class="student-name">灏忕孩</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懄</div><div class="student-name">灏忓垰</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懅</div><div class="student-name">灏忎附</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懄</div><div class="student-name">灏忓己</div></div>
+      <div class="student" onclick="raiseHand(this)"><div class="student-avatar">馃懅</div><div class="student-name">灏忚姵</div></div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="newQuestion()">🔄 换一题</button>
-      <button class="btn btn-success" onclick="showAnswer()">✅ 揭晓答案</button>
-      <button class="btn btn-warning" onclick="autoDemo()">▶ 自动演示</button>
+      <button class="btn btn-primary" onclick="newQuestion()">馃攧 鎹竴棰?/button>
+      <button class="btn btn-success" onclick="showAnswer()">鉁?鎻檽绛旀</button>
+      <button class="btn btn-warning" onclick="autoDemo()">鈻?鑷姩婕旂ず</button>
     </div>
   </div>
 </div>
 
-<!-- 规则说明 -->
+<!-- 瑙勫垯璇存槑 -->
 <div class="card">
-  <h2>📋 玩法规则</h2>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>老师出题：</strong>用大字卡投影或手持展示一道乘法口诀题（如 "3×5=?"）</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>学生抢答：</strong>看到题目后举手/起立抢答，越快越好！</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>回答要求：</strong>说出<strong>答案 + 完整口诀</strong>（如："15！三五十五！"）</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>计分方式：</strong>答对得1分，可个人累计或小组PK</div></div>
+  <h2>馃搵 鐜╂硶瑙勫垯</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鑰佸笀鍑洪锛?/strong>鐢ㄥぇ瀛楀崱鎶曞奖鎴栨墜鎸佸睍绀轰竴閬撲箻娉曞彛璇€棰橈紙濡?"3脳5=?"锛?/div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>瀛︾敓鎶㈢瓟锛?/strong>鐪嬪埌棰樼洰鍚庝妇鎵?璧风珛鎶㈢瓟锛岃秺蹇秺濂斤紒</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鍥炵瓟瑕佹眰锛?/strong>璇村嚭<strong>绛旀 + 瀹屾暣鍙ｈ瘈</strong>锛堝锛?15锛佷笁浜斿崄浜旓紒"锛?/div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>璁″垎鏂瑰紡锛?/strong>绛斿寰?鍒嗭紝鍙釜浜虹疮璁℃垨灏忕粍PK</div></div>
 </div>
 
-<!-- 变体玩法 -->
+<!-- 鍙樹綋鐜╂硶 -->
 <div class="card">
-  <h2>🎯 变体玩法</h2>
+  <h2>馃幆 鍙樹綋鐜╂硶</h2>
   <div class="variant-grid">
     <div class="variant-card">
-      <div class="variant-icon">⏱️</div>
-      <h4>限时模式</h4>
-      <p>设置5秒或10秒倒计时，增加紧张感</p>
+      <div class="variant-icon">鈴憋笍</div>
+      <h4>闄愭椂妯″紡</h4>
+      <p>璁剧疆5绉掓垨10绉掑€掕鏃讹紝澧炲姞绱у紶鎰?/p>
     </div>
     <div class="variant-card">
-      <div class="variant-icon">👥</div>
-      <h4>小组积分制</h4>
-      <p>全班分4组PK，答对为本组加分</p>
+      <div class="variant-icon">馃懃</div>
+      <h4>灏忕粍绉垎鍒?/h4>
+      <p>鍏ㄧ彮鍒?缁凱K锛岀瓟瀵逛负鏈粍鍔犲垎</p>
     </div>
     <div class="variant-card">
-      <div class="variant-icon">✋</div>
-      <h4>全员举牌</h4>
-      <p>所有人同时用手势表示答案，检查掌握率</p>
+      <div class="variant-icon">鉁?/div>
+      <h4>鍏ㄥ憳涓剧墝</h4>
+      <p>鎵€鏈変汉鍚屾椂鐢ㄦ墜鍔胯〃绀虹瓟妗堬紝妫€鏌ユ帉鎻＄巼</p>
     </div>
     <div class="variant-card">
-      <div class="variant-icon">🔗</div>
-      <h4>接力赛</h4>
-      <p>每组排成一列依次答题，培养团队默契</p>
+      <div class="variant-icon">馃敆</div>
+      <h4>鎺ュ姏璧?/h4>
+      <p>姣忕粍鎺掓垚涓€鍒椾緷娆＄瓟棰橈紝鍩瑰吇鍥㈤槦榛樺</p>
     </div>
   </div>
 </div>
 
-<!-- 基本信息 -->
+<!-- 鍩烘湰淇℃伅 -->
 <div class="card">
-  <h2>📌 基本信息</h2>
+  <h2>馃搶 鍩烘湰淇℃伅</h2>
   <div class="info-grid">
-    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐ 最简单</div></div>
-    <div class="info-item"><div class="label">适用人数</div><div class="value">全班（不限）</div></div>
-    <div class="info-item"><div class="label">所需时间</div><div class="value">5-10分钟/轮</div></div>
-    <div class="info-item"><div class="label">所需材料</div><div class="value">全班大字版卡牌</div></div>
-    <div class="info-item"><div class="label">适用场景</div><div class="value">课前热身 / 课间活动 / 复习检测</div></div>
-    <div class="info-item"><div class="label">训练目标</div><div class="value">快速反应 / 口诀熟练度</div></div>
+    <div class="info-item"><div class="label">闅惧害绛夌骇</div><div class="value">猸?鏈€绠€鍗?/div></div>
+    <div class="info-item"><div class="label">閫傜敤浜烘暟</div><div class="value">鍏ㄧ彮锛堜笉闄愶級</div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏃堕棿</div><div class="value">5-10鍒嗛挓/杞?/div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏉愭枡</div><div class="value">鍏ㄧ彮澶у瓧鐗堝崱鐗?/div></div>
+    <div class="info-item"><div class="label">閫傜敤鍦烘櫙</div><div class="value">璇惧墠鐑韩 / 璇鹃棿娲诲姩 / 澶嶄範妫€娴?/div></div>
+    <div class="info-item"><div class="label">璁粌鐩爣</div><div class="value">蹇€熷弽搴?/ 鍙ｈ瘈鐔熺粌搴?/div></div>
   </div>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+  <p>馃幃 涔樻硶鍙ｈ瘈澶у啋闄?路 <a href="/zyzuo/index.html">杩斿洖瀵艰埅</a></p>
 </div>
 
 <script>
 const questions = [
-  {q:'2 × 6 = ?', a:'12！二六十二！'},
-  {q:'3 × 5 = ?', a:'15！三五十五！'},
-  {q:'4 × 7 = ?', a:'28！四七二十八！'},
-  {q:'5 × 8 = ?', a:'40！五八四十！'},
-  {q:'6 × 6 = ?', a:'36！六六三十六！'},
-  {q:'3 × 9 = ?', a:'27！三九二十七！'},
-  {q:'4 × 4 = ?', a:'16！四四十六！'},
-  {q:'7 × 8 = ?', a:'56！七八五十六！'},
+  {q:'2 脳 6 = ?', a:'12锛佷簩鍏崄浜岋紒'},
+  {q:'3 脳 5 = ?', a:'15锛佷笁浜斿崄浜旓紒'},
+  {q:'4 脳 7 = ?', a:'28锛佸洓涓冧簩鍗佸叓锛?},
+  {q:'5 脳 8 = ?', a:'40锛佷簲鍏洓鍗侊紒'},
+  {q:'6 脳 6 = ?', a:'36锛佸叚鍏笁鍗佸叚锛?},
+  {q:'3 脳 9 = ?', a:'27锛佷笁涔濅簩鍗佷竷锛?},
+  {q:'4 脳 4 = ?', a:'16锛佸洓鍥涘崄鍏紒'},
+  {q:'7 脳 8 = ?', a:'56锛佷竷鍏簲鍗佸叚锛?},
 ];
 let qIdx = 0;
 
@@ -198,7 +198,7 @@ function newQuestion() {
   card.classList.remove('show-answer');
   document.getElementById('qText').textContent = questions[qIdx].q;
   document.getElementById('aText').textContent = questions[qIdx].a;
-  // 重置学生
+  // 閲嶇疆瀛︾敓
   document.querySelectorAll('.student').forEach(s => {
     s.classList.remove('raised', 'correct');
   });
@@ -225,7 +225,7 @@ function autoDemo() {
     step++;
     if (step === 1) newQuestion();
     else if (step === 2) {
-      // 随机选几个学生举手
+      // 闅忔満閫夊嚑涓鐢熶妇鎵?
       const students = document.querySelectorAll('.student');
       students.forEach((s, i) => {
         if (Math.random() > 0.5) setTimeout(() => raiseHand(s), i * 200);
@@ -242,3 +242,4 @@ function autoDemo() {
 
 </body>
 </html>
+
