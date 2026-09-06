@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>游戏⑤ 找朋友 - 乘法口诀大冒险</title>
+<title>娓告垙鈶?鎵炬湅鍙?- 涔樻硶鍙ｈ瘈澶у啋闄?/title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#f7971e 0%,#ffd200 100%);min-height:100vh;color:#333}
@@ -17,16 +17,16 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
 .card h2{font-size:18px;color:#e67e22;margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
-/* 玩法选择 */
+/* 鐜╂硶閫夋嫨 */
 .mode-tabs{display:flex;gap:10px;margin-bottom:15px;flex-wrap:justify}
 .mode-tab{padding:10px 20px;border-radius:12px;background:#f0f0f0;font-weight:bold;font-size:14px;cursor:pointer;transition:all .3s;border:2px solid transparent}
 .mode-tab.active{background:linear-gradient(135deg,#ffa502,#ffcc00);color:#fff;border-color:#e67e22}
 .mode-tab:hover:not(.active){background:#e8e8e8}
 
-/* 配对演示区 */
+/* 閰嶅婕旂ず鍖?*/
 .match-area{background:linear-gradient(180deg,#fff9e6,#fff3d0);border-radius:16px;padding:25px;text-align:center}
 
-/* 两列卡牌 */
+/* 涓ゅ垪鍗＄墝 */
 .match-cols{display:flex;gap:30px;justify-content:center;margin:20px 0;flex-wrap:wrap}
 .match-col{text-align:center}
 .col-label{font-weight:bold;font-size:15px;margin-bottom:12px;padding:6px 16px;border-radius:15px;background:#eee;display:inline-block}
@@ -43,11 +43,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .m-card.selected{animation:selectedPulse .5s ease infinite alternate;box-shadow:0 0 20px rgba(255,165,2,0.6)}
 @keyframes selectedPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
 
-/* 配对连线效果 */
+/* 閰嶅杩炵嚎鏁堟灉 */
 .match-line{position:absolute;height:3px;background:linear-gradient(90deg,#74b9ff,#fd79a8);z-index:0;transform-origin:left center;animation:lineGrow .4s ease forwards}
 @keyframes lineGrow{from{width:0}to{width:100%}}
 
-/* 成功提示 */
+/* 鎴愬姛鎻愮ず */
 .success-msg{font-size:20px;font-weight:bold;color:#2ed573;min-height:28px;margin:10px 0}
 .pair-info{font-size:14px;color:#555;background:#fff;padding:10px;border-radius:10px;margin-top:10px}
 
@@ -71,25 +71,25 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 <body>
 
 <div class="top-bar">
-  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
-  <h1>🤝 游戏⑤ 找朋友</h1>
+  <a class="back-btn" href="/zyzuo/index.html#tab-guide">鈫?杩斿洖瀵艰埅</a>
+  <h1>馃 娓告垙鈶?鎵炬湅鍙?/h1>
 </div>
 
 <div class="container">
 
-<span class="badge badge-up">🟡 提升篇 · 熟练运用</span>
+<span class="badge badge-up">馃煛 鎻愬崌绡?路 鐔熺粌杩愮敤</span>
 
-<!-- 演示区 -->
+<!-- 婕旂ず鍖?-->
 <div class="card">
-  <h2>🎬 找朋友演示</h2>
+  <h2>馃幀 鎵炬湅鍙嬫紨绀?/h2>
   <div class="match-area">
     <div class="mode-tabs" id="modeTabs">
-      <div class="mode-tab active" onclick="switchMode(0,this)">💑 交换律朋友</div>
-      <div class="mode-tab" onclick="switchMode(1,this)">🔢 得数朋友</div>
-      <div class="mode-tab" onclick="switchMode(2,this)">🔢 因数朋友</div>
+      <div class="mode-tab active" onclick="switchMode(0,this)">馃拺 浜ゆ崲寰嬫湅鍙?/div>
+      <div class="mode-tab" onclick="switchMode(1,this)">馃敘 寰楁暟鏈嬪弸</div>
+      <div class="mode-tab" onclick="switchMode(2,this)">馃敘 鍥犳暟鏈嬪弸</div>
     </div>
 
-    <div id="modeDesc" style="font-size:14px;color:#666;margin-bottom:10px">正向卡找对应的逆向卡，如 2×7=14 ↔ 7×2=14</div>
+    <div id="modeDesc" style="font-size:14px;color:#666;margin-bottom:10px">姝ｅ悜鍗℃壘瀵瑰簲鐨勯€嗗悜鍗★紝濡?2脳7=14 鈫?7脳2=14</div>
 
     <div class="match-cols" id="matchArea"></div>
 
@@ -97,59 +97,59 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
     <div class="pair-info" id="pairInfo"></div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="autoMatch()">▶ 自动配对演示</button>
-      <button class="btn btn-success" onclick="resetMatch()">🔄 重置</button>
+      <button class="btn btn-primary" onclick="autoMatch()">鈻?鑷姩閰嶅婕旂ず</button>
+      <button class="btn btn-success" onclick="resetMatch()">馃攧 閲嶇疆</button>
     </div>
   </div>
 </div>
 
-<!-- 三种玩法说明 -->
+<!-- 涓夌鐜╂硶璇存槑 -->
 <div class="card">
-  <h2>📋 三种玩法</h2>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法一——交换律朋友：</strong>老师出一张正向卡（2×7=14），学生找出对应的逆向卡（7×2=14），说："二七十四和七二十四都是14！"</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法二——得数朋友：</strong>老师报一个得数（如"36！"），学生找出所有得数是36的卡片（4×9、6×6、9×4），体会"不同算式可以结果相同"</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法三——因数朋友：</strong>老师报一个因数（如"找出所有8的口诀！"），学生找出所有含8的口诀卡（一八到八八共8句）</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>⚠️ 注意：</strong>7×7、8×8、9×9这类"平方口诀"只有一张卡，没有交换律朋友，可作为特殊卡使用</div></div>
+  <h2>馃搵 涓夌鐜╂硶</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鐜╂硶涓€鈥斺€斾氦鎹㈠緥鏈嬪弸锛?/strong>鑰佸笀鍑轰竴寮犳鍚戝崱锛?脳7=14锛夛紝瀛︾敓鎵惧嚭瀵瑰簲鐨勯€嗗悜鍗★紙7脳2=14锛夛紝璇达細"浜屼竷鍗佸洓鍜屼竷浜屽崄鍥涢兘鏄?4锛?</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鐜╂硶浜屸€斺€斿緱鏁版湅鍙嬶細</strong>鑰佸笀鎶ヤ竴涓緱鏁帮紙濡?36锛?锛夛紝瀛︾敓鎵惧嚭鎵€鏈夊緱鏁版槸36鐨勫崱鐗囷紙4脳9銆?脳6銆?脳4锛夛紝浣撲細"涓嶅悓绠楀紡鍙互缁撴灉鐩稿悓"</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鐜╂硶涓夆€斺€斿洜鏁版湅鍙嬶細</strong>鑰佸笀鎶ヤ竴涓洜鏁帮紙濡?鎵惧嚭鎵€鏈?鐨勫彛璇€锛?锛夛紝瀛︾敓鎵惧嚭鎵€鏈夊惈8鐨勫彛璇€鍗★紙涓€鍏埌鍏叓鍏?鍙ワ級</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鈿狅笍 娉ㄦ剰锛?/strong>7脳7銆?脳8銆?脳9杩欑被"骞虫柟鍙ｈ瘈"鍙湁涓€寮犲崱锛屾病鏈変氦鎹㈠緥鏈嬪弸锛屽彲浣滀负鐗规畩鍗′娇鐢?/div></div>
 </div>
 
-<!-- 基本信息 -->
+<!-- 鍩烘湰淇℃伅 -->
 <div class="card">
-  <h2>📌 基本信息</h2>
+  <h2>馃搶 鍩烘湰淇℃伅</h2>
   <div class="info-grid">
-    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐⭐ 提升</div></div>
-    <div class="info-item"><div class="label">适用人数</div><div class="value">全班/小组/个人</div></div>
-    <div class="info-item"><div class="label">所需时间</div><div class="value">10-15分钟/轮</div></div>
-    <div class="info-item"><div class="label">所需材料</div><div class="value">正向卡 + 逆向卡混合</div></div>
-    <div class="info-item"><div class="label">适用场景</div><div class="value">交换律专项训练 / 因数理解</div></div>
-    <div class="info-item"><div class="label">训练目标</div><div class="value">交换律 / 因数分解 / 等值关系</div></div>
+    <div class="info-item"><div class="label">闅惧害绛夌骇</div><div class="value">猸愨瓙猸?鎻愬崌</div></div>
+    <div class="info-item"><div class="label">閫傜敤浜烘暟</div><div class="value">鍏ㄧ彮/灏忕粍/涓汉</div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏃堕棿</div><div class="value">10-15鍒嗛挓/杞?/div></div>
+    <div class="info-item"><div class="label">鎵€闇€鏉愭枡</div><div class="value">姝ｅ悜鍗?+ 閫嗗悜鍗℃贩鍚?/div></div>
+    <div class="info-item"><div class="label">閫傜敤鍦烘櫙</div><div class="value">浜ゆ崲寰嬩笓椤硅缁?/ 鍥犳暟鐞嗚В</div></div>
+    <div class="info-item"><div class="label">璁粌鐩爣</div><div class="value">浜ゆ崲寰?/ 鍥犳暟鍒嗚В / 绛夊€煎叧绯?/div></div>
   </div>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+  <p>馃幃 涔樻硶鍙ｈ瘈澶у啋闄?路 <a href="/zyzuo/index.html">杩斿洖瀵艰埅</a></p>
 </div>
 
 <script>
 const modes = [
   {
-    desc: '正向卡找对应的逆向卡，如 2×7=14 ↔ 7×2=14',
-    left: [{e:'2×7',r:14},{e:'3×5',r:15},{e:'4×6',r:24},{e:'2×9',r:18}],
-    right: [{e:'7×2',r:14},{e:'5×3',r:15},{e:'6×4',r:24},{e:'9×2',r:18}],
-    msg: '配对成功！它们都是好朋友，得数相同！',
+    desc: '姝ｅ悜鍗℃壘瀵瑰簲鐨勯€嗗悜鍗★紝濡?2脳7=14 鈫?7脳2=14',
+    left: [{e:'2脳7',r:14},{e:'3脳5',r:15},{e:'4脳6',r:24},{e:'2脳9',r:18}],
+    right: [{e:'7脳2',r:14},{e:'5脳3',r:15},{e:'6脳4',r:24},{e:'9脳2',r:18}],
+    msg: '閰嶅鎴愬姛锛佸畠浠兘鏄ソ鏈嬪弸锛屽緱鏁扮浉鍚岋紒',
   },
   {
-    desc: '老师报一个得数，找出所有等于该得数的卡片',
-    left: [{e:'4×9',r:36},{e:'3×8',r:24},{e:'6×6',r:36},{e:'5×5',r:25}],
-    right: [{e:'6×6',r:36},{e:'4×6',r:24},{e:'9×4',r:36},{e:'?×?',r:25}],
-    msg: '找到所有得数相同的"得数朋友"！',
+    desc: '鑰佸笀鎶ヤ竴涓緱鏁帮紝鎵惧嚭鎵€鏈夌瓑浜庤寰楁暟鐨勫崱鐗?,
+    left: [{e:'4脳9',r:36},{e:'3脳8',r:24},{e:'6脳6',r:36},{e:'5脳5',r:25}],
+    right: [{e:'6脳6',r:36},{e:'4脳6',r:24},{e:'9脳4',r:36},{e:'?脳?',r:25}],
+    msg: '鎵惧埌鎵€鏈夊緱鏁扮浉鍚岀殑"寰楁暟鏈嬪弸"锛?,
   },
   {
-    desc: '老师报一个数字，找出所有包含该数字的口诀',
-    left: [{e:'1×8',r:8},{e:'2×8',r:16},{e:'3×8',r:24},{e:'4×8',r:32}],
-    right: [{e:'5×8',r:40},{e:'6×8',r:48},{e:'7×8',r:56},{e:'8×8',r:64}],
-    msg: '找到所有关于8的"因数朋友"！',
+    desc: '鑰佸笀鎶ヤ竴涓暟瀛楋紝鎵惧嚭鎵€鏈夊寘鍚鏁板瓧鐨勫彛璇€',
+    left: [{e:'1脳8',r:8},{e:'2脳8',r:16},{e:'3脳8',r:24},{e:'4脳8',r:32}],
+    right: [{e:'5脳8',r:40},{e:'6脳8',r:48},{e:'7脳8',r:56},{e:'8脳8',r:64}],
+    msg: '鎵惧埌鎵€鏈夊叧浜?鐨?鍥犳暟鏈嬪弸"锛?,
   }
 ];
 
@@ -168,11 +168,11 @@ function renderMatch() {
   const area = document.getElementById('matchArea');
   area.innerHTML = `
     <div class="match-col col-left">
-      <div class="col-label">📋 正向/左列</div>
+      <div class="col-label">馃搵 姝ｅ悜/宸﹀垪</div>
       <div class="match-cards">${m.left.map((c,i) => `<div class="m-card left-card" data-idx="${i}" onclick="selectCard(this,'left')"><div class="expr">${c.e}</div><div class="result">=${c.r}</div></div>`).join('')}</div>
     </div>
     <div class="match-col col-right">
-      <div class="col-label">🔄 逆向/右列</div>
+      <div class="col-label">馃攧 閫嗗悜/鍙冲垪</div>
       <div class="match-cards">${m.right.map((c,i) => `<div class="m-card right-card" data-idx="${i}" onclick="selectCard(this,'right')"><div class="expr">${c.e}</div><div class="result">=${c.r}</div></div>`).join('')}</div>
     </div>`;
 }
@@ -182,29 +182,29 @@ let selectedLeft = null, selectedRight = null;
 function selectCard(el, side) {
   if (el.classList.contains('matched')) return;
   
-  // 清除同侧其他选中
+  // 娓呴櫎鍚屼晶鍏朵粬閫変腑
   document.querySelectorAll(`.m-card.${side}-card`).forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   
   if (side === 'left') selectedLeft = el;
   else selectedRight = el;
   
-  // 检查是否两边都选了
+  // 妫€鏌ユ槸鍚︿袱杈归兘閫変簡
   if (selectedLeft && selectedRight) {
     const lVal = selectedLeft.querySelector('.result').textContent.replace('=','');
     const rVal = selectedRight.querySelector('.result').textContent.replace('=','');
     
     if (lVal === rVal) {
-      // 配对成功
+      // 閰嶅鎴愬姛
       selectedLeft.classList.add('matched');
       selectedRight.classList.add('matched');
       selectedLeft.classList.remove('selected');
       selectedRight.classList.remove('selected');
       
-      document.getElementById('successMsg').textContent = '✅ ' + modes[currentMode].msg;
-      document.getElementById('pairInfo').innerHTML = `<b>${selectedLeft.querySelector('.expr').textContent} = ${lVal}</b> 和 <b>${selectedRight.querySelector('.expr').textContent} = ${rVal}</b> 是好朋友！`;
+      document.getElementById('successMsg').textContent = '鉁?' + modes[currentMode].msg;
+      document.getElementById('pairInfo').innerHTML = `<b>${selectedLeft.querySelector('.expr').textContent} = ${lVal}</b> 鍜?<b>${selectedRight.querySelector('.expr').textContent} = ${rVal}</b> 鏄ソ鏈嬪弸锛乣;
     } else {
-      document.getElementById('successMsg').textContent = `❌ ${lVal} ≠ ${rVal}，不是朋友哦！`;
+      document.getElementById('successMsg').textContent = `鉂?${lVal} 鈮?${rVal}锛屼笉鏄湅鍙嬪摝锛乣;
       document.getElementById('pairInfo').innerHTML = '';
       setTimeout(() => { selectedLeft?.classList.remove('selected'); selectedRight?.classList.remove('selected'); }, 500);
     }
@@ -239,3 +239,4 @@ renderMatch();
 
 </body>
 </html>
+
