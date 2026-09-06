@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 乘法口诀幸运大转盘（班级投影版）</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);
+            min-height:100vh;padding:15px;display:flex;flex-direction:column;align-items:center;
+        }
+        .header{text-align:center;color:#c92a2a;margin-bottom:10px;}
+        .header h1{font-size:clamp(24px,3.5vw,34px);text-shadow:2px 2px 5px rgba(0,0,0,0.1);}
+        .header p{font-size:clamp(12px,1.8vw,16px);color:#e67700;margin-top:4px;}
+
+        /* 图例 */
+        .legend{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:#666;}
+        .legend-item{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.7);padding:4px 10px;border-radius:10px;}
+
+        /* 状态栏 */
+        .status-bar{
+            display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+            background:rgba(255,255,255,0.97);padding:10px 22px;border-radius:14px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);margin-bottom:10px;
+        }
+        .st-item{text-align:center;min-width:65px;}
+        .st-label{font-size:11px;color:#888;font-weight:bold;}
+        .st-val{font-size:clamp(22px,3.5vw,32px);font-weight:900;}
+        .v-candy{color:#e67700;} .v-bomb{color:#c92a2a;} .v-star{color:#fcc419;} .v-score{color:#e64980;}
+
+        /* 主区域 */
+        .game-container{
+            width:100%;max-width:600px;background:white;border-radius:22px;
+            padding:clamp(18px,3vw,28px);box-shadow:0 8px 28px rgba(0,0,0,0.14);margin-bottom:10px;
+        }
+
+        /* 题目区 */
+        .q-area{
+            text-align:center;padding:clamp(18px,3vw,30px);
+            background:linear-gradient(135deg,#fff9db,#fff3bf);border-radius:16px;
+            border:3px dashed #fcc419;margin-bottom:14px;
+        }
+        .q-label{font-size:clamp(13px,1.8vw,17px);color:#e67700;font-weight:bold;margin-bottom:8px;}
+        .q-formula{font-size:clamp(36px,6vw,58px);font-weight:900;color:#333;}
+
+        /* 四选项按钮 */
+        .opts-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+        .opt-btn{
+            padding:clamp(14px,2.5vw,22px);border:3px solid #eee;border-radius:14px;
+            background:white;font-size:clamp(24px,4vw,40px);font-weight:900;
+            cursor:pointer;transition:all 0.25s;display:flex;align-items:center;
+            justify-content:center;border-radius:14px;
+        }
+        .opt-btn:hover:not(.used){border-color:#fcc419;background:#fff9db;transform:translateY(-3px);box-shadow:0 4px 12px rgba(252,196,25,0.3);}
+        .opt-btn.correct{border-color:#51cf66!important;background:#d3f9d8!important;animation:correctPop 0.5s ease;color:#2b8a3e;}
+        .opt-btn.wrong{border-color:#ff6b6b!important;background:#ffe3e3!important;animation:shakeBig 0.4s ease;}
+        .opt-btn.used{opacity:0.45;pointer-events:none;}
+
+        @keyframes correctPop{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+        @keyframes shakeBig{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+
+        /* 转盘 */
+        .wheel-area{width:clamp(220px,30vw,280px);height:clamp(220px,30vw,280px);margin:0 auto 14px;position:relative;}
+        .wheel{
+            width:100%;height:100%;border-radius:50%;position:relative;
+            transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);
+            overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.2),inset 0 0 0 5px white,inset 0 0 0 7px #eee;
+        }
+        .wheel-seg{
+            position:absolute;width:50%;height:50%;left:50%;top:50%;
+            transform-origin:0 0;clip-path:polygon(0 0,100% 0,0 100%);
+            display:flex;align-items:center;justify-content:center;
+        }
+        .wheel-seg span{position:absolute;left:14px;top:-4px;font-size:clamp(18px,3vw,26px);transform:rotate(30deg);}
+        .s0{background:#ff6b6b;transform:rotate(0deg) skewY(-30deg);}
+        .s1{background:#ffa94d;transform:rotate(45deg) skewY(-30deg);}
+        .s2{background:#fcc419;transform:rotate(90deg) skewY(-30deg);}
+        .s3{background:#51cf66;transform:rotate(135deg) skewY(-30deg);}
+        .s4{background:#20c997;transform:rotate(180deg) skewY(-30deg);}
+        .s5{background:#339af0;transform:rotate(225deg) skewY(-30deg);}
+        .s6{background:#cc5de8;transform:rotate(270deg) skewY(-30deg);}
+        .s7{background:#f06595;transform:rotate(315deg) skewY(-30deg);}
+
+        .pointer{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:clamp(28px,4vw,38px);z-index:10;}
+        .center-btn{
+            position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+            width:clamp(50px,7vw,64px);height:clamp(50px,7vw,64px);border-radius:50%;
+            background:linear-gradient(135deg,#fff,#f1f3f5);border:4px solid #ddd;
+            display:flex;align-items:center;justify-content:center;
+            font-size:clamp(16px,2.5vw,22px);cursor:pointer;z-index:11;
+            box-shadow:0 3px 10px rgba(0,0,0,0.2);transition:all 0.3s;
+        }
+        .center-btn:hover{transform:translate(-50%,-50%) scale(1.12);}
+
+        /* 奖品展示 */
+        .prize-show{
+            text-align:center;padding:14px;border-radius:14px;margin-bottom:10px;
+            min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            opacity:0;transition:all 0.4s;
+        }
+        .prize-show.show{opacity:1;}
+        .prize-show.candy{background:#fff3e0;border:2px solid #ffb74d;}
+        .prize-show.bomb{background:#ffebee;border:2px solid #ef5350;}
+        .prize-show.star{background:#fff8e1;border:2px solid #ffd54f;}
+        .prize-show.special{background:#e8f5e9;border:2px solid #81c784;}
+        .p-emoji{font-size:clamp(36px,5vw,52px);animation:bounceIn 0.5s ease;}
+        @keyframes bounceIn{from{transform:scale(0)}50%{transform:scale(1.25)}to{transform:scale(1)}}
+        .p-text{font-size:clamp(16px,2.3vw,21px);font-weight:bold;color:#333;}
+        .p-desc{font-size:clamp(12px,1.7vw,15px);color:#888;margin-top:3px;}
+
+        /* 按钮 */
+        .ctrls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+        button{padding:9px 20px;border:none;border-radius:11px;font-size:clamp(12px,1.6vw,15px);font-weight:bold;cursor:pointer;transition:all 0.3s;color:white;}
+        .btn-next{background:linear-gradient(135deg,#74c0fc,#339af0);}
+        .btn-reset{background:linear-gradient(135deg,#ff8787,#c92a2a);}
+        button:hover{transform:translateY(-3px);box-shadow:0 5px 14px rgba(0,0,0,0.2);}
+
+        /* 奖品记录 */
+        .log-box{max-width:600px;width:100%;background:rgba(255,255,255,0.95);border-radius:14px;padding:10px 16px;margin-top:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+        .log-title{font-size:12px;font-weight:bold;color:#666;margin-bottom:6px;}
+        .log-items{display:flex;flex-wrap:wrap;gap:5px;min-height:28px;}
+        .log-item{padding:4px 10px;border-radius:12px;font-size:clamp(14px,2vw,18px);animation:popIn 0.3s ease;}
+        @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+        @media(max-width:500px){.game-container{padding:16px;}.opts-row{grid-template-columns:1fr 1fr;gap:8px;}}
+    </style>
+</head>
+<body>
+
+<div class="header"><h1>🎰 乘法口诀幸运大转盘</h1><p>选答案 → 转转盘 → 抽奖品！</p></div>
+
+<div class="legend">
+    <div class="legend-item">🍬糖果 +5分</div>
+    <div class="legend-item">⭐星星 +10分</div>
+    <div class="legend-item">💣炸弹 -5分</div>
+    <div class="legend-item">🎁惊喜 +15分</div>
+    <div class="legend-item">🏆大奖 +30分</div>
+    <div class="legend-item">✨再抽一次</div>
+    <div class="legend-item">😅谢谢 +1分</div>
+    <div class="legend-item">🍀幸运 +20分</div>
+</div>
+
+<div class="status-bar">
+    <div class="st-item"><div class="st-label">🍬糖果</div><div class="st-val v-candy" id="candyN">0</div></div>
+    <div class="st-item"><div class="st-label">⭐星星</div><div class="st-val v-star" id="starN">0</div></div>
+    <div class="st-item"><div class="st-label">💣炸弹</div><div class="st-val v-bomb" id="bombN">0</div></div>
+    <div class="st-item"><div class="st-label">📊总分</div><div class="st-val v-score" id="scoreN">0</div></div>
+</div>
+
+<div class="game-container">
+    <div class="q-area">
+        <div class="q-label">📝 请选择正确答案：</div>
+        <div class="q-formula" id="formulaDisp">2 × 5 = ?</div>
+    </div>
+
+    <!-- 四选项 -->
+    <div class="opts-row" id="optsRow"></div>
+
+    <!-- 转盘 -->
+    <div class="wheel-area">
+        <div class="pointer">👆</div>
+        <div class="wheel" id="theWheel">
+            <div class="wheel-seg s0"><span>🍬</span></div>
+            <div class="wheel-seg s1"><span>⭐</span></div>
+            <div class="wheel-seg s2"><span>💣</span></div>
+            <div class="wheel-seg s3"><span>🎁</span></div>
+            <div class="wheel-seg s4"><span>🏆</span></div>
+            <div class="wheel-seg s5"><span>✨</span></div>
+            <div class="wheel-seg s6"><span>😅</span></div>
+            <div class="wheel-seg s7"><span>🍀</span></div>
+        </div>
+        <div class="center-btn" id="spinBtn" onclick="spinIt()">🎰</div>
+    </div>
+
+    <!-- 奖品 -->
+    <div class="prize-show" id="prizeShow">
+        <div class="p-emoji" id="pEmoji"></div>
+        <div class="p-text" id="pText"></div>
+        <div class="p-desc" id="pDesc"></div>
+    </div>
+
+    <div class="ctrls">
+        <button class="btn-next" onclick="nextQ()">➡️ 下一题</button>
+        <button class="btn-reset" onclick="resetAll()">🔄 重置</button>
+    </div>
+</div>
+
+<div class="log-box">
+    <div class="log-title">🎒 我的奖品背包：</div>
+    <div class="log-items" id="logItems"></div>
+</div>
+
+<script>
+const ALL_Q=[
+    {a:1,b:1,r:1},{a:1,b:2,r:2},{a:2,b:2,r:4},
+    {a:1,b:3,r:3},{a:2,b:3,r:6},{a:3,b:3,r:9},
+    {a:1,b:4,r:4},{a:2,b:4,r:8},{a:3,b:4,r:12},{a:4,b:4,r:16},
+    {a:1,b:5,r:5},{a:2,b:5,r:10},{a:3,b:5,r:15},{a:4,b:5,r:20},{a:5,b:5,r:25},
+    {a:1,b:6,r:6},{a:2,b:6,r:12},{a:3,b:6,r:18},{a:4,b:6,r:24},{a:5,b:6,r:30},{a:6,b:6,r:36},
+    {a:1,b:7,r:7},{a:2,b:7,r:14},{a:3,b:7,r:21},{a:4,b:7,r:28},{a:5,b:7,r:35},{a:6,b:7,r:42},{a:7,b:7,r:49},
+    {a:1,b:8,r:8},{a:2,b:8,r:16},{a:3,b:8,r:24},{a:4,b:8,r:32},{a:5,b:8,r:40},{a:6,b:8,r:48},{a:7,b:8,r:56},{a:8,b:8,r:64},
+    {a:1,b:9,r:9},{a:2,b:9,r:18},{a:3,b:9,r:27},{a:4,b:9,r:36},{a:5,b:9,r:45},{a:6,b:9,r:54},{a:7,b:9,r:63},{a:8,b:9,r:72},{a:9,b:9,r:81}
+];
+
+const PRIZES=[
+    {emoji:'🍬',name:'糖果！',desc:'+5分',type:'candy',score:5},
+    {emoji:'⭐',name:'星星！',desc:'+10分',type:'star',score:10},
+    {emoji:'💣',name:'炸弹！💥',desc:'-5分',type:'bomb',score:-5},
+    {emoji:'🎁',name:'惊喜礼物！',desc:'+15分',type:'special',score:15},
+    {emoji:'🏆',name:'超级大奖！',desc:'+30分',type:'special',score:30},
+    {emoji:'✨',name:'再抽一次！',desc:'',type:'extra',score:0},
+    {emoji:'😅',name:'谢谢参与~',desc:'+1分',type:'none',score:1},
+    {emoji:'🍀',name:'四叶草！',desc:'+20分',type:'star',score:20}
+];
+
+let currentQ=null,candys=0,stars=0,bombs=0,totalScore=0,canSpin=false,spinning=false,prizeLog=[];
+
+function init(){nextQ();}
+
+function nextQ(){
+    currentQ=ALL_Q[Math.floor(Math.random()*ALL_Q.length)];
+    document.getElementById('formulaDisp').textContent=`${currentQ.a} × ${currentQ.b} = ?`;
+    
+    // 生成4选项
+    const opts=genOpts(currentQ.r);
+    const row=document.getElementById('optsRow');
+    row.innerHTML='';
+    opts.forEach((v,i)=>{
+        const btn=document.createElement('div');
+        btn.className='opt-btn';
+        btn.textContent=v;
+        btn.dataset.val=v;
+        btn.onclick()=>chooseAnswer(btn,v);
+        row.appendChild(btn);
+    });
+
+    const ps=document.getElementById('prizeShow');
+    ps.className='prize-show';
+    canSpin=false;spinning=false;
+}
+
+function genOpts(correct){
+    const s=new Set([correct]);
+    while(s.size<4){
+        let f=Math.random()>0.5?correct+Math.floor(Math.random()*7)-3:Math.floor(Math.random()*81)+1;
+        if(f>0&&f!==correct&&f<=81)s.add(f);
+    }
+    return Array.from(s).sort(()=>Math.random()-0.5);
+}
+
+function chooseAnswer(btn,val){
+    if(canSpin&&!spinning){spinIt();return;}
+    const opts=document.querySelectorAll('.opt-btn');
+    if(val===currentQ.r){
+        // 正确
+        btn.classList.add('correct');
+        opts.forEach(o=>o.classList.add('used'));
+        canSpin=true;
+        document.getElementById('spinBtn').style.animation='none';
+        void document.getElementById('spinBtn').offsetWidth;
+        document.getElementById('spinBtn').style.animation='pulse 0.5s infinite alternate';
+    }else{
+        // 错误
+        btn.classList.add('wrong');
+        const correctBtn=Array.from(opts).find(o=>parseInt(o.dataset.val)===currentQ.r);
+        if(correctBtn)correctBtn.classList.add('correct');
+        opts.forEach(o=>o.classList.add('used'));
+    }
+}
+
+@keyframes pulse{from{box-shadow:0 3px 10px rgba(0,0,0,0.2)}to{box-shadow:0 0 20px 8px rgba(252,196,25,0.6)}}
+
+function spinIt(){
+    if(!canSpin||spinning)return;
+    spinning=true;
+    const wheel=document.getElementById('theWheel');
+    const extra=(5+Math.random()*5)*360;
+    const idx=Math.floor(Math.random()*8);
+    const target=extra+(360-idx*45-22.5);
+    wheel.style.transform=`rotate(${target}deg)`;
+    setTimeout(()=>{
+        showPrize(idx);
+        spinning=false;
+    },4000);
+}
+
+function showPrize(idx){
+    const p=PRIZES[idx];
+    const ps=document.getElementById('prizeShow');
+    ps.className=`prize-show show ${p.type}`;
+    document.getElementById('pEmoji').textContent=p.emoji;
+    document.getElementById('pText').textContent=p.name;
+    document.getElementById('pDesc').textContent=p.desc;
+
+    totalScore+=p.score;if(totalScore<0)totalScore=0;
+    switch(p.type){case'candy':candys++;break;case'star':stars++;break;case'bomb':bombs++;}
+    document.getElementById('candyN').textContent=candys;
+    document.getElementById('starN').textContent=stars;
+    document.getElementById('bombN').textContent=bombs;
+    document.getElementById('scoreN').textContent=totalScore;
+
+    prizeLog.push(p.emoji);
+    document.getElementById('logItems').innerHTML=prizeLog.map((p,i)=>
+        `<span class="log-item" style="animation-delay:${i*0.05}s">${p}</span>`
+    ).join('');
+
+    if(p.type==='extra'){
+        setTimeout(()=>{alert('🎉 运气爆棚！再转一次！');canSpin=true;spinIt();},700);
+    }
+
+    canSpin=false;
+}
+
+function resetGame(){
+    candys=0;stars=0;bombs=0;totalScore=0;prizeLog=[];
+    document.getElementById('candyN').textContent='0';
+    document.getElementById('starN').textContent='0';
+    document.getElementById('bombN').textContent='0';
+    document.getElementById('scoreN').textContent='0';
+    document.getElementById('logItems').innerHTML='';
+    document.getElementById('theWheel').style.transform='rotate(0deg)';
+    nextQ();
+}
+
+init();
+</script>
+</body>
+</html>
