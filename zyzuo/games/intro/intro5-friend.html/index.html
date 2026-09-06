@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏⑤ 找朋友 - 乘法口诀大冒险</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#f7971e 0%,#ffd200 100%);min-height:100vh;color:#333}
+.top-bar{background:rgba(255,255,255,0.95);padding:12px 20px;display:flex;align-items:center;gap:15px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:linear-gradient(135deg,#f7971e,#ffd200);color:#fff;border-radius:20px;text-decoration:none;font-size:14px;font-weight:bold}
+.back-btn:hover{transform:translateX(-3px)}
+.top-bar h1{font-size:18px;color:#e67e22}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;margin-bottom:15px}
+.badge-up{background:linear-gradient(135deg,#ffa502,#ffcc00)}
+.card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
+.card h2{font-size:18px;color:#e67e22;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
+/* 玩法选择 */
+.mode-tabs{display:flex;gap:10px;margin-bottom:15px;flex-wrap:justify}
+.mode-tab{padding:10px 20px;border-radius:12px;background:#f0f0f0;font-weight:bold;font-size:14px;cursor:pointer;transition:all .3s;border:2px solid transparent}
+.mode-tab.active{background:linear-gradient(135deg,#ffa502,#ffcc00);color:#fff;border-color:#e67e22}
+.mode-tab:hover:not(.active){background:#e8e8e8}
+
+/* 配对演示区 */
+.match-area{background:linear-gradient(180deg,#fff9e6,#fff3d0);border-radius:16px;padding:25px;text-align:center}
+
+/* 两列卡牌 */
+.match-cols{display:flex;gap:30px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.match-col{text-align:center}
+.col-label{font-weight:bold;font-size:15px;margin-bottom:12px;padding:6px 16px;border-radius:15px;background:#eee;display:inline-block}
+.col-left .col-label{background:#74b9ff;color:#fff}
+.col-right .col-label{background:#fd79a8;color:#fff}
+
+.match-cards{display:flex;flex-direction:column;gap:8px}
+.m-card{width:90px;height:120px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;color:#fff;transition:all .4s cubic-bezier(0.68,-0.55,0.265,1.55);position:relative;z-index:1}
+.m-card.left-card{background:linear-gradient(135deg,#74b9ff,#0984e3)}
+.m-card.right-card{background:linear-gradient(135deg,#fd79a8,#e84393)}
+.m-card .expr{font-size:15px}
+.m-card .result{font-size:24px;font-weight:bold}
+.m-card.matched{opacity:0.5;transform:scale(0.9)}
+.m-card.selected{animation:selectedPulse .5s ease infinite alternate;box-shadow:0 0 20px rgba(255,165,2,0.6)}
+@keyframes selectedPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+
+/* 配对连线效果 */
+.match-line{position:absolute;height:3px;background:linear-gradient(90deg,#74b9ff,#fd79a8);z-index:0;transform-origin:left center;animation:lineGrow .4s ease forwards}
+@keyframes lineGrow{from{width:0}to{width:100%}}
+
+/* 成功提示 */
+.success-msg{font-size:20px;font-weight:bold;color:#2ed573;min-height:28px;margin:10px 0}
+.pair-info{font-size:14px;color:#555;background:#fff;padding:10px;border-radius:10px;margin-top:10px}
+
+.btn-row{display:flex;justify-content:center;gap:12px;margin-top:15px;flex-wrap:wrap}
+.btn{padding:10px 24px;border:none;border-radius:25px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
+.btn-primary{background:linear-gradient(135deg,#f7971e,#ffd200)}
+.btn-success{background:linear-gradient(135deg,#2ed573,#7bed9f)}
+
+.step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;padding:10px;background:#f8f9fa;border-radius:10px}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f7971e,#ffd200);color:#333;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;flex-shrink:0}
+.step-text{flex:1;font-size:13px;line-height:1.7;color:#555}
+.step-text strong{color:#e67e22}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmin(200px,1fr));gap:12px}
+.info-item{background:#f8f9fa;border-radius:10px;padding:14px;border-left:4px solid #e67e22}
+.info-item .label{font-size:12px;color:#888}
+.info-item .value{font-size:14px;font-weight:600}
+.footer{text-align:center;padding:20px;color:rgba(255,255,255,0.7);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🤝 游戏⑤ 找朋友</h1>
+</div>
+
+<div class="container">
+
+<span class="badge badge-up">🟡 提升篇 · 熟练运用</span>
+
+<!-- 演示区 -->
+<div class="card">
+  <h2>🎬 找朋友演示</h2>
+  <div class="match-area">
+    <div class="mode-tabs" id="modeTabs">
+      <div class="mode-tab active" onclick="switchMode(0,this)">💑 交换律朋友</div>
+      <div class="mode-tab" onclick="switchMode(1,this)">🔢 得数朋友</div>
+      <div class="mode-tab" onclick="switchMode(2,this)">🔢 因数朋友</div>
+    </div>
+
+    <div id="modeDesc" style="font-size:14px;color:#666;margin-bottom:10px">正向卡找对应的逆向卡，如 2×7=14 ↔ 7×2=14</div>
+
+    <div class="match-cols" id="matchArea"></div>
+
+    <div class="success-msg" id="successMsg"></div>
+    <div class="pair-info" id="pairInfo"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="autoMatch()">▶ 自动配对演示</button>
+      <button class="btn btn-success" onclick="resetMatch()">🔄 重置</button>
+    </div>
+  </div>
+</div>
+
+<!-- 三种玩法说明 -->
+<div class="card">
+  <h2>📋 三种玩法</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法一——交换律朋友：</strong>老师出一张正向卡（2×7=14），学生找出对应的逆向卡（7×2=14），说："二七十四和七二十四都是14！"</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法二——得数朋友：</strong>老师报一个得数（如"36！"），学生找出所有得数是36的卡片（4×9、6×6、9×4），体会"不同算式可以结果相同"</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>玩法三——因数朋友：</strong>老师报一个因数（如"找出所有8的口诀！"），学生找出所有含8的口诀卡（一八到八八共8句）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>⚠️ 注意：</strong>7×7、8×8、9×9这类"平方口诀"只有一张卡，没有交换律朋友，可作为特殊卡使用</div></div>
+</div>
+
+<!-- 基本信息 -->
+<div class="card">
+  <h2>📌 基本信息</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐⭐ 提升</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">全班/小组/个人</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">10-15分钟/轮</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">正向卡 + 逆向卡混合</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">交换律专项训练 / 因数理解</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">交换律 / 因数分解 / 等值关系</div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+</div>
+
+<script>
+const modes = [
+  {
+    desc: '正向卡找对应的逆向卡，如 2×7=14 ↔ 7×2=14',
+    left: [{e:'2×7',r:14},{e:'3×5',r:15},{e:'4×6',r:24},{e:'2×9',r:18}],
+    right: [{e:'7×2',r:14},{e:'5×3',r:15},{e:'6×4',r:24},{e:'9×2',r:18}],
+    msg: '配对成功！它们都是好朋友，得数相同！',
+  },
+  {
+    desc: '老师报一个得数，找出所有等于该得数的卡片',
+    left: [{e:'4×9',r:36},{e:'3×8',r:24},{e:'6×6',r:36},{e:'5×5',r:25}],
+    right: [{e:'6×6',r:36},{e:'4×6',r:24},{e:'9×4',r:36},{e:'?×?',r:25}],
+    msg: '找到所有得数相同的"得数朋友"！',
+  },
+  {
+    desc: '老师报一个数字，找出所有包含该数字的口诀',
+    left: [{e:'1×8',r:8},{e:'2×8',r:16},{e:'3×8',r:24},{e:'4×8',r:32}],
+    right: [{e:'5×8',r:40},{e:'6×8',r:48},{e:'7×8',r:56},{e:'8×8',r:64}],
+    msg: '找到所有关于8的"因数朋友"！',
+  }
+];
+
+let currentMode = 0;
+
+function switchMode(idx, el) {
+  currentMode = idx;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('modeDesc').textContent = modes[idx].desc;
+  resetMatch();
+}
+
+function renderMatch() {
+  const m = modes[currentMode];
+  const area = document.getElementById('matchArea');
+  area.innerHTML = `
+    <div class="match-col col-left">
+      <div class="col-label">📋 正向/左列</div>
+      <div class="match-cards">${m.left.map((c,i) => `<div class="m-card left-card" data-idx="${i}" onclick="selectCard(this,'left')"><div class="expr">${c.e}</div><div class="result">=${c.r}</div></div>`).join('')}</div>
+    </div>
+    <div class="match-col col-right">
+      <div class="col-label">🔄 逆向/右列</div>
+      <div class="match-cards">${m.right.map((c,i) => `<div class="m-card right-card" data-idx="${i}" onclick="selectCard(this,'right')"><div class="expr">${c.e}</div><div class="result">=${c.r}</div></div>`).join('')}</div>
+    </div>`;
+}
+
+let selectedLeft = null, selectedRight = null;
+
+function selectCard(el, side) {
+  if (el.classList.contains('matched')) return;
+  
+  // 清除同侧其他选中
+  document.querySelectorAll(`.m-card.${side}-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  
+  if (side === 'left') selectedLeft = el;
+  else selectedRight = el;
+  
+  // 检查是否两边都选了
+  if (selectedLeft && selectedRight) {
+    const lVal = selectedLeft.querySelector('.result').textContent.replace('=','');
+    const rVal = selectedRight.querySelector('.result').textContent.replace('=','');
+    
+    if (lVal === rVal) {
+      // 配对成功
+      selectedLeft.classList.add('matched');
+      selectedRight.classList.add('matched');
+      selectedLeft.classList.remove('selected');
+      selectedRight.classList.remove('selected');
+      
+      document.getElementById('successMsg').textContent = '✅ ' + modes[currentMode].msg;
+      document.getElementById('pairInfo').innerHTML = `<b>${selectedLeft.querySelector('.expr').textContent} = ${lVal}</b> 和 <b>${selectedRight.querySelector('.expr').textContent} = ${rVal}</b> 是好朋友！`;
+    } else {
+      document.getElementById('successMsg').textContent = `❌ ${lVal} ≠ ${rVal}，不是朋友哦！`;
+      document.getElementById('pairInfo').innerHTML = '';
+      setTimeout(() => { selectedLeft?.classList.remove('selected'); selectedRight?.classList.remove('selected'); }, 500);
+    }
+    selectedLeft = null; selectedRight = null;
+  }
+}
+
+function autoMatch() {
+  resetMatch();
+  setTimeout(() => {
+    const leftCards = document.querySelectorAll('.m-card.left-card');
+    const rightCards = document.querySelectorAll('.m-card.right-card');
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i >= Math.min(leftCards.length, rightCards.length)) { clearInterval(interval); return; }
+      selectCard(leftCards[i], 'left');
+      setTimeout(() => selectCard(rightCards[i], 'right'), 300);
+      i++;
+    }, 800);
+  }, 300);
+}
+
+function resetMatch() {
+  renderMatch();
+  document.getElementById('successMsg').textContent = '';
+  document.getElementById('pairInfo').innerHTML = '';
+  selectedLeft = null; selectedRight = null;
+}
+
+renderMatch();
+</script>
+
+</body>
+</html>
