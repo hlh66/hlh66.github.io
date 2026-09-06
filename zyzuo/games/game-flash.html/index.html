@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 乘法口诀闪卡模式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            user-select: none;
+        }
+
+        /* ====== 顶部标题栏 ====== */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ====== 控制面板 ====== */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            padding: 12px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 18px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-group label {
+            font-size: 13px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        select, input[type="number"] {
+            padding: 6px 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #667eea;
+        }
+
+        input[type="number"] {
+            width: 60px;
+        }
+
+        button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #51cf66, #2b8a3e);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(81,207,102,0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fcc419, #e67700);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(252,196,25,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #f06595, #c2255c);
+            color: white;
+            padding: 10px 24px;
+            font-size: 15px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240,101,149,0.4);
+        }
+
+        /* ====== 主闪卡区域 ====== */
+        .flashcard-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 16/9;
+            perspective: 1200px;
+            margin-bottom: 15px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* 正面（问题） */
+        .card-front {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border: 5px solid;
+        }
+
+        .card-front.row-1 { border-color: #FF6B6B; }
+        .card-front.row-2 { border-color: #FFA94D; }
+        .card-front.row-3 { border-color: #E8C547; }
+        .card-front.row-4 { border-color: #51CF66; }
+        .card-front.row-5 { border-color: #20C997; }
+        .card-front.row-6 { border-color: #339AF0; }
+        .card-front.row-7 { border-color: #5C7CFA; }
+        .card-front.row-8 { border-color: #CC5DE8; }
+        .card-front.row-9 { border-color: #F06595; }
+
+        /* 背面（答案） */
+        .card-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: rotateY(180deg);
+            color: white;
+        }
+
+        /* 卡片内容 - 算式 */
+        .card-formula {
+            font-size: clamp(36px, 8vw, 72px);
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-formula .equals {
+            color: #999;
+        }
+
+        .card-formula .answer-blank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            height: 70px;
+            border: 4px dashed #e67e22;
+            border-radius: 14px;
+            background: #fff9f0;
+            color: #e67e22;
+            font-size: 0.85em;
+        }
+
+        /* 背面内容 */
+        .back-answer {
+            font-size: clamp(60px, 12vw, 110px);
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .back-mnemonic {
+            font-size: clamp(20px, 4vw, 32px);
+            color: rgba(255,255,255,0.9);
+            margin-top: 12px;
+            letter-spacing: 4px;
+        }
+
+        .back-meaning {
+            font-size: clamp(14px, 2.5vw, 20px);
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
+        }
+
+        /* 翻转提示 */
+        .flip-hint {
+            position: absolute;
+            bottom: 12px;
+            font-size: 12px;
+            color: #aaa;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ====== 进度条 ====== */
+        .progress-bar {
+            width: 100%;
+            max-width: 600px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #51cf66, #20c997);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* ====== 状态信息栏 ====== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .counter {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* ====== 导航按钮（底部大按钮）====== */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .nav-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        /* ====== 模式选择标签 ====== */
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .mode-tab {
+            padding: 8px 18px;
+            border: 2px solid rgba(255,255,255,0.5);
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-tab.active {
+            background: white;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .mode-tab:hover:not(.active) {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* ====== 响应式 ====== */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .header h1 { font-size: 22px; }
+            .controls { padding: 10px 14px; }
+            .controls { gap: 6px; }
+            button { padding: 6px 12px; font-size: 12px; }
+            .nav-btn { width: 46px; height: 46px; font-size: 18px; }
+        }
+
+        /* ====== 动画效果 ====== */
+        .slide-in-left {
+            animation: slideInLeft 0.35s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.35s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-80px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(80px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* 正确/错误动画 */
+        .correct-flash {
+            animation: correctFlash 0.5s ease;
+        }
+
+        @keyframes correctFlash {
+            0%, 100% { box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+            50% { box-shadow: 0 0 40px rgba(81,207,102,0.8); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 标题 -->
+    <div class="header">
+        <h1>⚡ 乘法口诀闪卡</h1>
+        <p>点击卡片翻转 · 自动轮播 · 快速记忆</p>
+    </div>
+
+    <!-- 模式选择 -->
+    <div class="mode-tabs">
+        <button class="mode-tab active" onclick="setMode('all')" id="tab-all">📚 全部 (45题)</button>
+        <button class="mode-tab" onclick="setMode('forward')" id="tab-forward">➡️ 正向思维</button>
+        <button class="mode-tab" onclick="setMode('reverse')" id="tab-reverse">⬅️ 逆向思维</button>
+        <button class="mode-tab" onclick="setMode('hard')" id="tab-hard">🔥 困难关</button>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="controls">
+        <div class="control-group">
+            <label>⏱️ 速度:</label>
+            <select id="speedSelect" onchange="changeSpeed()">
+                <option value="5">5秒 (慢)</option>
+                <option value="3" selected>3秒 (正常)</option>
+                <option value="2">2秒 (快)</option>
+                <option value="1">1秒 (疯狂)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🔢 范围:</label>
+            <select id="rangeSelect" onchange="changeRange()">
+                <option value="all" selected>全部 1-9</option>
+                <option value="2">只练 2</option>
+                <option value="3">只练 3</option>
+                <option value="4">只练 4</option>
+                <option value="5">只练 5</option>
+                <option value="6">只练 6</option>
+                <option value="7">只练 7</option>
+                <option value="8">只练 8</option>
+                <option value="9">只练 9</option>
+            </select>
+        </div>
+        <button class="btn-success" id="playBtn" onclick="togglePlay()">▶️ 开始轮播</button>
+        <button class="btn-warning" onclick="shuffleCards()">🔀 打乱顺序</button>
+        <button class="btn-primary" onclick="resetCards()">🔄 重置</button>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 2.22%"></div>
+    </div>
+
+    <!-- 主闪卡 -->
+    <div class="flashcard-container">
+        <div class="flashcard slide-in-left" id="flashcard" onclick="flipCard()">
+            <!-- 正面：问题 -->
+            <div class="card-face card-front row-1" id="cardFront">
+                <div class="card-formula" id="formulaDisplay">
+                    <span id="numA">2</span>
+                    <span>×</span>
+                    <span id="numB">5</span>
+                    <span class="equals">=</span>
+                    <span class="answer-blank" id="blankDisplay">?</span>
+                </div>
+                <div class="flip-hint">👆 点击翻转查看答案</div>
+            </div>
+            <!-- 背面：答案 -->
+            <div class="card-face card-back" id="cardBack">
+                <div class="back-answer" id="answerDisplay">10</div>
+                <div class="back-mnemonic" id="mnemonicDisplay">二五一十</div>
+                <div class="back-meaning" id="meaningDisplay">表示 2个5 相加</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导航按钮 -->
+    <div class="nav-buttons">
+        <button class="nav-btn btn-primary" onclick="prevCard()" title="上一张">◀️</button>
+        <button class="nav-btn btn-action" onclick="flipCard()" title="翻转卡片">🔄</button>
+        <button class="nav-btn btn-primary" onclick="nextCard()" title="下一张">▶️</button>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="status-item">
+            📊 进度：<span class="counter" id="currentNum">1</span> / <span id="totalNum">45</span>
+        </div>
+        <div class="status-item">
+            ⏱️ 倒计时：<span class="counter" id="timerDisplay">--</span>
+        </div>
+        <div class="status-item">
+            ✅ 已完成：<span class="counter" id="doneCount">0</span>
+        </div>
+    </div>
+
+<script>
+// ====== 45道乘法口诀数据 ======
+const ALL_CARDS = [
+    // 1的口诀
+    {a:1,b:1,r:1,cn:"一一得一",m:"表示 1个1相加",row:1},
+    // 2的口诀
+    {a:1,b:2,r:2,cn:"一二得二",m:"表示 1个2相加",row:2},
+    {a:2,b:2,r:4,cn:"二二得四",m:"表示 2个2相加",row:2},
+    {a:1,b:3,r:3,cn:"一三得三",m:"表示 1个3相加",row:3},
+    {a:2,b:3,r:6,cn:"二三得六",m:"表示 2个3相加",row:3},
+    {a:3,b:3,r:9,cn:"三三得九",m:"表示 3个3相加",row:3},
+    // 4的口诀
+    {a:1,b:4,r:4,cn:"一四得四",m:"表示 1个4相加",row:4},
+    {a:2,b:4,r:8,cn:"二四得八",m:"表示 2个4相加",row:4},
+    {a:3,b:4,r:12,cn:"三四十二",m:"表示 3个4相加",row:4},
+    {a:4,b:4,r:16,cn:"四四十六",m:"表示 4个4相加",row:4},
+    // 5的口诀
+    {a:1,b:5,r:5,cn:"一五得五",m:"表示 1个5相加",row:5},
+    {a:2,b:5,r:10,cn:"二五一十",m:"表示 2个5相加",row:5},
+    {a:3,b:5,r:15,cn:"三五十五",m:"表示 3个5相加",row:5},
+    {a:4,b:5,r:20,cn:"四五二十",m:"表示 4个5相加",row:5},
+    {a:5,b:5,r:25,cn:"五五二十五",m:"表示 5个5相加",row:5},
+    // 6的口诀
+    {a:1,b:6,r:6,cn:"一六得六",m:"表示 1个6相加",row:6},
+    {a:2,b:6,r:12,cn:"二六十二",m:"表示 2个6相加",row:6},
+    {a:3,b:6,r:18,cn:"三六十八",m:"表示 3个6相加",row:6},
+    {a:4,b:6,r:24,cn:"四六二十四",m:"表示 4个6相加",row:6},
+    {a:5,b:6,r:30,cn:"五六三十",m:"表示 5个6相加",row:6},
+    {a:6,b:6,r:36,cn:"六六三十六",m:"表示 6个6相加",row:6},
+    // 7的口诀
+    {a:1,b:7,r:7,cn:"一七得七",m:"表示 1个7相加",row:7},
+    {a:2,b:7,r:14,cn:"二七十四",m:"表示 2个7相加",row:7},
+    {a:3,b:7,r:21,cn:"三七二十一",m:"表示 3个7相加",row:7},
+    {a:4,b:7,r:28,cn:"四七二十八",m:"表示 4个7相加",row:7},
+    {a:5,b:7,r:35,cn:"五七三十五",m:"表示 5个7相加",row:7},
+    {a:6,b:7,r:42,cn:"六七四十二",m:"表示 6个7相加",row:7},
+    {a:7,b:7,r:49,cn:"七七四十九",m:"表示 7个7相加",row:7},
+    // 8的口诀
+    {a:1,b:8,r:8,cn:"一八得八",m:"表示 1个8相加",row:8},
+    {a:2,b:8,r:16,cn:"二八十六",m:"表示 2个8相加",row:8},
+    {a:3,b:8,r:24,cn:"三八二十四",m:"表示 3个8相加",row:8},
+    {a:4,b:8,r:32,cn:"四八三十二",m:"表示 4个8相加",row:8},
+    {a:5,b:8,r:40,cn:"五八四十",m:"表示 5个8相加",row:8},
+    {a:6,b:8,r:48,cn:"六八四十八",m:"表示 6个8相加",row:8},
+    {a:7,b:8,r:56,cn:"七八五十六",m:"表示 7个8相加",row:8},
+    {a:8,b:8,r:64,cn:"八八六十四",m:"表示 8个8相加",row:8},
+    // 9的口诀
+    {a:1,b:9,r:9,cn:"一九得九",m:"表示 1个9相加",row:9},
+    {a:2,b:9,r:18,cn:"二九十八",m:"表示 2个9相加",row:9},
+    {a:3,b:9,r:27,cn:"三九二十七",m:"表示 3个9相加",row:9},
+    {a:4,b:9,r:36,cn:"四九三十六",m:"表示 4个9相加",row:9},
+    {a:5,b:9,r:45,cn:"五九四十五",m:"表示 5个9相加",row:9},
+    {a:6,b:9,r:54,cn:"六九五十四",m:"表示 6个9相加",row:9},
+    {a:7,b:9,r:63,cn:"七九六十三",m:"表示 7个9相加",row:9},
+    {a:8,b:9,r:72,cn:"八九七十二",m:"表示 8个9相加",row:9},
+    {a:9,b:9,r:81,cn:"九九八十一",m:"表示 9个9相加",row:9}
+];
+
+// ====== 状态变量 ======
+let currentCards = [...ALL_CARDS];
+let currentIndex = 0;
+let isPlaying = false;
+let playTimer = null;
+let countdownTimer = null;
+let speed = 3;
+let doneSet = new Set();
+let direction = 1; // 1=正向翻页, -1=逆向
+
+// ====== 初始化 ======
+function init() {
+    updateCard();
+    updateProgress();
+}
+
+// ====== 模式切换 ======
+function setMode(mode) {
+    // 更新标签样式
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + mode).classList.add('active');
+
+    switch(mode) {
+        case 'forward':
+            // 正向思维：a <= b 的（常规思维）
+            currentCards = ALL_CARDS.filter(c => c.a <= c.b);
+            break;
+        case 'reverse':
+            // 逆向思维：a > b 的（交换律）
+            currentCards = ALL_CARDS.filter(c => c.a > c.b);
+            break;
+        case 'hard':
+            // 困难关：7/8/9的口诀 + 大得数
+            currentCards = ALL_CARDS.filter(c => 
+                c.b >= 7 || c.r >= 36 || (c.a >= 7 && c.b >= 7)
+            );
+            break;
+        default:
+            currentCards = [...ALL_CARDS];
+    }
+
+    currentIndex = 0;
+    doneSet.clear();
+    stopPlay();
+    updateCard(true);
+    updateProgress();
+}
+
+// ====== 范围筛选 ======
+function changeRange() {
+    const val = document.getElementById('rangeSelect').value;
+    if (val === 'all') {
+        setMode(document.querySelector('.mode-tab.active').id.replace('tab-', ''));
+    } else {
+        const num = parseInt(val);
+        currentCards = ALL_CARDS.filter(c => c.b === num || c.a === num);
+        currentIndex = 0;
+        doneSet.clear();
+        stopPlay();
+        updateCard(true);
+        updateProgress();
+    }
+}
+
+// ====== 速度调整 ======
+function changeSpeed() {
+    speed = parseInt(document.getElementById('speedSelect').value);
+    if (isPlaying) {
+        stopPlay();
+        startPlay();
+    }
+}
+
+// ====== 更新卡片显示 ======
+function updateCard(animate = true) {
+    if (currentCards.length === 0) return;
+
+    const card = currentCards[currentIndex];
+    const flashcard = document.getElementById('flashcard');
+    
+    // 动画效果
+    if (animate) {
+        flashcard.classList.remove('slide-in-left', 'slide-in-right');
+        void flashcard.offsetWidth; // 触发重排
+        flashcard.classList.add(direction > 0 ? 'slide-in-left' : 'slide-in-right');
+    }
+
+    // 重置翻转状态
+    flashcard.classList.remove('flipped');
+
+    // 更新正面
+    document.getElementById('numA').textContent = card.a;
+    document.getElementById('numB').textContent = card.b;
+    document.getElementById('blankDisplay').textContent = '?';
+    
+    // 更新边框颜色
+    const front = document.getElementById('cardFront');
+    front.className = 'card-face card-front row-' + card.row;
+
+    // 更新背面
+    document.getElementById('answerDisplay').textContent = card.r;
+    document.getElementById('mnemonicDisplay').textContent = card.cn;
+    document.getElementById('meaningDisplay').textContent = card.m;
+
+    // 更新状态栏
+    document.getElementById('currentNum').textContent = currentIndex + 1;
+    document.getElementById('totalNum').textContent = currentCards.length;
+    document.getElementById('doneCount').textContent = doneSet.size;
+
+    updateProgress();
+}
+
+// ====== 翻转卡片 ======
+function flipCard() {
+    const flashcard = document.getElementById('flashcard');
+    flashcard.classList.toggle('flipped');
+
+    // 记录已完成
+    if (flashcard.classList.contains('flipped')) {
+        doneSet.add(currentIndex);
+        document.getElementById('doneCount').textContent = doneSet.size;
+        
+        // 正确动画
+        flashcard.classList.add('correct-flash');
+        setTimeout(() => flashcard.classList.remove('correct-flash'), 500);
+    }
+}
+
+// ====== 上一张/下一张 ======
+function prevCard() {
+    if (currentIndex > 0) {
+        direction = -1;
+        currentIndex--;
+        updateCard();
+        resetCountdown();
+    }
+}
+
+function nextCard() {
+    if (currentIndex < currentCards.length - 1) {
+        direction = 1;
+        currentIndex++;
+        updateCard();
+        resetCountdown();
+    } else {
+        // 到最后一张，循环或停止
+        if (isPlaying) {
+            currentIndex = 0;
+            updateCard();
+            resetCountdown();
+        }
+    }
+}
+
+// ====== 自动播放控制 ======
+function togglePlay() {
+    isPlaying ? stopPlay() : startPlay();
+}
+
+function startPlay() {
+    isPlaying = true;
+    const btn = document.getElementById('playBtn');
+    btn.textContent = '⏸️ 暂停';
+    btn.className = 'btn-danger';
+    resetCountdown();
+}
+
+function stopPlay() {
+    isPlaying = false;
+    const btn = document.getElementById('playBtn');
+    btn.textContent = '▶️ 开始轮播';
+    btn.className = 'btn-success';
+    if (countdownTimer) clearInterval(countdownTimer);
+    if (playTimer) clearTimeout(playTimer);
+    document.getElementById('timerDisplay').textContent = '--';
+}
+
+function resetCountdown() {
+    if (!isPlaying) return;
+    if (countdownTimer) clearInterval(countdownTimer);
+    
+    let remaining = speed;
+    document.getElementById('timerDisplay').textContent = remaining;
+    
+    countdownTimer = setInterval(() => {
+        remaining--;
+        document.getElementById('timerDisplay').textContent = remaining;
+        if (remaining <= 0) {
+            clearInterval(countdownTimer);
+            nextCard();
+            
+            // 设置下一次自动切换
+            playTimer = setTimeout(() => {
+                if (isPlaying) nextCard();
+            }, speed * 1000);
+        }
+    }, 1000);
+}
+
+// ====== 打乱顺序 ======
+function shuffleCards() {
+    for (let i = currentCards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentCards[i], currentCards[j]] = [currentCards[j], currentCards[i]];
+    }
+    currentIndex = 0;
+    doneSet.clear();
+    updateCard(true);
+}
+
+// ====== 重置 ======
+function resetCards() {
+    stopPlay();
+    document.getElementById('rangeSelect').value = 'all';
+    setMode('all');
+    shuffleCards();
+}
+
+// ====== 更新进度条 ======
+function updateProgress() {
+    const pct = currentCards.length > 0 
+        ? ((currentIndex + 1) / currentCards.length * 100).toFixed(1)
+        : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ====== 键盘快捷键 ======
+document.addEventListener('keydown', (e) => {
+    switch(e.key) {
+        case 'ArrowLeft': prevCard(); break;
+        case 'ArrowRight': nextCard(); break;
+        case ' ': flipCard(); e.preventDefault(); break;
+        case 'p': case 'P': togglePlay(); break;
+        case 's': case 'S': shuffleCards(); break;
+    }
+});
+
+// 启动
+init();
+</script>
+
+</body>
+</html>
