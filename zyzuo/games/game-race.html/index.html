@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎯 乘法口诀赛跑（双卷子·左右分屏竞赛版）</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --teamA:#e63946;--teamA-light:#ffe5e5;
+            --teamB:#457b9d;--teamB-light:#e5f0ff;
+            --ok:#2b8a3e;--ng:#e64980;--gold:#ffd700;
+        }
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+            min-height:100vh;padding:8px;display:flex;flex-direction:column;align-items:center;
+            overflow-x:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;color:white;
+        }
+
+        /* ====== 标题 ====== */
+        .header{text-align:center;margin-bottom:6px;width:100%;max-width:1400px;}
+        .header h1{font-size:clamp(22px,3vw,32px);text-shadow:0 0 18px rgba(255,215,0,0.4);}
+        .header p{font-size:clamp(11px,1.4vw,14px);opacity:0.85;}
+
+        /* ====== 设置区 ====== */
+        .setup-area{
+            width:100%;max-width:1400px;background:rgba(255,255,255,0.95);
+            border-radius:16px;padding:12px 18px;margin-bottom:6px;text-align:center;
+        }
+        .setup-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+        .setup-label{font-size:clamp(13px,1.7vw,16px);font-weight:bold;color:#333;}
+
+        .diff-sel{
+            padding:7px 12px;border:2px solid #ddd;border-radius:10px;
+            font-size:clamp(13px,1.6vw,15px);font-weight:bold;
+        }
+
+        .start-btn{
+            padding:12px 36px;border:none;border-radius:14px;
+            font-size:clamp(17px,2.2vw,22px);font-weight:900;
+            background:linear-gradient(135deg,#51cf66,#2b8a3e);color:white;
+            cursor:pointer;transition:all 0.25s;letter-spacing:2px;
+            box-shadow:0 5px 18px rgba(81,207,102,0.35);
+        }
+        .start-btn:hover{transform:translateY(-3px) scale(1.03);}
+
+        /* ====== 双卷子分屏区域（核心！）====== */
+        .split-screen{
+            display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.5vw,20px);
+            width:100%;max-width:1400px;margin-bottom:6px;
+        }
+
+        /* 单个卷子 */
+        .paper{
+            background:white;border-radius:16px;overflow:hidden;
+            box-shadow:0 6px 24px rgba(0,0,0,0.15);
+            position:relative;
+        }
+        .paper-teamA{border-top:5px solid var(--teamA);}
+        .paper-teamB{border-top:5px solid var(--teamB);}
+
+        /* 卷子头部 */
+        .paper-header{
+            padding:10px 16px;font-weight:bold;display:flex;justify-content:space-between;
+            align-items:center;
+        }
+        .ph-teamA{background:var(--teamA-light);color:var(--teamA);}
+        .ph-teamB{background:var(--teamB-light);color:var(--teamB);}
+        .ph-name{font-size:clamp(16px,2.2vw,22px);}
+        .ph-score{font-size:clamp(22px,3vw,34px);font-weight:900;}
+
+        /* 卷子题目区（超大） */
+        .paper-question{
+            padding:clamp(20px,3vw,36px) clamp(16px,2.5vw,28px);
+            text-align:center;background:#fafafa;
+            border-top:1px solid #eee;border-bottom:1px solid #eee;
+        }
+        .pq-round{font-size:clamp(12px,1.5vw,15px);color:#999;margin-bottom:6px;font-weight:bold;}
+        .pq-formula{
+            font-size:clamp(48px,7vw,80px);font-weight:900;color:#222;line-height:1.2;
+        }
+        .pq-hint{font-size:clamp(12px,1.5vw,15px);color:#aaa;margin-top:6px;}
+
+        /* 卷子选项区（四选一） */
+        .paper-options{
+            padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+            background:#fff;
+        }
+        .po-btn{
+            aspect-ratio:2/1;border:3px solid #e0e0e0;border-radius:14px;
+            background:linear-gradient(135deg,#ffffff,#f8f9fa);
+            font-size:clamp(28px,4vw,50px);font-weight:900;color:#333;
+            cursor:pointer;transition:all 0.2s;display:flex;align-items:center;
+            justify-content:center;position:relative;
+        }
+        .po-btn:active{transform:scale(0.94);}
+        .po-btn:hover:not(.disabled):not(.correct):not(.wrong){
+            border-color:#667eea;background:linear-gradient(135deg,#f0f0ff,#e8eaff);
+            transform:scale(1.02);
+        }
+        .po-btn .potag{position:absolute;top:5px;left:10px;font-size:clamp(13px,1.7vw,17px);font-weight:bold;color:#bbb;}
+        .po-btn.correct{
+            border-color:var(--ok)!important;background:linear-gradient(135deg,#d3f9d8,#b2f2bb)!important;
+            color:var(--ok)!important;animation:correctPop 0.45s ease;
+        }
+        .po-btn.wrong{
+            border-color:var(--ng)!important;background:linear-gradient(135deg,#ffe3e3,#ffd6e0)!important;
+            color:var(--ng)!important;animation:shakeBtn 0.4s ease;
+        }
+        .po-btn.disabled{pointer-events:none;opacity:0.35;}
+
+        @keyframes correctPop{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+        @keyframes shakeBtn{0%,100%{transform:translateX(0)}25%{transform:translateX(-14px)}75%{transform:translateX(14px)}}
+
+        /* 卷子状态栏 */
+        .paper-status{
+            padding:8px 16px;display:flex;justify-content:space-between;align-items:center;
+            font-size:clamp(13px,1.7vw,16px);font-weight:bold;
+        }
+        .ps-teamA{background:var(--teamA-light);color:var(--teamA);}
+        .ps-teamB{background:var(--teamB-light);color:var(--teamB);}
+        .ps-progress{display:flex;align-items:center;gap:6px;}
+        .ps-bar{
+            width:clamp(80px,10vw,140px);height:10px;background:#ddd;border-radius:5px;overflow:hidden;
+        }
+        .ps-fill{height:100%;border-radius:5px;transition:width 0.5s ease;}
+        .pf-teamA{background:var(--teamA);}
+        .pf-teamB{background:var(--teamB);}
+
+        /* 卷子反馈区 */
+        .paper-feedback{
+            padding:8px 16px;text-align:center;font-size:clamp(14px,1.8vw,19px);
+            font-weight:bold;min-height:34px;
+        }
+        .pf-ok{background:#d3f9d8;color:var(--ok);}
+        .pf-ng{background:#ffe3e3;color:var(--ng);}
+        .pf-wait{background:#f8f9fa;color:#999;}
+
+        /* ====== 中间VS分隔符 ====== */
+        .vs-divider{
+            position:absolute;left:50%;top:0;bottom:0;width:3px;
+            transform:translateX(-50%);z-index:10;
+            background:linear-gradient(to bottom,
+                transparent 0%,
+                var(--gold) 15%,
+                var(--gold) 85%,
+                transparent 100%
+            );
+            display:none; /* 在分屏模式下不需要，因为grid自带间距 */
+        }
+
+        /* ====== 底部对比条 ====== */
+        .compare-bar{
+            width:100%;max-width:1400px;background:rgba(255,255,255,0.95);
+            border-radius:14px;padding:10px 18px;margin-bottom:6px;
+            display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px;
+        }
+        .cb-item{text-align:center;}
+        .cb-label{font-size:clamp(11px,1.4vw,13px);color:#888;}
+        .cb-value{font-size:clamp(18px,2.4vw,26px);font-weight:900;}
+        .cb-vs{font-size:clamp(22px,3vw,32px);font-weight:900;color:var(--gold);}
+
+        /* ====== 结果面板 ====== */
+        .result-panel{
+            display:none;text-align:center;padding:24px;border-radius:20px;
+            background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,255,255,0.06));
+            border:4px solid var(--gold);width:100%;max-width:700px;margin:8px auto;
+        }
+        .result-panel.show{display:block;animation:resultIn 0.6s ease;}
+        @keyframes resultIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+        .rp-emoji{font-size:clamp(60px,9vw,90px);animation:bounce 1s infinite alternate;}
+        @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+        .rp-winner{font-size:clamp(24px,3.2vw,32px);font-weight:bold;color:var(--gold);margin-top:8px;}
+        .rp-detail{font-size:clamp(14px,1.8vw,18px);color:#ddd;margin-top:12px;line-height:1.7;}
+
+        .fs-btn{
+            position:fixed;bottom:10px;right:10px;padding:9px 15px;
+            background:rgba(0,0,0,0.65);color:white;border:none;
+            border-radius:10px;cursor:pointer;font-size:12px;z-index:100;
+        }
+
+        @media(max-width:800px){
+            .split-screen{grid-template-columns:1fr;gap:10px;}
+            body{padding:6px;}
+            .paper-options{grid-template-columns:1fr 1fr;gap:8px;}
+            .po-btn{aspect-ratio:auto;padding:14px 10px;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🎯 乘法口诀赛跑</h1>
+    <p>双卷子分屏 · 各自答题 · 左右实时对比</p>
+</div>
+
+<!-- 设置 -->
+<div class="setup-area" id="setupArea">
+    <div class="setup-row">
+        <span class="setup-label">🎯 难度：</span>
+        <select class="diff-sel" id="diffSel">
+            <option value="easy">⭐ 基础 (1-5的口诀)</option>
+            <option value="normal" selected>⚡ 普通 (全部)</option>
+            <option value="hard">🔥 困难 (7/8/9的口诀)</option>
+        </select>
+        <span class="setup-label" style="margin-left:10px;">📝 题数：</span>
+        <select class="diff-sel" id="countSel">
+            <option value="5">5 题（快速）</option>
+            <option value="10" selected>10 题（标准）</option>
+            <option value="15">15 题（挑战）</option>
+            <option value="20">20 题（马拉松）</option>
+        </select>
+    </div>
+    <button class="start-btn" id="startBtn" onclick="startRace()">🏁 发卷！开始比赛！</button>
+</div>
+
+<!-- 双卷子分屏 -->
+<div class="split-screen" id="splitScreen" style="display:none;">
+
+    <!-- ====== A卷（红队/左边）====== -->
+    <div class="paper paper-teamA" id="paperA">
+        <div class="paper-header ph-teamA">
+            <span class="ph-name">🔴 A卷 — 红队</span>
+            <span class="ph-score" id="scoreA">0</span>
+        </div>
+
+        <div class="paper-question">
+            <div class="pq-round" id="roundA">第 1 / 10 题</div>
+            <div class="pq-formula" id="formulaA">2 × 5 = ?</div>
+            <div class="pq-hint" id="hintA">请选择正确答案</div>
+        </div>
+
+        <div class="paper-options" id="optsA"></div>
+
+        <div class="paper-status ps-teamA">
+            <span>进度</span>
+            <div class="ps-progress">
+                <div class="ps-bar"><div class="ps-fill pf-teamA" id="barA" style="width:0%"></div></div>
+                <span id="pctA">0%</span>
+            </div>
+            <span id="statusA">等待开始...</span>
+        </div>
+
+        <div class="paper-feedback pf-wait" id="feedbackA">准备好就开始吧！</div>
+    </div>
+
+    <!-- ====== B卷（蓝队/右边）====== -->
+    <div class="paper paper-teamB" id="paperB">
+        <div class="paper-header ph-teamB">
+            <span class="ph-name">🔵 B卷 — 蓝队</span>
+            <span class="ph-score" id="scoreB">0</span>
+        </div>
+
+        <div class="paper-question">
+            <div class="pq-round" id="roundB">第 1 / 10 题</div>
+            <div class="pq-formula" id="formulaB">3 × 4 = ?</div>
+            <div class="pq-hint" id="hintB">请选择正确答案</div>
+        </div>
+
+        <div class="paper-options" id="optsB"></div>
+
+        <div class="paper-status ps-teamB">
+            <span>进度</span>
+            <div class="ps-progress">
+                <div class="ps-bar"><div class="ps-fill pf-teamB" id="barB" style="width:0%"></div></div>
+                <span id="pctB">0%</span>
+            </div>
+            <span id="statusB">等待开始...</span>
+        </div>
+
+        <div class="paper-feedback pf-wait" id="feedbackB">准备好就开始吧！</div>
+    </div>
+</div>
+
+<!-- 底部对比 -->
+<div class="compare-bar" id="compareBar" style="display:none;">
+    <div class="cb-item">
+        <div class="cb-label">🔴 红队得分</div>
+        <div class="cb-value" id="cbScoreA" style="color:var(--teamA)">0</div>
+    </div>
+    <div class="cb-vs">⚡ VS ⚡</div>
+    <div class="cb-item">
+        <div class="cb-label">🔵 蓝队得分</div>
+        <div class="cb-value" id="cbScoreB" style="color:var(--teamB)">0</div>
+    </div>
+    <div class="cb-item">
+        <div class="cb-label">领先</div>
+        <div class="cb-value" id="cbLeading">—</div>
+    </div>
+</div>
+
+<!-- 结果 -->
+<div class="result-panel" id="resultPanel">
+    <div class="rp-emoji" id="rpEmoji">🏆</div>
+    <div class="rp-winner" id="rpWinner">比赛结束！</div>
+    <div class="rp-detail" id="rpDetail"></div>
+</div>
+
+<button class="fs-btn" onclick="toggleFS()">⛶ 全屏投影</button>
+
+<script>
+// ============================================================
+// 🎯 乘法口诀赛跑 - 双卷子左右分屏版
+// ============================================================
+
+// ---- 数据 ----
+const ALL_Q = [
+    {a:1,b:1,r:1},{a:1,b:2,r:2},{a:2,b:2,r:4},
+    {a:1,b:3,r:3},{a:2,b:3,r:6},{a:3,b:3,r:9},
+    {a:1,b:4,r:4},{a:2,b:4,r:8},{a:3,b:4,r:12},{a:4,b:4,r:16},
+    {a:1,b:5,r:5},{a:2,b:5,r:10},{a:3,b:5,r:15},{a:4,b:5,r:20},{a:5,b:5,r:25},
+    {a:1,b:6,r:6},{a:2,b:6,r:12},{a:3,b:6,r:18},{a:4,b:6,r:24},{a:5,b:6,r:30},{a:6,b:6,r:36},
+    {a:1,b:7,r:7},{a:2,b:7,r:14},{a:3,b:7,r:21},{a:4,b:7,r:28},{a:5,b:7,r:35},{a:6,b:7,r:42},{a:7,b:7,r:49},
+    {a:1,b:8,r:8},{a:2,b:8,r:16},{a:3,b:8,r:24},{a:4,b:8,r:32},{a:5,b:8,r:40},{a:6,b:8,r:48},{a:7,b:8,r:56},{a:8,b:8,r:64},
+    {a:1,b:9,r:9},{a:2,b:9,r:18},{a:3,b:9,r:27},{a:4,b:9,r:36},{a:5,b:9,r:45},{a:6,b:9,r:54},{a:7,b:9,r:63},{a:8,b:9,r:72},{a:9,b:9,r:81}
+];
+
+const OPTS = ['A','B','C','D'];
+
+// ---- 状态 ----
+let teamA = null;   // {questions[], qIdx, score, wrong, done}
+let teamB = null;
+let raceStarted = false;
+
+// ---- 工具函数：生成选项 ----
+function genOpts(correct) {
+    const s = new Set([correct]);
+    while (s.size < 4) {
+        let f = correct + Math.floor(Math.random() * 11) - 5;
+        if (f > 0 && f !== correct && f <= 81) s.add(f);
+    }
+    return Array.from(s).sort(() => Math.random() - 0.5);
+}
+
+// ---- 工具函数：打乱数组 ----
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ---- 开始比赛 ----
+function startRace() {
+    // 难度筛选
+    const diff = document.getElementById('diffSel').value;
+    let pool;
+    switch(diff) {
+        case 'easy': pool = ALL_Q.filter(d => d.b <= 5 && d.a <= d.b); break;
+        case 'hard': pool = ALL_Q.filter(d => d.b >= 7 || [56,63,72,54].includes(d.r)); break;
+        default: pool = [...ALL_Q];
+    }
+
+    // 题目数量
+    const count = parseInt(document.getElementById('countSel').value);
+
+    // 为两队分别生成不同的题目（打乱后各取前N题）
+    const shuffledA = shuffle(pool);
+    const shuffledB = shuffle(pool);
+
+    teamA = {
+        questions: shuffledA.slice(0, count),
+        qIdx: 0,
+        score: 0,
+        wrong: 0,
+        done: false,
+        finishedAt: null
+    };
+    teamB = {
+        questions: shuffledB.slice(0, count),
+        qIdx: 0,
+        score: 0,
+        wrong: 0,
+        done: false,
+        finishedAt: null
+    };
+
+    raceStarted = true;
+
+    // UI切换
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('splitScreen').style.display = '';
+    document.getElementById('compareBar').style.display = '';
+
+    // 显示两边的题目
+    showQuestionA();
+    showQuestionB();
+    updateCompareBar();
+}
+
+// ---- 显示A卷题目 ----
+function showQuestionA() {
+    if (!teamA || teamA.qIdx >= teamA.questions.length) {
+        finishTeam('A');
+        return;
+    }
+
+    const q = teamA.questions[teamA.qIdx];
+    document.getElementById('roundA').textContent = `第 ${teamA.qIdx + 1} / ${teamA.questions.length} 题`;
+    document.getElementById('formulaA').innerHTML = 
+        `<span style="color:var(--teamA)">${q.a}</span> × <span style="color:var(--teamA)">${q.b}</span> = <span style="color:#e67700">?</span>`;
+    document.getElementById('hintA').textContent = '点击下方选项作答';
+    document.getElementById('statusA').textContent = '答题中...';
+
+    const opts = genOpts(q.r);
+    const grid = document.getElementById('optsA');
+    grid.innerHTML = '';
+    opts.forEach((v, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'po-btn';
+        btn.innerHTML = `<span class="potag">${OPTS[i]}</span>${v}`;
+        btn.dataset.val = v;
+        btn.onclick = () => handleAnswerA(btn, v, q);
+        grid.appendChild(btn);
+    });
+
+    setFeedbackA('wait', '请选择答案');
+}
+
+// ---- 显示B卷题目 ----
+function showQuestionB() {
+    if (!teamB || teamB.qIdx >= teamB.questions.length) {
+        finishTeam('B');
+        return;
+    }
+
+    const q = teamB.questions[teamB.qIdx];
+    document.getElementById('roundB').textContent = `第 ${teamB.qIdx + 1} / ${teamB.questions.length} 题`;
+    document.getElementById('formulaB').innerHTML = 
+        `<span style="color:var(--teamB)">${q.a}</span> × <span style="color:var(--teamB)">${q.b}</span> = <span style="color:#e67700">?</span>`;
+    document.getElementById('hintB').textContent = '点击下方选项作答';
+    document.getElementById('statusB').textContent = '答题中...';
+
+    const opts = genOpts(q.r);
+    const grid = document.getElementById('optsB');
+    grid.innerHTML = '';
+    opts.forEach((v, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'po-btn';
+        btn.innerHTML = `<span class="potag">${OPTS[i]}</span>${v}`;
+        btn.dataset.val = v;
+        btn.onclick = () => handleAnswerB(btn, v, q);
+        grid.appendChild(btn);
+    });
+
+    setFeedbackB('wait', '请选择答案');
+}
+
+// ---- 处理A卷答题 ----
+function handleAnswerA(btn, val, q) {
+    if (!raceStarted || teamA.done) return;
+
+    // 禁用A卷所有按钮
+    document.querySelectorAll('#optsA .po-btn').forEach(b => b.classList.add('disabled'));
+
+    if (val === q.r) {
+        btn.classList.add('correct');
+        teamA.score++;
+        teamA.qIdx++;
+
+        setFeedbackA('ok', `✅ 正确！${q.r}分`);
+        document.getElementById('scoreA').textContent = teamA.score;
+        
+        // 更新进度
+        const pct = Math.round((teamA.qIdx / teamA.questions.length) * 100);
+        document.getElementById('barA').style.width = `${pct}%`;
+        document.getElementById('pctA').textContent = `${pct}%`;
+
+        updateCompareBar();
+
+        // 自动下一题
+        setTimeout(() => showQuestionA(), 900);
+
+    } else {
+        btn.classList.add('wrong');
+        teamA.wrong++;
+        // 高亮正确答案
+        document.querySelectorAll('#optsA .po-btn').forEach(b => {
+            if (parseInt(b.dataset.val) === q.r) b.classList.add('correct');
+        });
+
+        setFeedbackA('ng', `❌ 不对！答案是 ${q.r}`);
+        teamA.qIdx++; // 也算过了一题（只是没加分）
+
+        const pct = Math.round((teamA.qIdx / teamA.questions.length) * 100);
+        document.getElementById('barA').style.width = `${pct}%`;
+        document.getElementById('pctA').textContent = `${pct}%`;
+
+        updateCompareBar();
+
+        setTimeout(() => showQuestionA(), 1300);
+    }
+}
+
+// ---- 处理B卷答题 ----
+function handleAnswerB(btn, val, q) {
+    if (!raceStarted || teamB.done) return;
+
+    // 禁用B卷所有按钮
+    document.querySelectorAll('#optsB .po-btn').forEach(b => b.classList.add('disabled'));
+
+    if (val === q.r) {
+        btn.classList.add('correct');
+        teamB.score++;
+        teamB.qIdx++;
+
+        setFeedbackB('ok', `✅ 正确！${q.r}分`);
+        document.getElementById('scoreB').textContent = teamB.score;
+
+        const pct = Math.round((teamB.qIdx / teamB.questions.length) * 100);
+        document.getElementById('barB').style.width = `${pct}%`;
+        document.getElementById('pctB').textContent = `${pct}%`;
+
+        updateCompareBar();
+
+        setTimeout(() => showQuestionB(), 900);
+
+    } else {
+        btn.classList.add('wrong');
+        teamB.wrong++;
+        document.querySelectorAll('#optsB .po-btn').forEach(b => {
+            if (parseInt(b.dataset.val) === q.r) b.classList.add('correct');
+        });
+
+        setFeedbackB('ng', `❌ 不对！答案是 ${q.r}`);
+        teamB.qIdx++;
+
+        const pct = Math.round((teamB.qIdx / teamB.questions.length) * 100);
+        document.getElementById('barB').style.width = `${pct}%`;
+        document.getElementById('pctB').textContent = `${pct}%`;
+
+        updateCompareBar();
+
+        setTimeout(() => showQuestionB(), 1300);
+    }
+}
+
+// ---- 设置反馈 ----
+function setFeedbackA(type, text) {
+    const el = document.getElementById('feedbackA');
+    el.className = `paper-feedback pf-${type}`;
+    el.textContent = text;
+}
+function setFeedbackB(type, text) {
+    const el = document.getElementById('feedbackB');
+    el.className = `paper-feedback pf-${type}`;
+    el.textContent = text;
+}
+
+// ---- 队伍完成 ----
+function finishTeam(side) {
+    if (side === 'A') {
+        teamA.done = true;
+        teamA.finishedAt = Date.now();
+        document.getElementById('statusA').textContent = '✅ 已完成！';
+        setFeedbackA('ok', `🎉 红队完成！得分：${teamA.score}`);
+    } else {
+        teamB.done = true;
+        teamB.finishedAt = Date.now();
+        document.getElementById('statusB').textContent = '✅ 已完成！';
+        setFeedbackB('ok', `🎉 蓝队完成！得分：${teamB.score}`);
+    }
+
+    updateCompareBar();
+
+    // 检查是否两边都完成了
+    if (teamA.done && teamB.done) {
+        setTimeout(showResult, 1200);
+    }
+}
+
+// ---- 更新底部对比栏 ----
+function updateCompareBar() {
+    document.getElementById('cbScoreA').textContent = teamA ? teamA.score : 0;
+    document.getElementById('cbScoreB').textContent = teamB ? teamB.score : 0;
+
+    const leadingEl = document.getElementById('cbLeading');
+    if (!teamA || !teamB) {
+        leadingEl.textContent = '—';
+        leadingEl.style.color = '#888';
+    } else if (teamA.score > teamB.score) {
+        leadingEl.textContent = '🔴 红队';
+        leadingEl.style.color = 'var(--teamA)';
+    } else if (teamB.score > teamA.score) {
+        leadingEl.textContent = '🔵 蓝队';
+        leadingEl.style.color = 'var(--teamB)';
+    } else {
+        leadingEl.textContent = '⚖️ 平局';
+        leadingEl.style.color = 'var(--gold)';
+    }
+}
+
+// ---- 显示结果 ----
+function showResult() {
+    raceStarted = false;
+
+    const rp = document.getElementById('resultPanel');
+    rp.className = 'result-panel show';
+
+    let winnerText, emoji;
+    if (teamA.score > teamB.score) {
+        winnerText = '🔴 红队获胜！';
+        emoji = '🏆';
+        document.getElementById('rpEmoji').style.color = 'var(--teamA)';
+    } else if (teamB.score > teamA.score) {
+        winnerText = '🔵 蓝队获胜！';
+        emoji = '🏆';
+        document.getElementById('rpEmoji').style.color = 'var(--teamB)';
+    } else {
+        winnerText = '⚖️ 平局！';
+        emoji = '🤝';
+        document.getElementById('rpEmoji').style.color = 'var(--gold)';
+    }
+
+    document.getElementById('rpEmoji').textContent = emoji;
+    document.getElementById('rpWinner').textContent = winnerText;
+
+    const diff = Math.abs(teamA.score - teamB.score);
+    document.getElementById('rpDetail').innerHTML = `
+        <table style="width:100%;margin:0 auto;font-size:clamp(14px,1.8vw,18px);text-align:left;">
+            <tr><td style="padding:6px;width:50%;">🔴 红队(A卷)</td><td style="padding:6px;">✅ ${teamA.score} 分 · ❌ ${teamA.wrong} 错</td></tr>
+            <tr><td style="padding:6px;">🔵 蓝队(B卷)</td><td style="padding:6px;">✅ ${teamB.score} 分 · ❌ ${teamB.wrong} 错</td></tr>
+        </table>
+        <br>
+        <div style="font-size:clamp(13px,1.7vw,16px);opacity:0.85;">
+            📊 分差：${diff} 分 · 总题数：各 ${teamA.questions.length} 题
+        </div>
+    `;
+
+    // 重玩按钮
+    setTimeout(() => {
+        document.getElementById('setupArea').style.display = '';
+        document.getElementById('startBtn').textContent = '🔄 再来一局';
+        document.getElementById('startBtn').onclick = () => location.reload();
+    }, 500);
+
+    rp.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---- 全屏 ----
+function toggleFS() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+}
+
+// ---- 键盘支持（同时控制两边不太合理，这里只控制活跃侧或默认左边）----
+document.addEventListener('keydown', e => {
+    if (!raceStarted) return;
+    
+    // 如果A卷还没做完，键盘操作A卷；否则操作B卷
+    const targetTeam = (!teamA || !teamA.done) ? 'A' : 'B';
+    const prefix = targetTeam === 'A' ? '#optsA' : '#optsB';
+    const handler = targetTeam === 'A' ? handleAnswerA : handleAnswerB;
+    const team = targetTeam === 'A' ? teamA : teamB;
+
+    if (team.done || team.qIdx >= team.questions.length) return;
+
+    const m = {'a':0,'b':1,'c':2,'d':3,'A':0,'B':1,'C':2,'D':3,'1':0,'2':1,'3':2,'4':3};
+    if (m[e.key] !== undefined) {
+        const btns = document.querySelectorAll(`${prefix} .po-btn:not(.disabled)`);
+        if (btns[m[e.key]]) {
+            const val = parseInt(btns[m[e.key]].dataset.val);
+            const q = team.questions[team.qIdx];
+            handler(btns[m[e.key]], val, q);
+        }
+    }
+});
+</script>
+</body>
+</html>
