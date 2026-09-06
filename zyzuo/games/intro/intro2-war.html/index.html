@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏② 口诀吃卡片 - 乘法口诀大冒险</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);min-height:100vh;color:#333}
+.top-bar{background:rgba(255,255,255,0.95);padding:12px 20px;display:flex;align-items:center;gap:15px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;border-radius:20px;text-decoration:none;font-size:14px;font-weight:bold;transition:all .3s}
+.back-btn:hover{transform:translateX(-3px)}
+.top-bar h1{font-size:18px;color:#11998e}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;margin-bottom:15px}
+.badge-basic{background:linear-gradient(135deg,#2ed573,#7bed9f)}
+
+.card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
+.card h2{font-size:18px;color:#11998e;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
+/* ===== 对战演示区 ===== */
+.battle-area{background:linear-gradient(180deg,#e8fff4,#d4ffea);border-radius:16px;padding:25px;text-align:center}
+
+/* 玩家 */
+.players{display:flex;justify-content:center;gap:40px;margin-bottom:20px}
+.player{text-align:center}
+.player-name{font-size:18px;font-weight:bold;margin-bottom:8px}
+.player-a .player-name{color:#3498db}
+.player-b .player-name{color:#e74c3c}
+.player-score{font-size:14px;color:#888;margin-bottom:8px}
+.card-pile{width:70px;height:95px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;box-shadow:0 4px 12px rgba(102,126,234,0.3);cursor:pointer;transition:all .3s}
+.card-pile:hover{transform:scale(1.05)}
+
+/* 战场 */
+.battlefield{display:flex;justify-content:center;align-items:center;gap:30px;margin:20px 0;min-height:140px;position:relative}
+.vs-text{font-size:24px;font-weight:bold;color:#ffa502;animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* 出的牌 */
+.played-card{width:110px;height:150px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 6px 20px rgba(0,0,0,0.15);position:relative;transition:all .5s cubic-bezier(0.68,-0.55,0.265,1.55)}
+.played-card.card-a{background:linear-gradient(135deg,#74b9ff,#0984e3);color:#fff}
+.played-card.card-b{background:linear-gradient(135deg,#ff7675,#d63031);color:#fff}
+.played-card .expr{font-size:22px}
+.played-card .result{font-size:28px;margin-top:5px}
+.played-card.hidden{opacity:0;transform:rotateY(90deg) scale(0.5)}
+.played-card.show{opacity:1;transform:rotateY(0) scale(1)}
+.played-card.winner{animation:winPulse .6s ease;box-shadow:0 0 30px rgba(46,213,115,0.6)}
+@keyframes winPulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* 结果提示 */
+.result-msg{font-size:20px;font-weight:bold;height:30px;margin:10px 0}
+.result-msg.win-a{color:#3498db}
+.result-msg.win-b{color:#e74c3c}
+.result-msg.tie{color:#ffa502}
+
+/* 操作按钮 */
+.btn-row{display:flex;justify-content:center;gap:12px;margin-top:15px;flex-wrap:wrap}
+.btn{padding:10px 24px;border:none;border-radius:25px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
+.btn-primary{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.btn-primary:hover{transform:scale(1.05)}
+.btn-warning{background:linear-gradient(135deg,#ffa502,#ffcc00)}
+
+/* 战绩板 */
+.scoreboard{display:flex;justify-content:center;gap:30px;margin-top:15px}
+.score-item{text-align:center;padding:10px 25px;border-radius:12px;background:#f8f9fa}
+.score-item .label{font-size:12px;color:#888}
+.score-item .value{font-size:28px;font-weight:bold}
+.score-item.a .value{color:#3498db}
+.score-item.b .value{color:#e74c3c}
+
+/* 规则步骤 */
+.step{display:flex;gap:15px;margin-bottom:12px;align-items:flex-start;padding:12px;background:#f8f9fa;border-radius:10px}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;flex-shrink:0}
+.step-text{flex:1;font-size:14px;line-height:1.7;color:#555}
+.step-text strong{color:#11998e}
+
+/* 流程图示 */
+.flow{display:flex;align-items:center;justify-content:center;gap:8px;margin:15px 0;flex-wrap:wrap}
+.flow-item{background:linear-gradient(135deg,#f8f9fa,#fff);border:2px solid #ddd;border-radius:10px;padding:10px 16px;font-size:13px;text-align:center;min-width:80px}
+.flow-arrow{font-size:20px;color:#11998e;font-weight:bold}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.info-item{background:#f8f9fa;border-radius:10px;padding:14px;border-left:4px solid #11998e}
+.info-item .label{font-size:12px;color:#888}
+.info-item .value{font-size:14px;font-weight:600;color:#333}
+
+.footer{text-align:center;padding:20px;color:rgba(255,255,255,0.7);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🃏 游戏② 口诀吃卡片</h1>
+</div>
+
+<div class="container">
+
+<span class="badge badge-basic">🟢 基础篇 · 两人对战</span>
+
+<!-- 演示区 -->
+<div class="card">
+  <h2>🎬 对战演示（点击出牌！）</h2>
+  <div class="battle-area">
+    <div class="players">
+      <div class="player player-a">
+        <div class="player-name">👦 玩家A</div>
+        <div class="player-score" id="scoreA">卡牌: 26张</div>
+        <div class="card-pile" onclick="playRound()" title="点击出牌!">🎴<br>出牌!</div>
+      </div>
+      <div class="player player-b">
+        <div class="player-name">👧 玩家B</div>
+        <div class="player-score" id="scoreB">卡牌: 26张</div>
+        <div class="card-pile" onclick="playRound()" title="点击出牌!">🎴<br>出牌!</div>
+      </div>
+    </div>
+
+    <div class="battlefield">
+      <div class="played-card card-a hidden" id="cardA">
+        <div class="expr" id="exprA">?</div>
+        <div class="result" id="resA">?</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="played-card card-b hidden" id="cardB">
+        <div class="expr" id="exprB">?</div>
+        <div class="result" id="resB">?</div>
+      </div>
+    </div>
+
+    <div class="result-msg" id="resultMsg"></div>
+
+    <div class="scoreboard">
+      <div class="score-item a"><div class="label">玩家A 赢得</div><div class="value" id="winA">0</div></div>
+      <div class="score-item b"><div class="label">玩家B 赢得</div><div class="value" id="winB">0</div></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="playRound()">🃏 出牌对战</button>
+      <button class="btn btn-warning" onclick="autoPlay()">▶ 自动对战(5轮)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 游戏流程 -->
+<div class="card">
+  <h2>📋 对战流程</h2>
+  <div class="flow">
+    <div class="flow-item">洗牌<br>平分</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">倒数<br>3-2-1</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">同时<br>翻牌</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">比<br>得数</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item" style="border-color:#2ed573;background:#e8ffe8">大的<br>赢走!</div>
+  </div>
+  
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>准备：</strong>一副卡牌平均分给两人，背面朝上叠好放在各自面前</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>出牌：</strong>两人同时喊"3-2-1！"然后翻开自己牌堆顶上的一张</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>比较：</strong>大声说出自己卡片的得数，比较谁的大</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>赢取：</strong>得数大的人赢得两张卡，放到自己牌堆底部</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>特殊情况——战争！</strong>如果得数相同，各自再翻一张，赢家通吃所有牌</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>获胜：</strong>一方卡牌全部被赢走，或时间到时卡牌多者获胜</div></div>
+</div>
+
+<!-- 示例 -->
+<div class="card">
+  <h2>💡 对战示例</h2>
+  <div style="background:#f8f9fa;border-radius:12px;padding:18px;font-size:14px;line-height:1.9;color:#555">
+    <p><strong>第1轮：</strong>A翻出 <span style="color:#3498db;font-weight:bold">[3×4=12]</span>，B翻出 <span style="color:#e74c3c;font-weight:bold">[5×6=30]</span></p>
+    <p style="padding-left:20px">→ B的30 > A的12 → <strong style="color:#e74c3c">B赢得这2张卡！</strong> ✅</p>
+    <p><strong>第2轮：</strong>A翻出 <span style="color:#3498db;font-weight:bold">[7×8=56]</span>，B翻出 <span style="color:#e74c3c;font-weight:bold">[4×9=36]</span></p>
+    <p style="padding-left:20px">→ A的56 > B的36 → <strong style="color:#3498db">A赢得这2张卡！</strong> ✅</p>
+    <p><strong>第3轮（战争！）：</strong>A翻出 <span style="color:#3498db;font-weight:bold">[6×6=36]</span>，B翻出 <span style="color:#e74c3c;font-weight:bold">[4×9=36]</span></p>
+    <p style="padding-left:20px">→ 得数相同！进入<strong style="color:#ffa502">"战争模式"</strong> → 各自再翻一张决胜！⚔️</p>
+  </div>
+</div>
+
+<!-- 基本信息 -->
+<div class="card">
+  <h2>📌 基本信息</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐ 简单</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">2人（可多人轮流）</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">10-15分钟/局</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">一套完整卡牌（54张）</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">课间活动 / 家庭亲子 / 小组对抗</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">心算速度 / 得数比较 / 反应力</div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+</div>
+
+<script>
+const cardData = [
+  {e:'1×2', r:2}, {e:'2×3', r:6}, {e:'3×4', r:12}, {e:'4×5', r:20},
+  {e:'5×6', r:30}, {e:'2×7', r:14}, {e:'3×8', r:24}, {e:'4×9', r:36},
+  {e:'5×5', r:25}, {e:'6×7', r:42}, {e:'2×8', r:16}, {e:'3×6', r:18},
+  {e:'4×4', r:16}, {e:'5×7', r:35}, {e:'6×6', r:36}, {e:'7×7', r:49},
+  {e:'2×5', r:10}, {e:'3×5', r:15}, {e:'4×6', r:24}, {e:'5×8', r:40},
+];
+let winA = 0, winB = 0;
+
+function getRandomCard() {
+  return cardData[Math.floor(Math.random() * cardData.length)];
+}
+
+function playRound() {
+  const ca = getRandomCard();
+  const cb = getRandomCard();
+
+  // 显示卡牌
+  const cardAEl = document.getElementById('cardA');
+  const cardBEl = document.getElementById('cardB');
+  
+  cardAEl.classList.remove('hidden', 'show', 'winner');
+  cardBEl.classList.remove('hidden', 'show', 'winner');
+  
+  document.getElementById('exprA').textContent = ca.e + ' = ?';
+  document.getElementById('resA').textContent = '';
+  document.getElementById('exprB').textContent = cb.e + ' = ?';
+  document.getElementById('resB').textContent = '';
+  document.getElementById('resultMsg').textContent = '';
+  document.getElementById('resultMsg').className = 'result-msg';
+
+  // 翻牌动画
+  setTimeout(() => {
+    cardAEl.classList.add('show');
+    cardBEl.classList.add('show');
+    document.getElementById('resA').textContent = ca.r;
+    document.getElementById('resB').textContent = cb.r;
+  }, 300);
+
+  // 比较结果
+  setTimeout(() => {
+    const msg = document.getElementById('resultMsg');
+    if (ca.r > cb.r) {
+      msg.textContent = `🏆 A胜！${ca.r} > ${cb.r}`;
+      msg.className = 'result-msg win-a';
+      cardAEl.classList.add('winner');
+      winA++;
+    } else if (cb.r > ca.r) {
+      msg.textContent = `🏆 B胜！${cb.r} > ${ca.r}`;
+      msg.className = 'result-msg win-b';
+      cardBEl.classList.add('winner');
+      winB++;
+    } else {
+      msg.textContent = `⚔️ 战争！${ca.r} = ${cb.r} 各再翻一张！`;
+      msg.className = 'result-msg tie';
+    }
+    document.getElementById('winA').textContent = winA;
+    document.getElementById('winB').textContent = winB;
+  }, 800);
+}
+
+let autoTimer = null;
+function autoPlay() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; return; }
+  let round = 0;
+  autoTimer = setInterval(() => {
+    playRound();
+    round++;
+    if (round >= 5) { clearInterval(autoTimer); autoTimer = null; }
+  }, 2000);
+}
+</script>
+
+</body>
+</html>
