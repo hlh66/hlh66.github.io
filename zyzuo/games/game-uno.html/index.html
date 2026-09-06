@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎰 乘法口诀UNO（接龙+功能牌·班级活动版）</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --red:#e63946;--blue:#457b9d;--green:#2a9d8f;--yellow:#f4a261;
+            --wild:#9c27b0;--dark:#1d3557;--card-w:#fff;
+            --bg-grad:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+        }
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:var(--bg-grad);min-height:100vh;padding:12px;
+            display:flex;flex-direction:column;align-items:center;
+            overflow-x:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;color:white;
+        }
+
+        /* ====== 标题 ====== */
+        .header{text-align:center;margin-bottom:8px;width:100%;max-width:1000px;}
+        .header h1{font-size:clamp(24px,3.5vw,36px);text-shadow:0 0 20px rgba(244,162,97,0.6);}
+        .header p{font-size:clamp(12px,1.5vw,15px);opacity:0.85;}
+
+        /* ====== 主容器 ====== */
+        .game-box{
+            width:100%;max-width:1000px;background:rgba(255,255,255,0.05);
+            border-radius:22px;padding:16px 20px;border:1px solid rgba(255,255,255,0.08);
+            backdrop-filter:blur(8px);box-shadow:0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        /* ====== 设置区 ====== */
+        .setup-zone{
+            background:linear-gradient(135deg,rgba(244,162,97,0.15),rgba(233,69,96,0.08));
+            border:2px solid rgba(244,162,97,0.25);border-radius:16px;
+            padding:16px 20px;margin-bottom:14px;text-align:center;
+        }
+        .setup-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+        .setup-label{font-size:clamp(14px,1.8vw,17px);font-weight:bold;color:var(--yellow);}
+        .player-sel{display:flex;gap:8px;}
+        .ps-btn{
+            width:clamp(44px,6vw,56px);height:clamp(44px,6vw,56px);
+            border:2px solid rgba(255,255,255,0.2);border-radius:12px;
+            font-size:clamp(18px,2.6vw,26px);font-weight:900;background:rgba(255,255,255,0.07);
+            color:white;cursor:pointer;transition:all 0.25s;
+        }
+        .ps-btn:hover{background:rgba(255,255,255,0.15);transform:scale(1.06);}
+        .ps-btn.active{background:var(--green);border-color:var(--green);box-shadow:0 0 12px rgba(42,157,143,0.5);}
+        
+        .start-btn{
+            padding:14px 36px;border:none;border-radius:16px;font-size:clamp(17px,2.3vw,23px);
+            font-weight:900;background:linear-gradient(135deg,var(--green),#208b7e);color:white;
+            cursor:pointer;transition:all 0.3s;letter-spacing:2px;
+            box-shadow:0 6px 20px rgba(42,157,143,0.35);
+        }
+        .start-btn:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 8px 28px rgba(42,157,143,0.45);}
+
+        /* ====== 游戏信息栏 ====== */
+        .info-bar{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:10px 16px;background:rgba(0,0,0,0.25);border-radius:12px;
+            margin-bottom:14px;flex-wrap:wrap;gap:8px;
+        }
+        .info-item{display:flex;align-items:center;gap:6px;}
+        .info-label{font-size:clamp(11px,1.4vw,14px);color:#aaa;}
+        .info-value{font-size:clamp(15px,2vw,19px);font-weight:bold;color:var(--yellow);}
+        .turn-indicator{
+            padding:6px 18px;border-radius:10px;font-size:clamp(14px,1.9vw,18px);
+            font-weight:bold;animation:pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes pulseGlow{from{box-shadow:0 0 5px transparent;}to{box-shadow:0 0 15px currentColor;}}
+
+        /* ====== 中央牌桌 ====== */
+        .table-center{
+            display:flex;flex-direction:column;align-items:center;gap:14px;
+            margin-bottom:14px;
+        }
+
+        /* 牌堆区 */
+        .deck-area{
+            display:flex;align-items:center;gap:30px;justify-content:center;
+        }
+        .deck-pile{
+            width:clamp(80px,11vw,120px);height:clamp(110px,15vw,165px);
+            border-radius:14px;display:flex;flex-direction:column;align-items:center;
+            justify-content:center;cursor:pointer;transition:all 0.3s;position:relative;
+            box-shadow:0 6px 20px rgba(0,0,0,0.3);
+        }
+        .deck-pile:hover{transform:translateY(-6px) scale(1.03);}
+        .deck-draw{
+            background:linear-gradient(135deg,#2d3436,#636e72);border:3px solid #74b9ff;
+        }
+        .deck-discard{
+            background:var(--card-w);border:3px solid #ddd;
+        }
+        .deck-icon{font-size:clamp(28px,4vw,42px);}
+        .deck-label{font-size:clamp(10px,1.3vw,13px);color:#aaa;margin-top:4px;font-weight:bold;}
+        .discard-formula{
+            font-size:clamp(22px,3.5vw,38px);font-weight:900;color:#333;
+        }
+
+        /* ====== 出牌区（手牌展示）====== */
+        .hand-area{
+            background:rgba(0,0,0,0.2);border-radius:16px;padding:14px 18px;
+            border:1px solid rgba(255,255,255,0.06);
+        }
+        .hand-title{
+            text-align:center;font-size:clamp(14px,1.9vw,18px);
+            font-weight:bold;color:var(--yellow);margin-bottom:10px;
+        }
+        .hand-cards{
+            display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+        }
+
+        /* UNO风格卡片 */
+        .uno-card{
+            width:clamp(70px,10vw,105px);height:clamp(95px,13vw,145px);
+            border-radius:12px;border:3px solid;cursor:pointer;
+            transition:all 0.25s;position:relative;display:flex;
+            flex-direction:column;align-items:center;justify-content:center;
+            box-shadow:0 4px 14px rgba(0,0,0,0.25);
+        }
+        .uno-card:hover:not(.disabled):not(.played){
+            transform:translateY(-10px) scale(1.06) rotateZ(2deg);
+            box-shadow:0 10px 28px rgba(0,0,0,0.35);
+            z-index:10;
+        }
+        .uno-card:active:not(.disabled){transform:scale(0.94);}
+        .uno-card.disabled{opacity:0.35;cursor:not-allowed;filter:grayscale(0.6);}
+        .uno-card.played{opacity:0.3;transform:scale(0.85);}
+
+        /* 卡片颜色 */
+        .uc-red{background:linear-gradient(135deg,#ff6b6b,#ee5a52);border-color:#c0392b;color:white;}
+        .uc-blue{background:linear-gradient(135deg,#74b9ff,#0984e3);border-color:#2980b9;color:white;}
+        .uc-green{background:linear-gradient(135deg,#55efc4,#00b894);border-color:#00a884;color:white;}
+        .uc-yellow{background:linear-gradient(135deg:#ffeaa7,#fdcb6e);border-color:#f39c12;color:#333;}
+        .uc-wild{background:linear-gradient(135deg,#a29bfe,#6c5ce7);border-color:#5b4cdb;color:white;}
+
+        /* 卡片内容 */
+        .uc-formula{font-size:clamp(18px,2.8vw,30px);font-weight:900;line-height:1.1;}
+        .uc-result{font-size:clamp(13px,1.8vw,17px);font-weight:bold;margin-top:2px;opacity:0.9;}
+        .uc-type{
+            position:absolute;top:4px;left:5px;font-size:clamp(9px,1.2vw,12px);
+            font-weight:bold;padding:1px 5px;border-radius:6px;background:rgba(0,0,0,0.25);
+        }
+        .uc-corner{
+            position:absolute;bottom:3px;right:5px;font-size:clamp(11px,1.5vw,15px);
+            font-weight:900;opacity:0.7;
+        }
+
+        /* 功能牌特殊样式 */
+        .uc-special .uc-formula{font-size:clamp(22px,3.2vw,36px);}
+
+        /* ====== 答题弹窗（核心交互）====== */
+        .answer-modal{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.75);display:none;align-items:center;
+            justify-content:center;z-index:200;backdrop-filter:blur(6px);
+        }
+        .answer-modal.show{display:flex;animation:modalIn 0.3s ease;}
+        @keyframes modalIn{from{opacity:0}to{opacity:1}}
+
+        .am-content{
+            background:linear-gradient(135deg,#1a1a2e,#16213e);
+            border:3px solid var(--yellow);border-radius:22px;
+            padding:clamp(20px,3vw,32px);width:90%;max-width:600px;
+            text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 40px rgba(244,162,97,0.15);
+        }
+        .am-title{font-size:clamp(18px,2.5vw,24px);color:var(--yellow);margin-bottom:12px;font-weight:bold;}
+        .am-card-preview{
+            font-size:clamp(36px,6vw,64px);font-weight:900;margin-bottom:14px;
+            padding:16px;border-radius:14px;background:rgba(255,255,255,0.06);
+        }
+        .am-question{font-size:clamp(14px,1.9vw,18px);color:#ccc;margin-bottom:16px;}
+        .am-options{
+            display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+        }
+        .am-opt{
+            aspect-ratio:2/1;border:3px solid rgba(255,255,255,0.15);border-radius:16px;
+            background:rgba(255,255,255,0.05);color:white;
+            font-size:clamp(28px,4.5vw,48px);font-weight:900;
+            cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;
+        }
+        .am-opt:hover{border-color:var(--green);background:rgba(42,157,143,0.15);transform:scale(1.03);}
+        .am-opt:active{transform:scale(0.95);}
+        .am-opt.correct{border-color:var(--green)!important;background:rgba(42,157,143,0.3)!important;animation:correctPop 0.4s ease;}
+        .am-opt.wrong{border-color:var(--red)!important;background:rgba(230,57,70,0.3)!important;animation:shakeBtn 0.4s ease;}
+        @keyframes correctPop{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+        @keyframes shakeBtn{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+
+        /* ====== 消息提示 ====== */
+        .msg-toast{
+            position:fixed;top:20px;left:50%;transform:translateX(-50%);
+            padding:12px 28px;border-radius:14px;font-size:clamp(15px,2vw,20px);
+            font-weight:bold;z-index:300;pointer-events:none;
+            animation:toastIn 0.35s ease,toastOut 0.35s ease 1.8s forwards;
+            white-space:nowrap;
+        }
+        @keyframes toastIn{from{top:-50px;opacity:0}to{top:20px;opacity:1}}
+        @keyframes toastOut{from{top:20px;opacity:1}to{top:-50px;opacity:0}}
+        .msg-ok{background:linear-gradient(135deg,var(--green),#208b7e);color:white;}
+        .msg-ng{background:linear-gradient(135deg,var(--red),#c0392b);color:white;}
+        .msg-info{background:linear-gradient(135deg,var(--blue),#2980b9);color:white;}
+        .msg-gold{background:linear-gradient(135deg,var(--yellow),#e17055);color:#333;}
+
+        /* ====== 玩家信息面板 ====== */
+        .players-panel{
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+            gap:10px;margin-bottom:14px;
+        }
+        .pp-card{
+            background:rgba(0,0,0,0.2);border-radius:12px;padding:10px 14px;
+            border-left:4px solid;text-align:center;transition:all 0.3s;
+        }
+        .pp-card.active-turn{transform:scale(1.04);box-shadow:0 0 15px rgba(244,162,97,0.3);}
+        .pp-name{font-size:clamp(13px,1.7vw,16px);font-weight:bold;margin-bottom:4px;}
+        .pp-cards{font-size:clamp(11px,1.4vw,14px);color:#aaa;}
+        .pp-score{font-size:clamp(14px,1.8vw,17px);font-weight:bold;color:var(--yellow);margin-top:2px;}
+
+        /* ====== 规则说明折叠 ====== */
+        .rules-toggle{
+            text-align:center;margin-top:10px;
+        }
+        .rt-btn{
+            padding:8px 20px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;
+            background:transparent;color:#aaa;cursor:pointer;font-size:clamp(12px,1.5vw,15px);
+            transition:all 0.25s;
+        }
+        .rt-btn:hover{color:white;border-color:rgba(255,255,255,0.3);}
+        .rules-content{
+            max-height:0;overflow:hidden;transition:max-height 0.4s ease;
+            background:rgba(0,0,0,0.15);border-radius:12px;margin-top:8px;
+        }
+        .rules-content.show{max-height:500px;padding:14px;}
+        .rules-text{font-size:clamp(12px,1.5vw,15px);line-height:1.7;color:#bbb;}
+
+        /* ====== 结算面板 ====== */
+        .result-panel{
+            display:none;text-align:center;padding:24px;border-radius:18px;
+            background:linear-gradient(135deg,rgba(244,162,97,0.15),rgba(156,39,176,0.1));
+            border:3px solid var(--gold);animation:resultIn 0.6s ease;
+        }
+        .result-panel.show{display:block;}
+        @keyframes resultIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+        .rp-emoji{font-size:clamp(60px,10vw,100px);animation:bounce 1s infinite alternate;}
+        @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+        .rp-text{font-size:clamp(22px,3vw,30px);font-weight:bold;color:var(--gold);margin-top:8px;}
+        .rp-detail{font-size:clamp(14px,1.9vw,18px);color:#ddd;margin-top:10px;line-height:1.6;}
+
+        .fs-btn{
+            position:fixed;bottom:12px;right:12px;padding:10px 16px;
+            background:rgba(0,0,0,0.6);color:white;border:none;
+            border-radius:10px;cursor:pointer;font-size:13px;z-index:100;
+        }
+
+        @media(max-width:650px){
+            body{padding:8px;}
+            .hand-cards{gap:6px;}
+            .uno-card{width:62px;height:86px;}
+            .am-options{grid-template-columns:1fr;gap:8px;}
+            .deck-area{gap:16px;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🎰 乘法口诀UNO</h1>
+    <p>接龙出牌 · 功能牌 · 四选项答题 · 全班活动</p>
+</div>
+
+<div class="game-box">
+
+    <!-- 设置 -->
+    <div class="setup-zone" id="setupZone">
+        <div class="setup-row">
+            <span class="setup-label">👥 玩家人数：</span>
+            <div class="player-sel" id="playerSel">
+                <button class="ps-btn active" onclick="setPCount(2,this)">2</button>
+                <button class="ps-btn" onclick="setPCount(3,this)">3</button>
+                <button class="ps-btn" onclick="setPCount(4,this)">4</button>
+                <button class="ps-btn" onclick="setPCount(5,this)">5</button>
+                <button class="ps-btn" onclick="setPCount(6,this)">6</button>
+            </div>
+        </div>
+        <button class="start-btn" id="startBtn" onclick="startGame()">🎮 开始游戏！</button>
+    </div>
+
+    <!-- 信息栏 -->
+    <div class="info-bar" id="infoBar" style="display:none;">
+        <div class="info-item"><span class="info-label">回合</span><span class="info-value" id="turnNum">1</span></div>
+        <div class="info-item"><span class="info-label">弃牌堆</span><span class="info-value" id="discardCount">0</span></div>
+        <div class="turn-indicator" id="turnIndicator">🔴 玩家1的回合</div>
+    </div>
+
+    <!-- 玩家面板 -->
+    <div class="players-panel" id="playersPanel" style="display:none;"></div>
+
+    <!-- 中央牌桌 -->
+    <div class="table-center" id="tableCenter" style="display:none;">
+        <!-- 牌堆 -->
+        <div class="deck-area">
+            <div class="deck-pile deck-draw" onclick="drawCard()" title="点击抽牌">
+                <div class="deck-icon">🎴</div>
+                <div class="deck-label">抽牌堆</div>
+            </div>
+            <div class="deck-pile deck-discard">
+                <div class="discard-formula" id="discardFormula">?</div>
+                <div class="deck-label">弃牌堆</div>
+            </div>
+        </div>
+
+        <!-- 手牌 -->
+        <div class="hand-area">
+            <div class="hand-title" id="handTitle">🃏 你的手牌（点击出牌）</div>
+            <div class="hand-cards" id="handCards"></div>
+        </div>
+    </div>
+
+    <!-- 结果 -->
+    <div class="result-panel" id="resultPanel">
+        <div class="rp-emoji" id="rpEmoji">🏆</div>
+        <div class="rp-text" id="rpText">游戏结束！</div>
+        <div class="rp-detail" id="rpDetail"></div>
+    </div>
+
+    <!-- 规则 -->
+    <div class="rules-toggle">
+        <button class="rt-btn" onclick="toggleRules()">📖 查看规则</button>
+        <div class="rules-content" id="rulesContent">
+            <div class="rules-text">
+                <strong>🎯 游戏目标：</strong>先出完所有手牌的玩家获胜<br><br>
+                <strong>🃏 基本出牌规则：</strong><br>
+                • 点击手牌 → 弹出答题窗口 → 答对才能打出<br>
+                • 可以出的牌：得数相同 / 因数重叠 / 颜色相同<br><br>
+                <strong>⚡ 功能牌效果：</strong><br>
+                • 🔄 反转牌：改变出牌方向<br>
+                • ⏭️ 跳过牌：跳过下一位玩家<br>
+                • 🎨 万能牌：可以随时打出，选择颜色<br>
+                • ➕ 抽四牌：下一位抽4张并跳过<br><br>
+                <strong>💡 操作方式：</strong><br>
+                • 点击手牌 = 尝试出牌（需答对题目）<br>
+                • 点击抽牌堆 = 抽一张新牌<br>
+                • 支持键盘 A/B/C/D 快捷答题
+            </div>
+        </div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div style="text-align:center;margin-top:12px;" id="ctrlBtnArea"></div>
+</div>
+
+<!-- 答题弹窗 -->
+<div class="answer-modal" id="answerModal">
+    <div class="am-content">
+        <div class="am-title" id="amTitle">确认出这张牌？</div>
+        <div class="am-card-preview" id="amCardPreview">2 × 5 = ?</div>
+        <div class="am-question" id="amQuestion">这张牌的得数是多少？</div>
+        <div class="am-options" id="amOptions"></div>
+    </div>
+</div>
+
+<button class="fs-btn" onclick="toggleFS()">⛶ 全屏投影</button>
+
+<script>
+// ============================================================
+// 🎰 乘法口诀UNO - 完整游戏逻辑
+// ============================================================
+
+// ---- 数据定义 ----
+const COLORS = ['red','blue','green','yellow'];
+const COLOR_NAMES = {red:'红',blue:'蓝',green:'绿',yellow:'黄'};
+const COLOR_CSS = {red:'#e63946',blue:'#457b9d',green:'#2a9d8f',yellow:'#f4a261'};
+
+// 所有乘法口诀卡片
+const ALL_CARDS = [];
+for (let b = 1; b <= 9; b++) {
+    for (let a = 1; a <= b; a++) {
+        const r = a * b;
+        // 按得数分配颜色
+        let color;
+        if (r <= 15) color = 'red';
+        else if (r <= 30) color = 'blue';
+        else if (r <= 50) color = 'green';
+        else color = 'yellow';
+
+        ALL_CARDS.push({
+            type: 'normal',
+            a, b, r,
+            formula: `${a}×${b}`,
+            color
+        });
+    }
+}
+
+// 功能牌定义
+const SPECIAL_CARDS = [
+    {type:'reverse',name:'🔄反转',symbol:'🔄',color:'wild'},
+    {type:'skip',name:'⏭️跳过',symbol:'⏭️',color:'wild'},
+    {type:'wild',name:'🎨万能',symbol:'🎨',color:'wild'},
+    {type:'+4',name:'➕+4',symbol:'+4',color:'wild'},
+];
+
+const PLAYER_COLORS = ['#ff6b6b','#ffa94d','#51cf66','#339af0','#cc5de8','#f06595'];
+
+// ---- 游戏状态 ----
+let playerCount = 2;
+let players = [];          // [{name, cards[], score}]
+let discardPile = [];       // 弃牌堆
+let drawPile = [];          // 抽牌堆
+let currentPlayerIdx = 0;
+let direction = 1;          // 1=顺时针 -1=逆时针
+let turnNumber = 1;
+let gameStarted = false;
+
+// 当前正在尝试出的牌
+let pendingCard = null;
+let pendingCardEl = null;
+
+// ---- 初始化设置 ----
+function setPCount(n, btn) {
+    document.querySelectorAll('.ps-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    playerCount = n;
+}
+
+// ---- 开始游戏 ----
+function startGame() {
+    // 初始化牌堆
+    drawPile = shuffle([...ALL_CARDS]);
+    
+    // 加入功能牌（每种2张）
+    for (const sp of SPECIAL_CARDS) {
+        drawPile.push({...sp});
+        drawPile.push({...sp});
+    }
+    drawPile = shuffle(drawPile);
+
+    // 初始化玩家
+    players = [];
+    for (let i = 0; i < playerCount; i++) {
+        const hand = [];
+        for (let j = 0; j < 5; j++) hand.push(drawPile.pop());
+        players.push({
+            name: `玩家${i+1}`,
+            cards: hand,
+            score: 0
+        });
+    }
+
+    // 翻开第一张弃牌
+    let firstCard = drawPile.pop();
+    while (firstCard.type !== 'normal') {
+        // 如果第一张是功能牌，放回去重新抽
+        drawPile.unshift(firstCard);
+        drawPile = shuffle(drawPile);
+        firstCard = drawPile.pop();
+    }
+    discardPile = [firstCard];
+
+    // 重置状态
+    currentPlayerIdx = 0;
+    direction = 1;
+    turnNumber = 1;
+    gameStarted = true;
+
+    // UI切换
+    document.getElementById('setupZone').style.display = 'none';
+    document.getElementById('infoBar').style.display = '';
+    document.getElementById('playersPanel').style.display = '';
+    document.getElementById('tableCenter').style.display = '';
+
+    renderAll();
+    showToast(`🎮 游戏开始！${players[0].name} 先手`, 'info');
+}
+
+// ---- 洗牌 ----
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// ---- 渲染全部 ----
+function renderAll() {
+    renderPlayers();
+    renderDiscard();
+    renderHand();
+    updateTurnIndicator();
+}
+
+// ---- 渲染玩家面板 ----
+function renderPlayers() {
+    const panel = document.getElementById('playersPanel');
+    panel.innerHTML = '';
+    players.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = `pp-card ${i === currentPlayerIdx ? 'active-turn' : ''}`;
+        card.style.borderLeftColor = PLAYER_COLORS[i];
+        card.innerHTML = `
+            <div class="pp-name">${p.name}</div>
+            <div class="pp-cards">🃏 ${p.cards.length} 张</div>
+            <div class="pp-score">得分：${p.score}</div>
+        `;
+        panel.appendChild(card);
+    });
+}
+
+// ---- 渲染弃牌堆 ----
+function renderDiscard() {
+    const top = discardPile[discardPile.length - 1];
+    if (!top) return;
+    
+    const el = document.getElementById('discardFormula');
+    if (top.type === 'normal') {
+        el.innerHTML = `<span style="color:${COLOR_CSS[top.color]||'#333'}">${top.formula}=${top.r}</span>`;
+    } else {
+        el.innerHTML = `<span style="color:${COLOR_CSS['wild']}">${top.symbol}</span>`;
+    }
+    document.getElementById('discardCount').textContent = discardPile.length;
+    document.getElementById('turnNum').textContent = turnNumber;
+}
+
+// ---- 渲染当前玩家手牌 ----
+function renderHand() {
+    const container = document.getElementById('handCards');
+    container.innerHTML = '';
+
+    const p = players[currentPlayerIdx];
+    document.getElementById('handTitle').textContent = `🃏 ${p.name}的手牌（${p.cards.length}张）— 点击出牌`;
+
+    p.cards.forEach((card, idx) => {
+        const el = createCardElement(card, idx);
+        container.appendChild(el);
+    });
+}
+
+// ---- 创建卡片DOM ----
+function createCardElement(card, idx) {
+    const el = document.createElement('div');
+    
+    if (card.type === 'normal') {
+        el.className = `uno-card uc-${card.color}`;
+        el.innerHTML = `
+            <span class="uc-type">${COLOR_NAMES[card.color]}</span>
+            <span class="uc-formula">${card.formula}</span>
+            <span class="uc-result">=${card.r}</span>
+            <span class="uc-corner">${card.r}</span>
+        `;
+    } else {
+        el.className = `uno-card uc-wild uc-special`;
+        el.innerHTML = `
+            <span class="uc-type">功能</span>
+            <span class="uc-formula">${card.symbol}</span>
+            <span class="uc-result">${card.name}</span>
+        `;
+    }
+
+    // 点击事件
+    el.onclick = () => tryPlayCard(card, el, idx);
+
+    return el;
+}
+
+// ---- 尝试出牌 ----
+function tryPlayCard(card, el, idx) {
+    if (!gameStarted) return;
+
+    // 检查是否可以出
+    const topCard = discardPile[discardPile.length - 1];
+    const canPlay = checkCanPlay(card, topCard);
+
+    if (!canPlay) {
+        showToast('❌ 这张牌不能出！', 'ng');
+        el.style.animation = 'shakeBtn 0.4s ease';
+        setTimeout(() => el.style.animation = '', 400);
+        return;
+    }
+
+    // 弹出答题窗口
+    pendingCard = card;
+    pendingCardEl = el;
+    showAnswerModal(card);
+}
+
+// ---- 检查是否可出 ----
+function checkCanPlay(card, topCard) {
+    // 万能牌永远可以出
+    if (card.type === 'wild') return true;
+    if (topCard.type !== 'normal') return true;
+
+    // 得数相同
+    if (card.r === topCard.r) return true;
+    // 颜色相同
+    if (card.color === topCard.color) return true;
+    // 因数重叠（有相同的a或b）
+    if (card.a === topCard.a || card.a === topCard.b ||
+        card.b === topCard.a || card.b === topCard.b) return true;
+
+    return false;
+}
+
+// ---- 显示答题弹窗 ----
+function showAnswerModal(card) {
+    const modal = document.getElementById('answerModal');
+    modal.className = 'answer-modal show';
+
+    if (card.type === 'normal') {
+        document.getElementById('amTitle').textContent = `出牌：${card.formula}`;
+        document.getElementById('amCardPreview').innerHTML = 
+            `<span style="color:${COLOR_CSS[card.color]}">${card.formula} = ?</span>`;
+        document.getElementById('amQuestion').textContent = `请计算 ${card.a} × ${card.b} 的得数`;
+
+        // 生成选项
+        const opts = genOpts(card.r);
+        const grid = document.getElementById('amOptions');
+        grid.innerHTML = '';
+        opts.forEach((v, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'am-opt';
+            btn.textContent = v;
+            btn.onclick = () => handleAnswer(v, card.r);
+            grid.appendChild(btn);
+        });
+
+    } else {
+        // 功能牌不需要答题，直接确认
+        document.getElementById('amTitle').textContent = `使用功能牌：${card.name}`;
+        document.getElementById('amCardPreview').innerHTML = 
+            `<span style="color:${COLOR_CSS['wild']}">${card.symbol}</span>`;
+        document.getElementById('amQuestion').textContent = `确定要使用「${card.name}」吗？`;
+        
+        const grid = document.getElementById('amOptions');
+        grid.innerHTML = '';
+        const btnYes = document.createElement('div');
+        btnYes.className = 'am-opt';
+        btnYes.textContent = '✅ 确定';
+        btnYes.onclick = () => playSpecialCard(card);
+        const btnNo = document.createElement('div');
+        btnNo.className = 'am-opt';
+        btnNo.textContent = '❌ 取消';
+        btnNo.onclick = () => closeModal();
+        grid.appendChild(btnYes);
+        grid.appendChild(btnNo);
+    }
+}
+
+// ---- 生成选项 ----
+function genOpts(correct) {
+    const s = new Set([correct]);
+    while (s.size < 4) {
+        let f = correct + Math.floor(Math.random() * 11) - 5;
+        if (f > 0 && f <= 81 && f !== correct) s.add(f);
+    }
+    return Array.from(s).sort(() => Math.random() - 0.5);
+}
+
+// ---- 处理答题 ----
+function handleAnswer(val, correct) {
+    const opts = document.querySelectorAll('.am-opt');
+    opts.forEach(o => o.classList.add('disabled'));
+    // 移除之前的disabled类以便显示正确/错误样式
+    opts.forEach(o => o.style.pointerEvents = 'none');
+
+    if (val === correct) {
+        // 找到点击的那个按钮标记为正确
+        for (const o of opts) {
+            if (parseInt(o.textContent) === val) o.classList.add('correct');
+        }
+        showToast('✅ 回答正确！出牌成功！', 'ok');
+
+        setTimeout(() => {
+            closeModal();
+            executePlayCard(pendingCard);
+        }, 800);
+
+    } else {
+        for (const o of opts) {
+            if (parseInt(o.textContent) === val) o.classList.add('wrong');
+            if (parseInt(o.textContent) === correct) o.classList.add('correct');
+        }
+        showToast(`❌ 不对哦！答案是 ${correct}`, 'ng');
+
+        setTimeout(() => {
+            closeModal();
+            // 答错不能出牌，跳过
+            nextTurn();
+        }, 1200);
+    }
+}
+
+// ---- 关闭弹窗 ----
+function closeModal() {
+    document.getElementById('answerModal').className = 'answer-modal';
+    pendingCard = null;
+    pendingCardEl = null;
+}
+
+// ---- 执行出牌（普通牌）----  
+function executePlayCard(card) {
+    const p = players[currentPlayerIdx];
+    
+    // 从手牌移到弃牌堆
+    const idx = p.cards.findIndex(c => c === card);
+    if (idx > -1) p.cards.splice(idx, 1);
+    discardPile.push(card);
+
+    // 加分
+    p.score += card.r || 5;
+
+    // 检查胜利
+    if (p.cards.length === 0) {
+        endGame(currentPlayerIdx);
+        return;
+    }
+
+    nextTurn();
+}
+
+// ---- 执行功能牌 ----
+function playSpecialCard(card) {
+    closeModal();
+
+    const p = players[currentPlayerIdx];
+    const idx = p.cards.findIndex(c => c === card);
+    if (idx > -1) p.cards.splice(idx, 1);
+    discardPile.push(card);
+
+    // 功能牌效果
+    switch (card.type) {
+        case 'reverse':
+            direction *= -1;
+            showToast('🔄 方向反转！', 'gold');
+            break;
+        case 'skip':
+            showToast(`⏭️ ${players[(currentPlayerIdx + direction + playerCount) % playerCount].name} 被跳过！`, 'info');
+            // 多走一步相当于跳过下一家
+            currentPlayerIdx = (currentPlayerIdx + direction + playerCount) % playerCount;
+            break;
+        case '+4':
+            const targetIdx = (currentPlayerIdx + direction + playerCount) % playerCount;
+            // 给目标玩家加4张牌
+            for (let i = 0; i < 4; i++) {
+                if (drawPile.length > 0) players[targetIdx].cards.push(drawPile.pop());
+            }
+            showToast(`➕ ${players[targetIdx].name} 抽4张牌并被跳过！`, 'ng');
+            currentPlayerIdx = targetIdx; // 再多走一步跳过
+            break;
+        case 'wild':
+            showToast('🎨 万能牌已打出！', 'gold');
+            break;
+    }
+
+    p.score += 10;
+
+    // 检查胜利
+    if (p.cards.length === 0) {
+        endGame(currentPlayerIdx);
+        return;
+    }
+
+    nextTurn();
+}
+
+// ---- 抽牌 ----
+function drawCard() {
+    if (!gameStarted) return;
+
+    const p = players[currentPlayerIdx];
+
+    if (drawPile.length === 0) {
+        // 重新洗弃牌堆（保留最后一张）
+        const keep = discardPile.pop();
+        drawPile = shuffle(discardPile);
+        discardPile = [keep];
+    }
+
+    if (drawPile.length > 0) {
+        const newCard = drawPile.pop();
+        p.cards.push(newCard);
+        showToast(`${p.name} 抽了一张牌`, 'info');
+        renderAll();
+    }
+
+    // 抽完牌后结束回合
+    setTimeout(() => nextTurn(), 500);
+}
+
+// ---- 下一回合 ----
+function nextTurn() {
+    currentPlayerIdx = (currentPlayerIdx + direction + playerCount) % playerCount;
+    turnNumber++;
+    renderAll();
+}
+
+// ---- 更新回合指示器 ----
+function updateTurnIndicator() {
+    const el = document.getElementById('turnIndicator');
+    const p = players[currentPlayerIdx];
+    el.textContent = `${direction === 1 ? '▶️' : '◀️'} ${p.name}的回合`;
+    el.style.color = PLAYER_COLORS[currentPlayerIdx];
+}
+
+// ---- 游戏结束 ----
+function endGame(winnerIdx) {
+    gameStarted = false;
+
+    const winner = players[winnerIdx];
+    const sorted = [...players].sort((a,b) => b.score - a.score);
+
+    document.getElementById('tableCenter').style.display = 'none';
+    document.getElementById('playersPanel').style.display = 'none';
+
+    const rp = document.getElementById('resultPanel');
+    rp.className = 'result-panel show';
+
+    document.getElementById('rpEmoji').textContent = '🏆';
+    document.getElementById('rpText').textContent = `${winner.name} 获胜！`;
+
+    let detailHtml = `🥇 <strong>${sorted[0].name}</strong> — ${sorted[0].score}分<br>`;
+    if (sorted[1]) detailHtml += `🥈 <strong>${sorted[1].name}</strong> — ${sorted[1].score}分<br>`;
+    if (sorted[2]) detailHtml += `🥉 <strong>${sorted[2].name}</strong> — ${sorted[2].score}分<br>`;
+    detailHtml += `<br>📊 总回合数：${turnNumber}<br>🃏 弃牌堆：${discardPile.length}张`;
+    document.getElementById('rpDetail').innerHTML = detailHtml;
+
+    document.getElementById('ctrlBtnArea').innerHTML = 
+        `<button class="start-btn" onclick="location.reload()">🔄 再来一局</button>`;
+
+    showToast(`🎉 ${winner.name} 赢得了比赛！`, 'gold');
+}
+
+// ---- Toast消息 ----
+function showToast(msg, type='info') {
+    const existing = document.querySelector('.msg-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `msg-toast msg-${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 2200);
+}
+
+// ---- 规则折叠 ----
+function toggleRules() {
+    const rc = document.getElementById('rulesContent');
+    rc.classList.toggle('show');
+}
+
+// ---- 全屏 ----
+function toggleFS() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+}
+
+// ---- 键盘支持 ----
+document.addEventListener('keydown', e => {
+    const modal = document.getElementById('answerModal');
+    if (!modal.classList.contains('show')) return;
+
+    const m = {'a':0,'b':1,'c':2,'d':3,'A':0,'B':1,'C':2,'D':3,'1':0,'2':1,'3':2,'4':3};
+    if (m[e.key] !== undefined) {
+        const opts = document.querySelectorAll('.am-opt:not(.disabled)');
+        // 检查是否是功能牌确认界面
+        if (opts.length === 2 && pendingCard && pendingCard.type !== 'normal') {
+            if (m[e.key] === 0) opts[0].click(); // 确定
+        } else if (opts[m[e.key]]) {
+            opts[m[e.key]].click();
+        }
+    }
+    if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
