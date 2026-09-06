@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 乘法口诀翻牌大冒险</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+            min-height:100vh;padding:15px;display:flex;flex-direction:column;align-items:center;
+            color:white;
+        }
+
+        /* ====== 标题区 ====== */
+        .header{text-align:center;margin-bottom:12px;}
+        .game-title{font-size:26px;font-weight:bold;background:linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none;}
+        .game-subtitle{font-size:13px;color:#aaa;margin-top:4px;}
+
+        /* ====== 计分板 ====== */
+        .scoreboard{
+            display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+            background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 24px;
+            margin-bottom:12px;backdrop-filter:blur(8px);
+        }
+        .score-item{text-align:center;}
+        .score-label{font-size:11px;color:#aaa;}
+        .score-value{font-size:22px;font-weight:bold;}
+        .sv-correct{color:#2ed573;}
+        .sv-wrong{color:#ff4757;}
+        .sv-score{color:#f1c40f;}
+        .sv-left{color:#70a1ff;}
+
+        /* ====== 筛选按钮 ====== */
+        .filter-bar{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+        .fbtn{
+            padding:7px 16px;border:2px solid rgba(255,255,255,0.2);border-radius:20px;
+            font-size:13px;font-weight:bold;color:#ccc;background:rgba(255,255,255,0.05);
+            cursor:pointer;transition:all 0.25s;
+        }
+        .fbtn:hover{background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.4);}
+        .fbtn.active{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-color:#667eea;}
+
+        /* ====== 卡片区 ====== */
+        .card-area{
+            width:100%;max-width:520px;perspective:1200px;margin-bottom:14px;
+        }
+
+        .flip-card{
+            width:100%;height:280px;cursor:pointer;position:relative;
+            transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(.4,.2,.2,1);
+        }
+        .flip-card.flipped{transform:rotateY(180deg);}
+
+        .card-face{
+            position:absolute;width:100%;height:100%;
+            backface-visibility:hidden;-webkit-backface-visibility:hidden;
+            border-radius:18px;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            box-shadow:0 10px 40px rgba(0,0,0,0.35),0 0 60px rgba(102,126,234,0.15);
+        }
+
+        /* 背面（未翻开）*/
+        .card-back{
+            background:linear-gradient(145deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+            border:3px solid rgba(255,255,255,0.2);
+        }
+        .back-icon{font-size:56px;margin-bottom:12px;animation:pulse 2s infinite ease-in-out;}
+        .back-text{font-size:19px;font-weight:bold;color:rgba(255,255,255,0.95);}
+        .back-hint{font-size:12px;color:rgba(255,255,255,0.6);margin-top:8px;}
+
+        @keyframes pulse{
+            0%,100%{transform:scale(1);}50%{transform:scale(1.08);}
+        }
+
+        /* 正面（翻开）*/
+        .card-front{
+            background:linear-gradient(160deg,#ffffff 0%,#f5f7fa 100%);
+            transform:rotateY(180deg);color:#333;
+        }
+        .front-formula{font-size:48px;font-weight:900;color:#222;line-height:1.2;text-shadow:2px 2px 4px rgba(0,0,0,0.06);}
+        .front-question{font-size:17px;color:#888;margin-top:8px;font-weight:bold;}
+        .front-progress{margin-top:12px;font-size:13px;color:#aaa;}
+
+        /* ====== 选项按钮 ====== */
+        .options-area{
+            width:100%;max-width:520px;display:grid;
+            grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;
+        }
+        .opt-btn{
+            padding:16px 12px;border:3px solid rgba(255,255,255,0.15);border-radius:16px;
+            font-size:17px;font-weight:bold;color:white;background:rgba(255,255,255,0.07);
+            cursor:pointer;transition:all 0.25s;text-align:center;
+            backdrop-filter:blur(6px);
+        }
+        .opt-btn:hover:not(:disabled){background:rgba(255,255,255,0.15);transform:scale(1.03);border-color:rgba(255,255,255,0.3);}
+        .opt-btn:disabled{opacity:0.45;cursor:default;}
+        
+        .opt-a:hover:not(:disabled){border-color:#2ed573;background:rgba(46,213,115,0.15);}
+        .opt-b:hover:not(:disabled){border-color:#f1c40f;background:rgba(241,196,64,0.15);}
+        .opt-c:hover:not(:disabled){border-color:#f093fb;background:rgba(240,147,251,0.15);}
+        .opt-d:hover:not(:disabled){border-color:#ff4757;background:rgba(255,71,87,0.15);}
+
+        .opt-btn.correct{background:linear-gradient(135deg,#2ed573,#1e90ff)!important;border-color:#2ed573!important;color:white!important;animation:correctPop 0.4s ease;}
+        .opt-btn.wrong{background:linear-gradient(135deg,#ff4757,#c0392b)!important;border-color:#ff4757!important;color:white!important;animation:wrongShake 0.4s ease;}
+
+        @keyframes correctPop{
+            0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}
+        }
+        @keyframes wrongShake{
+            0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}
+        }
+
+        /* 正确答案显示 */
+        .answer-reveal{
+            text-align:center;font-size:22px;font-weight:bold;color:#2ed573;
+            margin-bottom:14px;height:28px;opacity:0;transition:opacity 0.3s;
+        }
+        .answer-reveal.show{opacity:1;}
+
+        /* ====== 底部操作栏 ====== */
+        .action-bar{
+            display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;
+        }
+        .act-btn{
+            padding:10px 22px;border:2px solid rgba(255,255,255,0.2);border-radius:25px;
+            font-size:13px;font-weight:bold;color:#ddd;background:rgba(255,255,255,0.05);
+            cursor:pointer;transition:all 0.25s;
+        }
+        .act-btn:hover{background:rgba(255,255,255,0.15);color:white;transform:translateY(-2px);}
+
+        /* ====== 结果面板 ====== */
+        .result-overlay{
+            display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.85);z-index:100;
+            align-items:center;justify-content:center;backdrop-filter:blur(8px);
+        }
+        .result-overlay.show{display:flex;}
+        .result-box{
+            background:linear-gradient(160deg,#1a1a2e,#16213e);
+            border:2px solid rgba(255,255,255,0.15);border-radius:24px;
+            padding:30px 36px;text-align:center;max-width:420px;width:90%;
+            box-shadow:0 20px 60px rgba(0,0,0,0.5);
+        }
+        .result-title{font-size:28px;font-weight:bold;margin-bottom:16px;
+            background:linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .result-score-big{font-size:64px;font-weight:900;color:#f1c40f;margin:10px 0;}
+        .result-stats{display:flex;gap:16px;justify-content:center;margin:16px 0;}
+        .rs-item{text-align:center;}
+        .rs-num{font-size:24px;font-weight:bold;}
+        .rs-lbl{font-size:11px;color:#aaa;}
+        .result-msg{font-size:15px;color:#ccc;margin:16px 0;line-height:1.6;}
+        .result-stars{font-size:32px;margin:10px 0;}
+        .restart-btn{
+            padding:14px 36px;border:none;border-radius:30px;font-size:16px;font-weight:bold;
+            cursor:pointer;background:linear-gradient(135deg,#667eea,#764ba2);color:white;
+            transition:all 0.25s;margin-top:8px;
+        }
+        .restart-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(102,126,234,0.4);}
+
+        /* 响应式 */
+        @media(max-width:550px){
+            .game-title{font-size:21px;}
+            .flip-card{height:230px;}
+            .front-formula{font-size:38px;}
+            .scoreboard{padding:8px 16px;gap:12px;}
+            .score-value{font-size:18px;}
+            .opt-btn{padding:12px 10px;font-size:15px;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="game-title">🎮 乘法口诀翻牌大冒险</div>
+    <div class="game-subtitle">点击卡片翻开 → 选择答案 → 挑战全部45道！</div>
+</div>
+
+<!-- 计分板 -->
+<div class="scoreboard">
+    <div class="score-item"><div class="score-label">🎯 得分</div><div class="score-value sv-score" id="scoreVal">0</div></div>
+    <div class="score-item"><div class="score-label">✅ 正确</div><div class="score-value sv-correct" id="correctVal">0</div></div>
+    <div class="score-item"><div class="score-label">❌ 错误</div><div class="score-value sv-wrong" id="wrongVal">0</div></div>
+    <div class="score-item"><div class="score-label">🃏 剩余</div><div class="score-value sv-left" id="leftVal">45</div></div>
+</div>
+
+<!-- 筛选 -->
+<div class="filter-bar" id="filterBar"></div>
+
+<!-- 翻牌卡片 -->
+<div class="card-area">
+    <div class="flip-card" id="flipCard" onclick="flipCard()">
+        <div class="card-face card-back">
+            <div class="back-icon">🃏</div>
+            <div class="back-text">❓ 点击翻开卡片</div>
+            <div class="back-hint">看看这道题你会不会？</div>
+        </div>
+        <div class="card-face card-front">
+            <div class="front-formula" id="formulaDisplay"></div>
+            <div class="front-question" id="questionDisplay"></div>
+            <div class="front-progress" id="progressDisplay"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 答案提示 -->
+<div class="answer-reveal" id="answerReveal"></div>
+
+<!-- 四选一选项 -->
+<div class="options-area" id="optionsArea">
+    <button class="opt-btn opt-a" onclick="checkAnswer(this,'A')">A. 我会！直接答 ✨</button>
+    <button class="opt-btn opt-b" onclick="checkAnswer(this,'B')">B. 提示一下 💡</button>
+    <button class="opt-btn opt-c" onclick="checkAnswer(this,'C')">C. 不太确定 🤔</button>
+    <button class="opt-btn opt-d" onclick="checkAnswer(this,'D')">D. 完全不会 😅</button>
+</div>
+
+<!-- 操作栏 -->
+<div class="action-bar">
+    <button class="act-btn" onclick="skipCard()">⏭️ 跳过此题</button>
+    <button class="act-btn" onclick="toggleAuto()">▶️ 自动播放</button>
+    <button class="act-btn" onclick="showResult()">📊 查看结果</button>
+</div>
+
+<!-- 结果面板 -->
+<div class="result-overlay" id="resultOverlay">
+    <div class="result-box">
+        <div class="result-title">🏆 挑战完成！</div>
+        <div class="result-stars" id="resultStars"></div>
+        <div class="result-score-big" id="finalScore">0</div>
+        <div class="result-stats">
+            <div class="rs-item"><div class="rs-num sv-correct" id="fCorrect">0</div><div class="rs-lbl">正确</div></div>
+            <div class="rs-item"><div class="rs-num sv-wrong" id="fWrong">0</div><div class="rs-lbl">错误</div></div>
+            <div class="rs-item"><div class="rs-num sv-score" id="fSkip">0</div><div class="rs-lbl">跳过</div></div>
+        </div>
+        <div class="result-msg" id="resultMsg"></div>
+        <button class="restart-btn" onclick="restartGame()">🔄 再玩一次</button>
+    </div>
+</div>
+
+<script>
+// ====== 题库生成 ======
+let allQuestions = [];
+for (let i = 1; i <= 9; i++) {
+    for (let j = i; j <= 9; j++) {
+        allQuestions.push({ a: i, b: j, ans: i * j });
+    }
+}
+
+// 打乱
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ====== 游戏状态 ======
+let questions = shuffle(allQuestions);
+let qIdx = 0;
+let score = 0;
+let correct = 0;
+let wrong = 0;
+let skipCount = 0;
+let currentFilter = 'all';
+let autoMode = false;
+let autoTimer = null;
+let answered = false;
+
+// ====== 初始化筛选栏 ======
+function initFilters() {
+    const bar = document.getElementById('filterBar');
+    const filters = [
+        { key: 'all', label: '📋 全部口诀' },
+        { key: '2', label: '2的口诀' },
+        { key: '3', label: '3的口诀' },
+        { key: '4', label: '4的口诀' },
+        { key: '5', label: '5的口诀' },
+        { key: '6', label: '6的口诀' },
+        { key: '7', label: '7的口诀' },
+        { key: '8', label: '8的口诀' },
+        { key: '9', label: '9的口诀' },
+    ];
+    bar.innerHTML = filters.map(f =>
+        `<button class="fbtn ${f.key==='all'?'active':''}" onclick="setFilter('${f.key}',this)">${f.label}</button>`
+    ).join('');
+}
+
+function setFilter(key, btn) {
+    currentFilter = key;
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    let filtered = allQuestions;
+    if (key !== 'all') {
+        const n = parseInt(key);
+        filtered = allQuestions.filter(q => q.a === n || q.b === n);
+    }
+    questions = shuffle(filtered);
+    qIdx = 0;
+    resetStats();
+    loadQuestion();
+}
+
+function resetStats() {
+    score = 0; correct = 0; wrong = 0; skipCount = 0;
+    updateScoreboard();
+}
+
+// ====== 加载题目 ======
+function loadQuestion() {
+    if (qIdx >= questions.length) {
+        showResult();
+        return;
+    }
+
+    const q = questions[qIdx];
+    document.getElementById('formulaDisplay').textContent = `${q.a} × ${q.b} = ?`;
+    document.getElementById('questionDisplay').textContent = `第 ${qIdx + 1} / ${questions.length} 题`;
+    document.getElementById('progressDisplay').textContent = `进度：${Math.round((qIdx / questions.length) * 100)}%`;
+
+    // 重置卡片和选项
+    document.getElementById('flipCard').classList.remove('flipped');
+    document.getElementById('answerReveal').classList.remove('show');
+    document.getElementById('answerReveal').textContent = '';
+
+    const opts = document.querySelectorAll('.opt-btn');
+    opts.forEach(o => {
+        o.disabled = false;
+        o.className = o.className.replace(/\s*correct\s*/g, '').replace(/\s*wrong\s*/g, '');
+    });
+
+    answered = false;
+
+    // 更新剩余
+    document.getElementById('leftVal').textContent = questions.length - qIdx;
+}
+
+// ====== 翻牌 ======
+function flipCard() {
+    if (!document.getElementById('flipCard').classList.contains('flipped')) {
+        document.getElementById('flipCard').classList.add('flipped');
+    }
+}
+
+// ====== 检查答案 ======
+function checkAnswer(btn, choice) {
+    if (answered || !document.getElementById('flipCard').classList.contains('flipped')) return;
+    answered = true;
+
+    const q = questions[qIdx];
+    const isCorrect = choice === 'A';
+
+    // 禁用所有选项
+    document.querySelectorAll('.opt-btn').forEach(o => o.disabled = true);
+
+    if (isCorrect) {
+        btn.classList.add('correct');
+        correct++;
+        score += 10;
+        showAnswer(`✅ 太棒了！${q.a} × ${q.b} = ${q.ans}`, '#2ed573');
+    } else {
+        btn.classList.add('wrong');
+        // 显示正确答案是哪个
+        document.querySelector('.opt-a').classList.add('correct');
+        wrong++;
+        score = Math.max(0, score - 3);
+        showAnswer(`💡 正确答案是 ${q.ans}（${q.a}×${q.b}=${q.ans}）`, '#f1c40f');
+    }
+
+    updateScoreboard();
+
+    // 自动进入下一题
+    setTimeout(() => {
+        qIdx++;
+        loadQuestion();
+    }, 1400);
+}
+
+function showAnswer(text, color) {
+    const el = document.getElementById('answerReveal');
+    el.textContent = text;
+    el.style.color = color;
+    el.classList.add('show');
+}
+
+// ====== 跳过 ======
+function skipCard() {
+    if (answered) return;
+    skipCount++;
+    qIdx++;
+    document.getElementById('leftVal').textContent = Math.max(0, questions.length - qIdx);
+    loadQuestion();
+}
+
+// ====== 自动播放 ======
+function toggleAuto() {
+    autoMode = !autoMode;
+    if (autoMode) {
+        flipCard();
+        autoTimer = setInterval(() => {
+            if (!answered && document.getElementById('flipCard').classList.contains('flipped')) {
+                checkAnswer(document.querySelector('.opt-a'), 'A');
+            } else if (!document.getElementById('flipCard').classList.contains('flipped')) {
+                flipCard();
+            }
+        }, 2500);
+        // 先翻一次
+        setTimeout(flipCard, 500);
+    } else {
+        clearInterval(autoTimer);
+        autoTimer = null;
+    }
+}
+
+// ====== 更新计分板 ======
+function updateScoreboard() {
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('correctVal').textContent = correct;
+    document.getElementById('wrongVal').textContent = wrong;
+    document.getElementById('leftVal').textContent = Math.max(0, questions.length - qIdx);
+}
+
+// ====== 结果面板 ======
+function showResult() {
+    stopAuto();
+    const total = correct + wrong + skipCount;
+    const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('fCorrect').textContent = correct;
+    document.getElementById('fWrong').textContent = wrong;
+    document.getElementById('fSkip').textContent = skipCount;
+
+    // 星级评价
+    let stars = '';
+    if (pct >= 95) stars = '⭐⭐⭐⭐⭐ 口诀大师！';
+    else if (pct >= 80) stars = '⭐⭐⭐⭐ 很棒！';
+    else if (pct >= 60) stars = '⭐⭐⭐ 继续加油！';
+    else if (pct >= 40) stars = '⭐⭐ 还需练习~';
+    else stars = '⭐ 多背几遍吧！';
+    document.getElementById('resultStars').textContent = stars;
+
+    // 评语
+    let msg = '';
+    if (pct >= 80) msg = '🎉 太厉害了！你的乘法口诀掌握得非常好！<br>继续保持，你就是口诀小达人！';
+    else if (pct >= 60) msg = '👍 不错哦！大部分口诀都记住了。<br>再练习一下薄弱的地方就能更棒！';
+    else if (pct >= 40) msg = '💪 加油！有些口诀还需要多读几遍。<br>建议多看圆圈图理解"几个几"的意思。';
+    else msg = '📚 别灰心！乘法口诀需要反复记忆。<br>试试用"去掉答案"模式来练习吧！';
+    document.getElementById('resultMsg').innerHTML = msg;
+
+    document.getElementById('resultOverlay').classList.add('show');
+}
+
+function stopAuto() {
+    autoMode = false;
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+}
+
+// ====== 重新开始 ======
+function restartGame() {
+    document.getElementById('resultOverlay').classList.remove('show');
+    setFilter(currentFilter, document.querySelector('.fbtn.active') || document.querySelector('.fbtn'));
+}
+
+// ====== 初始化 ======
+initFilters();
+loadQuestion();
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e) {
+    if (document.getElementById('resultOverlay').classList.contains('show')) return;
+    switch(e.key.toUpperCase()) {
+        case 'A': checkAnswer(document.querySelector('.opt-a'), 'A'); break;
+        case 'B': checkAnswer(document.querySelector('.opt-b'), 'B'); break;
+        case 'C': checkAnswer(document.querySelector('.opt-c'), 'C'); break;
+        case 'D': checkAnswer(document.querySelector('.opt-d'), 'D'); break;
+        case ' ': flipCard(); break;
+        case 'S': skipCard(); break;
+    }
+});
+</script>
+</body>
+</html>
