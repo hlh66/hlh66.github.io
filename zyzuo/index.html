@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乘法口诀大冒险 - 卓越作业展示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+
+/* 顶部标题 */
+.header { background: rgba(255,255,255,0.95); padding: 30px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.header h1 { font-size: 28px; color: #667eea; margin-bottom: 8px; }
+.header .subtitle { font-size: 14px; color: #888; }
+.header .tags { margin-top: 12px; }
+.header .tags span { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 12px; margin: 3px; }
+
+/* 导航栏 */
+.nav { display: flex; justify-content: center; gap: 10px; padding: 18px 20px; flex-wrap: wrap; }
+.nav-btn { padding: 12px 28px; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; color: #fff; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+.nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+.nav-btn.active { background: #fff; color: #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+.nav-btn[data-tab="guide"] { background: rgba(102, 126, 234, 0.9); }
+.nav-btn[data-tab="print"] { background: rgba(46, 213, 115, 0.9); }
+.nav-btn[data-tab="games"] { background: rgba(255, 165, 2, 0.9); }
+.nav-btn[data-tab="guide"]:hover, .nav-btn[data-tab="guide"].active { background: #667eea; color: #fff; }
+.nav-btn[data-tab="print"]:hover, .nav-btn[data-tab="print"].active { background: #2ed573; color: #fff; }
+.nav-btn[data-tab="games"]:hover, .nav-btn[data-tab="games"].active { background: #ffa502; color: #fff; }
+
+/* 内容区 */
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.tab-content { display: none; animation: fadeIn 0.4s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 卡片通用样式 */
+.card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: transform 0.3s; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+.card h2 { font-size: 20px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee; display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: 16px; margin: 15px 0 10px; color: #555; }
+
+/* ===== 游戏说明板块 ===== */
+.level-tag { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 8px; }
+.level-basic { background: linear-gradient(135deg, #2ed573, #7bed9f); }
+.level-up { background: linear-gradient(135deg, #ffa502, #ffcc00); }
+.level-hard { background: linear-gradient(135deg, #ff4757, #ff6b81); }
+
+.game-item { background: #f8f9fa; border-radius: 12px; padding: 18px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+.game-item.basic { border-left-color: #2ed573; }
+.game-item.up { border-left-color: #ffa502; }
+.game-item.hard { border-left-color: #ff4757; }
+.game-item h4 { font-size: 16px; margin-bottom: 8px; }
+.game-item .stars { color: #ffa502; font-size: 14px; }
+.game-item p { font-size: 14px; line-height: 1.7; color: #555; margin: 8px 0; }
+.game-item .rule-box { background: #fff; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.8; }
+.game-item .rule-box strong { color: #667eea; }
+
+/* ===== 打印素材板块 ===== */
+.print-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.print-card { background: #f8f9fa; border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+.print-card:hover { border-color: #2ed573; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(46, 213, 115, 0.2); }
+.print-card .icon { font-size: 36px; margin-bottom: 10px; }
+.print-card h4 { font-size: 15px; margin-bottom: 6px; color: #333; }
+.print-card p { font-size: 12px; color: #888; margin-bottom: 10px; }
+.print-card .btn-print { display: inline-block; background: linear-gradient(135deg, #2ed573, #7bed9f); color: #fff; padding: 8px 24px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: bold; transition: all 0.3s; }
+.print-card .btn-print:hover { box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4); }
+
+/* ===== 网页游戏板块 ===== */
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.game-card { background: linear-gradient(135deg, #fff, #f8f9fa); border-radius: 14px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; position: relative; overflow: hidden; }
+.game-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2); }
+.game-card:hover { border-color: #ffa502; transform: translateY(-4px); box-shadow: 0 8px 25px rgba(255, 165, 2, 0.25); }
+.game-card .g-icon { font-size: 40px; margin-bottom: 10px; }
+.game-card h4 { font-size: 15px; margin-bottom: 6px; color: #333; }
+.game-card .g-stars { color: #ffa502; font-size: 13px; margin-bottom: 8px; }
+.game-card p { font-size: 12px; color: #777; margin-bottom: 12px; line-height: 1.5; }
+.game-card .btn-play { display: inline-block; background: linear-gradient(135deg, #ffa502, #ff6348); color: #fff; padding: 8px 28px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: bold; transition: all 0.3s; }
+.game-card .btn-play:hover { box-shadow: 0 4px 12px rgba(255, 165, 2, 0.4); }
+
+/* 难度标签 */
+.diff { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; color: #fff; }
+.d1 { background: #2ed573; }
+.d2 { background: #ffa502; }
+.d3 { background: #ff4757; }
+.d4 { background: #a55eea; }
+.d5 { background: #eb3b5a; }
+
+/* 页脚 */
+.footer { text-align: center; padding: 25px; color: rgba(255,255,255,0.8); font-size: 13px; }
+
+/* 响应式 */
+@media (max-width: 600px) {
+    .header h1 { font-size: 22px; }
+    .nav-btn { padding: 10px 18px; font-size: 14px; }
+    .print-grid, .game-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="header">
+    <h1>🎮 乘法口诀大冒险</h1>
+    <div class="subtitle">多元化口诀学习游戏系统 · 卓越作业征集活动</div>
+    <div class="tags">
+        <span>📖 北师大版二年级上册</span>
+        <span>🃏 实体卡牌 + 网页游戏</span>
+        <span>🎯 7种线下玩法 + 12种在线游戏</span>
+        <span>⭐ 基础/提升/挑战三层递进</span>
+    </div>
+</div>
+
+<!-- 导航 -->
+<div class="nav">
+    <button class="nav-btn active" data-tab="guide" onclick="switchTab('guide')">📖 游戏说明</button>
+    <button class="nav-btn" data-tab="print" onclick="switchTab('print')">🖨️ 打印素材</button>
+    <button class="nav-btn" data-tab="games" onclick="switchTab('games')">🎮 在线游戏</button>
+</div>
+
+<div class="container">
+
+<!-- ========== 板块1：游戏说明 ========== -->
+<div id="tab-guide" class="tab-content active">
+
+    <div class="card">
+        <h2>📋 游戏体系总览</h2>
+        <p style="line-height:1.8;color:#555;font-size:14px;">
+            本作业将<strong>7种线下游戏</strong>按照难度和认知要求分为三个层次，形成循序渐进的学习路径。
+            学生从最基础的全班举牌开始，逐步过渡到策略性的口诀扑克，最终挑战综合运用的口诀三国杀。
+            每种游戏都配有详细的规则说明和变体玩法，教师可根据教学进度灵活选用。
+        </p>
+        <div style="display:flex;gap:15px;margin-top:15px;flex-wrap:wrap;">
+            <span class="level-tag level-basic">🟢 基础篇（4个）— 人人能玩 · 日常热身</span>
+            <span class="level-tag level-up">🟡 提升篇（2个）— 熟练运用 · 策略入门</span>
+            <span class="level-tag level-hard">🔴 挑战篇（1个）— 综合运用 · 竞赛对抗</span>
+        </div>
+    </div>
+
+    <!-- 🟢 基础篇 -->
+    <div class="card">
+        <h2><span class="level-tag level-basic">🟢 基础篇</span> 人人能玩 · 日常热身</h2>
+
+        <div class="game-item basic">
+            <h4>① 全班举牌 <span class="stars">⭐</span></h4>
+            <p><strong>简介：</strong>最基础的游戏！老师展示卡片，学生抢答。适合每节课前5分钟热身或课间活动。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>全班大字版卡片（投影或手持展示）<br>
+                <strong>【规则】</strong>①老师展示一张卡（如"2×5=?"）；②学生举手/起立抢答；③回答要求：说答案+完整口诀；④答对得1分。<br>
+                <strong>【变体】</strong>限时模式（5秒/10秒倒计时）、小组积分制（分4组PK）、全员举牌（用手指表示答案同时出示）、接力赛（每组排成一列依次答题）
+            </div>
+        </div>
+
+        <div class="game-item basic">
+            <h4>② 口诀吃卡片 <span class="stars">⭐⭐</span></h4>
+            <p><strong>简介：</strong>两人对战！同时出卡比大小，得数大的赢走对方的卡。类似经典纸牌游戏"战争"，规则简单刺激。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>每人一套卡牌（或共用一套平分）<br>
+                <strong>【规则】</strong>①两人各持半副卡牌，背面朝上叠好；②倒数"3-2-1"同时翻开顶上一张；③大声说出自己卡片的得数；④得数大的赢得两张卡（放自己牌堆底部）；⑤卡片用完时，谁手里的卡多谁获胜。<br>
+                <strong>【示例】</strong>A翻出[3×4=12]，B翻出[5×6=30] → B得数更大 → B赢得这两张卡。若得数相同则各自再翻一张比大小，赢家通吃所有牌（"战争"机制）
+            </div>
+        </div>
+
+        <div class="game-item basic">
+            <h4>③ 接龙比大小 <span class="stars">⭐⭐</span></h4>
+            <p><strong>简介：</strong>按顺序出牌，后一张的得数必须比前一张更大！训练心算速度和数字比较能力。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>一套卡牌（2-4人玩）<br>
+                <strong>【规则】</strong>①洗牌后每人发5张手牌，剩余做抽牌堆；②第一个人出一张牌（如2×3=6）；③下家必须出得数更大的牌（如4×5=20大于6）；④没有更大的牌或选择不出则从抽牌堆摸1张；⑤先出完手牌者获胜。<br>
+                <strong>【进阶】</strong>可设定"最小增幅"——后一张必须比前一张大至少3（如前一张是10，下一张至少要13以上），增加难度
+            </div>
+        </div>
+
+        <div class="game-item basic">
+            <h4>④ 快速找出几的口诀 <span class="stars">⭐⭐</span></h4>
+            <p><strong>简介：</strong>老师说一个数字，学生从卡牌中快速找出所有包含该数字的口诀！训练因数分解和分类思维。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>每人一套完整卡牌（铺开在桌面上）<br>
+                <strong>【规则】</strong>①老师报一个数字（如"找出所有关于7的口诀！"）；②学生在自己的卡牌中快速搜寻；③找到后举起该卡片并读出口诀；④全部找到后喊"完成！"；⑤最先找全且正确的获胜。<br>
+                <strong>【示例】</strong>老师说"6" → 学生需找出：一六得六(1×6)、二六十二(2×6)、三六十八(3×6)、六六三十六(6×6)等所有含6的口诀<br>
+                <strong>【变体】</strong>找得数（"找出所有得数是24的口诀！"→3×8、4×6、8×3、6×4）；限时挑战（30秒内能找多少）
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟡 提升篇 -->
+    <div class="card">
+        <h2><span class="level-tag level-up">🟡 提升篇</span> 熟练运用 · 策略入门</h2>
+
+        <div class="game-item up">
+            <h4>⑤ 找朋友 <span class="stars">⭐⭐⭐</span></h4>
+            <p><strong>简介：</strong>核心训练交换律和因数关系！同一道口诀的不同形式是"朋友"，得数相同的也是"朋友"。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>正向卡 + 逆向卡混合使用<br>
+                <strong>【三种玩法】</strong><br>
+                &nbsp;&nbsp;<strong>玩法一——交换律朋友：</strong>老师出一张正向卡（2×7=14），学生找出对应的逆向卡（7×2=14），说："二七十四和七二十四都是14！"<br>
+                &nbsp;&nbsp;<strong>玩法二——得数朋友：</strong>老师报一个得数（如"36！"），学生找出所有得数是36的卡片（4×9、6×6、9×4），体会"不同算式可以结果相同"<br>
+                &nbsp;&nbsp;<strong>玩法三——因数朋友：</strong>老师报一个因数（如"找出所有8的口诀！"），学生找出所有含8的口诀卡（一八得八到八八六十四共8句）<br>
+                <strong>【注意】</strong>7×7、8×8、9×9这类"平方口诀"只有一张卡，没有交换律朋友，可作为特殊卡使用
+            </div>
+        </div>
+
+        <div class="game-item up">
+            <h4>⑥ 口诀扑克 <span class="stars">⭐⭐⭐</span></h4>
+            <p><strong>简介：</strong>模仿21点/炸金花机制，用口诀卡的得数进行计算和博弈。训练多步计算能力和风险评估意识。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>填空版卡牌（不显示答案，增加心算难度）+ 筹码（棋子/糖果/积分卡）<br>
+                <strong>【规则·21点简化版】</strong>①每人发3张暗牌；②翻开第1张心算得数；③选择"要牌"（再抽1张累加）或"停牌"；④总得数最接近21且不超过者获胜；⑤超过21则"爆掉"直接输。<br>
+                <strong>【示例】</strong>A翻[2×3=6]→停牌（总分6）；B翻[4×5=20]→停牌（总分20）；C翻[3×3=9]→要牌→[6×6=36]→爆掉！→B以20胜出<br>
+                <strong>【特殊规则】</strong>精确21点→直接获胜双倍筹码；1×1=1可当1或11自由选择；3张相同得数→"炸弹"直接获胜
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔴 挑战篇 -->
+    <div class="card">
+        <h2><span class="level-tag level-hard">🔴 挑战篇</span> 综合运用 · 竞赛对抗</h2>
+
+        <div class="game-item hard">
+            <h4>⑦ 口诀三国杀 <span class="stars">⭐⭐⭐⭐</span></h4>
+            <p><strong>简介：</strong>终极挑战！结合比大小机制和特殊技能卡的卡牌对战游戏。策略性最强，适合作为班级竞赛的压轴活动。</p>
+            <div class="rule-box">
+                <strong>【材料】</strong>全部版本混合卡牌 + 技能卡（可用不同颜色纸制作）<br>
+                <strong>【基本规则】</strong>①每人发5张手牌；②第一人出一张（如3×4=12）；③下家必须出得数更大的牌（如5×6=30＞12）；④没有更大的牌就跳过；⑤最后出完牌/跳过次数最少的人获胜。<br>
+                <strong>【示例流程】</strong>A出[2×3=6]→B出[4×5=20]→C出[6×7=42]→A没更大的→跳过→B出[8×9=72]→C没更大的→跳过→B胜出！<br>
+                <strong>【特殊技能卡（可选）】</strong><br>
+                🗡️<strong>交换律反击：</strong>打出交换律配对卡可直接反超无视大小<br>
+                🛡️<strong>九九护盾：</strong>本轮免一次不用跟牌<br>
+                ⚡<strong>得字突袭：</strong>喊出含"得"字的完整口诀可额外摸一张牌<br>
+                💣<strong>填空陷阱：</strong>用填空版卡让对方心算，算错则该张作废<br>
+                <strong>【简化建议】</strong>低年级只用基本规则不加技能卡；中高年级逐步引入技能卡；全班可采用淘汰赛制（2人对战→4强→决赛）
+            </div>
+        </div>
+    </div>
+
+</div><!-- /tab-guide -->
+
+<!-- ========== 板块2：打印素材 ========== -->
+<div id="tab-print" class="tab-content">
+
+    <div class="card">
+        <h2>🖨️ 卡牌打印素材（共9套）</h2>
+        <p style="font-size:14px;color:#555;line-height:1.7;margin-bottom:20px;">
+            所有卡牌均为HTML格式，浏览器打开后按 <strong>Ctrl+P</strong> 即可打印。
+            建议使用A4纸打印后裁剪塑封，耐用且效果好。
+        </p>
+    </div>
+
+    <div class="print-grid">
+        <div class="print-card" onclick="window.open('prints/口诀卡-正向标准.html')">
+            <div class="icon">🃏</div>
+            <h4>正向标准卡</h4>
+            <p>2×5="2个5"，含答案</p>
+            <span class="diff d1">基础</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-正向标准.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-正向填空.html')">
+            <div class="icon">❓</div>
+            <h4>正向填空卡</h4>
+            <p>答案被遮挡，用于检测</p>
+            <span class="diff d2">检测</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-正向填空.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-逆向标准.html')">
+            <div class="icon">🔄</div>
+            <h4>逆向标准卡</h4>
+            <p>2×5="5个2"，训练交换律</p>
+            <span class="diff d2">交换律</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-逆向标准.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-逆向填空.html')">
+            <div class="icon">🔀</div>
+            <h4>逆向填空卡</h4>
+            <p>逆向+填空双重训练</p>
+            <span class="diff d3">进阶</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-逆向填空.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-双向对照.html')">
+            <div class="icon">🔗</div>
+            <h4>双向对照卡</h4>
+            <p>同时显示两种理解</p>
+            <span class="diff d2">对照</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-双向对照.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-双向填空.html')">
+            <div class="icon">✏️</div>
+            <h4>双向填空卡</h4>
+            <p>双向+填空组合</p>
+            <span class="diff d3">进阶</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-双向填空.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-全班大字.html')">
+            <div class="icon">📺</div>
+            <h4>全班大字卡</h4>
+            <p>超大字体，投影展示用</p>
+            <span class="diff d1">投影</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-全班大字.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-全班带解释.html')">
+            <div class="icon">📖</div>
+            <h4>全班解释卡</h4>
+            <p>大字+意义说明</p>
+            <span class="diff d1">教学</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-全班带解释.html">🖨️ 打印</a>
+        </div>
+        <div class="print-card" onclick="window.open('prints/口诀卡-个人迷你.html')">
+            <div class="icon">🎴</div>
+            <h4>个人迷你卡</h4>
+            <p>A4一张45张迷你卡</p>
+            <span class="diff d2">便携</span><br><br>
+            <a class="btn-print" href="prints/口诀卡-个人迷你.html">🖨️ 打印</a>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3>📌 打印建议</h3>
+        <p style="font-size:13px;color:#555;line-height:1.8;">
+            <strong>纸张：</strong>A4铜版纸或卡纸（厚度160g以上效果最佳）<br>
+            <strong>塑封：</strong>打印后裁剪再塑封，防水耐折可反复使用<br>
+            <strong>班级使用：</strong>全班大字卡建议放大至A3投影使用；个人迷你卡每人一套<br>
+            <strong>家庭使用：</strong>正向标准卡 + 正向填空卡各一套即可满足基本需求
+        </p>
+    </div>
+
+</div><!-- /tab-print -->
+
+<!-- ========== 板块3：在线游戏 ========== -->
+<div id="tab-games" class="tab-content">
+
+    <div class="card">
+        <h2>🎮 在线游戏大厅（共12个）</h2>
+        <p style="font-size:14px;color:#555;line-height:1.7;margin-bottom:20px;">
+            点击即可在浏览器中直接运行，无需安装任何软件。支持电脑、平板、手机访问。
+            难度从★到★★★★★循序渐进，适合不同阶段的学生使用。
+        </p>
+    </div>
+
+    <div class="game-grid">
+        <div class="game-card" onclick="window.open('games/闪卡速记.html')">
+            <div class="g-icon">⚡</div>
+            <h4>闪卡速记</h4>
+            <div class="g-stars">★</div>
+            <p>自动翻页计时答题，快速反应训练</p>
+            <span class="diff d1">入门</span><br><br>
+            <a class="btn-play" href="games/闪卡速记.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/限时抢答.html')">
+            <div class="g-icon">⏱️</div>
+            <h4>限时抢答</h4>
+            <div class="g-stars">★★★</div>
+            <p>倒计时紧张刺激，抗压能力训练</p>
+            <span class="diff d3">挑战</span><br><br>
+            <a class="btn-play" href="games/限时抢答.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/填空挑战.html')">
+            <div class="g-icon">✏️</div>
+            <h4>填空挑战</h4>
+            <div class="g-stars">★★</div>
+            <p>挖空填答案即时判对错，记忆精确</p>
+            <span class="diff d2">练习</span><br><br>
+            <a class="btn-play" href="games/填空挑战.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/找朋友连线.html')">
+            <div class="g-icon">🤝</div>
+            <h4>找朋友连线</h4>
+            <div class="g-stars">★★</div>
+            <p>正向卡配对逆向卡，交换律训练</p>
+            <span class="diff d2">交换律</span><br><br>
+            <a class="btn-play" href="games/找朋友连线.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/幸运转盘.html')">
+            <div class="g-icon">🎡</div>
+            <h4>幸运转盘</h4>
+            <div class="g-stars">★</div>
+            <p>随机抽题趣味性强，随机检测</p>
+            <span class="diff d1">趣味</span><br><br>
+            <a class="btn-play" href="games/幸运转盘.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/四选一选择.html')">
+            <div class="g-icon">📝</div>
+            <h4>四选一选择</h4>
+            <div class="g-stars">★★</div>
+            <p>选择题辨析能力，排除干扰</p>
+            <span class="diff d2">辨析</span><br><br>
+            <a class="btn-play" href="games/四选一选择.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/记忆翻牌.html')">
+            <div class="g-icon">🃏</div>
+            <h4>记忆翻牌</h4>
+            <div class="g-stars">★★★</div>
+            <p>消消乐模式配对，记忆力+口诀</p>
+            <span class="diff d3">记忆</span><br><br>
+            <a class="btn-play" href="games/记忆翻牌.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/找七找五.html')">
+            <div class="g-icon">🎯</div>
+            <h4>找七找五</h4>
+            <div class="g-stars">★★</div>
+            <p>易混口诀专项突破，针对性训练</p>
+            <span class="diff d2">专项</span><br><br>
+            <a class="btn-play" href="games/找七找五.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/口诀塔防.html')">
+            <div class="g-icon">🏰</div>
+            <h4>口诀塔防</h4>
+            <div class="g-stars">★★★★</div>
+            <p>答对口诀防御怪物，综合应用</p>
+            <span class="diff d4">综合</span><br><br>
+            <a class="btn-play" href="games/口诀塔防.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/口诀赛跑.html')">
+            <div class="g-icon">🏃</div>
+            <h4>口诀赛跑</h4>
+            <div class="g-stars">★★★★</div>
+            <p>双屏PK角色赛跑，竞技激励</p>
+            <span class="diff d4">竞技</span><br><br>
+            <a class="btn-play" href="games/口诀赛跑.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/口诀UNO.html')">
+            <div class="g-icon">🎴</div>
+            <h4>口诀UNO</h4>
+            <div class="g-stars">★★★★</div>
+            <p>接龙+功能牌出牌，策略思维</p>
+            <span class="diff d4">策略</span><br><br>
+            <a class="btn-play" href="games/口诀UNO.html">▶ 开始</a>
+        </div>
+        <div class="game-card" onclick="window.open('games/翻牌大冒险.html')">
+            <div class="g-icon">🏆</div>
+            <h4>翻牌大冒险</h4>
+            <div class="g-stars">★★★★★</div>
+            <p>终极挑战综合模式，高阶趣味</p>
+            <span class="diff d5">终极</span><br><br>
+            <a class="btn-play" href="games/翻牌大冒险.html">▶ 开始</a>
+        </div>
+    </div>
+
+</div><!-- /tab-games -->
+
+</div><!-- /container -->
+
+<div class="footer">
+    <p>🎮 乘法口诀大冒险 · 卓越作业征集活动 | 北师大版二年级上册</p>
+    <p>© 2026 设计制作 | 实体卡牌 + 数字化交互双轨并行</p>
+</div>
+
+<script>
+function switchTab(tabId) {
+    // 切换按钮状态
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabId) btn.classList.add('active');
+    });
+    // 切换内容
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById('tab-' + tabId).classList.add('active');
+    // 滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
