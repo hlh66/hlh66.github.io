@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 乘法口诀找朋友（交换律配对）</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .header h1 { font-size: 26px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+
+        /* ====== 状态栏 ====== */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 24px;
+            border-radius: 14px;
+            max-width: 700px;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 11px; color: #888; }
+        .stat-value { font-size: 22px; font-weight: bold; color: #333; }
+        .stat-value.pairs { color: #e64980; }
+        .stat-value.time { color: #1971c2; }
+
+        /* ====== 控制按钮 ====== */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-success { background: linear-gradient(135deg, #38ef7d, #11998e); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #fcc419, #e67700); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #c92a2a); color: white; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* ====== 游戏主区域 ====== */
+        .game-area {
+            max-width: 850px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        /* 两列布局：正向 | 逆向 */
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 8px;
+            align-items: start;
+        }
+
+        .column-header {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .col-left-header { background: linear-gradient(135deg, #a5d8ff, #74c0fc); color: #1864ab; }
+        .col-right-header { background: linear-gradient(135deg, #ffc9c9, #ffa8a8); color: #c92a2a; }
+        .col-middle { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-top: 40px;
+        }
+
+        .middle-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 12px;
+            color: #aaa;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        /* 卡片网格 */
+        .cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* 单张卡片 */
+        .pair-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .pair-card.left-card {
+            background: linear-gradient(to right, #e7f5ff, #d0ebff);
+            border-color: #74c0fc;
+        }
+
+        .pair-card.right-card {
+            background: linear-gradient(to right, #fff0f3, #ffe3e8);
+            border-color: #ffa8a8;
+        }
+
+        .pair-card:hover:not(.matched):not(.selected) {
+            transform: translateX(4px);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        .pair-card.selected {
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px #fcc419, 0 4px 16px rgba(252,196,25,0.4);
+            z-index: 2;
+        }
+
+        .pair-card.left-card.selected { border-color: #fcc419; }
+        .pair-card.right-card.selected { border-color: #fcc419; }
+
+        .pair-card.matched {
+            opacity: 0.35;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
+
+        .pair-card.correct-flash {
+            animation: correctPulse 0.6s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(56,239,125,0); }
+            50% { box-shadow: 0 0 20px 8px rgba(56,239,125,0.5); }
+        }
+
+        .card-formula {
+            font-size: 17px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-result {
+            font-size: 19px;
+            font-weight: bold;
+            color: #555;
+            min-width: 32px;
+            text-align: right;
+        }
+
+        .card-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 连接线区域 SVG */
+        .lines-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ====== 完成弹窗 ====== */
+        .complete-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .complete-overlay.show { display: flex; }
+
+        .complete-card {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .complete-card h2 { font-size: 26px; color: #333; margin-bottom: 10px; }
+        .complete-card .emoji { font-size: 56px; margin-bottom: 10px; }
+        .complete-card p { font-size: 16px; color: #666; margin-bottom: 18px; }
+        .complete-stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
+        .complete-stat .val { font-size: 28px; font-weight: bold; color: #e64980; }
+        .complete-stat .lbl { font-size: 12px; color: #888; }
+
+        /* 难度选择 */
+        .difficulty-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .diff-btn {
+            padding: 6px 16px;
+            border: 2px solid rgba(255,255,255,0.6);
+            background: transparent;
+            color: white;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .diff-btn.active { background: white; color: #f5576c; font-weight: bold; }
+        .diff-btn:hover:not(.active) { background: rgba(255,255,255,0.15); }
+
+        @media (max-width: 650px) {
+            .columns { grid-template-columns: 1fr 40px 1fr; }
+            .pair-card { padding: 8px 10px; }
+            .card-formula { font-size: 14px; }
+            .card-result { font-size: 16px; }
+            .game-area { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🔗 找朋友连线</h1>
+        <p>正向卡 ↔ 逆向卡 配对 · 训练乘法交换律</p>
+    </div>
+
+    <!-- 难度选择 -->
+    <div class="difficulty-bar">
+        <button class="diff-btn active" onclick="setDifficulty('all')">📚 全部 (28对)</button>
+        <button class="diff-btn" onclick="setDifficulty('easy')">⭐ 基础 (2-5)</button>
+        <button class="diff-btn" onclick="setDifficulty('medium')">⚡ 进阶 (6-7)</button>
+        <button class="diff-btn" onclick="setDifficulty('hard')">🔥 困难 (8-9)</button>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="stat-item">
+            <div class="stat-label">✅ 已配对</div>
+            <div class="stat-value pairs" id="pairedCount">0</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">📊 总对数</div>
+            <div class="stat-value" id="totalPairs">28</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">⏱️ 用时</div>
+            <div class="stat-value time" id="timeDisplay">0:00</div>
+        </div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="controls">
+        <button class="btn-success" onclick="startGame()">▶️ 开始游戏</button>
+        <button class="btn-warning" onclick="shuffleCards()">🔀 重新打乱</button>
+        <button class="btn-danger" onclick="resetGame()">🔄 重置</button>
+        <button class="btn-primary" onclick="showAnswer()">💡 显示一个答案</button>
+    </div>
+
+    <!-- 游戏区域 -->
+    <div class="game-area" id="gameArea">
+        <div class="columns" id="columnsContainer">
+            <!-- 左列：正向卡 -->
+            <div>
+                <div class="column-header col-left-header">➡️ 正向思维 (a×b)</div>
+                <div class="cards-grid" id="leftColumn"></div>
+            </div>
+            
+            <!-- 中间：分隔 + 连线区 -->
+            <div class="col-middle">
+                <span class="middle-label">配 对 区</span>
+            </div>
+            
+            <!-- 右列：逆向卡 -->
+            <div>
+                <div class="column-header col-right-header">⬅️ 逆向思维 (b×a)</div>
+                <div class="cards-grid" id="rightColumn"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 完成弹窗 -->
+    <div class="complete-overlay" id="completeOverlay">
+        <div class="complete-card">
+            <div class="emoji" id="completeEmoji">🎉</div>
+            <h2>全部配对成功！</h2>
+            <p id="completeMsg">你真棒！所有朋友都找到了！</p>
+            <div class="complete-stats">
+                <div class="complete-stat">
+                    <div class="val" id="finalPaired">28</div>
+                    <div class="lbl">配对数</div>
+                </div>
+                <div class="complete-stat">
+                    <div class="val" id="finalTime">0:00</div>
+                    <div class="lbl">总用时</div>
+                </div>
+            </div>
+            <button class="btn-success" onclick="closeComplete(); shuffleCards(); startGame();" style="padding:12px 30px;font-size:15px;">再玩一次 🔄</button>
+        </div>
+    </div>
+
+<script>
+// ====== 配对数据（只包含 a≠b 的，因为 a=b 的没有正逆之分）======
+const ALL_PAIRS = [
+    // 2的
+    {left:{a:1,b:2,r:2,cn:"一二得二"},   right:{a:2,b:1,r:2,cn:"二一得二"}},
+    // 3的
+    {left:{a:1,b:3,r:3,cn:"一三得三"},   right:{a:3,b:1,r:3,cn:"三一得三"}},
+    {left:{a:2,b:3,r:6,cn:"二三得六"},   right:{a:3,b:2,r:6,cn:"三二得六"}},
+    // 4的
+    {left:{a:1,b:4,r:4,cn:"一四得四"},   right:{a:4,b:1,r:4,cn:"四一得四"}},
+    {left:{a:2,b:4,r:8,cn:"二四得八"},   right:{a:4,b:2,r:8,cn:"四二得八"}},
+    {left:{a:3,b:4,r:12,cn:"三四十二"},  right:{a:4,b:3,r:12,cn:"四三十二"}},
+    // 5的
+    {left:{a:1,b:5,r:5,cn:"一五得五"},   right:{a:5,b:1,r:5,cn:"五一得五"}},
+    {left:{a:2,b:5,r:10,cn:"二五一十"},  right:{a:5,b:2,r:10,cn:"五二一十"}},
+    {left:{a:3,b:5,r:15,cn:"三五十五"},  right:{a:5,b:3,r:15,cn:"五三十五"}},
+    {left:{a:4,b:5,r:20,cn:"四五二十"},  right:{a:5,b:4,r:20,cn:"五四二十"}},
+    // 6的
+    {left:{a:1,b:6,r:6,cn:"一六得六"},   right:{a:6,b:1,r:6,cn:"六一得六"}},
+    {left:{a:2,b:6,r:12,cn:"二六十二"},  right:{a:6,b:2,r:12,cn:"六二十二"}},
+    {left:{a:3,b:6,r:18,cn:"三六十八"},  right:{a:6,b:3,r:18,cn:"六三十八"}},
+    {left:{a:4,b:6,r:24,cn:"四六二十四"},right:{a:6,b:4,r:24,cn:"六四二十四"}},
+    {left:{a:5,b:6,r:30,cn:"五六三十"},  right:{a:6,b:5,r:30,cn:"六五三十"}},
+    // 7的
+    {left:{a:1,b:7,r:7,cn:"一七得七"},   right:{a:7,b:1,r:7,cn:"七一得七"}},
+    {left:{a:2,b:7,r:14,cn:"二七十四"},  right:{a:7,b:2,r:14,cn:"七二十四"}},
+    {left:{a:3,b:7,r:21,cn:"三七二十一"},right:{a:7,b:3,r:21,cn:"七三二十一"}},
+    {left:{a:4,b:7,r:28,cn:"四七二十八"},right:{a:7,b:4,r:28,cn:"七四二十八"}},
+    {left:{a:5,b:7,r:35,cn:"五七三十五"},right:{a:7,b:5,r:35,cn:"七五三十五"}},
+    {left:{a:6,b:7,r:42,cn:"六七四十二"},right:{a:7,b:6,r:42,cn:"七六四十二"}},
+    // 8的
+    {left:{a:1,b:8,r:8,cn:"一八得八"},   right:{a:8,b:1,r:8,cn:"八一得八"}},
+    {left:{a:2,b:8,r:16,cn:"二八十六"},  right:{a:8,b:2,r:16,cn:"八二十六"}},
+    {left:{a:3,b:8,r:24,cn:"三八二十四"},right:{a:8,b:3,r:24,cn:"八三二十四"}},
+    {left:{a:4,b:8,r:32,cn:"四八三十二"},right:{a:8,b:4,r:32,cn:"八四三十二"}},
+    {left:{a:5,b:8,r:40,cn:"五八四十"},  right:{a:8,b:5,r:40,cn:"八五四十"}},
+    {left:{a:6,b:8,r:48,cn:"六八四十八"},right:{a:8,b:6,r:48,cn:"八六四十八"}},
+    {left:{a:7,b:8,r:56,cn:"七八五十六"},right:{a:8,b:7,r:56,cn:"八七五十六"}},
+    // 9的
+    {left:{a:1,b:9,r:9,cn:"一九得九"},   right:{a:9,b:1,r:9,cn:"九一得九"}},
+    {left:{a:2,b:9,r:18,cn:"二九十八"},  right:{a:9,b:2,r:18,cn:"九二十八"}},
+    {left:{a:3,b:9,r:27,cn:"三九二十七"},right:{a:9,b:3,r:27,cn:"九三二十七"}},
+    {left:{a:4,b:9,r:36,cn:"四九三十六"},right:{a:9,b:4,r:36,cn:"九四三十六"}},
+    {left:{a:5,b:9,r:45,cn:"五九四十五"},right:{a:9,b:5,r:45,cn:"九五四十五"}},
+    {left:{a:6,b:9,r:54,cn:"六九五十四"},right:{a:9,b:6,r:54,cn:"九六五十四"}},
+    {left:{a:7,b:9,r:63,cn:"七九六十三"},right:{a:9,b:7,r:63,cn:"九七六十三"}},
+    {left:{a:8,b:9,r:72,cn:"八九七十二"},right:{a:9,b:8,r:72,cn:"九八七十二"}}
+];
+
+// ====== 状态变量 ======
+let currentPairs = [...ALL_PAIRS];
+let selectedLeft = null;
+let selectedRight = null;
+let pairedCount = 0;
+let startTime = null;
+let timerInterval = null;
+let gameStarted = false;
+
+// ====== 初始化 ======
+function init() {
+    renderCards();
+}
+
+// ====== 难度设置 ======
+function setDifficulty(diff) {
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    switch(diff) {
+        case 'easy':
+            currentPairs = ALL_PAIRS.filter(p => p.left.b <= 5 && p.left.a <= 4);
+            break;
+        case 'medium':
+            currentPairs = ALL_PAIRS.filter(p => p.left.b === 6 || p.left.b === 7);
+            break;
+        case 'hard':
+            currentPairs = ALL_PAIRS.filter(p => p.left.b >= 8);
+            break;
+        default:
+            currentPairs = [...ALL_PAIRS];
+    }
+
+    resetGame();
+}
+
+// ====== 渲染卡片 ======
+function renderCards() {
+    const leftCol = document.getElementById('leftColumn');
+    const rightCol = document.getElementById('rightColumn');
+    
+    leftCol.innerHTML = '';
+    rightCol.innerHTML = '';
+
+    // 打乱左右两边的顺序（独立打乱）
+    const leftOrder = currentPairs.map((_, i) => i).sort(() => Math.random() - 0.5);
+    const rightOrder = currentPairs.map((_, i) => i).sort(() => Math.random() - 0.5);
+
+    leftOrder.forEach((pairIdx) => {
+        const pair = currentPairs[pairIdx];
+        const card = createCard(pair.left, 'left', pairIdx);
+        leftCol.appendChild(card);
+    });
+
+    rightOrder.forEach((pairIdx) => {
+        const pair = currentPairs[pairIdx];
+        const card = createCard(pair.right, 'right', pairIdx);
+        rightCol.appendChild(card);
+    });
+
+    document.getElementById('totalPairs').textContent = currentPairs.length;
+}
+
+function createCard(data, side, pairIndex) {
+    const div = document.createElement('div');
+    div.className = `pair-card ${side}-card`;
+    div.dataset.pairIndex = pairIndex;
+    div.dataset.side = side;
+
+    div.innerHTML = `
+        <div>
+            <div class="card-formula">${data.a} × ${data.b} = ?</div>
+            <div class="card-hint">${data.cn}</div>
+        </div>
+        <div class="card-result">${data.r}</div>
+    `;
+
+    div.onclick = () => handleCardClick(div, side, pairIndex);
+    return div;
+}
+
+// ====== 点击处理 ======
+function handleCardClick(cardEl, side, pairIndex) {
+    if (!gameStarted) return;
+    if (cardEl.classList.contains('matched')) return;
+
+    if (side === 'left') {
+        // 取消之前选中的左卡
+        if (selectedLeft) selectedLeft.classList.remove('selected');
+        
+        if (selectedLeft === cardEl) {
+            selectedLeft = null;
+            return;
+        }
+        
+        selectedLeft = cardEl;
+        cardEl.classList.add('selected');
+
+        // 如果右卡也选中了，自动匹配
+        if (selectedRight) checkMatch();
+    } else {
+        // 取消之前选中的右卡
+        if (selectedRight) selectedRight.classList.remove('selected');
+        
+        if (selectedRight === cardEl) {
+            selectedRight = null;
+            return;
+        }
+        
+        selectedRight = cardEl;
+        cardEl.classList.add('selected');
+
+        if (selectedLeft) checkMatch();
+    }
+}
+
+// ====== 检查匹配 ======
+function checkMatch() {
+    const leftIdx = parseInt(selectedLeft.dataset.pairIndex);
+    const rightIdx = parseInt(selectedRight.dataset.pairIndex);
+
+    if (leftIdx === rightIdx) {
+        // 匹配成功！
+        selectedLeft.classList.remove('selected');
+        selectedRight.classList.remove('selected');
+        selectedLeft.classList.add('matched', 'correct-flash');
+        selectedRight.classList.add('matched', 'correct-flash');
+
+        pairedCount++;
+        document.getElementById('pairedCount').textContent = pairedCount;
+
+        setTimeout(() => {
+            selectedLeft.classList.remove('correct-flash');
+            selectedRight.classList.remove('correct-flash');
+        }, 600);
+
+        // 检查是否完成
+        if (pairedCount >= currentPairs.length) {
+            setTimeout(showComplete, 500);
+        }
+    } else {
+        // 不匹配，抖动提示
+        selectedLeft.style.animation = 'shake 0.4s ease';
+        selectedRight.style.animation = 'shake 0.4s ease';
+        setTimeout(() => {
+            if (selectedLeft) selectedLeft.style.animation = '';
+            if (selectedRight) selectedRight.style.animation = '';
+            selectedLeft?.classList.remove('selected');
+            selectedRight?.classList.remove('selected');
+        }, 400);
+    }
+
+    selectedLeft = null;
+    selectedRight = null;
+}
+
+// ====== 开始游戏 ======
+function startGame() {
+    gameStarted = true;
+    startTime = Date.now();
+    pairedCount = 0;
+    document.getElementById('pairedCount').textContent = '0';
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+
+    // 清除之前的匹配状态
+    document.querySelectorAll('.pair-card').forEach(c => {
+        c.classList.remove('matched', 'selected');
+    });
+}
+
+// ====== 打乱 ======
+function shuffleCards() {
+    renderCards();
+    resetGame();
+}
+
+// ====== 重置 ======
+function resetGame() {
+    gameStarted = false;
+    pairedCount = 0;
+    selectedLeft = null;
+    selectedRight = null;
+    document.getElementById('pairedCount').textContent = '0';
+    document.getElementById('timeDisplay').textContent = '0:00';
+    if (timerInterval) clearInterval(timerInterval);
+    document.querySelectorAll('.pair-card').forEach(c => c.classList.remove('matched','selected'));
+}
+
+// ====== 显示答案（提示）====== 
+function showAnswer() {
+    if (!gameStarted) return;
+    // 找一个未匹配的左卡，高亮它的正确配对
+    const unmatchedLeft = Array.from(document.querySelectorAll('.left-card:not(.matched)'));
+    if (unmatchedLeft.length > 0) {
+        const target = unmatchedLeft[0];
+        target.style.boxShadow = '0 0 15px 5px rgba(252,196,25,0.6)';
+        setTimeout(() => target.style.boxShadow = '', 1500);
+    }
+}
+
+// ====== 计时器 ======
+function updateTimer() {
+    if (!startTime) return;
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('timeDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ====== 完成 ======
+function showComplete() {
+    clearInterval(timerInterval);
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+
+    document.getElementById('finalPaired').textContent = pairedCount;
+    document.getElementById('finalTime').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+
+    // 根据时间给评价
+    let emoji, msg;
+    const secPerPair = elapsed / pairedCount;
+    if (secPerPair < 3) { emoji = '🏆'; msg = '闪电速度！你是交换律大师！'; }
+    else if (secPerPair < 6) { emoji = '🥇'; msg = '非常快！反应力超群！'; }
+    else if (secPerPair < 10) { emoji = '⭐'; msg = '做得不错！继续加油！'; }
+    else { emoji = '💪'; msg = '完成了！多练习会更快哦~'; }
+
+    document.getElementById('completeEmoji').textContent = emoji;
+    document.getElementById('completeMsg').textContent = msg;
+    document.getElementById('completeOverlay').classList.add('show');
+}
+
+function closeComplete() {
+    document.getElementById('completeOverlay').classList.remove('show');
+}
+
+// 启动
+init();
+</script>
+
+<!-- 抖动动画补充 -->
+<style>
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+</style>
+
+</body>
+</html>
