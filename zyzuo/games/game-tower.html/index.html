@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏰 乘法口诀塔防（全班合作防守版）</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+            min-height:100vh;padding:15px;display:flex;flex-direction:column;align-items:center;
+        }
+        .header{text-align:center;color:white;margin-bottom:8px;}
+        .header h1{font-size:clamp(24px,3.5vw,34px);text-shadow:2px 2px 5px rgba(0,0,0,0.4);}
+        .header p{font-size:clamp(12px,1.8vw,16px);opacity:0.9;margin-top:4px;}
+
+        /* HP条 */
+        .hp-bar{
+            display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+            background:rgba(255,255,255,0.97);padding:12px 20px;border-radius:16px;
+            margin-bottom:10px;box-shadow:0 4px 14px rgba(0,0,0,0.12);
+        }
+        .hp-group{display:flex;align-items:center;gap:6px;background:#f8f9fa;padding:8px 14px;border-radius:12px;border-left:4px solid #74c0fc;}
+        .hp-label{font-size:13px;font-weight:bold;color:#555;}
+        .hp-val{font-size:22px;font-weight:900;color:#1971c2;min-width:28px;text-align:center;}
+        .hp-bar-bg{width:120px;height:12px;background:#e9ecef;border-radius:6px;overflow:hidden;}
+        .hp-bar-fill{height:100%;background:linear-gradient(90deg,#51cf66,#38d9a9);border-radius:6px;transition:width 0.4s;}
+
+        /* 波次显示 */
+        .wave-info{
+            text-align:center;background:rgba(255,255,255,0.97);padding:10px 20px;border-radius:14px;
+            margin-bottom:8px;display:flex;align-items:center;gap:15px;justify-content:center;flex-wrap:wrap;
+        }
+        .wave-num{font-size:clamp(18px,2.5vw,24px);font-weight:900;color:#7950f2;}
+        .wave-name{font-size:clamp(14px,2vw,18px);color:#666;}
+        .wave-hp{font-size:12px;color:#888;}
+
+        /* 主舞台 */
+        .stage{
+            width:100%;max-width:800px;background:white;border-radius:22px;
+            padding:clamp(18px,3vw,28px);box-shadow:0 8px 30px rgba(0,0,0,0.15);
+            margin-bottom:10px;position:relative;overflow:hidden;
+        }
+
+        /* 魔王攻击区 */
+        .boss-attack{
+            text-align:center;padding:clamp(20px,3vw,35px);
+            background:linear-gradient(135deg,#ffebee,#ffcdd2);border-radius:18px;
+            border:4px solid #ff6b6b;margin-bottom:14px;position:relative;
+        }
+        .boss-icon{font-size:48px;margin-bottom:6px;}
+        .boss-name{font-size:clamp(18px,2.5vw,24px);font-weight:900;color:#c92a2a;}
+        .attack-formula{
+            font-size:clamp(36px,6vw,64px);font-weight:900;color:#333;
+        }
+        .attack-formula .wrong-x{text-decoration:line-through;color:#c92a2a;}
+        .attack-formula .correct-x{color:#2b8a3e;font-size:1.1em;}
+
+        /* 防御选项（超大按钮）*/
+        .defense-grid{
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;
+            justify-content:center;margin-bottom:14px;
+        }
+        .def-btn{
+            padding:clamp(16px,2.5vw,26px);border:4px solid #ddd;border-radius:16px;
+            background:linear-gradient(135deg,#e7f5ff,#d0e9ff);font-size:clamp(26px,4vw,42px);
+            font-weight:900;cursor:pointer;transition:all 0.25s;display:flex;
+            align-items:center;justify-content:center;gap:8px;
+        }
+        .def-btn:hover:not(.disabled){border-color:#339af0;background:linear-gradient(135deg,#d0e9ff,#a5d8ff);transform:translateY(-3px);box-shadow:0 6px 16px rgba(51,154,240,0.25);}
+        .def-btn.correct{border-color:#51cf66!important;background:#d3f9d8!important;color:#2b8a3e!important;animation:defOk 0.5s ease;}
+        .def-btn.wrong{border-color:#ff6b6b!important;background:#ffe3e3!important;color:#c92a2a!important;animation:defShake 0.45s ease;}
+        .def-btn.disabled{pointer-events:none;opacity:0.4;}
+        @keyframes defOk{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+        @keyframes defShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+
+        /* 反馈信息 */
+        .result-msg{
+            text-align:center;padding:12px;border-radius:12px;margin-bottom:10px;
+            font-size:clamp(18px,2.5vw,24px);font-weight:bold;min-height:40px;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+        }
+        .msg-ok{background:#d3f9d8;color:#2b8a3e;border:2px solid #51cf66;}
+        .msg-ng{background:#ffe3e3;color:#c92a2a;border:2px solid #ff6b6b;}
+        .msg-warn{background:#fff3e0;color:#e67700;border:2px solid #fcc419;}
+        .msg-cn{font-size:clamp(15px,2vw,19px);color:#666;margin-top:4px;letter-spacing:2px;}
+
+        /* 控制按钮 */
+        .ctrls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+        button{padding:10px 22px;border:none;border-radius:12px;font-size:clamp(13px,1.7vw,16px);font-weight:bold;cursor:pointer;transition:all 0.25s;color:white;}
+        .btn-start{background:linear-gradient(135deg,#51cf66,#2b8a3e);font-size:clamp(16px,2.2vw,20px);padding:14px 32px;}
+        .btn-next{background:linear-gradient(135deg,#74c0fc,#339af0);}
+        .btn-reset{background:linear-gradient(135deg,#ff8787,#c92a2a);}
+        button:hover{transform:translateY(-3px);box-shadow:0 5px 14px rgba(0,0,0,0.2);}
+
+        /* BOSS战特效 */
+        .boss-enter{animation:bossIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);}
+        @keyframes bossIn{from{transform:scale(3) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1};}
+        .boss-hit{animation:bossHit 0.3s ease;}
+        @keyframes bossHit{0%{transform:scale(1);}50%{transform:scale(0.95) rotate(5deg);}100%{transform:scale(1);}}
+        .shield-flash{animation:shieldFx 0.5s ease;}
+        @keyframes shieldFx{0%{box-shadow:0 0 0 0 transparent;}50%{box-shadow:0 0 30px 10px rgba(81,207,102,0.6);}100%{box-shadow:0 0 0 0 transparent;}}
+
+        /* 全屏按钮 */
+        .fs-btn{position:fixed;bottom:15px;right:15px;padding:12px 18px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:12px;cursor:pointer;font-size:14px;z-index:100;}
+
+        @media(max-width:600px){
+            body{padding:8px;}.stage{padding:16px;}
+            .defense-grid{grid-template-columns:1fr 1fr;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="header"><h1>🏰 乘法口诀塔防</h1><p>全班合作防守 · 老师当魔王 · 选答案防御！</p></div>
+
+<!-- HP状态栏 -->
+<div class="hp-bar" id="hpBar"></div>
+
+<!-- 波次信息 -->
+<div class="wave-info">
+    <span class="wave-num" id="waveNum">第 1 波</span>
+    <span class="wave-name" id="waveName">🔥 热身攻击</span>
+    <span class="wave-hp" id="waveHp">HP: 10/10</span>
+</div>
+
+<!-- 主舞台 -->
+<div class="stage" id="stage">
+    <!-- 魔王攻击 -->
+    <div class="boss-attack" id="bossArea">
+        <div class="boss-icon" id="bossIcon">👹</div>
+        <div class="boss-name" id="bossName">错题魔王</div>
+        <div class="attack-formula" id="attackFormula"></div>
+    </div>
+
+    <!-- 防御选项 -->
+    <div class="defense-grid" id="defGrid"></div>
+
+    <!-- 结果反馈 -->
+    <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<!-- 控制 -->
+<div class="ctrls">
+    <button class="btn-start" id="startBtn" onclick="startGame()">🎮 开始防守！</button>
+    <button class="btn-next" onclick="nextWave()">➡️ 下一波</button>
+    <button class="btn-reset" onclick="resetGame()">🔄 重置</button>
+</div>
+
+<button class="fs-btn" onclick="toggleFS()">⛶ 全屏投影</button>
+
+<script>
+// ====== 波次配置 ======
+const WAVES = [
+    {
+        name:'🔥 热身攻击',hpDamage:1,color:'#ff6b6b',icon:'👹',
+        attacks:[
+            {q:'3 × 5 = ?',wrong:'16',correct:'15',hint:'三五十五'},
+            {q:'6 × 7 = ?',wrong:'43',correct:'42',hint:'六七四十二'},
+            {q:'4 × 8 = ?',wrong:'34',correct:'32',hint:'四八三十二'},
+            {q:'9 × 6 = ?',wrong:'56',correct:'54',hint:'六九五十四'}
+        ]
+    },
+    {
+        name:'⚡ 连击攻击',hpDamage:2,color:'#ffa94d',icon:'⚡',
+        attacks:[
+            {q:'2 × 6 = ?',wrong:'13',correct:'12',hint:'二六十二',timeout:3},
+            {q:'3 × 4 = ?',wrong:'11',correct:'12',hint:'三四十二',timeout:3},
+            {q:'5 × 7 = ?',wrong:'34',correct:'35',hint:'五七三十五',timeout:3},
+            {q:'6 × 8 = ?',wrong:'46',correct:'48',hint:'六八四十八',timeout:3},
+            {q:'7 × 8 = ?',wrong:'54',correct:'56',hint:'七八五十六',timeout:3},
+            {q:'8 × 9 = ?',wrong:'72',correct:'72',hint:'八九七十二',timeout:3}
+        ]
+    },
+    {
+        name:'💀 变形攻击',hpDamage:2,color:'#fcc419',icon:'💀',
+        attacks:[
+            {q:'2的7倍是多少？',wrong:'14',correct:'14',type:'word',opts:['13','14','15','16']},
+            {q:'我有6个苹果，每个3元，总共？',wrong:'18',correct:'18',type:'word',opts:['15','16','17','18']},
+            {q:'一个数×8=40，这个数是？',wrong:'4',correct:'5',type:'word',opts:['4','5','6','7']},
+            {q:'我得数是36，有几种可能？',wrong:'1种',correct:'3种',type:'multi',opts:['1种','2种','3种','4种']}
+        ]
+    },
+    {
+        name:'👑 BOSS战 - 九九决战！',hpDamage:3,color:'#c92a2a',icon:'👑',
+        attacks:[
+            {q:'得数是24，找出所有可能！',wrong:'只找到1个',correct:'全部找到！',type:'findall',
+             options:[{r:24,a:3,b:8,cn:'三八二十四'},{r:24,a:4,b:6,cn:'四六二十四'},{r:24,a:6,b:4,cn:'六四二十四'},{r:24,a:12,b:2,cn:'二六二十四'}]},
+            {q:'得数是36，找出所有可能！',wrong:'只找到2个',correct:'全部找到！',type:'findall',
+             options:[{r:36,a:4,b:9,cn:'四九三十六'},{r:36,a:6,b:6,cn:'六六三十六'},{r:36,a:9,b:4,cn:'九四三十六'}]},
+            {q:'得数是18，找出所有可能！',wrong:'只找到1个',correct:'全部找到！',type:'findall',
+             options:[{r:18,a:2,b:9,cn:'二九十八'},{r:18,a:3,b:6,cn:'三六十八'},{r:18,a:6,b:3,cn:'六三十八'}]},
+            {q:'得数是45，找出所有可能！',wrong:'只找到1个',correct:'全部找到！',type:'findall',
+             options:[{r:45,a:5,b:9,cn:'五九四十五'},{r:45,a:9,b:5,cn:'九五四十五'}]},
+            {q:'得数是63，找出所有可能！',wrong:'只找到1个',correct:'全部找到！',type:'findall',
+             options:[{r:63,a:7,b:9,cn:'七九六十三'},{r:63,a:9,b:7,cn:'九七六十三'}]}
+        ]
+    }
+];
+
+let currentWave = 0;
+let groups = [];
+let maxHp = 10;
+let gameStarted = false;
+
+function initHpBar() {
+    const bar = document.getElementById('hpBar');
+    bar.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+        bar.innerHTML += `<div class="hp-group"><div class="hp-label">第${i + 1}组 HP</div><div class="hp-val" id="hp${i}">${maxHp}</div><div class="hp-bar-bg"><div class="hp-bar-fill" id="hpFill${i}" style="width:100%"></div></div></div>`;
+    }
+}
+
+function resetGame() {
+    initHpBar();
+    groups = [];
+    for (let i = 0; i < 4; i++) groups.push({ hp: maxHp });
+    currentWave = 0;
+    gameStarted = false;
+    document.getElementById('startBtn').textContent = '🎮 开始防守！';
+    document.getElementById('startBtn').className = 'btn-start';
+    document.getElementById('resultMsg').className = 'result-msg';
+    document.getElementById('resultMsg').innerHTML = '';
+    showWave();
+}
+
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    document.getElementById('startBtn').textContent = '🎮 防守中...';
+    document.getElementById('startBtn').className = 'btn-start';
+    showWave();
+}
+
+function nextWave() {
+    if (currentWave >= WAVES.length) {
+        showFinalResult(); return;
+    }
+    showWave();
+}
+
+function showWave() {
+    const wave = WAVES[currentWave];
+    document.getElementById('waveNum').textContent = `第 ${currentWave + 1} / ${WAVES.length} 波`;
+    document.getElementById('waveName').textContent = wave.name;
+    
+    // 更新HP显示
+    let totalHp = 0, aliveCount = 0;
+    groups.forEach((g, i) => { if (g.hp > 0) { totalHp += g.hp; aliveCount++; } });
+    document.getElementById('waveHp').textContent = `HP: ${totalHp}/${groups.length * maxHp}`;
+
+    // 显示魔王
+    const ba = document.getElementById('bossArea');
+    ba.className = 'boss-attack boss-enter';
+    ba.style.borderColor = wave.color;
+    document.getElementById('bossIcon').textContent = wave.icon;
+    document.getElementById('bossName').textContent = wave.name;
+
+    // 随机选一个攻击
+    const atk = wave.attacks[Math.floor(Math.random() * wave.attacks.length)];
+    showAttack(atk);
+
+    // 生成防御选项
+    genDefenseOpts(atk);
+}
+
+function showAttack(atk) {
+    const el = document.getElementById('attackFormula');
+    if (atk.type === 'findall') {
+        // 多选题：显示题目+选项按钮
+        let html = `<div style="font-size:clamp(18px,2.5vw,24px);color:#333;margin-bottom:10px;">${atk.q}</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">`;
+        atk.options.forEach((o, i) => {
+            html += `<button class="def-btn" onclick="submitDefense(${i},'findall',this)" style="padding:12px 18px;">${o.a}×${o.b}=${o.r}</button>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    } else if (atk.type === 'multi') {
+        // 选择题：显示选项
+        let html = `<div style="font-size:clamp(18px,2.5vw,24px);color:#333;margin-bottom:10px;">${atk.q}</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">`;
+        atk.opts.forEach((o, i) => {
+            html += `<button class="def-btn" onclick="submitDefense(${i},'multi',this)" style="padding:12px 18px;">${o}</button>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    } else if (atk.type === 'word') {
+        // 填空选择题：显示选项
+        let html = `<div style="font-size:clamp(18px,2.5vw,24px);color:#333;margin-bottom:10px;">${atk.q}</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">`;
+        atk.opts.forEach((o, i) => {
+            html += `<button class="def-btn" onclick="submitDefense(${i},'word',this)" style="padding:12px 18px;">${o}</button>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    } else {
+        // 普通算式：生成4选项
+        const correct = atk.correct;
+        const s = new Set([correct]);
+        while (s.size < 4) {
+            let f;
+            if (Math.random() > 0.5) f = correct + Math.floor(Math.random() * 10) - 4;
+            else f = Math.floor(Math.random() * 81) + 1;
+            if (f > 0 && f !== correct && f <= 81) s.add(f);
+        }
+        const opts = Array.from(s).sort(() => Math.random() - 0.5);
+        let html = `<div class="attack-formula" style="font-size:clamp(32px,5vw,52px);">${atk.q.replace('?', '<span style="color:#e67700;border-bottom:3px dashed;display:inline-block;padding:0 10px;">?</span>')}</div><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`;
+        opts.forEach((v, i) => {
+            html += `<button class="def-btn" onclick="submitDefense(${i},'normal',this)" style="padding:14px 20px;">${v}</button>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    }
+}
+
+function genDefenseOpts(atk) {
+    const grid = document.getElementById('defGrid');
+    grid.innerHTML = '';
+    // 根据攻击类型生成不同数量的正确答案
+    if (atk.type === 'findall') return; // 已在上面处理
+
+    const correctCount = atk.type === 'findall' ? atk.options.length : 1;
+    // 生成干扰项
+    const opts = [];
+    if (atk.type === 'normal') {
+        const s = new Set([atk.correct]);
+        while (s.size < 4) {
+            let f;
+            if (Math.random() > 0.6) f = atk.correct + Math.floor(Math.random() * 8) - 3;
+            else f = Math.floor(Math.random() * 81) + 1;
+            if (f > 0 && f !== atk.correct && f <= 81) s.add(f);
+        }
+        opts.push(...Array.from(s).sort(() => Math.random() - 0.5));
+    } else if (atk.type === 'multi' || atk.type === 'word') {
+        atk.opts.forEach(o => opts.push(o));
+    }
+
+    opts.forEach((val, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'def-btn';
+        btn.textContent = val;
+        btn.onclick = () => submitDefense(i, atk.type, btn);
+        grid.appendChild(btn);
+    });
+}
+
+function submitDefense(optIdx, type, btnEl) {
+    if (!gameStarted) return;
+    const wave = WAVES[currentWave];
+    const atk = wave.attacks[Math.floor(Math.random() * wave.attacks.length)];
+
+    let isCorrect = false;
+    if (type === 'normal') {
+        isCorrect = parseInt(btnEl.textContent) === atk.correct;
+    } else if (type === 'word' || type === 'multi') {
+        isCorrect = optIdx === (type === 'multi' ? 0 : atk.correct); // 简化：第一个选项为正确
+    } else if (type === 'findall') {
+        isCorrect = true; // 只要选了就算对，因为要找所有
+    }
+
+    // 禁用所有按钮
+    document.querySelectorAll('.def-btn').forEach(b => b.classList.add('disabled'));
+
+    if (isCorrect) {
+        btnEl.classList.add('correct');
+        showResult(true, `✅ 防御成功！${atk.hint ? ' · ' + atk.hint : ''}`, 'msg-ok');
+
+        // 护盾闪光
+        const stage = document.getElementById('stage');
+        stage.classList.add('shield-flash');
+        setTimeout(() => stage.classList.remove('shield-flash'), 500);
+    } else {
+        btnEl.classList.add('wrong');
+        
+        // 扣血
+        damageRandomGroups(wave.hpDamage);
+
+        // 魔王受击动画
+        const bi = document.getElementById('bossIcon');
+        bi.classList.add('boss-hit');
+        setTimeout(() => bi.classList.remove('boss-hit'), 300);
+
+        const wrongAns = type === 'findall' ? atk.wrong : (typeof btnEl.textContent === 'string' ? btnEl.textContent : btnEl.textContent);
+        showResult(false, `❌ 防御失败！正确答案是...`, 'msg-ng', wrongAns);
+    }
+}
+
+function damageRandomGroups(damage) {
+    // 随机扣一组或多组HP
+    const aliveGroups = groups.map((g, i) => ({ g, i })).filter(g => g.hp > 0);
+    if (aliveGroups.length === 0) {
+        showGameOver(); return;
+    }
+
+    if (damage >= 3) {
+        // 大伤害：扣一组全部HP的一半（向下取整）
+        aliveGroups.forEach(ag => {
+            ag.g.hp = Math.max(1, ag.g.hp - Math.ceil(ag.g.hp / 2));
+        });
+    } else if (damage === 2) {
+        // 中伤害：扣两组各1点
+        for (let i = 0; i < Math.min(2, aliveGroups.length); i++)) {
+            const idx = aliveGroups[i].i;
+            groups[idx].hp = Math.max(0, groups[idx].hp - 1);
+        }
+    } else {
+        // 小伤害：随机扣一组1点
+        const target = aliveGroups[Math.floor(Math.random() * aliveGroups.length)];
+        target.hp = Math.max(0, target.hp - 1);
+    }
+
+    updateHpDisplay();
+}
+
+function updateHpDisplay() {
+    let total = 0, alive = 0;
+    groups.forEach((g, i) => { if (g.hp > 0) { total += g.hp; alive++; } });
+    document.getElementById('waveHp').textContent = `HP: ${total}/${groups.length * maxHp}`;
+    for (let i = 0; i < 4; i++) {
+        const fill = document.getElementById(`hpFill${i}`);
+        const pct = groups[i].hp / maxHp * 100;
+        fill.style.width = Math.max(0, pct) + '%';
+        fill.style.background = pct > 50 ? '#ff6b6b' : '#51cf66';
+    }
+}
+
+function showResult(isOk, mainText, msgClass, subText) {
+    const el = document.getElementById('resultMsg');
+    el.className = `result-msg ${msgClass}`;
+    el.innerHTML = `<div class="fb-main" style="font-size:clamp(20px,2.8vw,28px);">${mainText}</div>${subText ? `<div class="fb-s">${subText}</div>` : ''}`;
+}
+
+function showGameOver() {
+    gameStarted = false;
+    const total = groups.reduce((s, g) => s + g.hp, 0);
+    const alive = groups.filter(g => g.hp > 0).length;
+    
+    let emoji, title, msg;
+    if (alive > 0) {
+        emoji = '😅'; title = '部分城堡受损...'; msg = `${alive}组还有剩余HP，继续防守！`;
+    } else {
+        emoji = '💀'; title = '城破人亡...'; msg = '所有HP耗尽，错题魔王获胜！下次再来！';
+    }
+
+    showResult(false, title, 'msg-ng', msg);
+    document.getElementById('startBtn').textContent = '🔄 重新开始';
+    document.getElementById('startBtn').className = 'btn-reset';
+
+    // 可以继续下一波
+    if (currentWave < WAVES.length - 1) {
+        setTimeout(() => { currentWave++; nextWave(); }, 2000);
+    } else {
+        // 游戏结束
+    }
+}
+
+function toggleFS() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreenElement().catch(()=>{}); 
+    else document.exitFullscreen();
+}
+
+// 初始化
+resetGame();
+</script>
+</body>
+</html>
