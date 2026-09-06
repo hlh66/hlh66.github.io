@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乘法口诀表 - V2正向版（i个j理解）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: #e8e8e8;
+            padding: 15px;
+        }
+
+        .page {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            padding: 12mm;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 22pt;
+            color: #333;
+            margin-bottom: 5pt;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 9.5pt;
+            color: #888;
+            margin-bottom: 10pt;
+            line-height: 1.5;
+        }
+
+        /* 乘法意义说明 - 正向版 */
+        .meaning-box {
+            background: linear-gradient(135deg, #D3F9D8, #B2F2BB);
+            border: 2px solid #40C057;
+            border-radius: 8pt;
+            padding: 8pt 14pt;
+            margin-bottom: 12pt;
+            font-size: 9.5pt;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .meaning-box strong {
+            color: #2B8A3E;
+        }
+
+        /* 卡片区 - 2列布局（A4竖着放2张） */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10pt;
+        }
+
+        /* ====== 卡牌样式 - V2正向版 ====== */
+        .card {
+            width: 100%;
+            height: 155pt;
+            min-height: 155pt;
+            max-height: 155pt;
+            border: 2.5pt solid;
+            border-radius: 10pt;
+            padding: 10pt 12pt;
+            background: white;
+            page-break-inside: avoid;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 每行不同边框色 + 浅色背景 */
+        .card.row-1 { 
+            border-color: #FF6B6B; 
+            background: linear-gradient(to bottom, #FFF5F5, white);
+        }
+        .card.row-2 { 
+            border-color: #FFA94D; 
+            background: linear-gradient(to bottom, #FFF8F0, white);
+        }
+        .card.row-3 { 
+            border-color: #E8C547; 
+            background: linear-gradient(to bottom, #FFFEF5, white);
+        }
+        .card.row-4 { 
+            border-color: #51CF66; 
+            background: linear-gradient(to bottom, #F6FFF5, white);
+        }
+        .card.row-5 { 
+            border-color: #20C997; 
+            background: linear-gradient(to bottom, #F0FFF8, white);
+        }
+        .card.row-6 { 
+            border-color: #339AF0; 
+            background: linear-gradient(to bottom, #F5FAFF, white);
+        }
+        .card.row-7 { 
+            border-color: #5C7CFA; 
+            background: linear-gradient(to bottom, #F5F8FF, white);
+        }
+        .card.row-8 { 
+            border-color: #CC5DE8; 
+            background: linear-gradient(to bottom, #FFF5FE, white);
+        }
+        .card.row-9 { 
+            border-color: #F06595; 
+            background: linear-gradient(to bottom, #FFF0F7, white);
+        }
+
+        /* 卡片顶部：算式 + 结果（居中对齐）*/
+        .card-top {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12pt;
+            margin-bottom: 5pt;
+            padding-bottom: 5pt;
+            border-bottom: 1pt dashed #ddd;
+            flex-shrink: 0;
+        }
+
+        .formula {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 等于号 */
+        .equals-sign {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #666;
+        }
+
+        /* 结果徽章 */
+        .result-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2pt 10pt;
+            border-radius: 15pt;
+            font-size: 13pt;
+            font-weight: bold;
+            min-width: 26pt;
+            text-align: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* 图形展示区 */
+        .visual-area {
+            flex: 1;
+            margin: 4pt auto 0;
+            padding: 5pt 8pt;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8pt;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* 圆圈行容器 */
+        .circle-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2pt 3pt;
+            width: 100%;
+            line-height: 1.4;
+            place-content: center;
+        }
+
+        /* 一组圆圈 */
+        .circle-group-inline {
+            display: inline-flex;
+            gap: 1.5pt;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 单个圆圈 */
+        .circle {
+            border-radius: 50%;
+            border: 1pt solid rgba(0,0,0,0.25);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @media print {
+            .circle {
+                border: 1pt solid #333 !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        /* 圆圈尺寸 */
+        .card.has-few .circle {
+            width: 11pt;
+            height: 11pt;
+        }
+
+        .card.has-medium .circle {
+            width: 8.5pt;
+            height: 8.5pt;
+        }
+
+        .card.has-many .circle {
+            width: 6.5pt;
+            height: 6.5pt;
+        }
+
+        .card.has-huge .circle {
+            width: 4pt;
+            height: 4pt;
+        }
+
+        .plus-sign {
+            font-size: 9pt;
+            color: #ccc;
+            font-weight: bold;
+            margin: 0 2pt;
+        }
+
+        .equals-row {
+            font-size: 10pt;
+            color: #aaa;
+            font-weight: bold;
+            margin-top: 3pt;
+            flex-shrink: 0;
+        }
+
+        /* 底部：中文口诀 + 意义（正向版）*/
+        .card-footer {
+            margin-top: 5pt;
+            padding-top: 4pt;
+            border-top: 1pt dashed #eee;
+            flex-shrink: 0;
+        }
+
+        .chinese-formula {
+            text-align: center;
+            font-size: 10.5pt;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 2pt;
+        }
+
+        .meaning-text {
+            text-align: center;
+            font-size: 8pt;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .meaning-text .highlight {
+            color: #2B8A3E;  /* 正向版用绿色 */
+            font-weight: bold;
+        }
+
+        /* 打印按钮 */
+        .print-section {
+            text-align: center;
+            margin-top: 15pt;
+        }
+
+        .print-btn {
+            padding: 10pt 30pt;
+            font-size: 12pt;
+            background: linear-gradient(135deg, #40C057, #2B8A3E);
+            color: white;
+            border: none;
+            border-radius: 25pt;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2pt;
+        }
+
+        .print-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                padding: 8mm;
+                max-width: 100%;
+            }
+            .print-section {
+                display: none;
+            }
+            .cards-container {
+                gap: 6pt;
+            }
+            .card {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1 class="title">✅ 乘法口诀卡牌 V2（正向版·i个j）</h1>
+    
+    <div class="subtitle">
+        北师大版 · 二年级上册 · 数学 &nbsp;|&nbsp; 正向思维 &nbsp;|&nbsp; 2×5 = 2个5
+    </div>
+
+    <!-- 乘法意义说明框 - 正向版 -->
+    <div class="meaning-box">
+        <strong>💡 正向思维：</strong><strong>2×5 = 2个5</strong>，读作"2乘5等于10"！
+        📌 <strong>例：</strong><strong>2×5=10</strong> 表示 <strong>2个5</strong>相加 → 5+5=10 &nbsp;&nbsp;
+        <strong>3×4=12</strong> 表示 <strong>3个4</strong>相加 → 4+4+4=12
+        &nbsp;&nbsp; 🔑 <strong>窍门：</strong>第一个数是"几个"，第二个数是"几"！
+    </div>
+
+    <!-- 口诀卡牌 -->
+    <div class="cards-container" id="cards"></div>
+
+    <div class="print-section">
+        <button class="print-btn" onclick="window.print()">🖨️ 打印正向版 V2</button>
+    </div>
+</div>
+
+<script>
+// 颜色配置
+const colors = [
+    '#FF6B6B',   // 1行 - 红
+    '#FFA94D',   // 2行 - 橙
+    '#E8C547',   // 3行 - 黄
+    '#51CF66',   // 4行 - 绿
+    '#20C997',   // 5行 - 青
+    '#339AF0',   // 6行 - 蓝
+    '#5C7CFA',   // 7行 - 靛
+    '#CC5DE8',   // 8行 - 紫
+    '#F06595'    // 9行 - 粉
+];
+
+// 中文数字
+const cnNums = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+// 完整的0-81中文数字映射
+const cnResults = [
+    '零',
+    '一', '二', '三', '四', '五', '六', '七', '八', '九',
+    '一十',
+    '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九',
+    '二十',
+    '二十一', '二十二', '二十三', '二十四', '二十五', '二十六', '二十七', '二十八', '二十九',
+    '三十',
+    '三十一', '三十二', '三十三', '三十四', '三十五', '三十六', '三十七', '三十八', '三十九',
+    '四十',
+    '四十一', '四十二', '四十三', '四十四', '四十五', '四十六', '四十七', '四十八', '四十九',
+    '五十',
+    '五十一', '五十二', '五十三', '五十四', '五十五', '五十六', '五十七', '五十八', '五十九',
+    '六十',
+    '六十一', '六十二', '六十三', '六十四', '六十五', '六十六', '六十七', '六十八', '六十九',
+    '七十',
+    '七十一', '七十二', '七十三', '七十四', '七十五', '七十六', '七十七', '七十八', '七十九',
+    '八十',
+    '八十一'
+];
+
+const container = document.getElementById('cards');
+
+// 生成45张口诀卡牌（上三角）
+for (let i = 1; i <= 9; i++) {
+    for (let j = i; j <= 9; j++) {
+        const result = i * j;
+        const mainColor = colors[i - 1];
+        
+        // 根据圆圈总数决定尺寸级别（4档）
+        const totalCircles = result;
+        let sizeClass = 'has-few';
+        if (totalCircles > 63) sizeClass = 'has-huge';
+        else if (totalCircles >= 28) sizeClass = 'has-many';
+        else if (totalCircles >= 13) sizeClass = 'has-medium';
+        else sizeClass = 'has-few';
+        
+        // ★★★ 关键修改：正向版显示 i个j（如2×5=2个5）★★★
+        // 原逆向版：j组，每组i个圆圈（如5组，每组2个）
+        // 现正向版：i组，每组j个圆圈（如2组，每组5个）
+        let circlesHTML = '';
+        for (let group = 0; group < i; group++) {    // i组（第一个数是"几个"）
+            if (group > 0) {
+                circlesHTML += '<span class="plus-sign">+</span>';
+            }
+            circlesHTML += '<span class="circle-group-inline">';
+            for (let c = 0; c < j; c++) {       // 每组j个（第二个数是"几"）
+                circlesHTML += `<div class="circle" style="background: ${mainColor}"></div>`;
+            }
+            circlesHTML += '</span>';
+        }
+
+        // 构建卡牌
+        const card = document.createElement('div');
+        card.className = `card row-${i} ${sizeClass}`;
+        
+        // 口诀文字：结果是个位数(1-9)用"得"，两位数(10-81)不用"得"
+        const useDe = (result <= 9);
+        const chineseFormula = useDe 
+            ? `✦ ${cnNums[i]}${cnNums[j]}得${cnResults[result]}`
+            : `✦ ${cnNums[i]}${cnNums[j]}${cnResults[result]}`;
+        
+        card.innerHTML = `
+            <div class="card-top">
+                <span class="formula">${i} × ${j}</span>
+                <span class="equals-sign">=</span>
+                <span class="result-badge">${result}</span>
+            </div>
+            
+            <div class="visual-area">
+                <div class="circle-row">${circlesHTML}</div>
+                <div class="equals-row">共 ${result} 个</div>
+            </div>
+            
+            <div class="card-footer">
+                <div class="chinese-formula">${chineseFormula}</div>
+                <div class="meaning-text">
+                    表示 <span class="highlight">${i}个${j}</span> 相加得 <span class="highlight">${result}</span>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    }
+}
+</script>
+</body>
+</html>
