@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 乘法口诀专项训练 - 找七/找五/找九</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            min-height:100vh;padding:15px;display:flex;flex-direction:column;align-items:center;
+        }
+        .header{text-align:center;color:white;margin-bottom:10px;}
+        .header h1{font-size:clamp(24px,3.5vw,34px);text-shadow:2px 2px 5px rgba(0,0,0,0.3);}
+        .header p{font-size:clamp(12px,1.8vw,16px);opacity:0.95;margin-top:4px;}
+
+        /* 数字选择 */
+        .num-select{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+        .nb{
+            width:clamp(60px,9vw,80px);height:clamp(60px,9vw,80px);border:none;border-radius:16px;
+            font-size:clamp(26px,4vw,40px);font-weight:900;color:white;cursor:pointer;
+            transition:all 0.25s;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 4px 12px rgba(0,0,0,0.18);
+        }
+        .nb:hover{transform:translateY(-4px) scale(1.08);}
+        .nb.active{transform:scale(1.12);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+        .nb-2{background:linear-gradient(135deg,#ffa94d,#e67700);}
+        .nb-3{background:linear-gradient(135deg,#fcc419,#e67700);}
+        .nb-4{background:linear-gradient(135deg,#51cf66,#2b8a3e);}
+        .nb-5{background:linear-gradient(135deg,#20c997,#099268);}
+        .nb-6{background:linear-gradient(135deg,#339af0,#1971c2);}
+        .nb-7{background:linear-gradient(135deg,#7950f2,#5f3dc4);}
+        .nb-8{background:linear-gradient(135deg,#cc5de8,#be4bdb);}
+        .nb-9{background:linear-gradient(135deg,#f06595,#c2255c);}
+
+        /* 状态栏 */
+        .st-bar{
+            display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+            background:rgba(255,255,255,0.97);padding:12px 24px;border-radius:16px;
+            margin-bottom:10px;box-shadow:0 4px 14px rgba(0,0,0,0.12);
+        }
+        .si{text-align:center;}
+        .sl{font-size:11px;color:#888;font-weight:bold;}
+        .sv{font-size:clamp(24px,3.5vw,36px);font-weight:900;}
+        .v-ok{color:#2b8a3e;} .v-ng{color:#c92a2a;} .v-left{color:#1971c2;} .v-total{color:#7950f2;}
+
+        /* 主区域 */
+        .main-box{
+            width:100%;max-width:750px;background:white;border-radius:22px;
+            padding:clamp(18px,3vw,28px);box-shadow:0 8px 30px rgba(0,0,0,0.14);margin-bottom:10px;
+        }
+
+        /* 当前题目 */
+        .current-q{
+            text-align:center;padding:clamp(18px,3vw,32px);
+            background:linear-gradient(135deg,#e8f0fe,#d0e8ff);border-radius:18px;
+            border:4px solid #74c0fc;margin-bottom:14px;
+        }
+        .cq-big{font-size:clamp(38px,6vw,68px);font-weight:900;color:#333;}
+        .cq-big .hn{color:#e64980;} .cq-big .op{color:#888;margin:0 0.1em;}
+        .cq-big .hn2{color:#1971c2;}
+
+        /* 题目类型标签 */
+        .q-type{
+            display:inline-block;padding:6px 18px;border-radius:20px;font-size:clamp(13px,1.8vw,17px);
+            font-weight:bold;margin-top:8px;
+        }
+        .qt-forward{background:linear-gradient(135deg,#ffd6e5,#fff0f6);color:#c92a2a;border:2px solid #ffcdd2;}
+        .qt-reverse{background:linear-gradient(135dx,#dbe4ff,#d0e8ff);color:#1864ab;border:2px solid #a5d8ff;}
+        .qt-both{background:linear-gradient(135dx,#f0fff4,#d3f9d8);color:#2b8a3e;border:2px solid #b2f2bb;}
+
+        /* 四选项 */
+        .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+        .obtn{
+            padding:clamp(16px,2.5vw,26px);border:4px solid #eee;border-radius:16px;
+            background:white;font-size:clamp(28px,4.5vw,48px);font-weight:900;
+            cursor:pointer;transition:all 0.25s;display:flex;align-items:center;
+            justify-content:center;gap:8px;position:relative;
+        }
+        .obtn:hover:not(.used):not(.correct):not(.wrong){border-color:#7950f2;background:#f0f0ff;transform:translateY(-3px);box-shadow:0 6px 16px rgba(121,80,242,0.25);}
+        .obtn .ol{position:absolute;top:8px;left:12px;font-size:clamp(13px,1.8vw,17px);font-weight:bold;color:#ccc;}
+        .obtn.correct{border-color:#51cf66!important;background:#d3f9d8!important;color:#2b8a3e!important;animation:cpOp 0.5s ease;}
+        .obtn.wrong{border-color:#ff6b6b!important;background:#ffe3e3!important;color:#c92a2a!important;animation:shB 0.45s ease;}
+        .obtn.used{pointer-events:none;opacity:0.55;}
+        @keyframes cpOp{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+        @keyframes shB{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+
+        /* 反馈 */
+        .fb-area{text-align:center;min-height:clamp(44px,6vw,64px);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .fb-t{font-size:clamp(24px,3.5vw,36px);font-weight:900;}
+        .fb-t-ok{color:#2b8a3e;} .fb-t-ng{color:#c92a2a;}
+        .fb-s{font-size:clamp(16px,2.2vw,21px);color:#666;margin-top:6px;letter-spacing:3px;}
+
+        /* 进度条 */
+        .prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+        .prg-lbl{font-size:13px;color:#888;font-weight:bold;}
+        .prg-bar{width:200px;height:10px;background:#eee;border-radius:5px;overflow:hidden;}
+        .prg-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:5px;transition:width 0.35s;}
+
+        /* 按钮 */
+        .btns{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+        button{padding:10px 22px;border:none;border-radius:12px;font-size:clamp(13px,1.7vw,16px);font-weight:bold;cursor:pointer;transition:all 0.3s;color:white;}
+        .btn-nxt{background:linear-gradient(135deg,#74c0fc,#339af0);} .btn-rst{background:linear-gradient(135deg,#ff8787,#c92a2a);}
+
+        /* 完成弹窗 */
+        .ov{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:100;align-items:center;justify-content:center;}
+        .ov.show{display:flex;}
+        .oc{background:white;border-radius:24px;padding:30px;text-align:center;animation:pIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);max-width:400px;width:90%;}
+        @keyframes pIn{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity=1}}
+        .oc h2{font-size:24px;color:#333;margin-bottom:8px;}
+        .oc-e{font-size:52px;margin-bottom:8px;}
+        .oc-sts{display:flex;gap:12px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+        .oci{background:#f8f9fa;padding:10px 16px;border-radius:12px;text-align:center;}
+        .oiv{font-size:24px;font-weight:bold;color:#7950f2;}
+        .oil{font-size:11px;color:#888;}
+        .oc-msg{font-size:15px;color:#666;margin-bottom:16px;}
+
+        @media(max-width:550px){.main-box{padding:16px;}.opt-grid{grid-template-columns:1fr;gap:10px;}}
+    </style>
+</head>
+<body>
+
+<div class="header"><h1>🔍 乘法口诀专项训练</h1><p>找七 / 找五 / 找九 · 选答案 · 大字体投影版</p></div>
+
+<!-- 数字选择 -->
+<div class="num-select" id="numSelect">
+    <button class="nb nb-2 active" onclick="pickNum(2,this)">2</button>
+    <button class="nb nb-3" onclick="pickNum(3,this)">3</button>
+    <button class="nb nb-4" onclick="pickNum(4,this)">4</button>
+    <button class="nb nb-5" onclick="pickNum(5,this)">5</button>
+    <button class="nb nb-6" onclick="pickNum(6,this)">6</button>
+    <button class="nb nb-7" onclick="pickNum(7,this)">7</button>
+    <button class="nb nb-8" onclick="pickNum(8,this)">8</button>
+    <button class="nb nb-9" onclick="pickNum(9,this)">9</button>
+</div>
+
+<!-- 状态 -->
+<div class="st-bar">
+    <div class="si"><div class="sl">📊 已完成</div><div class="sv v-total" id="totalDone">0/9</div></div>
+    <div class="si"><div class="sl">✅ 正确</div><div class="sv v-ok" id="okN">0</div></div>
+    <div class="si"><div class="sl">❌ 错误</div><div class="sv v-ng" id="ngN">0</div></div>
+    <div class="si"><div class="sl">⏱️ 用时</div><div class="sv v-time" id="tmDisp">0:00</div></div>
+</div>
+
+<!-- 进度 -->
+<div class="prog-row">
+    <span class="prg-lbl" id="progLabel">当前：2的口诀 (9题)</span>
+    <div class="prg-bar"><div class="prg-fill" id="progFill" style="width:0%"></div></div>
+</div>
+
+<!-- 主区域 -->
+<div class="main-box">
+    <!-- 题目 -->
+    <div class="current-q">
+        <div class="cq-big" id="cqDisplay">
+            <span class="hn" id="dispA">2</span><span class="op">×</span><span class="hn2" id="dispB">7</span><span class="op">=</span><span style="color:#e67700;">?</span>
+        </div>
+        <div class="q-type" id="qType" style="display:none;">正向思维</div>
+    </div>
+
+    <!-- 四选项 -->
+    <div class="opt-grid" id="optGrid"></div>
+
+    <!-- 反馈 -->
+    <div class="fb-area">
+        <div class="fb-t" id="fbText"></div>
+        <div class="fb-s" id="fbSub"></div>
+    </div>
+</div>
+
+<!-- 按钮 -->
+<div class="btns">
+    <button class="btn-nxt" onclick="nextQ()">➡️ 下一题</button>
+    <button class="btn-rst" onclick="restartAll()">🔄 换一个数字 / 重置</button>
+</div>
+
+<!-- 完成弹窗 -->
+<div class="ov" id="resultOv">
+    <div class="oc">
+        <div class="oc-e" id="resEmoji">🎉</div>
+        <h2 id="resTitle">完成！</h2>
+        <div class="oc-sts">
+            <div class="oci"><div class="oiv" id="resOk">0</div><div class="oil">正确</div></div>
+            <div class="oci"><div class="oiv" id="resNg">0</div><div class="oil">错误</div></div>
+            <div class="oci"><div class="oiv" id="resTime">0:00</div><div class="oil">用时</div></div>
+            <div class="oci"><div class="oiv" id="resAcc">0%</div><div class="oil">正确率</div></div>
+        </div>
+        <p class="oc-msg" id="resMsg"></p>
+        <button class="btn-nxt" style="padding:14px 28px;font-size:16px;" onclick="closeOv();restartAll();">再练一次 🔄</button>
+    </div>
+</div>
+
+<script>
+// ====== 数据：按数字分组的口诀 ======
+const BY_NUM = {
+    2: [
+        {a:1,b:2,r:2,cn:"一二得二",type:'forward'},
+        {a:2,b:2,r:4,cn:"二二得四",type:'same'}
+    ],
+    3: [
+        {a:1,b:3,r:3,cn:"一三得三",type:'forward'},
+        {a:2,b:3,r:6,cn:"二三得六",type:'forward'},
+        {a:3,b:3,r:9,cn:"三三得九",type:'same'}
+    ],
+    4: [
+        {a:1,b:4,r:4,cn:"一四得四",type:'forward'},
+        {a:2,b:4,r:8,cn:"二四得八",type:'forward'},
+        {a:3,b:4,r:12,cn:"三四十二",type:'forward'},
+        {a:4,b:4,r:16,cn:"四四十六",type:'same'}
+    ],
+    5: [
+        {a:1,b:5,r:5,cn:"一五得五",type:'forward'},
+        {a:2,b:5,r:10,cn:"二五一十",type:'forward'},
+        {a:3,b:5,r:15,cn:"三五十五",type:'forward'},
+        {a:4,b:5,r:20,cn:"四五二十",type:'forward'},
+        {a:5,b:5,r:25,cn:"五五二十五",type:'same'}
+    ],
+    6: [
+        {a:1,b:6,r:6,cn:"一六得六",type:'forward'},
+        {a:2,b:6,r:12,cn:"二六十二",type:'forward'},
+        {a:3,b:6,r:18,cn:"三六十八",type:'forward'},
+        {a:4,b:6,r:24,cn:"四六二十四",type:'forward'},
+        {a:5,b:6,r:30,cn:"五六三十",type:'forward'},
+        {a:6,b:6,r:36,cn:"六六三十六",type:'same'}
+    ],
+    7: [
+        {a:1,b:7,r:7,cn:"一七得七",type:'forward'},
+        {a:2,b:7,r:14,cn:"二七十四",type:'forward'},
+        {a:3,b:7,r:21,cn:"三七二十一",type:'forward'},
+        {a:4,b:7,r:28,cn:"四七二十八",type:'forward'},
+        {a:5,b:7,r:35,cn:"五七三十五",type:'forward'},
+        {a:6,b:7,r:42,cn:"六七四十二",type:'forward'},
+        {a:7,b:7,r:49,cn:"七七四十九",type:'same'}
+    ],
+    8: [
+        {a:1,b:8,r:8,cn:"一八得八",type:'forward'},
+        {a:2,b:8,r:16,cn:"二八十六",type:'forward'},
+        {a:3,b:8,r:24,cn:"三八二十四",type:'forward'},
+        {a:4,b:8,r:32,cn:"四八三十二",type:'forward'},
+        {a:5,b:8,r:40,cn:"五八四十",type:'forward'},
+        {a:6,b:8,r:48,cn:"六八四十八",type:'forward'},
+        {a:7,b:8,r:56,cn:"七八五十六",type:'forward'},
+        {a:8,b:8,r:64,cn:"八八六十四",type:'same'}
+    ],
+    9: [
+        {a:1,b:9,r:9,cn:"一九得九",type:'forward'},
+        {a:2,b:9,r:18,cn:"二九十八",type:'forward'},
+        { {a:3,b:9,r:27,cn:"三九二十七",type:'forward'},
+        {a:4,b:9,r:36,cn:"四九三十六",type:'forward'},
+        {a:5,b:9,r:45,cn:"五九四十五",type:'forward'},
+        {a:6,b:9,r:54,cn:"六九五十四",type:'forward'},
+        {a:7,b:9,r:63,cn:"七九六十三",type:'forward'},
+        {a:8,b:9,r:72,cn:"八九七十二",type:'forward'},
+        {a:9,b:9,r:81,cn:"九九八十一",type:'same'}
+    ]
+};
+
+const OPTS = ['A','B','C','D'];
+
+let currentNum = 2;
+let questions = [];
+let qIdx = 0;
+let ok = 0, ng = 0;
+let answered = false;
+let timerInterval = null;
+
+function pickNum(num, btnEl) {
+    document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+    currentNum = num;
+    restartAll();
+}
+
+function restartAll() {
+    questions = [...BY_NUM[currentNum]];
+    // 打乱顺序
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    qIdx = 0; ok = 0; ng = 0; answered = false;
+    if (timerInterval) clearInterval(timerInterval);
+    
+    const start = Date.now();
+    timerInterval = setInterval(() => {
+        const el = document.getElementById('tmDisp');
+        const e = Math.floor((Date.now() - start) / 1000);
+        const m = Math.floor(e / 60), s = e % 60;
+        el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    }, 1000);
+
+    updateStats();
+    showQ();
+    document.getElementById('resultOv').classList.remove('show');
+}
+
+function showQ() {
+    if (qIdx >= questions.length) {
+        showResult();
+        return;
+    }
+
+    const q = questions[qIdx];
+    document.getElementById('dispA').textContent = q.a;
+    document.getElementById('dispB').textContent = q.b;
+
+    // 显示类型标签
+    const typeEl = document.getElementById('qType');
+    typeEl.style.display = 'inline-block';
+    if (q.type === 'same') {
+        typeEl.textContent = '⭐ 平方数！' + q.a + '×' + q.a + '=' + q.r;
+        typeEl.className = 'q-type qt-same';
+    } else {
+        typeEl.textContent = '➡️ 正向思维：' + q.a + '个' + q.b + '相加';
+        typeEl.className = 'q-type qt-forward';
+    }
+
+    // 生成4选项
+    const opts = genOpts(q.r);
+    const grid = document.getElementById('optGrid');
+    grid.innerHTML = '';
+    opts.forEach((v, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'obtn';
+        btn.innerHTML = `<span class="ol">${OPTS[i]}</span>${v}`;
+        btn.dataset.val = v;
+        btn.onclick = () => selectOpt(btn, v, q);
+        grid.appendChild(btn);
+    });
+
+    document.getElementById('fbText').textContent = '';
+    document.getElementById('fbText').className = 'fb-t';
+    document.getElementById('fbSub').textContent = '';
+    answered = false;
+}
+
+function genOpts(correct) {
+    const s = new Set([correct]);
+    while (s.size < 4) {
+        let f;
+        // 生成接近正确答案的干扰项
+        if (Math.random() > 0.6) {
+            f = correct + Math.floor(Math.random() * 10) - 5;
+        } else {
+            f = Math.floor(Math.random() * 81) + 1;
+        }
+        if (f > 0 && f !== correct && f <= 81) s.add(f);
+    }
+    return Array.from(s).sort(() => Math.random() - 0.5);
+}
+
+function selectOpt(btn, val, q) {
+    if (answered) return;
+    answered = true;
+    document.querySelectorAll('.obtn').forEach(b => b.classList.add('disabled'));
+
+    if (val === q.r) {
+        btn.classList.add('correct');
+        ok++;
+        document.getElementById('fbText').textContent = '✅ 正确！' + (q.type === 'same' ? ' 这是平方数！' : '');
+        document.getElementById('fbText').className = 'fb-t fb-t-ok';
+        document.getElementById('fbSub').textContent = q.cn;
+    } else {
+        btn.classList.add('wrong');
+        // 高亮正确答案
+        document.querySelectorAll('.obtn').forEach(b => {
+            if (parseInt(b.dataset.val) === q.r) b.classList.add('correct');
+        });
+        ng++;
+        document.getElementById('fbText').textContent = '❌ 不对哦，答案是 ' + q.r;
+        document.getElementById('fbText').className = 'fb-t fb-t-ng';
+        document.getElementById('fbSub').textContent = q.cn;
+    }
+
+    updateStats();
+}
+
+function nextQ() {
+    qIdx++;
+    showQ();
+}
+
+function updateStats() {
+    const total = questions.length;
+    document.getElementById('totalDone').textContent = `${qIdx}/${total}`;
+    document.getElementById('okN').textContent = ok;
+    document.getElementById('ngN').textContent = ng;
+    document.getElementById('progFill').style.width = ((qIdx) / total * 100) + '%';
+    document.getElementById('progLabel').textContent = `当前：${currentNum}的口诀 (${total}题)`;
+}
+
+function showResult() {
+    clearInterval(timerInterval);
+    const total = ok + ng;
+    const acc = total > 0 ? Math.round(ok / total * 100) : 0;
+
+    let emoji, title, msg;
+    if (acc >= 95) { emoji = '🏆'; title = '完美掌握！'; msg = `${currentNum}的口诀全部过关！`; }
+    else if (acc >= 85) { emoji = '🥇'; title = '非常棒！'; msg = `继续加油，${currentNum}的口诀快熟了！`; }
+    else if (acc >= 70) { emoji = '🥈'; title = '不错哦'; msg = `${currentNum}的口诀还需要多练习~`; }
+    else { emoji = '💪'; title = '继续努力'; msg = `别灰心，多练几次${currentNum}的口诀就熟了！`; }
+
+    document.getElementById('resEmoji').textContent = emoji;
+    document.getElementById('resTitle').textContent = title + `（${currentNum}的口诀）`;
+    document.getElementById('resOk').textContent = ok;
+    document.getElementById('resNg').textContent = ng;
+    document.getElementById('resAcc').textContent = acc + '%';
+    document.getElementById('resMsg').textContent = msg;
+    document.getElementById('resultOv').classList.add('show');
+}
+
+function closeOv() {
+    document.getElementById('resultOv').classList.remove('show');
+}
+
+// 初始化
+pickNum(7, document.querySelector('.nb-7'));
+</script>
+</body>
+</html>
