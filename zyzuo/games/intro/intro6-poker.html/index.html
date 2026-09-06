@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏⑥ 口诀扑克 - 乘法口诀大冒险</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#614385 0%,#524769 100%);min-height:100vh;color:#333}
+.top-bar{background:rgba(255,255,255,0.95);padding:12px 20px;display:flex;align-items:center;gap:15px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:linear-gradient(135deg,#614385,#524769);color:#fff;border-radius:20px;text-decoration:none;font-size:14px;font-weight:bold}
+.back-btn:hover{transform:translateX(-3px)}
+.top-bar h1{font-size:18px;color:#6c5ce7}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;margin-bottom:15px}
+.badge-up{background:linear-gradient(135deg,#ffa502,#ffcc00)}
+.card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
+.card h2{font-size:18px;color:#6c5ce7;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
+/* 扑克桌 */
+.poker-table{background:linear-gradient(180deg,#1a472a,#2d5a3d);border-radius:16px;padding:25px;position:relative}
+.poker-table::before{content:'';position:absolute;inset:0;border-radius:16px;border:3px solid rgba(255,215,0,0.3)}
+
+/* 玩家区 */
+.poker-player{text-align:center;margin-bottom:15px}
+.player-name{color:#ffd700;font-size:16px;font-weight:bold;margin-bottom:10px}
+.player-hand{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;min-height:110px}
+
+/* 扑克牌 */
+.poker-card{width:70px;height:95px;border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;transition:all .3s;position:relative;border:2px solid #ddd;animation:dealCard .3s ease-out}
+@keyframes dealCard{from{opacity:0;transform:translateY(-30px) rotate(-10deg)}to{opacity:1;transform:translateY(0) rotate(0)}}
+.poker-card.hidden-card{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff}
+.poker-card.hidden-card::after{content:'?';font-size:28px}
+.poker-card .p-expr{font-size:13px;color:#333}
+.poker-card .p-result{font-size:22px;font-weight:bold;color:#e74c3c}
+.poker-card.revealed{border-color:#ffd700;box-shadow:0 0 15px rgba(255,215,0,0.5)}
+.poker-card.bust{background:#ffe8e8;border-color:#ff4757;animation:bustShake .4s}
+@keyframes bustShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.poker-card.winner{border-color:#2ed573;box-shadow:0 0 20px rgba(46,213,115,0.6);animation:winGlow .6s ease infinite alternate}
+@keyframes winGlow{from{box-shadow:0 0 10px rgba(46,213,115,0.4)}to{box-shadow:0 0 25px rgba(46,213,115,0.8)}}
+
+/* 总分显示 */
+.total-score{display:inline-block;background:rgba(0,0,0,0.5);color:#ffd700;padding:8px 20px;border-radius:20px;font-size:20px;font-weight:bold;margin-top:8px}
+.total-score.bust{background:#e74c3c;color:#fff}
+
+/* 操作按钮 */
+.action-btns{display:flex;justify-content:center;gap:12px;margin:15px 0;flex-wrap:wrap}
+.btn{padding:12px 28px;border:none;border-radius:25px;font-size:16px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
+.btn-hit{background:linear-gradient(135deg,#00b894,#00cec9)}
+.btn-hit:hover{transform:scale(1.05);box-shadow:0 5px 20px rgba(0,184,148,0.4)}
+.btn-stop{background:linear-gradient(135deg,#fdcb6e,#f39c12);color:#333}
+.btn-stop:hover{transform:scale(1.05)}
+.btn-new{background:linear-gradient(135deg,#a29bfe,#6c5ce7)}
+.btn-new:hover{transform:scale(1.05)}
+
+/* 游戏信息 */
+.game-info{display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap}
+.info-badge{background:rgba(255,255,255,0.1);padding:8px 18px;border-radius:20px;color:#ddd;font-size:13px}
+.info-badge b{color:#ffd700}
+
+.step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;padding:10px;background:#f8f9fa;border-radius:10px}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a29bfe,#6c5ce7);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;flex-shrink:0}
+.step-text{flex:1;font-size:13px;line-height:1.7;color:#555}
+.step-text strong{color:#6c5ce7}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmin(200px,1fr));gap:12px}
+.info-item{background:#f8f9fa;border-radius:10px;padding:14px;border-left:4px solid #6c5ce7}
+.info-item .label{font-size:12px;color:#888}
+.info-item .value{font-size:14px;font-weight:600}
+.footer{text-align:center;padding:20px;color:rgba(255,255,255,0.7);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🃏 游戏⑥ 口诀扑克</h1>
+</div>
+
+<div class="container">
+
+<span class="badge badge-up">🟡 提升篇 · 策略博弈</span>
+
+<!-- 演示区 -->
+<div class="card">
+  <h2>🎬 21点模拟</h2>
+  <div class="poker-table">
+    <div class="game-info">
+      <div class="info-badge">🎯 目标：最接近 <b>21</b></div>
+      <div class="info-badge">💥 超过21 = 爆掉！</div>
+      <div class="info-badge" id="roundInfo">第 1 轮</div>
+    </div>
+
+    <div class="poker-player">
+      <div class="player-name">👦 你的手牌</div>
+      <div class="player-hand" id="playerHand"></div>
+      <div class="total-score" id="playerTotal">总分: 0</div>
+    </div>
+
+    <div class="action-btns" id="actionBtns">
+      <button class="btn btn-hit" onclick="hitCard()">🃏 要牌 (Hit)</button>
+      <button class="btn btn-stop" onclick="stopCard()">✋ 停牌 (Stand)</button>
+    </div>
+
+    <div class="poker-player">
+      <div class="player-name">🤖 电脑手牌</div>
+      <div class="player-hand" id="cpuHand"></div>
+      <div class="total-score" id="cpuTotal" style="opacity:0.5">总分: ?</div>
+    </div>
+
+    <div style="text-align:center;margin-top:15px">
+      <button class="btn btn-new" onclick="newGame()">🔄 新一局</button>
+      <button class="btn btn-new" style="background:#e17055" onclick="autoPlay()">▶ 自动演示</button>
+    </div>
+
+    <div id="gameMsg" style="text-align:center;color:#ffd700;font-size:16px;font-weight:bold;margin-top:12px;min-height:22px"></div>
+  </div>
+</div>
+
+<!-- 规则 -->
+<div class="card">
+  <h2>📋 21点规则</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>发牌：</strong>每人发3张暗牌（填空版，不显示答案）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>翻牌：</strong>翻开第1张，心算出得数作为起始分</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>选择：</strong>"要牌"再抽一张累加，或"停牌"保持当前分数</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>爆牌：</strong>总分超过21直接输！</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text><strong>获胜：</strong>最接近21且不超过者获胜</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>特殊：</strong>精确21→双倍筹码；1×1=1可当1或11；3张相同得数→"炸弹"直胜</div></div>
+</div>
+
+<!-- 基本信息 -->
+<div class="card">
+  <h2>📌 基本信息</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐⭐ 提升</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">2-5人</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">15-20分钟/局</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">填空版卡牌 + 筹码</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">小组对抗 / 策略训练</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">多步计算 / 风险评估 / 博弈策略</div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+</div>
+
+<script>
+const deck = [
+  {e:'1×1',r:1},{e:'1×2',r:2},{e:'2×2',r:4},{e:'1×3',r:3},
+  {e:'2×3',r:6},{e:'3×3',r:9},{e:'1×4',r:4},{e:'2×4',r:8},
+  {e:'3×4',r:12},{e:'4×4',r:16},{e:'1×5',r:5},{e:'2×5',r:10},
+  {e:'3×5',r:15},{e:'4×5',r:20},{e:'5×5',r:25},{e:'2×6',r:12},
+  {e:'3×6',r:18},{e:'4×6',r:24},{e:'5×6',r:30},{e:'3×7',r:21},
+  {e:'4×7',r:28},{e:'5×7',r:35},{e:'3×8',r:24},{e:'4×8',r:32},
+];
+
+let playerCards = [], cpuCards = [], playerTotal = 0, cpuTotal = 0;
+let gameOver = false, round = 1;
+
+function newGame() {
+  playerCards = []; cpuCards = []; playerTotal = 0; cpuTotal = 0;
+  gameOver = false;
+  
+  // 发初始牌
+  const shuffled = deck.sort(() => Math.random() - 0.5);
+  for (let i = 0; i < 3; i++) {
+    playerCards.push({...shuffled[i], hidden: true});
+    cpuCards.push({...shuffled[i+3], hidden: true});
+  }
+  
+  // 翻开第一张
+  playerCards[0].hidden = false;
+  playerTotal = playerCards[0].r;
+  
+  renderHands();
+  document.getElementById('playerTotal').textContent = `总分: ${playerTotal}`;
+  document.getElementById('playerTotal').className = 'total-score';
+  document.getElementById('cpuTotal').textContent = `总分: ?`;
+  document.getElementById('cpuTotal').style.opacity = '0.5';
+  document.getElementById('gameMsg').textContent = '';
+  document.getElementById('roundInfo').textContent = `第 ${round} 轮`;
+  document.getElementById('actionBtns').innerHTML = `
+    <button class="btn btn-hit" onclick="hitCard()">🃏 要牌 (Hit)</button>
+    <button class="btn btn-stop" onclick="stopCard()">✋ 停牌 (Stand)</button>`;
+  round++;
+}
+
+function hitCard() {
+  if (gameOver) return;
+  const newCard = deck[Math.floor(Math.random() * deck.length)];
+  newCard.hidden = false;
+  playerCards.push(newCard);
+  playerTotal += newCard.r;
+  
+  renderHands();
+  const totalEl = document.getElementById('playerTotal');
+  totalEl.textContent = `总分: ${playerTotal}`;
+  
+  if (playerTotal > 21) {
+    totalEl.className = 'total-score bust';
+    totalEl.textContent = `总分: ${playerTotal} 💥爆了!`;
+    endGame(false);
+  } else if (playerTotal === 21) {
+    totalEl.style.background = 'linear-gradient(135deg,#ffd700,#f39c12)';
+    endGame(true);
+  }
+}
+
+function stopCard() {
+  if (gameOver) return;
+  // 电脑翻牌
+  cpuCards.forEach(c => c.hidden = false);
+  cpuTotal = cpuCards.reduce((sum, c) => sum + c.r, 0);
+  
+  document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal}`;
+  document.getElementById('cpuTotal').style.opacity = '1';
+  renderHands();
+  
+  // 电脑简单AI：小于16继续要牌
+  while (cpuTotal < 16) {
+    const nc = deck[Math.floor(Math.random() * deck.length)];
+    cpuCards.push(nc);
+    cpuTotal += nc.r;
+  }
+  
+  document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal}`;
+  if (cpuTotal > 21) {
+    document.getElementById('cpuTotal').className = 'total-score bust';
+    document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal} 💥电脑爆了!`;
+    endGame(true);
+  } else {
+    endGame(playerTotal > cpuTotal || cpuTotal > 21);
+  }
+}
+
+function endGame(playerWin) {
+  gameOver = true;
+  const msg = document.getElementById('gameMsg');
+  const hands = document.querySelectorAll('.poker-card');
+  
+  if (playerWin) {
+    msg.textContent = '🎉 你赢了！';
+    hands.forEach((c, i) => { if (i < playerCards.length && !playerCards[i].hidden) c.classList.add('winner'); });
+  } else {
+    msg.textContent = '😢 你输了...';
+    hands.forEach((c, i) => { if (i >= playerCards.length) c.classList.add('winner'); });
+  }
+  
+  document.getElementById('actionBtns').innerHTML = `<button class="btn btn-new" onclick="newGame()">🔄 再来一局</button>`;
+}
+
+function renderHands() {
+  const pH = document.getElementById('playerHand');
+  const cH = document.getElementById('cpuHand');
+  
+  pH.innerHTML = playerCards.map(c => 
+    `<div class="poker-card ${c.hidden?'hidden-card':'revealed'} ${!c.hidden&&playerTotal>21?'bust':''}">
+      ${c.hidden?'':`<div class="p-expr">${c.e}</div><div class="p-result">=${c.r}</div>`}
+    </div>`
+  ).join('');
+  
+  cH.innerHTML = cpuCards.map(c =>
+    `<div class="poker-card ${c.hidden?'hidden-card':'revealed'}">
+      ${c.hidden?'':`<div class="p-expr">${c.e}</div><div class="p-result">=${c.r}</div>`}
+    </div>`
+  ).join('');
+}
+
+function autoPlay() {
+  newGame();
+  setTimeout(() => hitCard(), 800);
+  setTimeout(() => {
+    if (!gameOver && Math.random() > 0.3) hitCard();
+  }, 1600);
+  setTimeout(() => {
+    if (!gameOver) stopCard();
+  }, 2500);
+}
+
+newGame();
+</script>
+
+</body>
+</html>
