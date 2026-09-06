@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏③ 接龙比大小 - 乘法口诀大冒险</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);min-height:100vh;color:#333}
+.top-bar{background:rgba(255,255,255,0.95);padding:12px 20px;display:flex;align-items:center;gap:15px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border-radius:20px;text-decoration:none;font-size:14px;font-weight:bold;transition:all .3s}
+.back-btn:hover{transform:translateX(-3px)}
+.top-bar h1{font-size:18px;color:#d63384}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;margin-bottom:15px}
+.badge-basic{background:linear-gradient(135deg,#2ed573,#7bed9f)}
+
+.card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
+.card h2{font-size:18px;color:#d63384;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
+/* 接龙演示区 */
+.sequence-area{background:linear-gradient(180deg,#fff5f7,#ffe8ec);border-radius:16px;padding:25px}
+
+/* 玩家 */
+.players-row{display:flex;justify-content:center;gap:20px;margin-bottom:18px;flex-wrap:wrap}
+.player-tag{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:8px 18px;border-radius:20px;font-weight:bold;font-size:14px;display:flex;align-items:center;gap:6px}
+.player-tag.p1{background:linear-gradient(135deg,#74b9ff,#0984e3)}
+.player-tag.p2{background:linear-gradient(135deg:#fd79a8,#e84393)}
+.player-tag.p3{background:linear-gradient(135deg,#a29bfe,#6c5ce7)}
+.player-tag.p4{background:linear-gradient(135deg:#55efc4,#00b894)}
+
+/* 接龙桌面 */
+.table-area{background:rgba(255,255,255,0.6);border-radius:14px;padding:20px;min-height:120px;margin:15px 0;border:2px dashed #ffb8c6}
+
+/* 已出的牌序列 */
+.card-sequence{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;min-height:80px;padding:10px}
+.seq-card{width:70px;height:95px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:13px;animation:slideIn .4s ease-out;position:relative;transition:all .3s}
+@keyframes slideIn{from{opacity:0;transform:translateY(-30px) scale(0.5)}to{opacity:1;transform:translateY(0) scale(1)}}
+.seq-card .expr{font-size:16px}
+.seq-card .result{font-size:22px;font-weight:bold}
+.seq-card .player-label{position:absolute;top:-8px;left:-8px;background:#333;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px}
+.seq-card.newest{animation:pulseGlow 1s ease;box-shadow:0 0 20px rgba(245,87,108,0.6)}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 5px rgba(245,87,108,0.3)}50%{box-shadow:0 0 25px rgba(245,87,108,0.8)}}
+
+/* 箭头 */
+.seq-arrow{font-size:20px;color:#f5576c;font-weight:bold}
+
+/* 当前要求 */
+.current-req{text-align:center;margin:12px 0;padding:12px;background:#fff3cd;border-radius:10px;font-size:16px}
+.current-req .req-num{font-size:28px;font-weight:bold;color:#e74c3c}
+.current-req .hint{font-size:13px;color:#888;margin-top:4px}
+
+/* 操作按钮 */
+.btn-row{display:flex;justify-content:center;gap:12px;margin-top:15px;flex-wrap:wrap}
+.btn{padding:10px 24px;border:none;border-radius:25px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
+.btn-primary{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.btn-primary:hover{transform:scale(1.05)}
+.btn-success{background:linear-gradient(135deg,#2ed573,#7bed9f)}
+
+/* 规则步骤 */
+.step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;padding:10px;background:#f8f9fa;border-radius:10px}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;flex-shrink:0}
+.step-text{flex:1;font-size:13px;line-height:1.7;color:#555}
+.step-text strong{color:#d63384}
+
+/* 示例流程 */
+.example-flow{background:#f8f9fa;border-radius:12px;padding:18px}
+.example-round{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px;background:#fff;border-radius:10px;border-left:4px solid #f5576c}
+.example-round .who{font-weight:bold;font-size:13px;width:50px;flex-shrink:0}
+.example-round .card-mini{background:linear-gradient(135deg,#a29bfe,#6c5ce7);color:#fff;padding:6px 14px;border-radius:8px;font-size:14px;font-weight:bold}
+.example-round .arrow{color:#f5576c;font-weight:bold}
+.example-round .note{font-size:12px;color:#888}
+.example-round.fail .card-mini{background:#ddd;color:#999;text-decoration:line-through}
+.example-round.fail .note{color:#e74c3c}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.info-item{background:#f8f9fa;border-radius:10px;padding:14px;border-left:4px solid #f5576c}
+.info-item .label{font-size:12px;color:#888}
+.info-item .value{font-size:14px;font-weight:600}
+
+.footer{text-align:center;padding:20px;color:rgba(255,255,255,0.7);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🔗 游戏③ 接龙比大小</h1>
+</div>
+
+<div class="container">
+
+<span class="badge badge-basic">🟢 基础篇 · 2-4人</span>
+
+<!-- 演示区 -->
+<div class="card">
+  <h2>🎬 接龙演示</h2>
+  <div class="sequence-area">
+    <div class="players-row">
+      <div class="player-tag p1">👦 玩家A</div>
+      <div class="player-tag p2">👧 玩家B</div>
+      <div class="player-tag p3">👦 玩家C</div>
+    </div>
+
+    <div class="current-req" id="currentReq">
+      当前最小得数：<span class="req-num" id="minReq">?</span>
+      <div class="hint">下家必须出比这个数更大的牌！</div>
+    </div>
+
+    <div class="table-area">
+      <div class="card-sequence" id="seqArea">
+        <span style="color:#ccc;font-size:14px">点击下方按钮开始接龙...</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="nextCard()">🃏 出下一张</button>
+      <button class="btn btn-success" onclick="autoSequence()">▶ 自动接龙</button>
+      <button class="btn btn-primary" style="background:#aaa" onclick="resetSeq()">🔄 重置</button>
+    </div>
+  </div>
+</div>
+
+<!-- 规则 -->
+<div class="card">
+  <h2>📋 玩法规则</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>发牌：</strong>洗牌后每人发5张手牌，剩余做公共抽牌堆</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>起始：</strong>第一个人任意出一张牌（如 2×3=6）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>接龙：</strong>下家必须出<strong>得数更大</strong>的牌（如 4×5=20 > 6 ✓）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>无法跟：</strong>没有更大的牌或选择不出 → 从抽牌堆摸1张</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>获胜：</strong>先出完手牌的人获胜！</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>进阶：</strong>可设定"最小增幅"——后一张必须大至少3以上</div></div>
+</div>
+
+<!-- 示例 -->
+<div class="card">
+  <h2>💡 对战示例</h2>
+  <div class="example-flow">
+    <div class="example-round">
+      <div class="who">A出:</div>
+      <div class="card-mini">2×3=<b>6</b></div>
+      <div class="note">起始牌，当前最小=6</div>
+    </div>
+    <div class="example-round">
+      <div class="who">B出:</div>
+      <div class="card-mini">4×5=<b>20</b></div>
+      <div class="arrow">✅ 20 > 6</div>
+      <div class="note">当前最小=20</div>
+    </div>
+    <div class="example-round">
+      <div class="who">C出:</div>
+      <div class="card-mini">3×4=<b>12</b></div>
+      <div class="arrow">❌ 12 < 20!</div>
+      <div class="note fail">太小了！摸1张牌跳过</div>
+    </div>
+    <div class="example-round">
+      <div class="who">A出:</div>
+      <div class="card-mini">6×7=<b>42</b></div>
+      <div class="arrow">✅ 42 > 20</div>
+      <div class="note">当前最小=42</div>
+    </div>
+    <div class="example-round">
+      <div class="who">B出:</div>
+      <div class="card-mini">8×9=<b>72</b></div>
+      <div class="arrow">✅ 72 > 42</div>
+      <div class="note">漂亮！继续...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 基本信息 -->
+<div class="card">
+  <h2>📌 基本信息</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐ 简单</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">2-4人</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">10-15分钟/局</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">一套完整卡牌</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">小组活动 / 课间对抗</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">心算速度 / 数字比较 / 策略规划</div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
+</div>
+
+<script>
+const cards = [
+  {e:'1×2',r:2},{e:'2×2',r:4},{e:'3×2',r:6},{e:'4×2',r:8},
+  {e:'2×3',r:6},{e:'3×3',r:9},{e:'4×3',r:12},{e:'5×3',r:15},
+  {e:'2×4',r:8},{e:'3×4',r:12},{e:'4×4',r:16},{e:'5×4',r:20},
+  {e:'2×5',r:10},{e:'3×5',r:15},{e:'4×5',r:20},{e:'5×5',r:25},
+  {e:'3×6',r:18},{e:'4×6',r:24},{e:'5×6',r:30},{e:'6×6',r:36},
+  {e:'4×7',r:28},{e:'5×7',r:35},{e:'6×7',r:42},{e:'7×7',r:49},
+  {e:'5×8',r:40},{e:'6×8',r:48},{e:'7×8',r:56},{e:'8×8',r:64},
+];
+const colors = ['#74b9ff','#fd79a8','#a29bfe'];
+const names = ['A','B','C'];
+let seq = [];
+let minVal = 0;
+let turn = 0;
+
+function getValidCard(minV) {
+  const valid = cards.filter(c => c.r > minV);
+  if (valid.length === 0 || Math.random() > 0.7) return null; // 模拟有时没更大的
+  return valid[Math.floor(Math.random() * valid.length)];
+}
+
+function nextCard() {
+  if (seq.length === 0) {
+    // 第一张随便出
+    const c = cards[Math.floor(Math.random() * cards.length)];
+    seq.push({...c, player: 0});
+    minVal = c.r;
+  } else {
+    const card = getValidCard(minVal);
+    const playerIdx = turn % 3;
+    turn++;
+    
+    if (card) {
+      seq.push({...card, player: playerIdx});
+      minVal = card.r;
+    } else {
+      // 没有更大的牌
+      seq.push({e:'❌', r: 0, player: playerIdx, fail: true});
+    }
+  }
+  
+  renderSeq();
+}
+
+function renderSeq() {
+  const area = document.getElementById('seqArea');
+  document.getElementById('minReq').textContent = minVal || '?';
+  
+  if (seq.length === 0) {
+    area.innerHTML = '<span style="color:#ccc;font-size:14px">点击下方按钮开始接龙...</span>';
+    return;
+  }
+  
+  area.innerHTML = seq.map((c, i) => {
+    if (i > 0) {
+      var prev = `<span class="seq-arrow">→</span>`;
+    } else { var prev = ''; }
+    
+    if (c.fail) {
+      return `${prev}<div class="seq-card" style="background:#ddd;color:#999;width:60px;height:80px;font-size:12px">
+        <div style="text-decoration:line-through">${names[c.player]}</div>
+        <div>无法跟!</div>
+        <div style="font-size:11px">摸1张</div>
+      </div>`;
+    }
+    
+    const isLast = i === seq.length - 1;
+    return `${prev}<div class="seq-card ${isLast ? 'newest' : ''}" style="background:linear-gradient(135deg,${colors[c.player]},${colors[c.player]}dd)">
+      <div class="player-label">${names[c.player]}</div>
+      <div class="expr">${c.e}</div>
+      <div class="result">${c.r}</div>
+    </div>`;
+  }).join('');
+}
+
+let autoTimer = null;
+function autoSequence() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; return; }
+  resetSeq();
+  autoTimer = setInterval(() => {
+    nextCard();
+    if (seq.length >= 8) { clearInterval(autoTimer); autoTimer = null; }
+  }, 1200);
+}
+
+function resetSeq() {
+  seq = [];
+  minVal = 0;
+  turn = 0;
+  renderSeq();
+  document.getElementById('minReq').textContent = '?';
+}
+</script>
+
+</body>
+</html>
