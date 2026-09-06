@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乘法口诀表 - V6大字版（全班展示·猜答案）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 10mm;
+        }
+
+        .page {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            padding: 8mm;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24pt;
+            color: #333;
+            margin-bottom: 3pt;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 11pt;
+            color: #888;
+            margin-bottom: 8pt;
+            line-height: 1.4;
+        }
+
+        /* 说明框 */
+        .info-box {
+            background: linear-gradient(135deg, #FFF0F6, #FFE4EC);
+            border: 2pt solid #F06595;
+            border-radius: 8pt;
+            padding: 6pt 12pt;
+            margin-bottom: 10pt;
+            font-size: 10pt;
+            line-height: 1.6;
+            color: #555;
+            text-align: center;
+        }
+
+        .info-box strong {
+            color: #C2255C;
+        }
+
+        /* ====== 卡片区 - 单列布局（一行一张）====== */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6pt;
+        }
+
+        /* ====== 卡牌样式 - V6大字版（一行一张，超大版）====== */
+        .card {
+            width: 100%;
+            height: 170pt;             /* 翻倍：从85pt→170pt */
+            min-height: 170pt;
+            max-height: 170pt;
+            border: 4pt solid;         /* 加粗边框 */
+            border-radius: 12pt;
+            padding: 15pt 25pt;          /* 加内边距 */
+            background: white;
+            page-break-inside: avoid;
+            display: flex;
+            align-items: center;
+            justify-content: center;    /* 居中显示 */
+            gap: 30pt;                  /* 加大间距 */
+            transition: all 0.3s;
+        }
+
+        /* 每行不同边框色 */
+        .card.row-1 { 
+            border-color: #FF6B6B; 
+            background: linear-gradient(to right, #FFF5F5, white, #FFF0F0);
+        }
+        .card.row-2 { 
+            border-color: #FFA94D; 
+            background: linear-gradient(to right, #FFF9F0, white, #FFF8F0);
+        }
+        .card.row-3 { 
+            border-color: #E8C547; 
+            background: linear-gradient(to right, #FFFFF0, white, #FFFEF0);
+        }
+        .card.row-4 { 
+            border-color: #51CF66; 
+            background: linear-gradient(to right, #F0FFF5, white, #EEFFEF);
+        }
+        .card.row-5 { 
+            border-color: #20C997; 
+            background: linear-gradient(to right, #F0FFFF, white, #EFFFFF);
+        }
+        .card.row-6 { 
+            border-color: #339AF0; 
+            background: linear-gradient(to right, #F5FAFF, white, #F0F5FF);
+        }
+        .card.row-7 { 
+            border-color: #5C7CFA; 
+            background: linear-gradient(to right, #F5F8FF, white, #F0F5FF);
+        }
+        .card.row-8 { 
+            border-color: #CC5DE8; 
+            background: linear-gradient(to right, #FFF5FE, white, #FFF0FD);
+        }
+        .card.row-9 { 
+            border-color: #F06595; 
+            background: linear-gradient(to right, #FFF0F7, white, #FFEFF5);
+        }
+
+        /* 左侧：算式区域 */
+        .formula-area {
+            display: flex;
+            align-items: center;
+            gap: 12pt;
+            flex-shrink: 0;
+        }
+
+        /* 算式 - 超大字体 */
+        .formula {
+            font-size: 48pt;             /* 从28pt→48pt（翻倍）*/
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 3pt;
+        }
+
+        /* 等于号 */
+        .equals-sign {
+            font-size: 48pt;             /* 从28pt→48pt */
+            font-weight: bold;
+            color: #999;
+        }
+
+        /* 填空框 - 超大号 */
+        .answer-box {
+            width: 90pt;             /* 从60pt→90pt */
+            height: 55pt;            /* 从40pt→55pt */
+            border: 4pt dashed #E67E22;
+            border-radius: 10pt;
+            background: #FFF9F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36pt;           /* 从24pt→36pt */
+            font-weight: bold;
+            color: #E67E22;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .answer-box:hover {
+            background: #FFF3E0;
+            border-color: #F57C00;
+            transform: scale(1.05);
+        }
+
+        /* 右侧：口诀区域 */
+        .mnemonic-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2pt;
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        /* 中文口诀 - 大字体 */
+        .chinese-formula {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #555;
+            letter-spacing: 2pt;
+        }
+
+        /* 填空下划线 - 大号 */
+        .blank-line {
+            display: inline-block;
+            min-width: 40pt;
+            border-bottom: 3pt solid #E67E22;
+            margin: 0 4pt;
+            color: transparent;
+        }
+
+        /* 提示文字 */
+        .hint-text {
+            font-size: 10pt;
+            color: #BBB;
+        }
+
+        /* 切换按钮区域 */
+        .toggle-section {
+            text-align: center;
+            margin: 10pt 0;
+        }
+
+        .toggle-btn {
+            padding: 10pt 30pt;
+            font-size: 13pt;
+            background: linear-gradient(135deg, #F06595, #C2255C);
+            color: white;
+            border: none;
+            border-radius: 25pt;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2pt;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.03);
+        }
+
+        .toggle-btn.showing-answer {
+            background: linear-gradient(135deg, #51CF66, #2B8A3E);
+        }
+
+        /* 打印按钮 */
+        .print-section {
+            text-align: center;
+            margin-top: 12pt;
+        }
+
+        .print-btn {
+            padding: 10pt 30pt;
+            font-size: 13pt;
+            background: linear-gradient(135deg, #F06595, #C2255C);
+            color: white;
+            border: none;
+            border-radius: 25pt;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2pt;
+        }
+
+        .print-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                padding: 5mm;
+                max-width: 100%;
+            }
+            .print-section, .toggle-section, .info-box {
+                display: none;
+            }
+            .cards-container {
+                gap: 4pt;
+            }
+            .card {
+                break-inside: avoid;
+                height: 54pt;  /* 打印时稍微紧凑 */
+            }
+            .answer-box {
+                border: 3pt dashed #666 !important;
+                background: white !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1 class="title">📢 乘法口诀表 V6（大字版·全班展示）</h1>
+    
+    <div class="subtitle">
+        全班可见 · 一行一张 &nbsp;|&nbsp; 超大字体 &nbsp;|&nbsp; 隐藏答案猜一猜
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="info-box">
+        <strong>📢 V6大字版说明：</strong>专为<strong>全班展示/打印</strong>设计！
+        📌 <strong>特点：</strong>一行一张口诀、超大字体、隐藏得数
+        📌 <strong>用法：</strong>投影到屏幕 / 打印发给学生 / 点击显示答案
+        &nbsp;&nbsp; 💡 <strong>点击"显示/隐藏答案"切换！</strong>
+    </div>
+
+    <!-- 切换按钮 -->
+    <div class="toggle-section">
+        <button class="toggle-btn" id="toggleBtn" onclick="toggleAnswers()">👁️ 显示答案</button>
+    </div>
+
+    <!-- 口诀卡牌 - 单列布局 -->
+    <div class="cards-container" id="cards"></div>
+
+    <div class="print-section">
+        <button class="print-btn" onclick="window.print()">🖨️ 打印大字版 V6</button>
+    </div>
+</div>
+
+<script>
+// 颜色配置
+const colors = [
+    '#FF6B6B',   // 1行 - 红
+    '#FFA94D',   // 2行 - 橙
+    '#E8C547',   // 3行 - 黄
+    '#51CF66',   // 4行 - 绿
+    '#20C997',   // 5行 - 青
+    '#339AF0',   // 6行 - 蓝
+    '#5C7CFA',   // 7行 - 靛
+    '#CC5DE8',   // 8行 - 紫
+    '#F06595'    // 9行 - 粉
+];
+
+// 中文数字
+const cnNums = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+// 完整的0-81中文数字映射
+const cnResults = [
+    '零',
+    '一', '二', '三', '四', '五', '六', '七', '八', '九',
+    '一十',
+    '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九',
+    '二十',
+    '二十一', '二十二', '二十三', '二十四', '二十五', '二十六', '二十七', '二十八', '二十九',
+    '三十',
+    '三十一', '三十二', '三十三', '三十四', '三十五', '三十六', '三十七', '三十八', '三十九',
+    '四十',
+    '四十一', '四十二', '四十三', '四十四', '四十五', '四十六', '四十七', '四十八', '四十九',
+    '五十',
+    '五十一', '五十二', '五十三', '五十四', '五十五', '五十六', '五十七', '五十八', '五十九',
+    '六十',
+    '六十一', '六十二', '六十三', '六十四', '六十五', '六十六', '六十七', '六十八', '六十九',
+    '七十',
+    '七十一', '七十二', '七十三', '七十四', '七十五', '七十六', '七十七', '七十八', '七十九',
+    '八十',
+    '八十一'
+];
+
+// 全局状态：是否显示答案
+let showingAnswers = false;
+
+// 切换显示/隐藏答案
+function toggleAnswers() {
+    showingAnswers = !showingAnswers;
+    const btn = document.getElementById('toggleBtn');
+    
+    if (showingAnswers) {
+        btn.textContent = '🙈 隐藏答案';
+        btn.classList.add('showing-answer');
+    } else {
+        btn.textContent = '👁️ 显示答案';
+        btn.classList.remove('showing-answer');
+    }
+    
+    // 更新所有卡片的显示
+    document.querySelectorAll('.answer-content').forEach(el => {
+        el.style.display = showingAnswers ? 'inline' : 'none';
+    });
+    document.querySelectorAll('.blank-content').forEach(el => {
+        el.style.display = showingAnswers ? 'none' : 'inline';
+    });
+}
+
+const container = document.getElementById('cards');
+
+// 生成45张口诀卡牌（上三角）
+for (let i = 1; i <= 9; i++) {
+    for (let j = i; j <= 9; j++) {
+        const result = i * j;
+        
+        // 构建卡牌
+        const card = document.createElement('div');
+        card.className = `card row-${i}`;
+        
+        // 口诀文字：结果是个位数(1-9)用"得"，两位数(10-81)不用"得"
+        const useDe = (result <= 9);
+        
+        card.innerHTML = `
+            <!-- 算式 + 填空（居中显示） -->
+            <div class="formula-area" style="width: 100%; justify-content: center;">
+                <span class="formula">${i} × ${j}</span>
+                <span class="equals-sign">=</span>
+                <div class="answer-box">
+                    <span class="blank-content">?</span>
+                    <span class="answer-content" style="display: none;">${result}</span>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    }
+}
+</script>
+</body>
+</html>
