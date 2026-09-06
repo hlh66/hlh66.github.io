@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 乘法口诀迷你卡 V2（A4·加号圆圈·双向版）</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Microsoft YaHei','微软雅黑',Arial,sans-serif;
+            background:#eef1f7;min-height:100vh;padding:10px;
+        }
+        .wrapper{max-width:900px;margin:0 auto;}
+
+        /* ====== 控制栏 ====== */
+        .ctrl-bar{
+            background:white;border-radius:12px;padding:10px 16px;margin-bottom:8px;
+            box-shadow:0 3px 12px rgba(0,0,0,0.06);display:flex;align-items:center;
+            gap:6px;flex-wrap:wrap;justify-content:center;
+        }
+        .ctrl-label{font-size:12px;font-weight:bold;color:#555;white-space:nowrap;}
+        .ctrl-btn{
+            padding:6px 13px;border:2px solid #ddd;border-radius:9px;
+            font-size:12px;font-weight:bold;background:white;cursor:pointer;transition:all 0.2s;
+        }
+        .ctrl-btn:hover{border-color:#5c7cfa;background:#f0f3ff;}
+        .ctrl-btn.active{background:linear-gradient(135deg,#5c7cfa,#7950f2);color:white;border-color:#5c7cfa;}
+
+        /* ====== 主容器 ====== */
+        .main-area{
+            background:white;border-radius:12px;padding:14px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.07);
+        }
+
+        .page-title{text-align:center;font-size:19px;font-weight:bold;color:#222;margin-bottom:3px;}
+        .page-subtitle{text-align:center;font-size:11px;color:#999;margin-bottom:10px;}
+
+        /* 模式切换 */
+        .mode-switch{display:flex;gap:6px;justify-content:center;margin-bottom:10px;flex-wrap:wrap;}
+        .mode-btn{
+            padding:6px 14px;border:2px solid #ddd;border-radius:11px;
+            font-size:12px;font-weight:bold;cursor:pointer;transition:all 0.25s;
+        }
+        .mode-btn:hover{border-color:#5c7cfa;background:#f5f7ff;}
+        .mode-btn.active{background:linear-gradient(135deg,#5c7cfa,#7950f2);color:white;border-color:#5c7cfa;}
+
+        /* ====== 卡片网格 ====== */
+        .card-grid{
+            display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
+        }
+
+        .mcard{
+            border-radius:8px;padding:5px 4px;text-align:center;
+            position:relative;display:flex;flex-direction:column;align-items:center;
+            justify-content:flex-start;min-height:90px;
+            border:2pt solid transparent;cursor:pointer;transition:all 0.15s;overflow:hidden;
+        }
+        .mcard:hover:not(.empty-cell){transform:scale(1.03);z-index:5;box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+
+        /* 颜色行 - 实色边框+浅色背景 */
+        .r1{border-color:#e74c3c!important;background:#fef5f5!important;}
+        .r2{border-color:#e67e22!important;background:#fef8f0!important;}
+        .r3{border-color:#f1c40f!important;background:#fefdf0!important;}
+        .r4{border-color:#27ae60!important;background:#f0faf2!important;}
+        .r5{border-color:#1abc9c!important;background:#f0fbfa!important;}
+        .r6{border-color:#3498db!important;background:#f0f7fc!important;}
+        .r7{border-color:#6c5ce7!important;background:#f4f2fe!important;}
+        .r8{border-color:#a55eea!important;background:#fdf5ff!important;}
+        .r9{border-color:#fd79a8!important;background:#fdf0f5!important;}
+
+        .mc-formula{font-size:14px;font-weight:900;color:#222;line-height:1.2;}
+        .mc-result{font-size:16px;font-weight:900;color:#e74c3c;line-height:1.2;}
+
+        /* ====== 加号圆圈图示 ====== */
+        .visual-area{margin-top:2px;width:100%;}
+        .visual-row{
+            display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+            gap:1px;line-height:1;
+        }
+        .circle-group{display:inline-flex;gap:0.5px;align-items:center;}
+        .c-dot{
+            border-radius:50%;border:0.7pt solid rgba(0,0,0,0.2);
+            flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;
+        }
+        .plus-sign{font-size:7px;color:#bbb;font-weight:bold;margin:0 1px;}
+
+        /* 圆点尺寸 */
+        .sz-few .c-dot{width:7px;height:7px;}
+        .sz-med .c-dot{width:5.5px;height:5.5px;}
+        .sz-many .c-dot{width:4.5px;height:4.5px;}
+        .sz-huge .c-dot{width:3.5px;height:3.5px;}
+
+        .v-label{font-size:7.5px;color:#999;font-weight:bold;margin-bottom:1px;}
+        .v-divider{height:1px;background:#eee;margin:2px 0;}
+
+        /* 口诀 */
+        .mc-koujue{font-size:8.5px;color:#666;font-weight:bold;line-height:1.2;margin-top:2px;}
+
+        /* 空白格 */
+        .empty-cell{background:#f7f7f7!important;opacity:0.3;cursor:default;min-height:90px;border:none!important;}
+
+        /* ====== 打印按钮 ====== */
+        .print-row{text-align:center;margin-top:10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+        .print-btn{
+            padding:10px 26px;border:none;border-radius:28px;font-size:14px;font-weight:bold;
+            cursor:pointer;transition:all 0.2s;letter-spacing:2px;
+        }
+        .pb-main{background:linear-gradient(135deg,#2ed573,#1e90ff);color:white;box-shadow:0 4px 15px rgba(46,213,115,0.3);}
+        .pb-main:hover{transform:translateY(-2px) scale(1.04);}
+        .pb-sec{background:white;color:#555;border:2px solid #ddd;}
+        .pb-sec:hover{background:#f9f9f9;}
+
+        /* ====== 打印样式（关键修复）====== */
+        @media print{
+            @page {
+                size: A4 portrait;
+                margin: 5mm;
+            }
+            html,body{background:white!important;width:100%;height:auto;}
+            
+            .wrapper{max-width:100%!important;margin:0!important;padding:0!important;}
+            .ctrl-bar,.print-row,.page-subtitle,.mode-switch{display:none!important;}
+            .main-area{
+                box-shadow:none!important;padding:4mm!important;
+                border-radius:0!important;width:100%;
+            }
+            .page-title{font-size:15pt;margin-bottom:2pt;color:#111!important;}
+            .card-grid{gap:2.5pt!important;}
+            .mcard{
+                min-height:62pt!important;padding:2.5pt 2pt!important;
+                border-radius:5pt!important;border-width:1.2pt!important;
+                break-inside:avoid;page-break-inside:avoid;
+            }
+            .mc-formula{font-size:10.5pt!important;}
+            .mc-result{font-size:12.5pt!important;}
+            .mc-koujue{font-size:6.5pt!important;}
+            .v-label{font-size:5.5pt!important;}
+            .plus-sign{font-size:5pt!important;color:#999!important;}
+            .c-dot{border:0.5pt solid #444!important;}
+            .empty-cell{display:none!important;}
+            .answer-cover{display:none!important;}
+            
+            /* 强制边框和背景色 */
+            .r1{border-color:#e74c3c!important;background:#fef5f5!important;}
+            .r2{border-color:#e67e22!important;background:#fef8f0!important;}
+            .r3{border-color:#f1c40f!important;background:#fefdf0!important;}
+            .r4{border-color:#27ae60!important;background:#f0faf2!important;}
+            .r5{border-color:#1abc9c!important;background:#f0fbfa!important;}
+            .r6{border-color:#3498db!important;background:#f0f7fc!important;}
+            .r7{border-color:#6c5ce7!important;background:#f4f2fe!important;}
+            .r8{border-color:#a55eea!important;background:#fdf5ff!important;}
+            .r9{border-color:#fd79a8!important;background:#fdf0f5!important;}
+        }
+
+        @media(max-width:600px){
+            .card-grid{grid-template-columns:repeat(4,1fr);gap:3px;}
+            .mcard{min-height:78px;}
+            .mc-formula{font-size:13px;}
+            .mc-result{font-size:14px;}
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- 控制栏 -->
+<div class="ctrl-bar">
+    <span class="ctrl-label">📋 答案：</span>
+    <button class="ctrl-btn active" id="showAll" onclick="setMode('all',this)">✅ 显示答案</button>
+    <button class="ctrl-btn" id="hideAns" onclick="setMode('hide',this)">❌ 去掉答案</button>
+    <span class="ctrl-label" style="margin-left:6px;">🎨 样式：</span>
+    <button class="ctrl-btn active" id="styleColor" onclick="setStyle('color',this)">🌈 彩色</button>
+    <button class="ctrl-btn" id="styleSimple" onclick="setStyle('simple',this)">⬜ 黑白</button>
+</div>
+
+<div class="main-area">
+    <div class="page-title">📋 乘法口诀迷你卡 V2（加号圆圈·双向理解）</div>
+    <div class="page-subtitle">A4一张纸 · 全部45道 · 加号圆圈图 · 正逆双向 · 可隐藏答案 · 点击打印</div>
+
+    <!-- 模式切换 -->
+    <div class="mode-switch">
+        <button class="mode-btn active" onclick="switchView('dual')" id="vDual">🔄 双向图示</button>
+        <button class="mode-btn" onclick="switchView('single')" id="vSingle">⚫ 单向图示</button>
+        <button class="mode-btn" onclick="switchView('pure')" id="vPure">🔢 纯算式</button>
+    </div>
+
+    <!-- 卡片区域 -->
+    <div class="card-grid" id="cardGrid"></div>
+
+    <!-- 打印按钮 -->
+    <div class="print-row">
+        <button class="print-btn pb-main" onclick="window.print()">🖨️ 打印 / 另存为PDF</button>
+        <button class="print-btn pb-sec" onclick="toggleAnswers()">🔄 切换显示/去掉答案</button>
+    </div>
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ====== 配置 ======
+const COLORS = ['#e74c3c','#e67e22','#f39c12','#27ae60','#1abc9c','#3498db','#6c5ce7','#a55eea','#fd79a8'];
+const COLORS2 = ['#ff7979','#ffa502','#ffeaaa','#7bed9f','#81ecec','#70a1ff','#a29bfe','#d68aff','#ffb8d0'];
+
+const CN_NUMS = ['','一','二','三','四','五','六','七','八','九'];
+const CN_RESULTS = [
+    '零','一','二','三','四','五','六','七','八','九',
+    '一十','十一','十二','十三','十四','十五','十六','十七','十八','十九',
+    '二十','二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九',
+    '三十','三十一','三十二','三十三','三十四','三十五','三十六','三十七','三十八','三十九',
+    '四十','四十一','四十二','四十三','四十四','四十五','四十六','四十七','四十八','四十九',
+    '五十','五十一','五十二','五十三','五十四','五十五','五十六','五十七','五十八','五十九',
+    '六十','六十一','六十二','六十三','六十四','六十五','六十六','六十七','六十八','六十九',
+    '七十','七十一','七十二','七十三','七十四','七十五','七十六','七十七','七十八','七十九',
+    '八十','八十一'
+];
+
+const KOUJUE = {
+    1:{1:'一一得一',2:'一二得二',3:'一三得三',4:'一四得四',5:'一五得五',6:'一六得六',7:'一七得七',8:'一八得八',9:'一九得九'},
+    2:{2:'二二得四',3:'二三得六',4:'二四得八',5:'二五一十',6:'二六十二',7:'二七十四',8:'二八十六',9:'二九十八'},
+    3:{3:'三三得九',4:'三四十二',5:'三五十五',6:'三六十八',7:'三七二十一',8:'三八二十四',9:'三九二十七'},
+    4:{4:'四四十六',5:'四五二十',6:'四六二十四',7:'四七二十八',8:'四八三十二',9:'四九三十六'},
+    5:{5:'五五二十五',6:'五六三十',7:'五七三十五',8:'五八四十',9:'五九四十五'},
+    6:{6:'六六三十六',7:'六七四十二',8:'六八四十八',9:'六九五十四'},
+    7:{7:'七七四十九',8:'七八五十六',9:'七九六十三'},
+    8:{8:'八八六十四',9:'八九七十二'},
+    9:{9:'九九八十一'}
+};
+
+let currentMode = 'all';
+let viewMode = 'dual';
+let colorMode = true;
+
+// ====== 生成加号圆圈HTML ======
+function makeCircleGroups(totalCount, groupSize, color) {
+    const groups = Math.floor(totalCount / groupSize);
+    let html = '';
+    for (let g = 0; g < groups; g++) {
+        if (g > 0) html += '<span class="plus-sign">+</span>';
+        html += '<span class="circle-group">';
+        for (let c = 0; c < groupSize; c++) {
+            html += `<div class="c-dot" style="background:${color}"></div>`;
+        }
+        html += '</span>';
+    }
+    return html;
+}
+
+function getSizeClass(n) {
+    if (n > 63) return 'sz-huge';
+    if (n >= 28) return 'sz-many';
+    if (n >= 13) return 'sz-med';
+    return 'sz-few';
+}
+
+// ====== 渲染卡片 ======
+function renderCards() {
+    const grid = document.getElementById('cardGrid');
+    grid.innerHTML = '';
+
+    for (let i = 1; i <= 9; i++) {
+        for (let j = 1; j <= 9; j++) {
+            if (j < i) {
+                const empty = document.createElement('div');
+                empty.className = 'mcard empty-cell';
+                grid.appendChild(empty);
+                continue;
+            }
+
+            const r = i * j;
+            const isSquare = (i === j);
+            const szClass = getSizeClass(r);
+            const mainColor = COLORS[i-1];
+            const secColor = COLORS2[i-1];
+
+            const useDe = (r <= 9);
+            // 隐藏答案时，口诀也只保留算式不显示结果数字
+            const kjText = currentMode === 'hide'
+                ? `${CN_NUMS[i]}${CN_NUMS[j]}${useDe?'得':''}？`
+                : (useDe
+                    ? `${CN_NUMS[i]}${CN_NUMS[j]}得${CN_RESULTS[r]}`
+                    : `${CN_NUMS[i]}${CN_NUMS[j]}${CN_RESULTS[r]}`);
+
+            const card = document.createElement('div');
+            card.className = `mcard r${i} ${szClass}`;
+
+            let html = '';
+            const ansStr = currentMode === 'hide' ? '?' : r;
+
+            if (viewMode === 'dual') {
+                const circles1 = makeCircleGroups(r, j, mainColor);
+                const circles2 = makeCircleGroups(r, i, secColor);
+
+                html = `
+                    <div class="mc-formula">${i} × ${j} = ${ansStr}</div>
+                    <div class="visual-area">
+                        ${isSquare ? `
+                        <div class="v-label">${i}个${j}相加</div>
+                        <div class="visual-row">${circles1}</div>
+                        ` : `
+                        <div class="v-label" style="color:${mainColor}">① ${i}个${j}</div>
+                        <div class="visual-row">${circles2}</div>
+                        <div class="v-divider"></div>
+                        <div class="v-label" style="color:${secColor}">② ${j}个${i}</div>
+                        <div class="visual-row">${circles1}</div>
+                        `}
+                    </div>
+                    <div class="mc-koujue">${kjText}</div>
+                `;
+            } else if (viewMode === 'single') {
+                const circles = makeCircleGroups(r, i, mainColor);
+                html = `
+                    <div class="mc-formula">${i} × ${j} = ${ansStr}</div>
+                    <div class="visual-area">
+                        <div class="v-label">${i}个${j}相加</div>
+                        <div class="visual-row">${circles}</div>
+                    </div>
+                    <div class="mc-koujue">${kjText}</div>
+                `;
+            } else {
+                html = `
+                    <div class="mc-formula">${i} × ${j}</div>
+                    <div class="mc-result">${ansStr}</div>
+                    <div class="mc-koujue">${kjText}</div>
+                `;
+            }
+
+
+            card.innerHTML = html;
+            grid.appendChild(card);
+        }
+    }
+}
+
+// ====== 模式切换 ======
+function setMode(mode, btn) {
+    currentMode = mode;
+    document.querySelectorAll('.ctrl-bar .ctrl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (mode === 'hide') {
+        document.getElementById('hideAns').classList.add('active');
+        document.getElementById('showAll').classList.remove('active');
+    } else {
+        document.getElementById('showAll').classList.add('active');
+        document.getElementById('hideAns').classList.remove('active');
+    }
+    renderCards();
+}
+
+function toggleAnswers() {
+    if (currentMode === 'all') setMode('hide', document.getElementById('hideAns'));
+    else setMode('all', document.getElementById('showAll'));
+}
+
+function switchView(mode, btn) {
+    viewMode = mode;
+    document.querySelectorAll('.mode-switch .mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards();
+}
+
+function setStyle(style, btn) {
+    colorMode = (style === 'color');
+    document.querySelectorAll('.ctrl-bar .ctrl-btn').forEach((b,i) => {
+        if (b.id === 'styleSimple' || b.id === 'styleColor') b.classList.remove('active');
+    });
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.mcard:not(.empty-cell)');
+    cards.forEach(c => {
+        if (!colorMode) {
+            c.style.background = '#fff'; c.style.borderColor='#ccc';
+            const f=c.querySelector('.mc-formula');if(f)f.style.color='#000';
+            const r=c.querySelector('.mc-result');if(r)r.style.color='#333';
+            const k=c.querySelector('.mc-koujue');if(k)k.style.color='#888';
+            c.querySelectorAll('.c-dot').forEach(d=>{d.style.background='#999';d.style.borderColor='#777';});
+        } else {
+            c.style.background='';c.style.borderColor='';
+            const f=c.querySelector('.mc-formula');if(f)f.style.color='';
+            const r=c.querySelector('.mc-result');if(r)r.style.color='';
+            const k=c.querySelector('.mc-koujue');if(k)k.style.color='';
+            c.querySelectorAll('.c-dot').forEach(d=>{d.style.background='';d.style.borderColor='';});
+        }
+    });
+}
+
+// ====== 初始化 ======
+renderCards();
+
+// 点击效果
+document.getElementById('cardGrid').addEventListener('click', function(e) {
+    const card = e.target.closest('.mcard');
+    if (!card || card.classList.contains('empty-cell')) return;
+    document.querySelectorAll('.mcard.highlighted').forEach(c=>c.classList.remove('highlighted'));
+    card.classList.add('highlighted');
+    card.style.transform='scale(1.08)';
+    card.style.boxShadow='0 5px 18px rgba(0,0,0,0.12)';
+    card.style.zIndex='10';
+    setTimeout(()=>{
+        card.classList.remove('highlighted');
+        card.style.transform='';card.style.boxShadow='';card.style.zIndex='';
+    },1200);
+});
+</script>
+</body>
+</html>
