@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乘法口诀魔法大冒险</title>
+<style>
+  *{box-sizing:border-box;font-family:"Microsoft YaHei","PingFang SC",sans-serif;}
+  body{margin:0;min-height:100vh;color:#fff;padding:14px;position:relative;
+    background:linear-gradient(135deg,#1a1038,#2a1a4a);}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),
+      radial-gradient(1px 1px at 28% 65%,#cfe0ff,transparent),
+      radial-gradient(1.5px 1.5px at 45% 30%,#ffe9b3,transparent),
+      radial-gradient(1px 1px at 60% 80%,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 75% 15%,#d9c9ff,transparent),
+      radial-gradient(1px 1px at 88% 55%,#fff,transparent),
+      radial-gradient(1px 1px at 8% 85%,#cfe0ff,transparent),
+      radial-gradient(1.5px 1.5px at 95% 88%,#ffe9b3,transparent);
+  }
+  h1{text-align:center;margin:6px 0;font-size:28px;
+    background:linear-gradient(90deg,#ffd54f,#ff9d00,#ff66cc,#b07bff,#ffd54f);
+    background-size:200% auto;-webkit-background-clip:text;background-clip:text;
+    color:transparent;animation:shine 4s linear infinite;
+    filter:drop-shadow(0 0 10px rgba(176,123,255,.55));}
+  @keyframes shine{to{background-position:200% center;}}
+  .sub{text-align:center;color:#d9c9ff;margin-bottom:6px;font-size:13px;}
+  .sub2{text-align:center;color:#9fe;font-size:12px;margin-bottom:10px;}
+  .topbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+  .player{background:#1f1540;border:2px solid #5a3fb0;border-radius:10px;padding:6px 10px;min-width:120px;}
+  .player.cur{box-shadow:0 0 14px #ffd54f;border-color:#ffd54f;animation:ppulse 1.6s infinite;}
+  @keyframes ppulse{0%,100%{box-shadow:0 0 8px #ffd54f;}50%{box-shadow:0 0 20px #ffd54f,0 0 30px #ff9d00;}}
+  .player .nm{font-weight:bold;}
+  .player .pos{font-size:12px;color:#c9b8ff;}
+  .hand{font-size:11px;color:#9fe;margin-top:3px;min-height:16px;}
+  .hand .sk{display:inline-block;background:linear-gradient(135deg,#6b21a8,#a855f7);
+    border:1px solid #d8b4fe;border-radius:6px;padding:1px 6px;margin:1px;font-size:11px;
+    color:#fff;cursor:pointer;transition:transform .15s;}
+  .hand .sk:hover{transform:scale(1.12);box-shadow:0 0 8px #a855f7;}
+
+  .board{
+    display:grid;grid-template-columns:repeat(9,1fr);gap:3px;
+    max-width:980px;margin:0 auto 14px;
+    padding:10px;border-radius:14px;
+    background:#3a6b2e;
+    background-image:
+      radial-gradient(circle at 20% 30%, #4a8540 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 60%, #4a8540 0 2px, transparent 3px),
+      radial-gradient(circle at 40% 80%, #4a8540 0 2px, transparent 3px);
+    background-size: 16px 16px, 20px 20px, 14px 14px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,.4);
+  }
+  .cell.c-empty{
+    background:transparent;min-height:48px;box-shadow:none;
+  }
+  .cell{
+    border-radius:8px;padding:6px 3px;min-height:48px;
+    position:relative;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;font-size:10px;
+    cursor:help;transition:transform .15s;
+    background:#f4c430;
+    background-image:
+      linear-gradient(135deg, rgba(0,0,0,.06) 25%, transparent 25%, transparent 50%, rgba(0,0,0,.06) 50%, rgba(0,0,0,.06) 75%, transparent 75%, transparent),
+      linear-gradient(45deg, rgba(255,255,255,.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.2) 75%, transparent 75%, transparent);
+    background-size: 12px 12px, 12px 12px;
+    color:#4a3200;
+    border:1px solid #c9a227;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.25);
+  }
+  .cell .idx{position:absolute;top:2px;left:4px;font-size:9px;font-weight:bold;color:#6a4a00;}
+  .cell .ic{font-size:18px;}
+  .cell .lb{font-weight:bold;margin-top:1px;line-height:1.1;}
+  .cell .tp{font-size:8px;margin-top:1px;color:#5a4000;}
+  .tok{position:absolute;bottom:2px;display:flex;gap:2px;z-index:8;font-size:14px;}
+  .tok .cur-tok{display:inline-block;animation:bounce .7s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+  .cell.c-start{background:#a8e6a3;color:#0a5a00;border-color:#5cb85c;}
+  .cell.c-end{background:#ffd54f;color:#6a4a00;border-color:#c9a227;box-shadow:0 0 12px #ffd54f;}
+  .cell:hover{transform:scale(1.18);z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.55);}
+  .cell.has-ply{box-shadow:0 0 14px rgba(255,255,255,.9), inset 0 0 0 1px rgba(255,255,255,.6);}
+  .cell.cur-pos{animation:cpulse 1.2s infinite;}
+  @keyframes cpulse{0%,100%{box-shadow:0 0 10px #ffd54f;}50%{box-shadow:0 0 24px #ffd54f,0 0 36px #ff9d00;}}
+  .cell::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:4px;border-radius:8px 8px 0 0;
+  }
+  .cell.c-base::before{background:#b88a2a;}
+  .cell.c-impro::before{background:#ff9d00;}
+  .cell.c-chal::before{background:#ff4d4d;}
+  .cell.c-pk::before{background:#ff66cc;}
+  .cell.c-skill::before{background:#a855f7;}
+  .cell.c-trap::before{background:#8b5a2b;}
+  .cell.c-back::before{background:#e74c3c;}
+  .cell.c-story::before{background:#2ecc71;}
+  .cell.c-mean::before{background:#3498db;}
+  .cell.c-adv::before{background:#f39c12;}
+  .cell.c-tele::before{background:#00bcd4;}
+
+  .panel{background:#1f1540;border:2px solid #5a3fb0;border-radius:12px;padding:12px;max-width:980px;margin:0 auto 14px;}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  button{background:#7b4ddb;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+  button:hover{background:#9b6dff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(123,77,219,.6);}
+  button.sec{background:#3a2b6b;}
+  /* ===== 新奇卡牌（一看就懂） ===== */
+  .mcard{display:inline-block;width:200px;border-radius:14px;overflow:hidden;
+    border:2px solid;margin:10px auto 4px;cursor:help;text-align:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);
+    animation:cardIn .55s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes cardIn{0%{transform:rotateY(90deg) scale(.6);opacity:0;}100%{transform:rotateY(0) scale(1);opacity:1;}}
+  .mcard:hover{transform:translateY(-4px) scale(1.04);transition:transform .18s;}
+  .m-head{font-size:12px;font-weight:bold;padding:5px;letter-spacing:3px;}
+  .m-body{font-size:30px;font-weight:bold;padding:16px 6px;line-height:1.25;}
+  .m-foot{font-size:12px;padding:6px 4px;font-weight:bold;}
+  .m-kou{background:linear-gradient(160deg,#fff8e7,#f5deb3);color:#5a3a00;border-color:#c9a227;}
+  .m-kou .m-head{background:#8b5a2b;color:#ffe9b3;}
+  .m-kou .m-foot{background:rgba(139,90,43,.16);color:#7a4a10;}
+  .m-skill{background:linear-gradient(160deg,#3b1f6e,#241040);color:#e8d5ff;border-color:#a855f7;
+    box-shadow:0 0 22px rgba(168,85,247,.55),0 8px 24px rgba(0,0,0,.5);}
+  .m-skill .m-head{background:#a855f7;color:#fff;}
+  .m-skill .m-body{font-size:20px;}
+  .m-skill .m-foot{background:rgba(168,85,247,.22);color:#d9b3ff;}
+  .m-bomb{background:linear-gradient(160deg,#3a0d0d,#1a0505);color:#ffb3b3;border-color:#ff4d4d;
+    box-shadow:0 0 22px rgba(255,60,60,.5),0 8px 24px rgba(0,0,0,.5);}
+  .m-bomb .m-head{background:#c0392b;color:#fff;}
+  .m-bomb .m-foot{background:rgba(192,57,43,.25);color:#ff9d9d;}
+  .m-fwd{background:linear-gradient(160deg,#fff3c4,#ffd54f);color:#6a4a00;border-color:#ffca28;
+    box-shadow:0 0 22px rgba(255,213,79,.6),0 8px 24px rgba(0,0,0,.5);}
+  .m-fwd .m-head{background:#f39c12;color:#fff;}
+  .m-fwd .m-foot{background:rgba(243,156,18,.2);color:#8a5a00;}
+  .m-back{background:linear-gradient(160deg,#4a2c1a,#2a1608);color:#ffcc99;border-color:#8b5a2b;}
+  .m-back .m-head{background:#8b5a2b;color:#ffe0b3;}
+  .m-back .m-foot{background:rgba(139,90,43,.3);color:#e8b87a;}
+  /* ===== 悬停说明气泡 ===== */
+  #tooltip{position:fixed;display:none;z-index:999;max-width:250px;
+    background:rgba(20,12,40,.97);border:1px solid #b07bff;border-radius:10px;
+    color:#f0e6ff;font-size:12px;line-height:1.7;padding:8px 11px;
+    box-shadow:0 6px 20px rgba(0,0,0,.65);pointer-events:none;}
+  .msg{min-height:22px;text-align:center;color:#ffd54f;margin:8px 0;font-size:14px;}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;}
+  .modal.show{display:flex;}
+  .mbox{background:#2a1a4a;border:2px solid #b07bff;border-radius:14px;padding:18px;max-width:440px;width:90%;}
+  .mbox h3{margin:0 0 8px;}
+  details{max-width:980px;margin:10px auto;color:#d9c9ff;font-size:13px;}
+  summary{cursor:pointer;}
+  .legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:11px;margin-bottom:10px;}
+  .legend span{background:#1f1540;border:1px solid #5a3fb0;border-radius:6px;padding:2px 6px;cursor:help;}
+  .legend span:hover{border-color:#ffd54f;box-shadow:0 0 8px rgba(255,213,79,.4);}
+</style>
+</head>
+<body>
+<h1>✨ 乘法口诀魔法大冒险 ✨</h1>
+<div class="sub">抽口诀卡前进 · 沿黄砖路闯关 · 拾取魔法技能 · 先到终点者胜（2-4人对战）</div>
+
+<div class="topbar" id="players"></div>
+
+<div class="legend">
+  <span data-tip="🎯出战格：抽口诀卡，大声读口诀，✅读对按步数前进，❌读错退1格">🎯出战格</span>
+  <span data-tip="🎮游戏关：踩上弹出真小游戏！👯找朋友/🎴吃卡片/⚡找几口诀，赢了+2格">🎮游戏关</span>
+  <span data-tip="⚔️PK格：与下一位玩家各抽1卡比得数，赢+2格、输退2格">⚔️PK格</span>
+  <span data-tip="✨技能格：免费拾取1张魔法技能卡，收入手牌随时可用">✨技能格</span>
+  <span data-tip="🎁幸运格：抽2张口诀卡，选步数大的那张走">🎁幸运格</span>
+  <span data-tip="📖故事格：用口诀编一个生活小故事，如「每人4块糖，3人共几块」">📖故事格</span>
+  <span data-tip="💡意义格：说出算式的意义，如3×4表示「4个3相加」">💡意义格</span>
+  <span data-tip="🎲冒险格：回答一道冒险题，答错暂停1轮">🎲冒险格</span>
+  <span data-tip="🌀传送格：算出一个乘法得数，传送到对应数字的格子">🌀传送格</span>
+  <span data-tip="🕳️伏兵格：踩中埋伏后退3格！🛡️九九护盾可抵挡">🕳️伏兵(退3)</span>
+  <span data-tip="🔻倒退格：后退2格！🛡️九九护盾可抵挡">🔻倒退(退2)</span>
+  <span data-tip="💣炸弹卡：抽到立刻后退3格！🛡️护盾可抵挡">💣炸弹卡</span>
+  <span data-tip="⭐幸运前进卡：抽到立刻向前跳2格！">⭐幸运前进卡</span>
+  <span data-tip="🚩起点：小勇士们从这里出发 / 🏁终点：第一个到达者获胜！">🚩起点 🏁终点</span>
+</div>
+<div class="sub2">💡 鼠标悬停任意【格子】或【卡牌】，都会弹出说明哦！</div>
+
+<div class="board" id="board"></div>
+
+<div class="panel">
+  <div class="controls">
+    <button onclick="drawCard()">🎴 抽卡</button>
+    <button class="sec" onclick="readRight()">✅ 读对</button>
+    <button class="sec" onclick="readWrong()">❌ 读错</button>
+    <button class="sec" onclick="nextTurn()">➡️ 下一玩家</button>
+    <button class="sec" onclick="restart()">🔄 重开</button>
+  </div>
+  <div style="text-align:center" id="cardArea"></div>
+  <div class="msg" id="msg">点击「抽卡」开始吧！</div>
+</div>
+
+<details>
+  <summary>📜 完整规则 / 格子说明</summary>
+  <div style="line-height:1.7;padding:8px">
+  <b>推进：</b>点「抽卡」→ 可能翻到四类卡：<br>
+  ① <b>口诀卡</b>：读对按卡面步数前进，读错退1（连续错3次自动给答案并前进，防卡死）；得数≤9含"得"字→读对再+1。<br>
+  ② <b>技能卡</b>（得字突袭/九九护盾/填空陷阱/加倍前进）：立刻收进手牌<b>保留</b>，本回合仍前进1格，想用时点手牌。<br>
+  ③ <b>即时卡</b>：💣炸弹(退3) / ⭐幸运前进(跳2) / 🔻倒退(退2)，抽到立刻生效。<br>
+  <b>九九护盾</b>可挡一切后退（炸弹/倒退/伏兵/读错/ PK 输）。<br>
+  <b>防死循环：</b>只结算落点；退格不连锁；两退格格间距&gt;3。<br>
+  <b>三游戏融入：</b>👯找朋友（得数配对） · 🎴口诀吃卡片（比大小） · ⚡快速找几的口诀；技能卡源自「口诀三国杀」；PK格与吃卡片都是两人真对战，赢的人才前进。
+  </div>
+</details>
+
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div id="tooltip"></div>
+
+<script>
+// ===== 数据 =====
+const CELLS = [
+  {i:0, t:"start", ic:"🚩", lb:"起点", cls:"c-start"},
+  {i:1, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:2, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:3, t:"lucky", ic:"🎁", lb:"幸运格", cls:"c-skill"},
+  {i:4, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:5, t:"story", ic:"📖", lb:"故事格", cls:"c-story"},
+  {i:6, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:7, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
+  {i:8, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:9, t:"game", ic:"👯", lb:"游戏·找朋友", sub:"得数配对", cls:"c-base"},
+  {i:10, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:11, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:12, t:"mean", ic:"💡", lb:"意义格", cls:"c-mean"},
+  {i:13, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:14, t:"trap", ic:"🕳️", lb:"伏兵格", sub:"退3", cls:"c-trap"},
+  {i:15, t:"back", ic:"🔻", lb:"倒退格", sub:"退2", cls:"c-back"},
+  {i:16, t:"game", ic:"🎴", lb:"游戏·吃卡片", sub:"比大小", cls:"c-impro"},
+  {i:17, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
+  {i:18, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:19, t:"adv", ic:"🎲", lb:"冒险格", cls:"c-adv"},
+  {i:20, t:"game", ic:"⚡", lb:"游戏·找几口诀", sub:"限时挑战", cls:"c-base"},
+  {i:21, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:22, t:"pk", ic:"⚔️", lb:"PK格", sub:"单挑", cls:"c-pk"},
+  {i:23, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:24, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:25, t:"tele", ic:"🌀", lb:"传送格", cls:"c-tele"},
+  {i:26, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:27, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
+  {i:28, t:"boss", ic:"⚔️", lb:"终极对决", sub:"挑战", cls:"c-chal"},
+  {i:29, t:"end", ic:"🏁", lb:"终点", cls:"c-end"},
+];
+// 9×9 大网格，路径格之间必隔草地（无连续路格），每步相邻，无歧义
+const PATH=[
+  [8,1],[7,1],[6,1],[5,1],[4,1],[3,1],[2,1],
+  [2,2],[2,3],[3,3],[4,3],[5,3],[6,3],[7,3],
+  [7,4],[7,5],[6,5],[5,5],[4,5],[3,5],[2,5],
+  [2,6],[2,7],[3,7],[4,7],[5,7],[6,7],[7,7],[8,7],[8,8]
+];
+const GRID_R=9, GRID_C=9;
+const idxByCoord={};
+PATH.forEach((rc,i)=>{ idxByCoord[rc[0]+","+rc[1]]=i; });
+
+const COLORS=["🔴","🔵","🟡","🟢"];
+const NAMES=["红方","蓝方","黄方","绿方"];
+let numPlayers=2;
+const SKILLS=["得字突袭","九九护盾","填空陷阱","加倍前进"];
+const GAME_RULES={
+  "找朋友":"喊出目标得数（如36），找出所有得数相同的口诀朋友：四九三十六、六六三十六…全找齐+2格！",
+  "吃卡片":"与对手各翻1张卡，大声读口诀比得数，得数大的吃掉小的：赢+2格。",
+  "找几口诀":"限时挑战：大声报出某个数的全部口诀（如全部7的口诀），全对+2格！",
+  "终极对决":"BOSS战：最后冲刺！当前玩家与全体对手各抽1卡比最大得数，赢者冲线。可用技能卡翻盘。"
+};
+
+// ===== 格子悬停说明 =====
+const CELL_TIPS={
+  start:"🚩起点：小勇士们从这里出发，先冲到🏁终点者获胜！",
+  fight:"🎯出战格：抽口诀卡→大声读口诀→✅读对按步数前进，❌读错退1格",
+  lucky:"🎁幸运格：抽2张口诀卡，选步数大的那张前进！",
+  story:"📖故事格：用抽到的口诀编一个生活小故事，如「3×4：每人4块糖，3人一共几块？」",
+  skill:"✨技能格：免费拾取1张魔法技能卡！🗡️得字突袭/🛡️九九护盾/🕳️填空陷阱/⚡加倍前进",
+  trap:"🕳️伏兵格：哎呀踩中埋伏！后退3格（🛡️九九护盾可抵挡）",
+  back:"🔻倒退格：后退2格（🛡️九九护盾可抵挡）",
+  mean:"💡意义格：说出算式的意义，如3×4表示「4个3相加」",
+  adv:"🎲冒险格：回答一道冒险题，答错暂停1轮",
+  tele:"🌀传送格：算出一个乘法得数，传送到对应数字的格子",
+  pk:"⚔️PK格：与下一位玩家各抽1张口诀卡比得数，赢+2格、输退2格",
+  boss:"⚔️终极魔法对决：最后冲刺！与全体对手各抽1卡比最大得数，赢者直接冲线！可用技能卡翻盘",
+  end:"🏁终点：第一个到达这里的玩家获胜！🏆"
+};
+// 游戏关逐格说明
+const GAME_TIPS={
+  "游戏·找朋友":"👯找朋友（得数配对）：喊出目标得数如36，找出所有得数相同的口诀——四九三十六、六六三十六！全找齐+2格",
+  "游戏·吃卡片":"🎴口诀吃卡片（比大小）：与对手各翻1张卡大声读口诀，得数大的吃掉小的，赢+2格",
+  "游戏·找几口诀":"⚡快速找出几的口诀：限时报出某个数的全部口诀（如全部7的），全对+2格"
+};
+// ===== 技能卡图鉴 =====
+const SKILL_INFO={
+  "得字突袭":{ic:"🗡️",short:"立即+1格",tip:"立即向前突进1格！口诀得数≤9含「得」字时读对也会自动触发"},
+  "九九护盾":{ic:"🛡️",short:"挡1次后退",tip:"使用后抵挡下一次任何后退：炸弹/伏兵/倒退/读错/PK失败统统不怕"},
+  "填空陷阱":{ic:"🕳️",short:"坑下家退2格",tip:"指定下一位玩家说一句乘法口诀，说错就退2格，说对则没事"},
+  "加倍前进":{ic:"⚡",short:"立即+2格",tip:"马力全开！立即向前冲刺2格"}
+};
+// 口诀读法（3×7→三七二十一）
+const CN_NUM=["","一","二","三","四","五","六","七","八","九"];
+function koujue(a,b){
+  const p=a*b; let s=CN_NUM[a]+CN_NUM[b];
+  if(p<10) s+="得"+CN_NUM[p];
+  else if(p<20) s+="十"+(p%10?CN_NUM[p%10]:"");
+  else { s+=CN_NUM[Math.floor(p/10)]+"十"; if(p%10)s+=CN_NUM[p%10]; }
+  return s;
+}
+
+let players=[], cur=0, deck=[], skillDeck=[], curCard=null, wrongStreak=0;
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
+function buildDeck(){
+  deck=[];
+  for(let a=1;a<=6;a++) for(let b=1;b<=9;b++){
+    const p=a*b;
+    let step=1;
+    if(p<=9) step=1;
+    else if(Math.random()<0.18) step=2;
+    else if(Math.random()<0.06) step=3;
+    deck.push({type:"kou",a,b,p,step});
+  }
+  for(let i=0;i<8;i++) deck.push({type:"skill",skill:SKILLS[i%SKILLS.length]});
+  for(let i=0;i<4;i++) deck.push({type:"bomb"});
+  for(let i=0;i<4;i++) deck.push({type:"fwd"});
+  for(let i=0;i<4;i++) deck.push({type:"back"});
+  shuffle(deck);
+}
+function popKou(){
+  let c=deck.pop();
+  while(c && c.type!=="kou"){ c=deck.pop(); }
+  if(!c){ buildDeck(); c=deck.pop(); while(c && c.type!=="kou"){ c=deck.pop(); } }
+  return c;
+}
+function init(){
+  players=[];
+  for(let i=0;i<numPlayers;i++) players.push({name:NAMES[i],color:COLORS[i],pos:0,hand:[],shield:false,stop:0});
+  cur=0; wrongStreak=0; curCard=null;
+  buildDeck(); skillDeck=[...SKILLS]; shuffle(skillDeck);
+  render();
+}
+function render(){
+  const pb=document.getElementById("players"); pb.innerHTML="";
+  players.forEach((pl,i)=>{
+    const d=document.createElement("div"); d.className="player"+(i===cur?" cur":"");
+    const handHTML=pl.hand.length? pl.hand.map((s,j)=>{const si=SKILL_INFO[s];return `<span class="sk" data-j="${j}" data-tip="${si.ic}【${s}】${si.tip}${i===cur?"（点击使用）":""}">${si.ic}${s}</span>`;}).join("") : "手牌空";
+    d.innerHTML=`<div class="nm">${i===cur?"👉 ":""}${pl.color} ${pl.name}${i===cur?" · 轮到你了":""}</div><div class="pos">第${pl.pos}格${pl.stop>0?" ·停"+pl.stop+"轮":""}${pl.shield?" ·🛡️":""}</div><div class="hand">${handHTML}</div>`;
+    pb.appendChild(d);
+  });
+  const bd=document.getElementById("board"); bd.innerHTML="";
+  for(let r=0;r<GRID_R;r++){
+    for(let c=0;c<GRID_C;c++){
+      const key=r+","+c;
+      if(key in idxByCoord){
+        const idx=idxByCoord[key]; const cc=CELLS[idx];
+        const toks=players.map((p,pi)=>p.pos===idx?`<span class="tk${pi===cur?" cur-tok":""}">${p.color}</span>`:"").join("");
+        const cell=document.createElement("div");
+        cell.className="cell "+cc.cls;
+        if(players.some(p=>p.pos===idx)) cell.classList.add("has-ply");
+        if(players[cur].pos===idx) cell.classList.add("cur-pos");
+        cell.setAttribute("data-tip", GAME_TIPS[cc.lb]||CELL_TIPS[cc.t]||cc.lb);
+        cell.innerHTML=`<div class="idx">${idx}</div><div class="ic">${cc.ic}</div><div class="lb">${cc.lb}</div>${cc.sub?`<div class="tp">${cc.sub}</div>`:""}<div class="tok">${toks}</div>`;
+        bd.appendChild(cell);
+      } else {
+        const e=document.createElement("div"); e.className="cell c-empty"; bd.appendChild(e);
+      }
+    }
+  }
+  bindHands();
+  bindTips();
+}
+function bindHands(){
+  const pb=document.getElementById("players");
+  players.forEach((pl,i)=>{
+    if(i!==cur||!pl.hand.length) return;
+    pb.children[i].querySelectorAll(".sk").forEach(sp=>{
+      sp.onclick=()=>useSkill(parseInt(sp.dataset.j));
+    });
+  });
+}
+// ===== 悬停说明气泡 =====
+function bindTips(){
+  document.querySelectorAll("[data-tip]").forEach(el=>{
+    if(el._tipBound) return; el._tipBound=true;
+    el.addEventListener("mouseenter",e=>{
+      const t=document.getElementById("tooltip");
+      t.textContent=el.getAttribute("data-tip"); t.style.display="block"; moveTip(e);
+    });
+    el.addEventListener("mousemove",moveTip);
+    el.addEventListener("mouseleave",()=>{document.getElementById("tooltip").style.display="none";});
+  });
+}
+function moveTip(e){
+  const t=document.getElementById("tooltip"); const pad=12;
+  let x=e.clientX+pad, y=e.clientY+pad;
+  const r=t.getBoundingClientRect();
+  if(x+r.width>window.innerWidth-6) x=e.clientX-r.width-pad;
+  if(y+r.height>window.innerHeight-6) y=e.clientY-r.height-pad;
+  t.style.left=x+"px"; t.style.top=y+"px";
+}
+function setMsg(m){document.getElementById("msg").textContent=m;}
+function moveBy(p,delta){ let np=p.pos+delta; if(np<0)np=0; if(np>29)np=29; p.pos=np; return np; }
+function applyBack(p,n,reason){
+  if(p.shield){ p.shield=false; setMsg(p.color+" 触发"+reason+"，但🛡️护盾抵消后退！"); }
+  else { const np=moveBy(p,-n); setMsg(p.color+" 触发"+reason+"，退"+n+"格 → 第"+np+"格"); }
+}
+function resolveCell(p){
+  const c=CELLS[p.pos];
+  if(c.t==="trap"){ applyBack(p,3,"伏兵格"); afterEvent(); }
+  else if(c.t==="back"){ applyBack(p,2,"倒退格"); afterEvent(); }
+  else if(c.t==="skill"){
+    const sk = skillDeck.length? skillDeck.pop() : SKILLS[Math.floor(Math.random()*4)];
+    p.hand.push(sk); setMsg(p.color+" 拾取魔法卡：【"+sk+"】已进手牌"); afterEvent();
+  }
+  else if(c.t==="lucky"){ openModal("<h3>🎁 幸运格</h3><p>抽2张口诀卡，选步数大的那张走！</p><button onclick='closeModal();luckyGo()'>抽2张选大</button>"); }
+  else if(c.t==="pk"){ openPK(p); }
+  else if(c.t==="tele"){
+    const ans=prompt("传送格：算出现在所在「前一步」的得数（如 3×4 输入12），传送到对应数字格");
+    if(ans!==null){ let t=parseInt(ans)%29; if(isNaN(t))t=p.pos; moveBy(p,t-p.pos); setMsg(p.color+" 传送至第"+p.pos+"格"); afterEvent(); }
+  }
+  else if(c.t==="story"){ openModal("<h3>📖 故事格</h3><p>请编一个包含这句乘法的小故事（如：3×4，小明买了3包糖每包4颗…），说完点完成。</p><button onclick='closeModal();afterEvent()'>完成 +0</button>"); }
+  else if(c.t==="mean"){ openModal("<h3>💡 意义格</h3><p>说出当前这句口诀的'意义'（如 3×4 表示 4个3相加 / 3个4相加），说完点完成。</p><button onclick='closeModal();afterEvent()'>完成 +0</button>"); }
+  else if(c.t==="adv"){
+    const q=popKou()||{a:1,b:1};
+    openModal(`<h3>🎲 冒险格</h3><p>冒险题：${q.a} × ${q.b} = ?</p><button onclick='closeModal();players[cur].stop=1;setMsg("答问环节：答错则停1轮（演示版默认停1轮）");afterEvent()'>答完·停1轮</button> <button onclick='closeModal();afterEvent()'>我会·不停</button>`);
+  }
+  else if(c.t==="game"){
+    if(c.lb==="游戏·找朋友") gameFriend();
+    else if(c.lb==="游戏·吃卡片") gameEat();
+    else if(c.lb==="游戏·找几口诀") gameFindN();
+    else afterEvent();
+  }
+  else if(c.t==="boss"){
+    openModal(`<h3>⚔️ 终极魔法对决</h3><p>最后冲刺！与全体对手各抽1卡比最大得数，赢者冲线。也可用技能卡翻盘。</p><button onclick='closeModal();moveBy(players[cur],1);setMsg(players[cur].color+" 通过终极对决，冲向终点！");afterEvent()'>挑战 +1</button>`);
+  }
+  else if(c.t==="end"){
+    openModal(`<h3>🏁 ${p.color} 到达终点！</h3><p>恭喜通关！点击下一玩家继续，或重开一局。</p><button onclick='closeModal()'>好</button>`);
+  }
+  else { afterEvent(); }
+}
+function afterEvent(){ render(); }
+function drawCard(){
+  if(players[cur].stop>0){ setMsg("你处于暂停，点「下一玩家」跳过本回合。"); return; }
+  const c = deck.length? deck.pop() : (buildDeck(),deck.pop());
+  if(c.type==="skill"){
+    players[cur].hand.push(c.skill);
+    const si=SKILL_INFO[c.skill];
+    document.getElementById("cardArea").innerHTML=`<div class="mcard m-skill" data-tip="✨技能卡【${c.skill}】${si.ic}：${si.tip}。已自动收进手牌，轮到你时点击手牌即可使用！">
+      <div class="m-head">✨ 技 能 卡</div>
+      <div class="m-body"><span style="font-size:36px">${si.ic}</span><br>${c.skill}</div>
+      <div class="m-foot">${si.short} · 已收进手牌</div>
+    </div>`;
+    bindTips();
+    setMsg(players[cur].color+" 抽到技能卡【"+c.skill+"】！已保留到手牌（本回合前进1格）");
+    curCard=null; moveBy(players[cur],1); resolveCell(players[cur]);
+    return;
+  }
+  if(c.type==="bomb"){
+    document.getElementById("cardArea").innerHTML=`<div class="mcard m-bomb" data-tip="💣炸弹卡：轰隆！立刻后退3格！手牌若有🛡️九九护盾会自动抵挡。">
+      <div class="m-head">💣 炸 弹 卡</div>
+      <div class="m-body">💥<br>轰！</div>
+      <div class="m-foot">后退3格 · 🛡️护盾可挡</div>
+    </div>`;
+    bindTips();
+    setMsg(players[cur].color+" 抽到💣炸弹卡！");
+    curCard=null; applyBack(players[cur],3,"炸弹"); resolveCell(players[cur]);
+    return;
+  }
+  if(c.type==="fwd"){
+    document.getElementById("cardArea").innerHTML=`<div class="mcard m-fwd" data-tip="⭐幸运前进卡：好运降临！立刻向前跳2格！">
+      <div class="m-head">⭐ 幸 运 卡</div>
+      <div class="m-body">🌟<br>幸运前进</div>
+      <div class="m-foot">向前跳2格</div>
+    </div>`;
+    bindTips();
+    const np=moveBy(players[cur],2);
+    setMsg(players[cur].color+" 抽到⭐幸运前进卡，跳2格 → 第"+np+"格");
+    curCard=null; resolveCell(players[cur]);
+    return;
+  }
+  if(c.type==="back"){
+    document.getElementById("cardArea").innerHTML=`<div class="mcard m-back" data-tip="🔻倒退卡：哎呀踩到香蕉皮！后退2格。🛡️九九护盾可抵挡。">
+      <div class="m-head">🔻 倒 退 卡</div>
+      <div class="m-body">🍌<br>哎哟！</div>
+      <div class="m-foot">后退2格 · 🛡️护盾可挡</div>
+    </div>`;
+    bindTips();
+    setMsg(players[cur].color+" 抽到🔻倒退卡！");
+    curCard=null; applyBack(players[cur],2,"倒退卡"); resolveCell(players[cur]);
+    return;
+  }
+  curCard=c;
+  const kj=koujue(c.a,c.b);
+  document.getElementById("cardArea").innerHTML=`<div class="mcard m-kou" data-tip="📜口诀卡：大声读出「${kj}」。✅读对前进${c.step}格${c.p<=9?"，含「得」字再+1格":""}；❌读错退1格（连错3次自动给答案并前进）。🤫悄悄看答案：${kj}">
+    <div class="m-head">📜 口 诀 卡</div>
+    <div class="m-body">${c.a} × ${c.b} = ?</div>
+    <div class="m-foot">${"⭐".repeat(c.step)} 读对前进${c.step}格${c.p<=9?" · 🗡️得字再+1":""}</div>
+  </div>
+  <div style="font-size:12px;color:#c9b8ff">读出口诀后点「✅读对 / ❌读错」 · 悬停卡牌可偷看答案</div>`;
+  bindTips();
+  setMsg("读出这句口诀，再点「读对 / 读错」");
+}
+function readRight(){
+  if(!curCard){setMsg("先抽卡！");return;}
+  wrongStreak=0;
+  let step=curCard.step;
+  if(curCard.p<=9) step+=1;
+  const np=moveBy(players[cur],step);
+  setMsg(players[cur].color+" 读对，前进"+step+"格 → 第"+np+"格");
+  curCard=null; document.getElementById("cardArea").innerHTML="";
+  resolveCell(players[cur]);
+}
+function readWrong(){
+  if(!curCard){setMsg("先抽卡！");return;}
+  wrongStreak++;
+  if(wrongStreak>=3){ moveBy(players[cur],1); wrongStreak=0; setMsg(players[cur].color+" 连续读错3次，自动给答案并前进1格"); curCard=null; document.getElementById("cardArea").innerHTML=""; resolveCell(players[cur]); return; }
+  applyBack(players[cur],1,"读错");
+  curCard=null; document.getElementById("cardArea").innerHTML=""; resolveCell(players[cur]);
+}
+function luckyGo(){
+  const a=popKou()||{step:1}; const b=popKou()||{step:1};
+  const step=Math.max(a.step,b.step);
+  moveBy(players[cur],step);
+  setMsg(players[cur].color+" 幸运格抽2选大，前进"+step+"格");
+  afterEvent();
+}
+// ===== 游戏①：找朋友（得数配对） =====
+const FRIEND_SETS=[
+  {v:6,list:["一六得六","二三得六"]},
+  {v:8,list:["一八得八","二四得八"]},
+  {v:12,list:["二六十二","三四十二"]},
+  {v:16,list:["二八十六","四四十六"]},
+  {v:18,list:["二九十八","三六十八"]},
+  {v:24,list:["三八二十四","四六二十四"]},
+  {v:36,list:["四九三十六","六六三十六"]}
+];
+function gameFriend(){
+  const t=FRIEND_SETS[Math.floor(Math.random()*FRIEND_SETS.length)];
+  window._friend=t;
+  openModal(`<h3>👯 找朋友</h3>
+  <p style="font-size:16px">大声说出所有得数是 <b style="color:#ffd54f;font-size:26px">${t.v}</b> 的乘法口诀！</p>
+  <p style="font-size:13px;color:#9fe">得数相同的朋友不止一个哦，把它们全部找出来～</p>
+  <button onclick='gameFriendAns()'>🙋 我说完了 · 核对答案</button>`);
+}
+function gameFriendAns(){
+  const t=window._friend;
+  openModal(`<h3>👯 答案核对</h3>
+  <p style="font-size:15px">得数 <b style="color:#ffd54f">${t.v}</b> 的口诀朋友有：</p>
+  <p style="font-size:20px;color:#9fe">${t.list.join("　·　")}</p>
+  <button onclick='closeModal();moveBy(players[cur],2);setMsg(players[cur].color+" 找朋友全找齐！前进2格");afterEvent()'>✅ 全找齐 +2格</button>
+  <button class="sec" onclick='closeModal();moveBy(players[cur],1);setMsg(players[cur].color+" 找到部分朋友，前进1格");afterEvent()'>找到一些 +1格</button>`);
+}
+// ===== 游戏②：口诀吃卡片（比大小） =====
+function gameEat(){
+  const opp=(cur+1)%players.length;
+  const a=popKou()||{a:3,b:4,p:12};
+  const b=popKou()||{a:5,b:6,p:30};
+  openModal(`<h3>🎴 口诀吃卡片</h3>
+  <p style="font-size:15px">${players[cur].color}<b>${players[cur].name}</b> 　VS　 ${players[opp].color}<b>${players[opp].name}</b></p>
+  <div style="display:flex;gap:14px;justify-content:center;margin:12px 0">
+    <div class="mcard m-kou" style="width:130px;margin:0"><div class="m-head">${players[cur].color}${players[cur].name}</div><div class="m-body" style="font-size:24px">？×？</div><div class="m-foot">暗卡</div></div>
+    <div class="mcard m-kou" style="width:130px;margin:0"><div class="m-head">${players[opp].color}${players[opp].name}</div><div class="m-body" style="font-size:24px">？×？</div><div class="m-foot">暗卡</div></div>
+  </div>
+  <button onclick='gameEatGo(${a.a},${a.b},${a.p},${b.a},${b.b},${b.p},${opp})'>🔥 翻卡 · 大声读口诀比大小</button>`);
+}
+function gameEatGo(a1,b1,p1,a2,b2,p2,opp){
+  const ka=koujue(a1,b1), kb=koujue(a2,b2);
+  let result;
+  if(p1>p2) result=players[cur].color+players[cur].name+" 得数大，吃掉对方的卡！🏆";
+  else if(p2>p1) result=players[opp].color+players[opp].name+" 得数大，吃掉对方的卡！🏆";
+  else result="平局！得数一样大，都不动🤝";
+  openModal(`<h3>🎴 开吃！</h3>
+  <div style="display:flex;gap:14px;justify-content:center;margin:12px 0">
+    <div class="mcard m-kou" style="width:130px;margin:0"><div class="m-head">${players[cur].color}${players[cur].name}</div><div class="m-body" style="font-size:20px">${a1}×${b1}=${p1}</div><div class="m-foot">${ka}</div></div>
+    <div class="mcard m-kou" style="width:130px;margin:0"><div class="m-head">${players[opp].color}${players[opp].name}</div><div class="m-body" style="font-size:20px">${a2}×${b2}=${p2}</div><div class="m-foot">${kb}</div></div>
+  </div>
+  <p style="font-size:14px">两人大声读出自己的口诀！</p>
+  <p style="font-size:15px;color:#ffd54f"><b>${ka}</b>　VS　<b>${kb}</b></p>
+  <p style="font-size:15px">${result}</p>
+  <button onclick='closeModal();gameEatEnd(${p1},${p2},${opp})'>确定</button>`);
+}
+function gameEatEnd(p1,p2,opp){
+  if(p1>p2){ moveBy(players[cur],2); setMsg(players[cur].color+players[cur].name+" 吃卡片获胜！前进2格"); }
+  else if(p2>p1){ moveBy(players[opp],2); setMsg(players[opp].color+players[opp].name+" 吃卡片获胜！前进2格"); }
+  else setMsg("吃卡片平局，都不动");
+  afterEvent();
+}
+// ===== 游戏③：快速找几的口诀 =====
+function gameFindN(){
+  const n=2+Math.floor(Math.random()*8);
+  window._findN=n;
+  let rows="";
+  for(let i=1;i<=9;i++) rows+=`<span style="display:inline-block;background:#1f1540;border:1px solid #5a3fb0;border-radius:6px;padding:3px 7px;margin:2px;font-size:13px">${n}×${i}=?</span>`;
+  openModal(`<h3>⚡ 快速找出 ${n} 的口诀</h3>
+  <p style="font-size:15px">限时15秒！大声报出 <b style="color:#ffd54f;font-size:22px">${n}</b> 的全部口诀：</p>
+  <div style="margin:10px 0">${rows}</div>
+  <button onclick='gameFindNAns()'>⏰ 报完了 · 核对答案</button>`);
+}
+function gameFindNAns(){
+  const n=window._findN;
+  let rows="";
+  for(let i=1;i<=9;i++) rows+=`<span style="display:inline-block;background:#1f1540;border:1px solid #ffd54f;border-radius:6px;padding:3px 7px;margin:2px;font-size:13px">${n}×${i}=${n*i}</span>`;
+  openModal(`<h3>⚡ 答案核对</h3>
+  <div style="margin:10px 0">${rows}</div>
+  <button onclick='closeModal();moveBy(players[cur],2);setMsg(players[cur].color+" 口诀全部报对！前进2格");afterEvent()'>✅ 全部报对 +2格</button>
+  <button class="sec" onclick='closeModal();moveBy(players[cur],1);setMsg(players[cur].color+" 报对部分口诀，前进1格");afterEvent()'>有错漏 +1格</button>`);
+}
+// ===== 开局选人 =====
+function showSetup(){
+  openModal(`<h3>✨ 乘法口诀魔法大冒险</h3>
+  <p style="font-size:15px">选择玩家人数，开始对战！</p>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+    <button onclick='startGame(2)'>👥 2人对战（推荐）</button>
+    <button class="sec" onclick='startGame(3)'>👥 3人混战</button>
+    <button class="sec" onclick='startGame(4)'>👥 4人混战</button>
+  </div>`);
+}
+function startGame(n){
+  numPlayers=n; closeModal(); init();
+  setMsg("游戏开始！轮到 🔴 红方，点「抽卡」");
+}
+function openPK(p){
+  const opp=(cur+1)%players.length;
+  openModal(`<h3>⚔️ PK格 · ${p.color}${p.name} vs ${players[opp].color}${players[opp].name}</h3>
+    <p>两人各抽1张口诀卡，大声读出口诀比得数：大者+2，小者退2。</p>
+    <button onclick='pkGo(${opp})'>开始PK（各抽1卡）</button>
+    <button onclick='closeModal();setMsg("${p.color} 选择不PK，直接过");afterEvent()'>不PK·过</button>`);
+}
+function pkGo(opp){
+  const a=popKou()||{p:Math.floor(Math.random()*81)+1};
+  const b=popKou()||{p:Math.floor(Math.random()*81)+1};
+  let res;
+  if(a.p>b.p){ if(players[opp].shield){players[opp].shield=false;res=players[cur].color+" 赢！但"+players[opp].color+"🛡️抵消不退";} else {moveBy(players[opp],-2);res=players[cur].color+" 赢，"+players[opp].color+" 退2";} moveBy(players[cur],2);}
+  else if(b.p>a.p){ if(players[cur].shield){players[cur].shield=false;res=players[opp].color+" 赢！但"+players[cur].color+"🛡️抵消不退";} else {moveBy(players[cur],-2);res=players[opp].color+" 赢，"+players[cur].color+" 退2";} moveBy(players[opp],2);}
+  else res="平局，都不动";
+  closeModal(); setMsg(`PK 得数 ${a.p} vs ${b.p} → `+res); render();
+}
+function useSkill(idx){
+  const pl=players[cur]; const sk=pl.hand[idx];
+  if(!sk) return;
+  if(sk==="九九护盾"){ pl.shield=true; pl.hand.splice(idx,1); setMsg(pl.color+" 使用🛡️九九护盾：下次后退抵消"); }
+  else if(sk==="加倍前进"){ pl.hand.splice(idx,1); moveBy(pl,2); setMsg(pl.color+" 使用✨加倍前进：立即+2格"); }
+  else if(sk==="得字突袭"){ pl.hand.splice(idx,1); moveBy(pl,1); setMsg(pl.color+" 使用得字突袭：+1格"); }
+  else if(sk==="填空陷阱"){
+    const opp=(cur+1)%players.length;
+    openModal(`<h3>填空陷阱</h3><p>让 ${players[opp].color} 说一句乘法口诀：</p><button onclick='closeModal();moveBy(players[opp],-2);setMsg("${players[opp].color} 说错，退2格");render()'>说错·退2</button> <button onclick='closeModal();setMsg("${players[opp].color} 说对，不动")'>说对·不动</button>`);
+    pl.hand.splice(idx,1);
+  }
+  render();
+}
+function nextTurn(){
+  cur=(cur+1)%players.length;
+  if(players[cur].stop>0){players[cur].stop--; setMsg(players[cur].color+" 暂停中，自动跳过"); cur=(cur+1)%players.length;}
+  wrongStreak=0; curCard=null; document.getElementById("cardArea").innerHTML="";
+  setMsg("轮到 "+players[cur].color+" "+players[cur].name+"（点手牌可用技能）"); render();
+}
+function openModal(h){document.getElementById("mbox").innerHTML=h; document.getElementById("modal").classList.add("show");}
+function closeModal(){document.getElementById("modal").classList.remove("show");}
+function restart(){closeModal();showSetup();}
+
+init();
+showSetup();
+</script>
+</body>
+</html>
