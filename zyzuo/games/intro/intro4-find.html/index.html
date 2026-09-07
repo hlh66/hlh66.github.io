@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>娓告垙鈶?蹇€熸壘鍑哄嚑鐨勫彛璇€ - 涔樻硶鍙ｈ瘈澶у啋闄?/title>
+<title>游戏④ 快速找出几的口诀 - 乘法口诀大冒险</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);min-height:100vh;color:#333}
@@ -17,16 +17,16 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
 .card h2{font-size:18px;color:#0984e3;margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
-/* 鎼滃婕旂ず鍖?*/
+/* 搜寻演示区 */
 .search-area{background:linear-gradient(180deg,#e8fcff,#d4f4ff);border-radius:16px;padding:25px}
 
-/* 鑰佸笀鍑洪 */
+/* 老师出题 */
 .teacher-q{text-align:center;margin-bottom:18px}
 .q-bubble{display:inline-block;background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:#fff;padding:12px 30px;border-radius:30px;font-size:22px;font-weight:bold;position:relative;animation:bounceIn .5s ease}
 @keyframes bounceIn{from{transform:scale(0)}to{transform:scale(1)}}
 .q-bubble::after{content:'';position:absolute;bottom:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top-color:#ee5a24}
 
-/* 鍗＄墝缃戞牸 */
+/* 卡牌网格 */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin:15px 0}
 .mini-card{aspect-ratio:2/3;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:bold;cursor:pointer;transition:all .3s;position:relative;background:#e0e0e0;color:#999;border:2px solid transparent}
 .mini-card .expr{font-size:13px}
@@ -34,11 +34,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .mini-card.target{border-color:#ffa502;background:#fff5e0;color:#333;animation:highlight .6s ease infinite alternate}
 @keyframes highlight{from{background:#fff5e0}to{background:#ffe4b5}}
 .mini-card.found{border-color:#2ed573;background:#e8ffe8;color:#27ae60;transform:scale(1.05);box-shadow:0 4px 12px rgba(46,213,115,0.4)}
-.mini-card.found::after{content:'鉁?;position:absolute;top:-5px;right:-5px;width:20px;height:20px;background:#2ed573;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
+.mini-card.found::after{content:'✓';position:absolute;top:-5px;right:-5px;width:20px;height:20px;background:#2ed573;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
 .mini-card.wrong{border-color:#ff4757;background:#ffe8e8;animation:shake .4s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-/* 杩涘害 */
+/* 进度 */
 .progress-bar{height:8px;background:#eee;border-radius:4px;overflow:hidden;margin:12px 0}
 .progress-fill{height:100%;background:linear-gradient(90deg,#2ed573,#7bed9f);border-radius:4px;transition:width .3s;width:0%}
 .stats{display:flex;justify-content:center;gap:25px;font-size:14px}
@@ -67,26 +67,26 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 <body>
 
 <div class="top-bar">
-  <a class="back-btn" href="/zyzuo/index.html#tab-guide">鈫?杩斿洖瀵艰埅</a>
-  <h1>馃攳 娓告垙鈶?蹇€熸壘鍑哄嚑鐨勫彛璇€</h1>
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🔍 游戏④ 快速找出几的口诀</h1>
 </div>
 
 <div class="container">
 
-<span class="badge badge-basic">馃煝 鍩虹绡?路 鍏ㄧ彮/涓汉</span>
+<span class="badge badge-basic">🟢 基础篇 · 全班/个人</span>
 
-<!-- 婕旂ず鍖?-->
+<!-- 演示区 -->
 <div class="card">
-  <h2>馃幀 鎼滃婕旂ず</h2>
+  <h2>🎬 搜寻演示</h2>
   <div class="search-area">
     <div class="teacher-q">
-      <div class="q-bubble" id="qBubble">馃幆 鎵惧嚭鎵€鏈夊叧浜庛€?span id="targetNum">6</span>銆嶇殑鍙ｈ瘈锛?/div>
+      <div class="q-bubble" id="qBubble">🎯 找出所有关于「<span id="targetNum">6</span>」的口诀！</div>
     </div>
 
     <div class="stats" style="margin-top:15px">
-      <div class="stat-item"><div class="num" id="foundNum">0</div><div class="label">宸叉壘鍒?/div></div>
-      <div class="stat-item"><div class="num" id="totalNum">?</div><div class="label">鐩爣鏁伴噺</div></div>
-      <div class="stat-item"><div class="num" id="timeUsed">0</div><div class="label">鐢ㄦ椂(绉?</div></div>
+      <div class="stat-item"><div class="num" id="foundNum">0</div><div class="label">已找到</div></div>
+      <div class="stat-item"><div class="num" id="totalNum">?</div><div class="label">目标数量</div></div>
+      <div class="stat-item"><div class="num" id="timeUsed">0</div><div class="label">用时(秒)</div></div>
     </div>
 
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -94,72 +94,72 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
     <div class="cards-grid" id="cardsGrid"></div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="newSearch('6')">馃攳 鎵?鐨勫彛璇€</button>
-      <button class="btn btn-primary" onclick="newSearch('7')">馃攳 鎵?鐨勫彛璇€</button>
-      <button class="btn btn-primary" onclick="newSearch('8')">馃攳 鎵?鐨勫彛璇€</button>
-      <button class="btn btn-warning" onclick="autoSearch()">鈻?鑷姩鎼滃</button>
-      <button class="btn btn-success" onclick="resetSearch()">馃攧 閲嶇疆</button>
+      <button class="btn btn-primary" onclick="newSearch('6')">🔍 找6的口诀</button>
+      <button class="btn btn-primary" onclick="newSearch('7')">🔍 找7的口诀</button>
+      <button class="btn btn-primary" onclick="newSearch('8')">🔍 找8的口诀</button>
+      <button class="btn btn-warning" onclick="autoSearch()">▶ 自动搜寻</button>
+      <button class="btn btn-success" onclick="resetSearch()">🔄 重置</button>
     </div>
   </div>
 </div>
 
-<!-- 瑙勫垯 -->
+<!-- 规则 -->
 <div class="card">
-  <h2>馃搵 鐜╂硶瑙勫垯</h2>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鑰佸笀鎶ユ暟锛?/strong>璇村嚭涓€涓暟瀛楋紙濡?鎵惧嚭鎵€鏈夊叧浜?鐨勫彛璇€锛?锛?/div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text><strong>瀛︾敓鎼滃锛?/strong>浠庤嚜宸辩殑鍗＄墝涓揩閫熸壘鍑烘墍鏈夊寘鍚鏁板瓧鐨勫崱鐗?/div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>涓捐捣纭锛?/strong>鎵惧埌鍚庝妇璧峰崱鐗囧苟澶у０璇诲嚭鍙ｈ瘈</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text><strong>瀹屾垚鍒ゅ畾锛?/strong>鍏ㄩ儴鎵惧鍚庡枈"瀹屾垚锛?锛屾渶鍏堟壘鍏ㄨ€呰幏鑳?/div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鍙樹綋鈥斺€旀壘寰楁暟锛?/strong>"鎵惧嚭鎵€鏈夊緱鏁版槸24鐨勫彛璇€锛?鈫?脳8/4脳6/8脳3/6脳4</div></div>
+  <h2>📋 玩法规则</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>老师报数：</strong>说出一个数字（如"找出所有关于6的口诀！"）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text><strong>学生搜寻：</strong>从自己的卡牌中快速找出所有包含该数字的卡片</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>举起确认：</strong>找到后举起卡片并大声读出口诀</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text><strong>完成判定：</strong>全部找对后喊"完成！"，最先找全者获胜</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>变体——找得数：</strong>"找出所有得数是24的口诀！"→3×8/4×6/8×3/6×4</div></div>
 </div>
 
-<!-- 绀轰緥 -->
+<!-- 示例 -->
 <div class="card">
-  <h2>馃挕 绀轰緥锛氭壘"6"鐨勫彛璇€</h2>
+  <h2>💡 示例：找"6"的口诀</h2>
   <div style="background:#f8f9fa;border-radius:12px;padding:18px;font-size:14px;line-height:1.9;color:#555">
-    <p>鑰佸笀璇达細<strong style="color:#0984e3;font-size:16px">"鎵惧嚭鎵€鏈夊叧浜?鐨勫彛璇€锛?</strong></p>
-    <p>瀛︾敓闇€瑕佷粠45寮犲崱涓壘鍑轰互涓?strong>8寮?/strong>锛?/p>
+    <p>老师说：<strong style="color:#0984e3;font-size:16px">"找出所有关于6的口诀！"</strong></p>
+    <p>学生需要从45张卡中找出以下<strong>8张</strong>：</p>
     <p style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px">
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">涓€鍏緱鍏?(1脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">浜屽叚鍗佷簩 (2脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">涓夊叚鍗佸叓 (3脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">鍥涘叚浜屽崄鍥?(4脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">浜斿叚涓夊崄 (5脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">鍏叚涓夊崄鍏?(6脳6)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">鍏竷鍥涘崄浜?(6脳7)</span>
-      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">鍏叓鍥涘崄鍏?(6脳8)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">一六得六 (1×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">二六十二 (2×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">三六十八 (3×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">四六二十四 (4×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">五六三十 (5×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">六六三十六 (6×6)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">六七四十二 (6×7)</span>
+      <span style="background:#e8fcff;padding:6px 14px;border-radius:8px;font-weight:bold;color:#0984e3">六八四十八 (6×8)</span>
     </p>
   </div>
 </div>
 
-<!-- 鍩烘湰淇℃伅 -->
+<!-- 基本信息 -->
 <div class="card">
-  <h2>馃搶 鍩烘湰淇℃伅</h2>
+  <h2>📌 基本信息</h2>
   <div class="info-grid">
-    <div class="info-item"><div class="label">闅惧害绛夌骇</div><div class="value">猸愨瓙 绠€鍗?/div></div>
-    <div class="info-item"><div class="label">閫傜敤浜烘暟</div><div class="value">鍏ㄧ彮/涓汉/灏忕粍</div></div>
-    <div class="info-item"><div class="label">鎵€闇€鏃堕棿</div><div class="value">5-10鍒嗛挓/杞?/div></div>
-    <div class="info-item"><div class="label">鎵€闇€鏉愭枡</div><div class="value">姣忎汉涓€濂楀畬鏁村崱鐗岋紙閾哄紑锛?/div></div>
-    <div class="info-item"><div class="label">閫傜敤鍦烘櫙</div><div class="value">璇惧爞娲诲姩 / 鍒嗙被鎬濈淮璁粌</div></div>
-    <div class="info-item"><div class="label">璁粌鐩爣</div><div class="value">鍥犳暟鍒嗚В / 鍒嗙被 / 鎼滅储閫熷害</div></div>
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐ 简单</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">全班/个人/小组</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">5-10分钟/轮</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">每人一套完整卡牌（铺开）</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">课堂活动 / 分类思维训练</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">因数分解 / 分类 / 搜索速度</div></div>
   </div>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>馃幃 涔樻硶鍙ｈ瘈澶у啋闄?路 <a href="/zyzuo/index.html">杩斿洖瀵艰埅</a></p>
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
 </div>
 
 <script>
 const allCards = [
-  {e:'1脳2',r:2},{e:'2脳2',r:4},{e:'3脳2',r:6},{e:'4脳2',r:8},{e:'5脳2',r:10},{e:'6脳2',r:12},
-  {e:'1脳3',r:3},{e:'2脳3',r:6},{e:'3脳3',r:9},{e:'4脳3',r:12},{e:'5脳3',r:15},{e:'6脳3',r:18},
-  {e:'1脳4',r:4},{e:'2脳4',r:8},{e:'3脳4',r:12},{e:'4脳4',r:16},{e:'5脳4',r:20},{e:'6脳4',r:24},
-  {e:'1脳5',r:5},{e:'2脳5',r:10},{e:'3脳5',r:15},{e:'4脳5',r:20},{e:'5脳5',r:25},{e:'6脳5',r:30},
-  {e:'1脳6',r:6},{e:'2脳6',r:12},{e:'3脳6',r:18},{e:'4脳6',r:24},{e:'5脳6',r:30},{e:'6脳6',r:36},
-  {e:'1脳7',r:7},{e:'2脳7',r:14},{e:'3脳7',r:21},{e:'4脳7',r:28},{e:'5脳7',r:35},{e:'6脳7',r:42},
-  {e:'1脳8',r:8},{e:'2脳8',r:16},{e:'3脳8',r:24},{e:'4脳8',r:32},{e:'5脳8',r:40},{e:'6脳8',r:48},
+  {e:'1×2',r:2},{e:'2×2',r:4},{e:'3×2',r:6},{e:'4×2',r:8},{e:'5×2',r:10},{e:'6×2',r:12},
+  {e:'1×3',r:3},{e:'2×3',r:6},{e:'3×3',r:9},{e:'4×3',r:12},{e:'5×3',r:15},{e:'6×3',r:18},
+  {e:'1×4',r:4},{e:'2×4',r:8},{e:'3×4',r:12},{e:'4×4',r:16},{e:'5×4',r:20},{e:'6×4',r:24},
+  {e:'1×5',r:5},{e:'2×5',r:10},{e:'3×5',r:15},{e:'4×5',r:20},{e:'5×5',r:25},{e:'6×5',r:30},
+  {e:'1×6',r:6},{e:'2×6',r:12},{e:'3×6',r:18},{e:'4×6',r:24},{e:'5×6',r:30},{e:'6×6',r:36},
+  {e:'1×7',r:7},{e:'2×7',r:14},{e:'3×7',r:21},{e:'4×7',r:28},{e:'5×7',r:35},{e:'6×7',r:42},
+  {e:'1×8',r:8},{e:'2×8',r:16},{e:'3×8',r:24},{e:'4×8',r:32},{e:'5×8',r:40},{e:'6×8',r:48},
 ];
 
 let target = 6;
@@ -173,7 +173,7 @@ function newSearch(num) {
   found = 0;
   seconds = 0;
   
-  // 璁＄畻鐩爣鏁伴噺
+  // 计算目标数量
   totalTarget = allCards.filter(c => c.e.includes(target + '') || c.r.toString().includes(target + '')).length;
   
   document.getElementById('targetNum').textContent = target;
@@ -198,7 +198,7 @@ function renderGrid() {
     </div>`;
   }).join('');
   
-  // 缁戝畾鐐瑰嚮
+  // 绑定点击
   grid.querySelectorAll('.mini-card').forEach(el => {
     el.addEventListener('click', function() {
       if (this.classList.contains('found')) return;
@@ -210,7 +210,7 @@ function renderGrid() {
         document.getElementById('progressFill').style.width = (found / totalTarget * 100) + '%';
         if (found >= totalTarget) {
           clearInterval(timerInterval);
-          alert(`馃帀 澶浜嗭紒${seconds}绉掑唴鎵惧埌浜嗘墍鏈?{target}鐨勫彛璇€锛乣);
+          alert(`🎉 太棒了！${seconds}秒内找到了所有${target}的口诀！`);
         }
       } else {
         this.classList.add('wrong');
@@ -243,7 +243,7 @@ function autoSearch() {
 function resetSearch() {
   if (timerInterval) clearInterval(timerInterval);
   found = 0; seconds = 0;
-  document.getElementById('cardsGrid').innerHTML = '<span style="grid-column:1/-1;text-align:center;color:#ccc;padding:20px">鐐瑰嚮涓婃柟鎸夐挳寮€濮嬫悳瀵?..</span>';
+  document.getElementById('cardsGrid').innerHTML = '<span style="grid-column:1/-1;text-align:center;color:#ccc;padding:20px">点击上方按钮开始搜寻...</span>';
   document.getElementById('foundNum').textContent = '0';
   document.getElementById('totalNum').textContent = '?';
   document.getElementById('timeUsed').textContent = '0';
@@ -253,4 +253,3 @@ function resetSearch() {
 
 </body>
 </html>
-
