@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>娓告垙鈶?鍙ｈ瘈鎵戝厠 - 涔樻硶鍙ｈ瘈澶у啋闄?/title>
+<title>游戏⑥ 口诀扑克 - 乘法口诀大冒险</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gradient(135deg,#614385 0%,#524769 100%);min-height:100vh;color:#333}
@@ -17,16 +17,16 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .card{background:#fff;border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
 .card h2{font-size:18px;color:#6c5ce7;margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
-/* 鎵戝厠妗?*/
+/* 扑克桌 */
 .poker-table{background:linear-gradient(180deg,#1a472a,#2d5a3d);border-radius:16px;padding:25px;position:relative}
 .poker-table::before{content:'';position:absolute;inset:0;border-radius:16px;border:3px solid rgba(255,215,0,0.3)}
 
-/* 鐜╁鍖?*/
+/* 玩家区 */
 .poker-player{text-align:center;margin-bottom:15px}
 .player-name{color:#ffd700;font-size:16px;font-weight:bold;margin-bottom:10px}
 .player-hand{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;min-height:110px}
 
-/* 鎵戝厠鐗?*/
+/* 扑克牌 */
 .poker-card{width:70px;height:95px;border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;transition:all .3s;position:relative;border:2px solid #ddd;animation:dealCard .3s ease-out}
 @keyframes dealCard{from{opacity:0;transform:translateY(-30px) rotate(-10deg)}to{opacity:1;transform:translateY(0) rotate(0)}}
 .poker-card.hidden-card{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff}
@@ -39,11 +39,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .poker-card.winner{border-color:#2ed573;box-shadow:0 0 20px rgba(46,213,115,0.6);animation:winGlow .6s ease infinite alternate}
 @keyframes winGlow{from{box-shadow:0 0 10px rgba(46,213,115,0.4)}to{box-shadow:0 0 25px rgba(46,213,115,0.8)}}
 
-/* 鎬诲垎鏄剧ず */
+/* 总分显示 */
 .total-score{display:inline-block;background:rgba(0,0,0,0.5);color:#ffd700;padding:8px 20px;border-radius:20px;font-size:20px;font-weight:bold;margin-top:8px}
 .total-score.bust{background:#e74c3c;color:#fff}
 
-/* 鎿嶄綔鎸夐挳 */
+/* 操作按钮 */
 .action-btns{display:flex;justify-content:center;gap:12px;margin:15px 0;flex-wrap:wrap}
 .btn{padding:12px 28px;border:none;border-radius:25px;font-size:16px;font-weight:bold;cursor:pointer;transition:all .3s;color:#fff}
 .btn-hit{background:linear-gradient(135deg,#00b894,#00cec9)}
@@ -53,7 +53,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 .btn-new{background:linear-gradient(135deg,#a29bfe,#6c5ce7)}
 .btn-new:hover{transform:scale(1.05)}
 
-/* 娓告垙淇℃伅 */
+/* 游戏信息 */
 .game-info{display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap}
 .info-badge{background:rgba(255,255,255,0.1);padding:8px 18px;border-radius:20px;color:#ddd;font-size:13px}
 .info-badge b{color:#ffd700}
@@ -73,88 +73,88 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:linear-gr
 <body>
 
 <div class="top-bar">
-  <a class="back-btn" href="/zyzuo/index.html#tab-guide">鈫?杩斿洖瀵艰埅</a>
-  <h1>馃儚 娓告垙鈶?鍙ｈ瘈鎵戝厠</h1>
+  <a class="back-btn" href="../index.html#tab-guide">← 返回导航</a>
+  <h1>🃏 游戏⑥ 口诀扑克</h1>
 </div>
 
 <div class="container">
 
-<span class="badge badge-up">馃煛 鎻愬崌绡?路 绛栫暐鍗氬紙</span>
+<span class="badge badge-up">🟡 提升篇 · 策略博弈</span>
 
-<!-- 婕旂ず鍖?-->
+<!-- 演示区 -->
 <div class="card">
-  <h2>馃幀 21鐐规ā鎷?/h2>
+  <h2>🎬 21点模拟</h2>
   <div class="poker-table">
     <div class="game-info">
-      <div class="info-badge">馃幆 鐩爣锛氭渶鎺ヨ繎 <b>21</b></div>
-      <div class="info-badge">馃挜 瓒呰繃21 = 鐖嗘帀锛?/div>
-      <div class="info-badge" id="roundInfo">绗?1 杞?/div>
+      <div class="info-badge">🎯 目标：最接近 <b>21</b></div>
+      <div class="info-badge">💥 超过21 = 爆掉！</div>
+      <div class="info-badge" id="roundInfo">第 1 轮</div>
     </div>
 
     <div class="poker-player">
-      <div class="player-name">馃懄 浣犵殑鎵嬬墝</div>
+      <div class="player-name">👦 你的手牌</div>
       <div class="player-hand" id="playerHand"></div>
-      <div class="total-score" id="playerTotal">鎬诲垎: 0</div>
+      <div class="total-score" id="playerTotal">总分: 0</div>
     </div>
 
     <div class="action-btns" id="actionBtns">
-      <button class="btn btn-hit" onclick="hitCard()">馃儚 瑕佺墝 (Hit)</button>
-      <button class="btn btn-stop" onclick="stopCard()">鉁?鍋滅墝 (Stand)</button>
+      <button class="btn btn-hit" onclick="hitCard()">🃏 要牌 (Hit)</button>
+      <button class="btn btn-stop" onclick="stopCard()">✋ 停牌 (Stand)</button>
     </div>
 
     <div class="poker-player">
-      <div class="player-name">馃 鐢佃剳鎵嬬墝</div>
+      <div class="player-name">🤖 电脑手牌</div>
       <div class="player-hand" id="cpuHand"></div>
-      <div class="total-score" id="cpuTotal" style="opacity:0.5">鎬诲垎: ?</div>
+      <div class="total-score" id="cpuTotal" style="opacity:0.5">总分: ?</div>
     </div>
 
     <div style="text-align:center;margin-top:15px">
-      <button class="btn btn-new" onclick="newGame()">馃攧 鏂颁竴灞€</button>
-      <button class="btn btn-new" style="background:#e17055" onclick="autoPlay()">鈻?鑷姩婕旂ず</button>
+      <button class="btn btn-new" onclick="newGame()">🔄 新一局</button>
+      <button class="btn btn-new" style="background:#e17055" onclick="autoPlay()">▶ 自动演示</button>
     </div>
 
     <div id="gameMsg" style="text-align:center;color:#ffd700;font-size:16px;font-weight:bold;margin-top:12px;min-height:22px"></div>
   </div>
 </div>
 
-<!-- 瑙勫垯 -->
+<!-- 规则 -->
 <div class="card">
-  <h2>馃搵 21鐐硅鍒?/h2>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鍙戠墝锛?/strong>姣忎汉鍙?寮犳殫鐗岋紙濉┖鐗堬紝涓嶆樉绀虹瓟妗堬級</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>缈荤墝锛?/strong>缈诲紑绗?寮狅紝蹇冪畻鍑哄緱鏁颁綔涓鸿捣濮嬪垎</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>閫夋嫨锛?/strong>"瑕佺墝"鍐嶆娊涓€寮犵疮鍔狅紝鎴?鍋滅墝"淇濇寔褰撳墠鍒嗘暟</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鐖嗙墝锛?/strong>鎬诲垎瓒呰繃21鐩存帴杈擄紒</div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text><strong>鑾疯儨锛?/strong>鏈€鎺ヨ繎21涓斾笉瓒呰繃鑰呰幏鑳?/div></div>
-  <div class="step"><div class="step-num"></div><div class="step-text"><strong>鐗规畩锛?/strong>绮剧‘21鈫掑弻鍊嶇鐮侊紱1脳1=1鍙綋1鎴?1锛?寮犵浉鍚屽緱鏁扳啋"鐐稿脊"鐩磋儨</div></div>
+  <h2>📋 21点规则</h2>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>发牌：</strong>每人发3张暗牌（填空版，不显示答案）</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>翻牌：</strong>翻开第1张，心算出得数作为起始分</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>选择：</strong>"要牌"再抽一张累加，或"停牌"保持当前分数</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>爆牌：</strong>总分超过21直接输！</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text><strong>获胜：</strong>最接近21且不超过者获胜</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-text"><strong>特殊：</strong>精确21→双倍筹码；1×1=1可当1或11；3张相同得数→"炸弹"直胜</div></div>
 </div>
 
-<!-- 鍩烘湰淇℃伅 -->
+<!-- 基本信息 -->
 <div class="card">
-  <h2>馃搶 鍩烘湰淇℃伅</h2>
+  <h2>📌 基本信息</h2>
   <div class="info-grid">
-    <div class="info-item"><div class="label">闅惧害绛夌骇</div><div class="value">猸愨瓙猸?鎻愬崌</div></div>
-    <div class="info-item"><div class="label">閫傜敤浜烘暟</div><div class="value">2-5浜?/div></div>
-    <div class="info-item"><div class="label">鎵€闇€鏃堕棿</div><div class="value">15-20鍒嗛挓/灞€</div></div>
-    <div class="info-item"><div class="label">鎵€闇€鏉愭枡</div><div class="value">濉┖鐗堝崱鐗?+ 绛圭爜</div></div>
-    <div class="info-item"><div class="label">閫傜敤鍦烘櫙</div><div class="value">灏忕粍瀵规姉 / 绛栫暐璁粌</div></div>
-    <div class="info-item"><div class="label">璁粌鐩爣</div><div class="value">澶氭璁＄畻 / 椋庨櫓璇勪及 / 鍗氬紙绛栫暐</div></div>
+    <div class="info-item"><div class="label">难度等级</div><div class="value">⭐⭐⭐ 提升</div></div>
+    <div class="info-item"><div class="label">适用人数</div><div class="value">2-5人</div></div>
+    <div class="info-item"><div class="label">所需时间</div><div class="value">15-20分钟/局</div></div>
+    <div class="info-item"><div class="label">所需材料</div><div class="value">填空版卡牌 + 筹码</div></div>
+    <div class="info-item"><div class="label">适用场景</div><div class="value">小组对抗 / 策略训练</div></div>
+    <div class="info-item"><div class="label">训练目标</div><div class="value">多步计算 / 风险评估 / 博弈策略</div></div>
   </div>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>馃幃 涔樻硶鍙ｈ瘈澶у啋闄?路 <a href="/zyzuo/index.html">杩斿洖瀵艰埅</a></p>
+  <p>🎮 乘法口诀大冒险 · <a href="../index.html">返回导航</a></p>
 </div>
 
 <script>
 const deck = [
-  {e:'1脳1',r:1},{e:'1脳2',r:2},{e:'2脳2',r:4},{e:'1脳3',r:3},
-  {e:'2脳3',r:6},{e:'3脳3',r:9},{e:'1脳4',r:4},{e:'2脳4',r:8},
-  {e:'3脳4',r:12},{e:'4脳4',r:16},{e:'1脳5',r:5},{e:'2脳5',r:10},
-  {e:'3脳5',r:15},{e:'4脳5',r:20},{e:'5脳5',r:25},{e:'2脳6',r:12},
-  {e:'3脳6',r:18},{e:'4脳6',r:24},{e:'5脳6',r:30},{e:'3脳7',r:21},
-  {e:'4脳7',r:28},{e:'5脳7',r:35},{e:'3脳8',r:24},{e:'4脳8',r:32},
+  {e:'1×1',r:1},{e:'1×2',r:2},{e:'2×2',r:4},{e:'1×3',r:3},
+  {e:'2×3',r:6},{e:'3×3',r:9},{e:'1×4',r:4},{e:'2×4',r:8},
+  {e:'3×4',r:12},{e:'4×4',r:16},{e:'1×5',r:5},{e:'2×5',r:10},
+  {e:'3×5',r:15},{e:'4×5',r:20},{e:'5×5',r:25},{e:'2×6',r:12},
+  {e:'3×6',r:18},{e:'4×6',r:24},{e:'5×6',r:30},{e:'3×7',r:21},
+  {e:'4×7',r:28},{e:'5×7',r:35},{e:'3×8',r:24},{e:'4×8',r:32},
 ];
 
 let playerCards = [], cpuCards = [], playerTotal = 0, cpuTotal = 0;
@@ -164,27 +164,27 @@ function newGame() {
   playerCards = []; cpuCards = []; playerTotal = 0; cpuTotal = 0;
   gameOver = false;
   
-  // 鍙戝垵濮嬬墝
+  // 发初始牌
   const shuffled = deck.sort(() => Math.random() - 0.5);
   for (let i = 0; i < 3; i++) {
     playerCards.push({...shuffled[i], hidden: true});
     cpuCards.push({...shuffled[i+3], hidden: true});
   }
   
-  // 缈诲紑绗竴寮?
+  // 翻开第一张
   playerCards[0].hidden = false;
   playerTotal = playerCards[0].r;
   
   renderHands();
-  document.getElementById('playerTotal').textContent = `鎬诲垎: ${playerTotal}`;
+  document.getElementById('playerTotal').textContent = `总分: ${playerTotal}`;
   document.getElementById('playerTotal').className = 'total-score';
-  document.getElementById('cpuTotal').textContent = `鎬诲垎: ?`;
+  document.getElementById('cpuTotal').textContent = `总分: ?`;
   document.getElementById('cpuTotal').style.opacity = '0.5';
   document.getElementById('gameMsg').textContent = '';
-  document.getElementById('roundInfo').textContent = `绗?${round} 杞甡;
+  document.getElementById('roundInfo').textContent = `第 ${round} 轮`;
   document.getElementById('actionBtns').innerHTML = `
-    <button class="btn btn-hit" onclick="hitCard()">馃儚 瑕佺墝 (Hit)</button>
-    <button class="btn btn-stop" onclick="stopCard()">鉁?鍋滅墝 (Stand)</button>`;
+    <button class="btn btn-hit" onclick="hitCard()">🃏 要牌 (Hit)</button>
+    <button class="btn btn-stop" onclick="stopCard()">✋ 停牌 (Stand)</button>`;
   round++;
 }
 
@@ -197,11 +197,11 @@ function hitCard() {
   
   renderHands();
   const totalEl = document.getElementById('playerTotal');
-  totalEl.textContent = `鎬诲垎: ${playerTotal}`;
+  totalEl.textContent = `总分: ${playerTotal}`;
   
   if (playerTotal > 21) {
     totalEl.className = 'total-score bust';
-    totalEl.textContent = `鎬诲垎: ${playerTotal} 馃挜鐖嗕簡!`;
+    totalEl.textContent = `总分: ${playerTotal} 💥爆了!`;
     endGame(false);
   } else if (playerTotal === 21) {
     totalEl.style.background = 'linear-gradient(135deg,#ffd700,#f39c12)';
@@ -211,25 +211,25 @@ function hitCard() {
 
 function stopCard() {
   if (gameOver) return;
-  // 鐢佃剳缈荤墝
+  // 电脑翻牌
   cpuCards.forEach(c => c.hidden = false);
   cpuTotal = cpuCards.reduce((sum, c) => sum + c.r, 0);
   
-  document.getElementById('cpuTotal').textContent = `鎬诲垎: ${cpuTotal}`;
+  document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal}`;
   document.getElementById('cpuTotal').style.opacity = '1';
   renderHands();
   
-  // 鐢佃剳绠€鍗旳I锛氬皬浜?6缁х画瑕佺墝
+  // 电脑简单AI：小于16继续要牌
   while (cpuTotal < 16) {
     const nc = deck[Math.floor(Math.random() * deck.length)];
     cpuCards.push(nc);
     cpuTotal += nc.r;
   }
   
-  document.getElementById('cpuTotal').textContent = `鎬诲垎: ${cpuTotal}`;
+  document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal}`;
   if (cpuTotal > 21) {
     document.getElementById('cpuTotal').className = 'total-score bust';
-    document.getElementById('cpuTotal').textContent = `鎬诲垎: ${cpuTotal} 馃挜鐢佃剳鐖嗕簡!`;
+    document.getElementById('cpuTotal').textContent = `总分: ${cpuTotal} 💥电脑爆了!`;
     endGame(true);
   } else {
     endGame(playerTotal > cpuTotal || cpuTotal > 21);
@@ -242,14 +242,14 @@ function endGame(playerWin) {
   const hands = document.querySelectorAll('.poker-card');
   
   if (playerWin) {
-    msg.textContent = '馃帀 浣犺耽浜嗭紒';
+    msg.textContent = '🎉 你赢了！';
     hands.forEach((c, i) => { if (i < playerCards.length && !playerCards[i].hidden) c.classList.add('winner'); });
   } else {
-    msg.textContent = '馃槩 浣犺緭浜?..';
+    msg.textContent = '😢 你输了...';
     hands.forEach((c, i) => { if (i >= playerCards.length) c.classList.add('winner'); });
   }
   
-  document.getElementById('actionBtns').innerHTML = `<button class="btn btn-new" onclick="newGame()">馃攧 鍐嶆潵涓€灞€</button>`;
+  document.getElementById('actionBtns').innerHTML = `<button class="btn btn-new" onclick="newGame()">🔄 再来一局</button>`;
 }
 
 function renderHands() {
@@ -285,4 +285,3 @@ newGame();
 
 </body>
 </html>
-
