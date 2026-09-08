@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能卡 - 乘法口诀魔法大冒险（棋盘游戏配套）</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+        background: #e8e8e8;
+        padding: 15px;
+    }
+
+    .page {
+        max-width: 210mm;
+        margin: 0 auto;
+        background: white;
+        padding: 12mm;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .title {
+        text-align: center;
+        font-size: 22pt;
+        color: #333;
+        margin-bottom: 5pt;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 9.5pt;
+        color: #888;
+        margin-bottom: 10pt;
+        line-height: 1.5;
+    }
+
+    /* 使用说明盒 */
+    .meaning-box {
+        background: linear-gradient(135deg, #F3F0FF, #E5DBFF);
+        border: 2px solid #9775FA;
+        border-radius: 8pt;
+        padding: 8pt 14pt;
+        margin-bottom: 12pt;
+        font-size: 9.5pt;
+        line-height: 1.7;
+        color: #555;
+    }
+
+    .meaning-box strong { color: #5F3DC4; }
+
+    /* 卡片区 - 2列布局（与口诀卡相同） */
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10pt;
+    }
+
+    /* ====== 卡牌样式 - 与口诀卡同尺寸（185pt高）====== */
+    .card {
+        width: 100%;
+        height: 185pt;
+        min-height: 185pt;
+        max-height: 185pt;
+        border: 2.5pt solid;
+        border-radius: 10pt;
+        padding: 10pt 12pt;
+        background: white;
+        page-break-inside: avoid;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 7种卡各自颜色（边框 + 浅渐变背景） */
+    .card.c-tuxi   { border-color: #E8590C; background: linear-gradient(to bottom, #FFF4E6, white); }
+    .card.c-hudun  { border-color: #339AF0; background: linear-gradient(to bottom, #F0F8FF, white); }
+    .card.c-xianjing { border-color: #CC5DE8; background: linear-gradient(to bottom, #FDF5FF, white); }
+    .card.c-jiabei { border-color: #F59F00; background: linear-gradient(to bottom, #FFFBEB, white); }
+    .card.c-zhadan { border-color: #FA5252; background: linear-gradient(to bottom, #FFF0F0, white); }
+    .card.c-xingyun { border-color: #20C997; background: linear-gradient(to bottom, #F0FFF9, white); }
+    .card.c-daotui { border-color: #868E96; background: linear-gradient(to bottom, #F5F6F7, white); }
+
+    /* 卡片顶部：技能名 + 类型徽章 */
+    .card-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10pt;
+        margin-bottom: 4pt;
+        padding-bottom: 4pt;
+        border-bottom: 1pt dashed #ddd;
+        flex-shrink: 0;
+    }
+
+    .skill-name {
+        font-size: 15pt;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* 类型徽章（技能卡=紫 / 即时卡=橙红） */
+    .type-badge {
+        color: white;
+        padding: 2pt 10pt;
+        border-radius: 15pt;
+        font-size: 10pt;
+        font-weight: bold;
+        text-align: center;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .type-badge.skill { background: linear-gradient(135deg, #9775FA, #7048E8); }
+    .type-badge.instant { background: linear-gradient(135deg, #FF8787, #E8590C); }
+
+    /* 中间主区域：大图标 + 效果大字 */
+    .main-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4pt;
+        overflow: hidden;
+    }
+
+    .big-icon {
+        font-size: 44pt;
+        line-height: 1.1;
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+    }
+
+    .effect-text {
+        font-size: 15pt;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.3;
+    }
+    .c-tuxi .effect-text   { color: #E8590C; }
+    .c-hudun .effect-text  { color: #1971C2; }
+    .c-xianjing .effect-text { color: #AE3EC9; }
+    .c-jiabei .effect-text { color: #E8890C; }
+    .c-zhadan .effect-text { color: #E03131; }
+    .c-xingyun .effect-text { color: #0CA678; }
+    .c-daotui .effect-text { color: #5C636A; }
+
+    /* 底部：使用说明 */
+    .card-footer {
+        margin-top: 4pt;
+        padding-top: 4pt;
+        border-top: 1pt dashed #eee;
+        flex-shrink: 0;
+    }
+
+    .usage-text {
+        text-align: center;
+        font-size: 8.5pt;
+        color: #666;
+        line-height: 1.45;
+    }
+
+    .usage-text .highlight { color: #E67E22; font-weight: bold; }
+
+    /* 打印按钮 */
+    .print-section {
+        text-align: center;
+        margin-top: 15pt;
+    }
+
+    .print-btn {
+        padding: 10pt 30pt;
+        font-size: 12pt;
+        font-weight: bold;
+        color: white;
+        background: linear-gradient(135deg, #9775FA, #7048E8);
+        border: none;
+        border-radius: 8pt;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(112,72,232,0.3);
+    }
+
+    .print-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(112,72,232,0.4); }
+
+    @media print {
+        body { background: white; padding: 0; }
+        .page { box-shadow: none; max-width: 100%; }
+        .print-section { display: none; }
+        .card, .type-badge, .meaning-box {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="page">
+    <div class="title">✨ 技能卡 · 乘法口诀魔法大冒险</div>
+    <div class="subtitle">棋盘飞行游戏配套卡牌 · 共7种14张 · 尺寸与乘法口诀卡一致 · 沿边框剪下即可使用</div>
+
+    <div class="meaning-box">
+        <strong>🎴 使用方法：</strong>4种<strong>技能卡</strong>（紫徽章）抽到后收进手牌，轮到自己时可选择使用一次；
+        3种<strong>即时卡</strong>（橙徽章）抽到立刻生效，不能保留。
+        技能卡源自「口诀三国杀」玩法，九九护盾可抵挡任何后退效果！
+    </div>
+
+    <div class="cards-container">
+
+        <!-- 🗡️ 得字突袭 ×2 -->
+        <div class="card c-tuxi">
+            <div class="card-top">
+                <div class="skill-name">得字突袭</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🗡️</div>
+                <div class="effect-text">立即前进 1 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">轮到你时使用，向前突进1格。<br><span class="highlight">彩蛋：口诀得数≤9含「得」字，读对自动触发！</span></div>
+            </div>
+        </div>
+        <div class="card c-tuxi">
+            <div class="card-top">
+                <div class="skill-name">得字突袭</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🗡️</div>
+                <div class="effect-text">立即前进 1 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">轮到你时使用，向前突进1格。<br><span class="highlight">彩蛋：口诀得数≤9含「得」字，读对自动触发！</span></div>
+            </div>
+        </div>
+
+        <!-- 🛡️ 九九护盾 ×2 -->
+        <div class="card c-hudun">
+            <div class="card-top">
+                <div class="skill-name">九九护盾</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🛡️</div>
+                <div class="effect-text">抵挡一次任何后退！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">使用后生成护盾，抵挡下一次后退：<br><span class="highlight">炸弹 / 伏兵 / 倒退 / 读错 / PK失败 统统不怕！</span></div>
+            </div>
+        </div>
+        <div class="card c-hudun">
+            <div class="card-top">
+                <div class="skill-name">九九护盾</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🛡️</div>
+                <div class="effect-text">抵挡一次任何后退！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">使用后生成护盾，抵挡下一次后退：<br><span class="highlight">炸弹 / 伏兵 / 倒退 / 读错 / PK失败 统统不怕！</span></div>
+            </div>
+        </div>
+
+        <!-- 🕳️ 填空陷阱 ×2 -->
+        <div class="card c-xianjing">
+            <div class="card-top">
+                <div class="skill-name">填空陷阱</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🕳️</div>
+                <div class="effect-text">让对手后退 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">指定下一位玩家说一句乘法口诀，<br><span class="highlight">他说错就退2格，说对则安然无恙。</span></div>
+            </div>
+        </div>
+        <div class="card c-xianjing">
+            <div class="card-top">
+                <div class="skill-name">填空陷阱</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🕳️</div>
+                <div class="effect-text">让对手后退 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">指定下一位玩家说一句乘法口诀，<br><span class="highlight">他说错就退2格，说对则安然无恙。</span></div>
+            </div>
+        </div>
+
+        <!-- ⚡ 加倍前进 ×2 -->
+        <div class="card c-jiabei">
+            <div class="card-top">
+                <div class="skill-name">加倍前进</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">⚡</div>
+                <div class="effect-text">立即前进 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">轮到你时使用，马力全开！<br><span class="highlight">留着冲线前用，效果最佳！</span></div>
+            </div>
+        </div>
+        <div class="card c-jiabei">
+            <div class="card-top">
+                <div class="skill-name">加倍前进</div>
+                <div class="type-badge skill">技能卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">⚡</div>
+                <div class="effect-text">立即前进 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">轮到你时使用，马力全开！<br><span class="highlight">留着冲线前用，效果最佳！</span></div>
+            </div>
+        </div>
+
+        <!-- 💣 炸弹卡 ×2 -->
+        <div class="card c-zhadan">
+            <div class="card-top">
+                <div class="skill-name">炸弹卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">💣</div>
+                <div class="effect-text">轰！后退 3 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">有九九护盾可以抵挡。</span></div>
+            </div>
+        </div>
+        <div class="card c-zhadan">
+            <div class="card-top">
+                <div class="skill-name">炸弹卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">💣</div>
+                <div class="effect-text">轰！后退 3 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">有九九护盾可以抵挡。</span></div>
+            </div>
+        </div>
+
+        <!-- ⭐ 幸运前进卡 ×2 -->
+        <div class="card c-xingyun">
+            <div class="card-top">
+                <div class="skill-name">幸运前进卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">⭐</div>
+                <div class="effect-text">好运！向前跳 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">好运降临，直接向前跳2格！</span></div>
+            </div>
+        </div>
+        <div class="card c-xingyun">
+            <div class="card-top">
+                <div class="skill-name">幸运前进卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">⭐</div>
+                <div class="effect-text">好运！向前跳 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">好运降临，直接向前跳2格！</span></div>
+            </div>
+        </div>
+
+        <!-- 🔻 倒退卡 ×2 -->
+        <div class="card c-daotui">
+            <div class="card-top">
+                <div class="skill-name">倒退卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🔻</div>
+                <div class="effect-text">哎哟！后退 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">有九九护盾可以抵挡。</span></div>
+            </div>
+        </div>
+        <div class="card c-daotui">
+            <div class="card-top">
+                <div class="skill-name">倒退卡</div>
+                <div class="type-badge instant">即时卡</div>
+            </div>
+            <div class="main-area">
+                <div class="big-icon">🔻</div>
+                <div class="effect-text">哎哟！后退 2 格！</div>
+            </div>
+            <div class="card-footer">
+                <div class="usage-text">抽到立刻生效，不能保留！<br><span class="highlight">有九九护盾可以抵挡。</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="print-section">
+        <button class="print-btn" onclick="window.print()">🖨️ 打印技能卡（A4 · 建议彩印）</button>
+    </div>
+</div>
+
+</body>
+</html>
