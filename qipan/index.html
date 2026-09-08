@@ -94,6 +94,7 @@
   .cell.c-story::before{background:#2ecc71;}
   .cell.c-mean::before{background:#3498db;}
   .cell.c-adv::before{background:#f39c12;}
+  .cell.c-plain::before{background:transparent;}
   .cell.c-tele::before{background:#00bcd4;}
 
   .panel{background:#1f1540;border:2px solid #5a3fb0;border-radius:12px;padding:12px;max-width:980px;margin:0 auto 14px;}
@@ -145,6 +146,21 @@
   .legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:11px;margin-bottom:10px;}
   .legend span{background:#1f1540;border:1px solid #5a3fb0;border-radius:6px;padding:2px 6px;cursor:help;}
   .legend span:hover{border-color:#ffd54f;box-shadow:0 0 8px rgba(255,213,79,.4);}
+
+  /* ===== 打印样式：输出干净的彩色A4棋盘 ===== */
+  @media print{
+    body::before{display:none;}
+    body{background:#fff;padding:0;}
+    h1{background:none;color:#7b4ddb;-webkit-text-fill-color:#7b4ddb;filter:none;font-size:22px;animation:none;}
+    .sub,.sub2{color:#555;}
+    .topbar,.panel,#tooltip,.modal{display:none!important;}
+    .board{max-width:100%;box-shadow:none;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .cell{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .cell:hover{transform:none;}
+    .legend span{background:#f5f5f5;border:1px solid #bbb;color:#333;}
+    details{border:1px solid #ccc;border-radius:8px;padding:8px;color:#333;}
+  }
 </style>
 </head>
 <body>
@@ -154,7 +170,7 @@
 <div class="topbar" id="players"></div>
 
 <div class="legend">
-  <span data-tip="🎯出战格：抽口诀卡，大声读口诀，✅读对按步数前进，❌读错退1格">🎯出战格</span>
+  <span data-tip="🟡普通格：纯走路的安全路面，什么都不发生">🟡普通格</span>
   <span data-tip="🎮游戏关：踩上弹出真小游戏！👯找朋友/🎴吃卡片/⚡找几口诀，赢了+2格">🎮游戏关</span>
   <span data-tip="⚔️PK格：与下一位玩家各抽1卡比得数，赢+2格、输退2格">⚔️PK格</span>
   <span data-tip="✨技能格：免费拾取1张魔法技能卡，收入手牌随时可用">✨技能格</span>
@@ -179,6 +195,7 @@
     <button class="sec" onclick="readRight()">✅ 读对</button>
     <button class="sec" onclick="readWrong()">❌ 读错</button>
     <button class="sec" onclick="nextTurn()">➡️ 下一玩家</button>
+    <button class="sec" onclick="window.print()" data-tip="🖨️打印棋盘：打印时会自动隐藏按钮和玩家栏，输出彩色A4纸质棋盘（建议彩印）">🖨️ 打印棋盘</button>
     <button class="sec" onclick="restart()">🔄 重开</button>
   </div>
   <div style="text-align:center" id="cardArea"></div>
@@ -205,32 +222,32 @@
 // ===== 数据 =====
 const CELLS = [
   {i:0, t:"start", ic:"🚩", lb:"起点", cls:"c-start"},
-  {i:1, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
-  {i:2, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:1, t:"fight", ic:"", lb:"", cls:"c-plain"},
+  {i:2, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:3, t:"lucky", ic:"🎁", lb:"幸运格", cls:"c-skill"},
-  {i:4, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:4, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:5, t:"story", ic:"📖", lb:"故事格", cls:"c-story"},
-  {i:6, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:6, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:7, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
-  {i:8, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:8, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:9, t:"game", ic:"👯", lb:"游戏·找朋友", sub:"得数配对", cls:"c-base"},
-  {i:10, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
-  {i:11, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:10, t:"fight", ic:"", lb:"", cls:"c-plain"},
+  {i:11, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:12, t:"mean", ic:"💡", lb:"意义格", cls:"c-mean"},
-  {i:13, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:13, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:14, t:"trap", ic:"🕳️", lb:"伏兵格", sub:"退3", cls:"c-trap"},
   {i:15, t:"back", ic:"🔻", lb:"倒退格", sub:"退2", cls:"c-back"},
   {i:16, t:"game", ic:"🎴", lb:"游戏·吃卡片", sub:"比大小", cls:"c-impro"},
   {i:17, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
-  {i:18, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:18, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:19, t:"adv", ic:"🎲", lb:"冒险格", cls:"c-adv"},
   {i:20, t:"game", ic:"⚡", lb:"游戏·找几口诀", sub:"限时挑战", cls:"c-base"},
-  {i:21, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:21, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:22, t:"pk", ic:"⚔️", lb:"PK格", sub:"单挑", cls:"c-pk"},
-  {i:23, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
-  {i:24, t:"fight", ic:"🎯", lb:"口诀练习", cls:"c-base"},
+  {i:23, t:"fight", ic:"", lb:"", cls:"c-plain"},
+  {i:24, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:25, t:"tele", ic:"🌀", lb:"传送格", cls:"c-tele"},
-  {i:26, t:"fight", ic:"🎯", lb:"出战格", cls:"c-base"},
+  {i:26, t:"fight", ic:"", lb:"", cls:"c-plain"},
   {i:27, t:"skill", ic:"✨", lb:"技能格", cls:"c-skill"},
   {i:28, t:"boss", ic:"⚔️", lb:"终极对决", sub:"挑战", cls:"c-chal"},
   {i:29, t:"end", ic:"🏁", lb:"终点", cls:"c-end"},
@@ -260,7 +277,7 @@ const GAME_RULES={
 // ===== 格子悬停说明 =====
 const CELL_TIPS={
   start:"🚩起点：小勇士们从这里出发，先冲到🏁终点者获胜！",
-  fight:"🎯出战格：抽口诀卡→大声读口诀→✅读对按步数前进，❌读错退1格",
+  fight:"🟡普通格：安全路面，纯走路，什么都不发生，歇口气～",
   lucky:"🎁幸运格：抽2张口诀卡，选步数大的那张前进！",
   story:"📖故事格：用抽到的口诀编一个生活小故事，如「3×4：每人4块糖，3人一共几块？」",
   skill:"✨技能格：免费拾取1张魔法技能卡！🗡️得字突袭/🛡️九九护盾/🕳️填空陷阱/⚡加倍前进",
@@ -645,6 +662,8 @@ function nextTurn(){
 }
 function openModal(h){document.getElementById("mbox").innerHTML=h; document.getElementById("modal").classList.add("show");}
 function closeModal(){document.getElementById("modal").classList.remove("show");}
+// 打印前自动展开规则说明
+window.onbeforeprint=function(){document.querySelectorAll("details").forEach(d=>d.open=true);};
 function restart(){closeModal();showSetup();}
 
 init();
