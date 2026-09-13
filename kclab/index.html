@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI科创实验室 | 2026顺德区青少年科技创新大赛</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-elevated: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --gradient-3: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,.3), 0 2px 4px -2px rgba(0,0,0,.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.4), 0 4px 6px -4px rgba(0,0,0,.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--gradient-2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .hero h2 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .hero-stat .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .kpi-icon.purple { background: rgba(99, 102, 241, 0.15); }
+        .kpi-icon.amber { background: rgba(245, 158, 11, 0.15); }
+        .kpi-icon.green { background: rgba(16, 185, 129, 0.15); }
+        .kpi-icon.red { background: rgba(239, 68, 68, 0.15); }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* Timeline Section */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.4rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--bg-elevated);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 25px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-card);
+            z-index: 1;
+        }
+
+        .timeline-dot.completed { background: var(--success); }
+        .timeline-dot.current { background: var(--accent); animation: pulse 1.5s infinite; }
+        .timeline-dot.upcoming { background: var(--bg-elevated); }
+
+        .timeline-content {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            border-left: 4px solid transparent;
+        }
+
+        .timeline-item.completed .timeline-content { border-left-color: var(--success); }
+        .timeline-item.current .timeline-content { 
+            border-left-color: var(--accent); 
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+        }
+        .timeline-item.upcoming .timeline-content { border-left-color: var(--border); opacity: 0.7; }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--primary-light);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .timeline-status {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 0.6rem;
+            font-weight: 600;
+        }
+
+        .status-done { background: rgba(16,185,129,0.15); color: var(--success); }
+        .status-now { background: rgba(245,158,11,0.15); color: var(--accent); }
+        .status-wait { background: rgba(148,163,184,0.15); color: var(--text-muted); }
+
+        /* Two Column Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Project Cards */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .project-card {
+            background: var(--bg-elevated);
+            border-radius: 14px;
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .project-icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-name {
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+        }
+
+        .tag.hot { background: rgba(239,68,68,0.15); color: #f87171; }
+        .tag.new { background: rgba(16,185,129,0.15); color: #34d399; }
+
+        /* Recruitment Section */
+        .recruit-highlight {
+            background: var(--gradient-1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .recruit-highlight h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .recruit-benefits {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .benefit-item {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .benefit-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-title {
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .benefit-desc {
+            font-size: 0.82rem;
+            opacity: 0.9;
+        }
+
+        /* Agent Features */
+        .agent-features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .agent-feature {
+            background: var(--bg-elevated);
+            border-radius: 14px;
+            padding: 1.5rem 1.2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .agent-feature .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .agent-feature h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .agent-feature p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-top: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-elevated);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2 { grid-template-columns: 1fr; }
+            .agent-features { grid-template-columns: repeat(2, 1fr); }
+            .recruit-benefits { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .project-grid { grid-template-columns: 1fr; }
+            .agent-features { grid-template-columns: 1fr 1fr; }
+            .recruit-benefits { grid-template-columns: 1fr; }
+            .hero-stats { gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">🔬</div>
+        <div class="logo-text">
+            <h1>AI科创实验室</h1>
+            <p>2026顺德区青少年科技创新大赛 · 备赛基地</p>
+        </div>
+    </div>
+    <div class="status-badge">
+        <span class="status-dot"></span>
+        <span>当前阶段：项目招募与选题中</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">🚀 2026年顺德区青少年科技创新大赛备赛启动</div>
+        <h2>用 <span>AI Agent</span> 点燃创意火花</h2>
+        <p>欢迎加入AI科创实验室！这里有你想要的设备、有专业的指导、更有AI助手帮你把脑洞变成现实。你的每一个想法，都值得被看见。</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="num">~60%</div>
+                <div class="label">总获奖率</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">10月10日</div>
+                <div class="label">申报截止</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">9-12月</div>
+                <div class="label">大赛周期</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">∞</div>
+                <div class="label">创意可能</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div>
+                    <div class="kpi-label">距申报截止</div>
+                    <div class="kpi-value" style="color: var(--danger);" id="countdown">27天</div>
+                    <div class="kpi-sub">2026年10月10日 17:00</div>
+                </div>
+                <div class="kpi-icon red">⏰</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div>
+                    <div class="kpi-label">当前阶段</div>
+                    <div class="kpi-value" style="color: var(--accent);">第2阶段</div>
+                    <div class="kpi-sub">项目招募与选题</div>
+                </div>
+                <div class="kpi-icon amber">🎯</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div>
+                    <div class="kpi-label">目标招募</div>
+                    <div class="kpi-value" style="color: var(--success);">10-15人</div>
+                    <div class="kpi-sub">科创小队员</div>
+                </div>
+                <div class="kpi-icon green">👥</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div>
+                    <div class="kpi-label">项目方向</div>
+                    <div class="kpi-value" style="color: var(--primary-light);">5+个</div>
+                    <div class="kpi-sub">待学生最终确定</div>
+                </div>
+                <div class="kpi-icon purple">💡</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid-2">
+
+        <!-- Left: Timeline -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-title"><span class="icon">📅</span> 备赛进度时间线</div>
+                <span style="font-size:0.85rem;color:var(--text-muted);">2026年9月-12月</span>
+            </div>
+
+            <div class="timeline">
+                <!-- Phase 1 -->
+                <div class="timeline-item completed">
+                    <div class="timeline-dot completed"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">9月上旬 · 已完成</div>
+                        <div class="timeline-title">📋 第一阶段：赛前准备</div>
+                        <div class="timeline-desc">参加科技辅导员培训、了解比赛规则、确定实验室场地和设备清单</div>
+                        <span class="timeline-status status-done">✓ 已完成</span>
+                    </div>
+                </div>
+
+                <!-- Phase 2: Current -->
+                <div class="timeline-item current">
+                    <div class="timeline-dot current"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">9月中旬-下旬 · 🔴 进行中</div>
+                        <div class="timeline-title">🎯 第二阶段：招生与选题</div>
+                        <div class="timeline-desc">招募科创小队员（目标10-15人）、培训Agent使用方法、头脑风暴确定参赛项目方向</div>
+                        <span class="timeline-status status-now">● 当前阶段</span>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot upcoming"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">9月下旬-10月初</div>
+                        <div class="timeline-title">🛠️ 第三阶段：项目开发</div>
+                        <div class="timeline-desc">学生利用课余时间在实验室进行项目开发，使用AI Agent辅助实现创意想法</div>
+                        <span class="timeline-status status-wait">⏳ 待开始</span>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot upcoming"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">10月5日-10日</div>
+                        <div class="timeline-title">📝 第四阶段：材料准备与申报</div>
+                        <div class="timeline-desc">完成申报书、研究报告、查新报告、演示视频等材料，线上提交申报</div>
+                        <span class="timeline-status status-wait">⏳ 待开始</span>
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot upcoming"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">10月中下旬</div>
+                        <div class="timeline-title">🏆 第五阶段：评审与遴选</div>
+                        <div class="timeline-desc">区赛评审、优秀作品遴选推荐参加澳门国际创新发明展（线上）</div>
+                        <span class="timeline-status status-wait">⏳ 待开始</span>
+                    </div>
+                </div>
+
+                <!-- Phase 6 -->
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot upcoming"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">10月30日-11月1日</div>
+                        <div class="timeline-title">🌐 第六阶段：澳门国际创新发明展</div>
+                        <div class="timeline-desc">推荐作品参加第14届澳门国际创新发明展（线上展），地点：澳门会展中心</div>
+                        <span class="timeline-status status-wait">⏳ 待开始</span>
+                    </div>
+                </div>
+
+                <!-- Phase 7 -->
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot upcoming"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">11月-12月</div>
+                        <div class="timeline-title">🎖️ 第七阶段：市赛与颁奖</div>
+                        <div class="timeline-desc">获奖作品择优上送第42届佛山市青少年科技创新大赛、区赛颁奖典礼</div>
+                        <span class="timeline-status status-wait">⏳ 待开始</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Progress -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>整体进度</span>
+                    <span style="color:var(--primary-light);font-weight:600;">约 15%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 15%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right: Projects & Recruitment -->
+        <div>
+            <!-- Recruitment Highlight -->
+            <section class="section">
+                <div class="section-header">
+                    <div class="section-title"><span class="icon">📢</span> 科创小队员招募</div>
+                </div>
+
+                <div class="recruit-highlight">
+                    <h3>🌟 加入AI科创实验室，让你的创意变成现实！</h3>
+                    <p style="opacity:0.9;">不需要你是编程大神，只需要你有一个好点子。AI Agent帮你写代码、做设计、建模型，你只管发挥想象力！</p>
+                    
+                    <div class="recruit-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">💻</div>
+                            <div class="benefit-title">专属电脑</div>
+                            <div class="benefit-desc">实验室配备专用电脑<br/>随时可用</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🔧</div>
+                            <div class="benefit-title">硬件设备</div>
+                            <div class="benefit-desc">单片机/传感器/3D打印<br/>免费提供</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">💰</div>
+                            <div class="benefit-title">费用报销</div>
+                            <div class="benefit-desc">项目材料费<br/>可申请报销</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;padding:1rem;background:var(--bg-elevated);border-radius:12px;">
+                    <strong style="color:var(--primary-light);">📍 实验室地点：</strong> 学校电脑室（具体位置待定）
+                    <br><br>
+                    <strong style="color:var(--primary-light);">⏰ 开放时间：</strong> 课余时间 / 下课时间（灵活安排）
+                    <br><br>
+                    <strong style="color:var(--primary-light);">👨‍🏫 指导老师：</strong> 洪林华老师
+                </div>
+            </section>
+
+            <!-- Project Directions -->
+            <section class="section">
+                <div class="section-header">
+                    <div class="section-title"><span class="icon">💡</span> 候选项目方向</div>
+                    <span style="font-size:0.85rem;color:var(--accent);">待学生最终确定</span>
+                </div>
+
+                <div class="project-grid">
+                    <div class="project-card">
+                        <div class="project-icon">🌐</div>
+                        <div class="project-name">学习类网站/应用</div>
+                        <div class="project-desc">利用AI开发有助于学习的工具网站，如错题本、知识卡片、学习助手等</div>
+                        <div class="project-tags">
+                            <span class="tag new">热门</span>
+                            <span class="tag">Web开发</span>
+                            <span class="tag">AI</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-icon">🤖</div>
+                        <div class="project-name">校园扫地机器人</div>
+                        <div class="project-desc">基于单片机的智能清洁机器人，自动避障、路径规划</div>
+                        <div class="project-tags">
+                            <span class="tag hot">推荐</span>
+                            <span class="tag">硬件</span>
+                            <span class="tag">机器人</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-icon">📱</div>
+                        <div class="project-name">二手手机再开发</div>
+                        <div class="project-desc">将闲置旧手机改造成智能设备，如监控、控制面板、信息屏等</div>
+                        <div class="project-tags">
+                            <span class="tag">创意</span>
+                            <span class="tag">环保</span>
+                            <span class="tag">硬件改造</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-icon">🖨️</div>
+                        <div class="project-name">3D打印小发明</div>
+                        <div class="project-desc">结合3D建模+打印，制作实用的小发明、教具或生活用品</div>
+                        <div class="project-tags">
+                            <span class="tag new">新颖</span>
+                            <span class="tag">3D建模</span>
+                            <span class="tag">创客</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-icon">🎮</div>
+                        <div class="project-name">教育游戏/互动软件</div>
+                        <div class="project-desc">用游戏化方式呈现教学内容，让学习变得有趣</div>
+                        <div class="project-tags">
+                            <span class="tag">软件</span>
+                            <span class="tag">游戏化</span>
+                            <span class="tag">教育</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-icon">🔮</div>
+                        <div class="project-name">等你来定义...</div>
+                        <div class="project-desc">你有更好的想法吗？只要敢想，AI帮你实现！</div>
+                        <div class="project-tags">
+                            <span class="tag hot">开放</span>
+                            <span class="tag">无限可能</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- AI Agent Features -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-title"><span class="icon">🤖</span> AI Agent 能为你做什么？</div>
+        </div>
+        <div class="agent-features">
+            <div class="agent-feature">
+                <div class="emoji">🎨</div>
+                <h4>3D建模</h4>
+                <p>描述你的想法，AI生成3D模型</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">💻</div>
+                <h4>写代码</h4>
+                <p>自然语言描述需求，自动生成程序</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">🌐</div>
+                <h4>做网页</h4>
+                <p>一句话生成完整网站页面</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">📝</div>
+                <h4>写文档</h4>
+                <p>自动生成研究报告、申报书</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">🔧</div>
+                <h4>硬件编程</h4>
+                <p>Arduino/单片机代码一键生成</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">🎵</div>
+                <h4>多媒体</h4>
+                <p>生成图片、音乐、视频素材</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">🧠</div>
+                <h4>头脑风暴</h4>
+                <p>帮你拓展思路、优化方案</p>
+            </div>
+            <div class="agent-feature">
+                <div class="emoji">🐛</div>
+                <h4>调试排错</div>
+                <p>遇到问题？AI帮你找原因</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competition Info -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-title"><span class="icon">🏆</span> 大赛奖项设置</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;text-align:center;">
+            <div style="background:linear-gradient(135deg,#fbbf24,#f59e0b);border-radius:16px;padding:2rem;color:#000;">
+                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🥇</div>
+                <div style="font-size:1.8rem;font-weight:800;">一等奖</div>
+                <div style="font-size:1.2rem;opacity:0.8;">约 10%</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#94a3b8,#64748b);border-radius:16px;padding:2rem;color:#fff;">
+                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🥈</div>
+                <div style="font-size:1.8rem;font-weight:800;">二等奖</div>
+                <div style="font-size:1.2rem;opacity:0.8;">约 20%</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#cd7c2a,#a16207);border-radius:16px;padding:2rem;color:#fff;">
+                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🥉</div>
+                <div style="font-size:1.8rem;font-weight:800;">三等奖</div>
+                <div style="font-size:1.2rem;opacity:0.8;">约 30%</div>
+            </div>
+        </div>
+        <p style="text-align:center;margin-top:1.5rem;color:var(--text-muted);">
+            ✅ 总获奖率约 <strong style="color:var(--success);font-size:1.2rem;">60%</strong> | 获奖作品择优推荐参加佛山市赛
+        </p>
+    </section>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>🔬 AI科创实验室 | 2026顺德区青少年科技创新大赛备赛基地</p>
+    <p style="margin-top:0.5rem;">申报网址：<a href="https://www.8cpae.cn" style="color:var(--primary-light);">www.8cpae.cn</a> | 截止时间：2026年10月10日 17:00</p>
+    <p style="margin-top:0.5rem;opacity:0.6;">Made with ❤️ by 洪林华老师</p>
+</footer>
+
+<script>
+// Countdown timer
+function updateCountdown() {
+    const deadline = new Date('2026-10-10T17:00:00+08:00');
+    const now = new Date();
+    const diff = deadline - now;
+    const days = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    document.getElementById('countdown').textContent = days + '天';
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+</script>
+
+</body>
+</html>
