@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📥 下载中心</title>
+<title>📥 下载中心 · 远程控制受控端</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -11,44 +11,53 @@ body{
   background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
   min-height:100vh;color:#fff;
 }
-.container{max-width:800px;margin:0 auto;padding:25px 18px}
-.header{text-align:center;padding:35px 20px 22px}
+.container{max-width:820px;margin:0 auto;padding:25px 18px}
+.header{text-align:center;padding:30px 20px 18px}
 .avatar{
   width:85px;height:85px;border-radius:50%;
   background:linear-gradient(135deg,#fff,#f0eaff);
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:40px;margin-bottom:16px;
+  font-size:40px;margin-bottom:14px;
   box-shadow:0 6px 28px rgba(0,0,0,.2);animation:pulse 3s ease infinite;
 }
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .header h1{font-size:2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:6px}
 .header .subtitle{font-size:.95em;opacity:.9}
-.card{
+
+.dl-card{
   background:rgba(255,255,255,.96);border-radius:16px;
-  padding:20px 24px;margin-bottom:14px;color:#333;
+  padding:20px 24px;margin-bottom:14px;
   box-shadow:0 6px 24px rgba(0,0,0,.12);
+  display:flex;align-items:center;gap:18px;
+  border-left:6px solid transparent;
 }
-.card h2{color:#333;margin-bottom:10px;font-size:1.15em}
-.card p,.card li{font-size:.88em;line-height:1.7;color:#555}
-.card ul{margin-left:22px;margin-top:6px}
-.warn{
-  background:rgba(255,220,220,.95);border-left:5px solid #e74c3c;
-  border-radius:12px;padding:16px 20px;margin:18px 0;color:#7a2222;line-height:1.7;
-}
-.tip{
-  background:rgba(255,255,255,.12);border-radius:12px;
-  padding:14px 20px;margin:20px 0;font-size:.85em;line-height:1.6;
-  border:1px solid rgba(255,255,255,.15);
-}
+.dl-icon{font-size:2.8em;flex-shrink:0;width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;border-radius:14px;
+  background:linear-gradient(135deg,#f0f0f5,#e8e8f0);}
+.dl-info{flex-grow:1;min-width:0}
+.dl-name{font-size:1.1em;font-weight:bold;color:#333;margin-bottom:4px}
+.dl-desc{font-size:.82em;color:#777;line-height:1.55}
+.dl-meta{font-size:.74em;color:#aaa;margin-top:5px}
+.dl-btn{
+  flex-shrink:0;padding:12px 22px;border-radius:12px;font-weight:bold;font-size:.92em;
+  text-decoration:none;color:white;background:linear-gradient(135deg,#f093fb,#f5576c);
+  transition:all .3s;white-space:nowrap;}
+.dl-btn:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(245,87,108,.4)}
+.tag{display:inline-block;font-size:.72em;padding:2px 9px;border-radius:10px;
+  margin-top:6px;font-weight:bold;}
+.tag-ok{background:#e3f9e5;color:#1b8a3a;}
+.tag-warn{background:#ffe9e9;color:#c0392b;}
+.tag-self{background:#fff4e0;color:#b9770e;}
+
+.tip{background:rgba(255,255,255,.12);border-radius:12px;padding:13px 20px;
+  margin:18px 0;font-size:.82em;line-height:1.6;border:1px solid rgba(255,255,255,.15);}
 .tip strong{color:#FFE66D}
-.back-btn{
-  display:inline-block;margin:20px 0;padding:10px 28px;
-  border-radius:22px;background:rgba(255,255,255,.2);
-  color:white;text-decoration:none;font-size:.9em;
-  border:1px solid rgba(255,255,255,.3);transition:all .3s;
-}
+.back-btn{display:inline-block;margin:20px 0;padding:10px 28px;border-radius:22px;
+  background:rgba(255,255,255,.2);color:white;text-decoration:none;font-size:.9em;
+  border:1px solid rgba(255,255,255,.3);transition:all .3s;}
 .back-btn:hover{background:rgba(255,255,255,.35);transform:translateY(-2px)}
-.footer{text-align:center;padding:20px;font-size:.8em;opacity:.6}
+.footer{text-align:center;padding:20px;font-size:.78em;opacity:.6}
+@media(max-width:600px){.dl-card{flex-direction:column;text-align:center;gap:10px}.dl-btn{width:100%}}
 </style>
 </head>
 <body>
@@ -57,43 +66,76 @@ body{
 <div class="header">
   <div class="avatar">📥</div>
   <h1>下载中心</h1>
-  <p class="subtitle">工具与资料分发</p>
-</div>
-
-<div class="warn">
-  ⚠️ <strong>受控端（controlled.exe）已下架公开下载。</strong>
-  旧版被控端直接挂在公共 MQTT 上、无认证、可被执行任意命令，存在严重暴露风险。
-  新版已改为<strong>私有分发</strong>：内嵌个人命名空间与口令，仅限本人设备之间使用，请勿公开转发。
-</div>
-
-<div class="card">
-  <h2>🔐 如何安全地用远程控制</h2>
-  <ul>
-    <li>受控端通过你的私有渠道获取（私有网盘 / 私有仓库），不要上传到公开站点或群聊。</li>
-    <li>它内嵌专属命名空间与命令口令，陌生人无法发现也无法下达命令。</li>
-    <li>如需远程执行任意命令，务必把 broker 换成<strong>私有服务器或内网（Tailscale）</strong>；公共 broker 下明文传输，钥匙一旦扩散即失控。</li>
-    <li>开机自启写入当前用户注册表，双击运行时按提示授权管理员权限。</li>
-  </ul>
-</div>
-
-<div class="card">
-  <h2>📄 文档资料</h2>
-  <p>远程控制项目文档、编译说明与自检脚本，见本地目录：</p>
-  <p style="margin-top:8px;font-family:monospace;background:#f5f5f5;padding:8px 12px;border-radius:8px;">D:\Desktop\远程方案\移动远程渗透\Computer-MQTT-Control_版本二\</p>
+  <p class="subtitle">远程控制受控端 · 各版本汇总</p>
 </div>
 
 <div class="tip">
-  💡 <strong>提示：</strong>本页不再提供可直接下载的受控端二进制，避免他人误用造成安全风险。需要部署时，从你的私有渠道取用对应版本的 <code>controlled.exe</code>。
+  💡 <strong>怎么选：</strong>自用远程控制请用 <b>v2（安全版）</b>；v1 / zq 为公网裸通道旧版，<b>已停用、不安全</b>，仅作对照研究。<b>v2 内嵌个人密钥，仅限本人设备使用，请勿转发。</b>
 </div>
 
-<div style="text-align:center;margin-top:30px">
+<!-- 版本二 -->
+<div class="dl-card" style="border-left-color:#1b8a3a">
+  <div class="dl-icon">🔐</div>
+  <div class="dl-info">
+    <div class="dl-name">受控端 v2 · 安全加固版 ⭐推荐</div>
+    <div class="dl-desc">
+      <strong>MQTT 远程控制（私有通道 + 口令）</strong><br>
+      ✅ 双击自动 UAC 提权（管理员权限）<br>
+      ✅ 开机自启（隐藏运行）<br>
+      ✅ 随机命名空间，陌生人无法发现<br>
+      ✅ 远程执行任意 cmd 命令
+    </div>
+    <div class="dl-meta">controlled_v2.exe · 282 KB · 更新于2026-09-19</div>
+    <span class="tag tag-self">⚠ 内嵌个人密钥 · 仅本人</span>
+  </div>
+  <a class="dl-btn" href="controlled_v2.exe" download>⬇ 下载</a>
+</div>
+
+<!-- 版本一 -->
+<div class="dl-card" style="border-left-color:#c0392b">
+  <div class="dl-icon">⚠️</div>
+  <div class="dl-info">
+    <div class="dl-name">受控端 v1 · 初版（已停用）</div>
+    <div class="dl-desc">
+      <strong>MQTT 远程控制（公网裸通道）</strong><br>
+      ❌ 无认证、任意命令执行<br>
+      ❌ 命令/响应走公共频道，可被陌生人发现<br>
+      📌 仅作安全对照研究，<b>不要再运行</b>
+    </div>
+    <div class="dl-meta">controlled_v1.exe · 278 KB · 2026-09-19</div>
+    <span class="tag tag-warn">高危 · 已停用</span>
+  </div>
+  <a class="dl-btn" href="controlled_v1.exe" download>⬇ 下载</a>
+</div>
+
+<!-- zq 版 -->
+<div class="dl-card" style="border-left-color:#c0392b">
+  <div class="dl-icon">⚠️</div>
+  <div class="dl-info">
+    <div class="dl-name">受控端 zq · 分支版（不安全）</div>
+    <div class="dl-desc">
+      <strong>同 v1 公共 broker 裸 topic</strong><br>
+      ❌ 无认证、无命名空间隔离<br>
+      📌 与 v1 同样不安全，仅作对照
+    </div>
+    <div class="dl-meta">controlled_zq.exe · 253 KB · 2026-08-28</div>
+    <span class="tag tag-warn">高危 · 不安全</span>
+  </div>
+  <a class="dl-btn" href="controlled_zq.exe" download>⬇ 下载</a>
+</div>
+
+<div class="tip">
+  🔧 <strong>部署提醒：</strong>v2 仍连公共 broker（明文）。长期请用私有 broker 或 Tailscale 内网，并重新生成密钥编译。详细见本地目录 <code>Computer-MQTT-Control_版本二\发布版\README.md</code>。
+</div>
+
+<div style="text-align:center;margin-top:28px">
   <a class="back-btn" href="https://hlh66.github.io/">← 返回主页</a>
 </div>
 
 </div>
 
 <div class="footer">
-  <p>📥 下载中心 · 私有分发 · hlh66.github.io/xz/</p>
+  <p>📥 下载中心 · hlh66.github.io/xz/</p>
 </div>
 
 </body>
