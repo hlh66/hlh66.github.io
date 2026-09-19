@@ -12,8 +12,6 @@ body{
   min-height:100vh;color:#fff;
 }
 .container{max-width:800px;margin:0 auto;padding:25px 18px}
-
-/* 头部 */
 .header{text-align:center;padding:35px 20px 22px}
 .avatar{
   width:85px;height:85px;border-radius:50%;
@@ -25,44 +23,24 @@ body{
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .header h1{font-size:2em;text-shadow:2px 2px 4px rgba(0,0,0,.2);margin-bottom:6px}
 .header .subtitle{font-size:.95em;opacity:.9}
-
-/* 下载卡片 */
-.dl-card{
+.card{
   background:rgba(255,255,255,.96);border-radius:16px;
-  padding:20px 24px;margin-bottom:14px;
+  padding:20px 24px;margin-bottom:14px;color:#333;
   box-shadow:0 6px 24px rgba(0,0,0,.12);
-  display:flex;align-items:center;gap:18px;
-  transition:transform .3s,box-shadow .3s;
-  border-left:5px solid transparent;
 }
-.dl-card:hover{transform:translateY(-4px);box-shadow:0 10px 36px rgba(0,0,0,.18)}
-.dl-icon{
-  font-size:2.8em;flex-shrink:0;
-  width:64px;height:64px;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:14px;background:linear-gradient(135deg,#f0f0f5,#e8e8f0);
+.card h2{color:#333;margin-bottom:10px;font-size:1.15em}
+.card p,.card li{font-size:.88em;line-height:1.7;color:#555}
+.card ul{margin-left:22px;margin-top:6px}
+.warn{
+  background:rgba(255,220,220,.95);border-left:5px solid #e74c3c;
+  border-radius:12px;padding:16px 20px;margin:18px 0;color:#7a2222;line-height:1.7;
 }
-.dl-info{flex-grow:1;min-width:0}
-.dl-name{font-size:1.1em;font-weight:bold;color:#333;margin-bottom:4px}
-.dl-desc{font-size:.85em;color:#888;line-height:1.5}
-.dl-meta{font-size:.75em;color:#aaa;margin-top:4px}
-.dl-btn{
-  flex-shrink:0;padding:12px 24px;border-radius:12px;
-  font-weight:bold;font-size:.95em;text-decoration:none;color:white;
-  background:linear-gradient(135deg,#f093fb,#f5576c);
-  transition:all .3s;white-space:nowrap;
+.tip{
+  background:rgba(255,255,255,.12);border-radius:12px;
+  padding:14px 20px;margin:20px 0;font-size:.85em;line-height:1.6;
+  border:1px solid rgba(255,255,255,.15);
 }
-.dl-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(245,87,108,.4)}
-.dl-btn:active{transform:scale(0.95)}
-
-/* 分类标题 */
-.category{
-  font-size:1.1em;font-weight:bold;margin:24px 0 12px;
-  display:flex;align-items:center;gap:8px;
-  padding:8px 0;border-bottom:2px solid rgba(255,255,255,.15);
-}
-
-/* 返回按钮 */
+.tip strong{color:#FFE66D}
 .back-btn{
   display:inline-block;margin:20px 0;padding:10px 28px;
   border-radius:22px;background:rgba(255,255,255,.2);
@@ -70,123 +48,44 @@ body{
   border:1px solid rgba(255,255,255,.3);transition:all .3s;
 }
 .back-btn:hover{background:rgba(255,255,255,.35);transform:translateY(-2px)}
-
-/* 提示 */
-.tip{
-  background:rgba(255,255,255,.12);border-radius:12px;
-  padding:14px 20px;margin:20px 0;font-size:.85em;line-height:1.6;
-  border:1px solid rgba(255,255,255,.15);
-}
-.tip strong{color:#FFE66D}
-
-/* 页脚 */
 .footer{text-align:center;padding:20px;font-size:.8em;opacity:.6}
-
-/* 空状态 */
-.empty{
-  text-align:center;padding:60px 20px;opacity:.7;
-}
-.empty-icon{font-size:4em;margin-bottom:12px}
-
-@media(max-width:600px){
-  .header h1{font-size:1.6em}
-  .dl-card{flex-direction:column;text-align:center;gap:12px}
-  .dl-btn{width:100%}
-}
 </style>
 </head>
 <body>
-
 <div class="container">
 
-<!-- 头部 -->
 <div class="header">
   <div class="avatar">📥</div>
   <h1>下载中心</h1>
-  <p class="subtitle">点击按钮即可直接下载文件 ✨</p>
+  <p class="subtitle">工具与资料分发</p>
 </div>
 
-<!-- 提示 -->
+<div class="warn">
+  ⚠️ <strong>受控端（controlled.exe）已下架公开下载。</strong>
+  旧版被控端直接挂在公共 MQTT 上、无认证、可被执行任意命令，存在严重暴露风险。
+  新版已改为<strong>私有分发</strong>：内嵌个人命名空间与口令，仅限本人设备之间使用，请勿公开转发。
+</div>
+
+<div class="card">
+  <h2>🔐 如何安全地用远程控制</h2>
+  <ul>
+    <li>受控端通过你的私有渠道获取（私有网盘 / 私有仓库），不要上传到公开站点或群聊。</li>
+    <li>它内嵌专属命名空间与命令口令，陌生人无法发现也无法下达命令。</li>
+    <li>如需远程执行任意命令，务必把 broker 换成<strong>私有服务器或内网（Tailscale）</strong>；公共 broker 下明文传输，钥匙一旦扩散即失控。</li>
+    <li>开机自启写入当前用户注册表，双击运行时按提示授权管理员权限。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>📄 文档资料</h2>
+  <p>远程控制项目文档、编译说明与自检脚本，见本地目录：</p>
+  <p style="margin-top:8px;font-family:monospace;background:#f5f5f5;padding:8px 12px;border-radius:8px;">D:\Desktop\远程方案\移动远程渗透\Computer-MQTT-Control_版本二\</p>
+</div>
+
 <div class="tip">
-  💡 <strong>使用说明：</strong>点击右侧「下载」按钮即可直接下载文件到本地。所有文件均已通过安全检查，请放心使用。
+  💡 <strong>提示：</strong>本页不再提供可直接下载的受控端二进制，避免他人误用造成安全风险。需要部署时，从你的私有渠道取用对应版本的 <code>controlled.exe</code>。
 </div>
 
-<!-- 分类：常用工具 -->
-<div class="category">🧰 常用工具</div>
-
-<div class="dl-card" style="border-left-color:#f5576c">
-  <div class="dl-icon">💻</div>
-  <div class="dl-info">
-    <div class="dl-name">远程控制助手 v2.1 ⭐新版</div>
-    <div class="dl-desc">
-      <strong>MQTT远程控制被控端</strong><br>
-      ✅ 双击自动UAC提权（管理员权限）<br>
-      ✅ 自动开启开机自启（隐藏运行）<br>
-      ✅ 远程执行cmd命令（whoami/dir/ipconfig等）<br>
-      📦 单文件445KB，零依赖，双击即用
-    </div>
-    <div class="dl-meta">controlled.exe · 445 KB · 更新于2026-09-19</div>
-  </div>
-  <a class="dl-btn" href="controlled.exe" download>⬇ 下载</a>
-</div>
-
-<div class="dl-card" style="border-left-color:#4e9eff">
-  <div class="dl-icon">📖</div>
-  <div class="dl-info">
-    <div class="dl-name">使用说明</div>
-    <div class="dl-desc">
-      <strong>快速开始（3步）：</strong><br>
-      ① 下载并双击 controlled.exe<br>
-      ② 弹出UAC窗口时点「是」（提权+自启）<br>
-      ③ 控制端发命令即可远程控制
-    </div>
-    <div class="dl-meta">详细文档 · 内置命令参考</div>
-  </div>
-  <a class="dl-btn" href="#tips" onclick="document.getElementById('tips').style.display='block';return false;">📋 查看</a>
-</div>
-
-<!-- 详细说明（默认隐藏） -->
-<div id="tips" style="display:none" class="dl-card" style="border-left-color:#00d4ff;flex-direction:column;align-items:stretch;">
-  <div style="font-weight:bold;color:#333;margin-bottom:10px;">📖 完整使用指南</div>
-  <div style="font-size:.85em;color:#555;line-height:1.8;">
-    <p><strong>🔧 连接信息：</strong></p>
-    <ul style="margin-left:20px;margin-bottom:12px;">
-      <li>MQTT服务器：broker.emqx.io:1883</li>
-      <li>命令频道：pc_cmd_001</li>
-      <li>结果频道：pc_res_001</li>
-    </ul>
-    
-    <p><strong>🎯 内置命令：</strong></p>
-    <table style="width:100%;border-collapse:collapse;font-size:.9em;margin-bottom:12px;">
-      <tr style="background:#f5f5f5;"><th style="padding:6px;text-align:left;">命令</th><th style="padding:6px;text-align:left;">功能</th></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>__ping__</code></td><td style="padding:6px;border-bottom:1px solid #eee;">测试连接</td></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>__status__</code></td><td style="padding:6px;border-bottom:1px solid #eee;">查看系统信息</td></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>__admin__</code></td><td style="padding:6px;border-bottom:1px solid #eee;">手动UAC提权</td></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>__autostart on/off</code></td><td style="padding:6px;border-bottom:1px solid #eee;">开启/关闭自启</td></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>__quit__</code></td><td style="padding:6px;border-bottom:1px solid #eee;">关闭被控端</td></tr>
-      <tr><td style="padding:6px;border-bottom:1px solid #eee;"><code>其他任意输入</code></td><td style="padding:6px;border-bottom:1px solid #eee;">当cmd命令执行</td></tr>
-    </table>
-    
-    <p><strong>⚠️ 注意事项：</strong></p>
-    <ul style="margin-left:20px;">
-      <li>首次运行会弹出UAC窗口，点「是」即可</li>
-      <li>自启后电脑重启会自动运行（隐藏窗口）</li>
-      <li>需要控制端Python脚本配合使用</li>
-      <li>通过EMQX公共MQTT服务器中转，需联网</li>
-    </ul>
-  </div>
-</div>
-
-<!-- 分类：文档资料 -->
-<div class="category">📄 文档资料</div>
-
-<div class="empty">
-  <div class="empty-icon">📋</div>
-  <p>暂无文档资料</p>
-  <p style="font-size:.85em;margin-top:6px">后续添加的文件会出现在这里</p>
-</div>
-
-<!-- 返回主页 -->
 <div style="text-align:center;margin-top:30px">
   <a class="back-btn" href="https://hlh66.github.io/">← 返回主页</a>
 </div>
@@ -194,7 +93,7 @@ body{
 </div>
 
 <div class="footer">
-  <p>📥 下载中心 · 文件直接下载 · hlh66.github.io/xz/</p>
+  <p>📥 下载中心 · 私有分发 · hlh66.github.io/xz/</p>
 </div>
 
 </body>
