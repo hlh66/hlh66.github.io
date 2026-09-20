@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESD 防静电产品 | 洁净室整体解决方案供应商</title>
+<meta name="description" content="专业 ESD 防静电与洁净室解决方案，为电子制造、半导体、医疗器械及精密工业提供高品质防静电产品。">
+<style>
+  :root{
+    --navy:#0A1D3A;
+    --navy-2:#122B52;
+    --blue:#1668DC;
+    --cyan:#00C2E0;
+    --line:#06C755;
+    --wechat:#07C160;
+    --text:#1B2430;
+    --muted:#5C6B7F;
+    --bg:#F5F8FC;
+    --card:#FFFFFF;
+    --border:#E3EAF3;
+    --radius:14px;
+    --shadow:0 6px 24px rgba(10,29,58,.08);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans Thai","Leelawadee UI",system-ui,sans-serif;
+    color:var(--text);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;background:rgba(10,29,58,.96);
+    backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .nav-in{display:flex;align-items:center;gap:26px;height:66px}
+  .logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+  .logo-mark{
+    width:34px;height:34px;border-radius:9px;flex:0 0 34px;
+    background:linear-gradient(135deg,var(--cyan),var(--blue));
+    display:grid;place-items:center;font-size:15px;font-weight:800;color:#04182F;
+  }
+  .logo small{display:block;font-size:10px;font-weight:400;color:#8FA8C8;letter-spacing:1.4px}
+  nav.links{display:flex;gap:22px;margin-left:auto;font-size:14.5px}
+  nav.links a{color:#C9D8EC;transition:.2s;padding:4px 0}
+  nav.links a:hover{color:#fff}
+  .lang{display:flex;gap:2px;background:rgba(255,255,255,.08);border-radius:9px;padding:3px}
+  .lang button{
+    border:0;background:transparent;color:#A9BEDB;font-size:12.5px;font-weight:600;
+    padding:6px 10px;border-radius:7px;cursor:pointer;font-family:inherit;transition:.2s;
+  }
+  .lang button.on{background:var(--blue);color:#fff}
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:10px;
+    font-size:14.5px;font-weight:600;border:0;cursor:pointer;font-family:inherit;transition:.22s;
+  }
+  .btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04182F;box-shadow:0 6px 18px rgba(0,194,224,.28)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,194,224,.4)}
+  .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+  .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+  .nav-cta{display:flex;gap:10px}
+  .burger{display:none;margin-left:auto;background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;background:radial-gradient(1200px 520px at 78% -8%,#1B4A8A 0%,var(--navy) 58%);color:#fff;
+    padding:92px 0 96px;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:52px 52px;mask-image:radial-gradient(600px 340px at 75% 20%,#000,transparent 78%);
+  }
+  .hero .wrap{position:relative;z-index:2;max-width:900px}
+  .tag{
+    display:inline-flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:1.5px;font-weight:600;
+    color:var(--cyan);border:1px solid rgba(0,194,224,.4);background:rgba(0,194,224,.09);
+    padding:6px 14px;border-radius:100px;margin-bottom:22px;text-transform:uppercase;
+  }
+  .hero h1{font-size:clamp(30px,5vw,50px);line-height:1.2;font-weight:800;letter-spacing:-.5px;margin-bottom:18px}
+  .hero h1 em{font-style:normal;color:var(--cyan)}
+  .hero p.lead{font-size:clamp(15px,1.6vw,18px);color:#B9CCE4;max-width:660px;margin-bottom:32px}
+  .hero-acts{display:flex;gap:14px;flex-wrap:wrap}
+  .stats{display:flex;gap:46px;flex-wrap:wrap;margin-top:56px;padding-top:30px;border-top:1px solid rgba(255,255,255,.12)}
+  .stats div b{display:block;font-size:26px;font-weight:800;color:#fff}
+  .stats div span{font-size:13px;color:#8FA8C8}
+
+  /* ---------- SECTION ---------- */
+  section{padding:78px 0}
+  .s-head{text-align:center;max-width:680px;margin:0 auto 46px}
+  .s-head .kicker{font-size:12.5px;letter-spacing:2px;font-weight:700;color:var(--blue);text-transform:uppercase}
+  .s-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:800;margin:10px 0 12px;letter-spacing:-.4px}
+  .s-head p{color:var(--muted);font-size:15.5px}
+
+  /* ---------- WHY ---------- */
+  .why{background:#fff}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .why-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;transition:.25s}
+  .why-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#C8DCF5}
+  .why-ico{
+    width:44px;height:44px;border-radius:11px;display:grid;place-items:center;margin-bottom:15px;
+    background:linear-gradient(135deg,#E8F3FF,#D5E9FF);color:var(--blue);
+  }
+  .why-ico svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .why-card h3{font-size:16.5px;font-weight:700;margin-bottom:7px}
+  .why-card p{font-size:14px;color:var(--muted)}
+
+  /* ---------- PRODUCTS ---------- */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .p-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+    transition:.25s;display:flex;flex-direction:column;
+  }
+  .p-card:hover{transform:translateY(-5px);box-shadow:0 14px 34px rgba(10,29,58,.13);border-color:#C8DCF5}
+  .p-top{
+    height:132px;display:grid;place-items:center;position:relative;
+    background:linear-gradient(135deg,#0F2A52,#1C4E8F);color:#7FE2F5;
+  }
+  .p-top svg{width:54px;height:54px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .p-top::after{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:100% 22px;
+  }
+  .p-body{padding:20px 20px 22px;flex:1;display:flex;flex-direction:column}
+  .p-body h3{font-size:16.5px;font-weight:700;margin-bottom:5px}
+  .p-body .sub{font-size:12.5px;color:var(--blue);font-weight:600;letter-spacing:.3px;margin-bottom:10px}
+  .p-body p{font-size:13.6px;color:var(--muted);flex:1}
+  .p-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .p-tags span{font-size:11.5px;color:#44607F;background:#EEF5FD;border-radius:6px;padding:3px 9px}
+
+  /* ---------- INDUSTRIES ---------- */
+  .ind{background:#fff}
+  .ind-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .ind-row span{
+    background:var(--bg);border:1px solid var(--border);border-radius:100px;
+    padding:11px 22px;font-size:14.5px;font-weight:600;color:var(--navy-2);
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact{background:linear-gradient(160deg,var(--navy) 0%,#0E2A52 100%);color:#fff}
+  .contact .s-head h2{color:#fff}
+  .contact .s-head p{color:#9FB6D4}
+  .contact .s-head .kicker{color:var(--cyan)}
+  .c-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .c-card{
+    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);
+    border-radius:var(--radius);padding:22px;text-align:center;transition:.25s;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .c-card:hover{background:rgba(255,255,255,.09);transform:translateY(-4px)}
+  .c-card .c-ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:12px}
+  .c-card .c-ico svg{width:22px;height:22px}
+  .c-card h3{font-size:15.5px;font-weight:700;margin-bottom:4px}
+  .c-card .c-id{font-size:12.5px;color:#9FB6D4;word-break:break-all;margin-bottom:14px}
+  .qr-box{background:#fff;border-radius:12px;padding:9px;width:178px;margin:0 auto}
+  .qr-box img{width:100%;border-radius:6px}
+  .qr-hint{font-size:12px;color:#8FA8C8;margin-top:11px}
+  .c-soon{
+    width:178px;height:196px;border-radius:12px;border:1.5px dashed rgba(255,255,255,.22);
+    display:grid;place-items:center;color:#7C93B4;font-size:12.5px;line-height:1.9;text-align:center;
+  }
+  .c-note{
+    margin-top:42px;text-align:center;font-size:14px;color:#9FB6D4;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);padding:18px;
+  }
+  .c-note b{color:#fff}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:#071528;color:#7C93B4;font-size:13.5px;padding:30px 0}
+  .f-in{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+  .f-in a:hover{color:#fff}
+
+  @media(max-width:960px){
+    .grid-4,.c-grid{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(2,1fr)}
+    nav.links{display:none}
+    .nav-cta{display:none}
+    .burger{display:block}
+  }
+  @media(max-width:620px){
+    .grid-4,.grid-3,.c-grid{grid-template-columns:1fr}
+    section{padding:56px 0}
+    .hero{padding:64px 0 68px}
+    .stats{gap:28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="logo">
+      <span class="logo-mark">ESD</span>
+      <span>ESD TECH<small data-i18n="logo.sub">防静电 · 洁净室</small></span>
+    </a>
+    <nav class="links">
+      <a href="#why" data-i18n="nav.why">为什么选择我们</a>
+      <a href="#products" data-i18n="nav.products">产品分类</a>
+      <a href="#industries" data-i18n="nav.ind">应用行业</a>
+      <a href="#contact" data-i18n="nav.contact">联系我们</a>
+    </nav>
+    <div class="lang" id="lang">
+      <button data-lang="zh" class="on">中文</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="th">ไทย</button>
+    </div>
+    <button class="burger" id="burger">☰</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <span class="tag" data-i18n="hero.tag">ESD · Cleanroom Solutions</span>
+    <h1 data-i18n="hero.h1">专业 <em>ESD 防静电</em>与洁净室解决方案</h1>
+    <p class="lead" data-i18n="hero.lead">为电子制造、半导体、医疗器械及精密工业提供高品质防静电产品。工厂直供，支持 OEM / ODM 定制与 JIT 准时制配送。</p>
+    <div class="hero-acts">
+      <a href="#products" class="btn btn-primary" data-i18n="hero.cta1">查看产品分类</a>
+      <a href="#contact" class="btn btn-ghost" data-i18n="hero.cta2">立即联系 / 获取报价</a>
+    </div>
+    <div class="stats">
+      <div><b>10+</b><span data-i18n="stats.1">年行业经验</span></div>
+      <div><b>6</b><span data-i18n="stats.2">大产品系列</span></div>
+      <div><b>OEM</b><span data-i18n="stats.3">支持定制</span></div>
+      <div><b>JIT</b><span data-i18n="stats.4">准时交付</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY ================= -->
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="why.kicker">Why Us</div>
+      <h2 data-i18n="why.h2">为什么选择我们</h2>
+      <p data-i18n="why.p">从材料到成品，全流程符合国际 ESD 防护标准。</p>
+    </div>
+    <div class="grid-4">
+      <div class="why-card">
+        <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M12 2l7 3v6c0 4.5-3 8.2-7 9-4-.8-7-4.5-7-9V5l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3 data-i18n="why.c1.t">品质认证</h3>
+        <p data-i18n="why.c1.d">产品符合国际 ESD 防护标准，确保洁净室与电子产线安全。</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <h3 data-i18n="why.c2.t">价格优势</h3>
+        <p data-i18n="why.c2.d">工厂直供，批量采购更具竞争力，支持价格匹配。</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg></div>
+        <h3 data-i18n="why.c3.t">快速交付</h3>
+        <p data-i18n="why.c3.d">JIT 准时制配送，降低您的库存压力。</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2v.2a2 2 0 11-4 0v-.1A1.7 1.7 0 007 19.4a1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.7 1.7 0 003.5 14H3.3a2 2 0 110-4h.2A1.7 1.7 0 004.6 7a1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1A1.7 1.7 0 0010 3.5V3.3a2 2 0 114 0v.2a1.7 1.7 0 002.9 1.2l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 001.2 2.9h.2a2 2 0 110 4h-.2a1.7 1.7 0 00-1.5 1z"/></svg></div>
+        <h3 data-i18n="why.c4.t">定制服务</h3>
+        <p data-i18n="why.c4.d">支持 OEM / ODM 定制，满足不同行业与规格需求。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section id="products">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="prod.kicker">Products</div>
+      <h2 data-i18n="prod.h2">产品分类</h2>
+      <p data-i18n="prod.p">覆盖电子产线与洁净室全场景的防静电耗材与装备。</p>
+    </div>
+    <div class="grid-3">
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M8 3l4 3 4-3 2 5-2 3v10H8V11L6 8z"/><path d="M9 13h6"/></svg></div>
+        <div class="p-body">
+          <h3>防静电服装</h3>
+          <div class="sub" data-i18n="p1.sub">Anti-Static Clothing</div>
+          <p data-i18n="p1.d">导电丝网格面料，防静电工作服、无尘服、连体服、大褂及配套帽鞋。</p>
+          <div class="p-tags"><span data-i18n="tag.fabric">导电纤维</span><span data-i18n="tag.class100">Class 100</span><span data-i18n="tag.wash">耐洗</span></div>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M3 17h12l4-3 2 2-3 4H6a3 3 0 01-3-3z"/><path d="M7 17V9l5-5 3 2-3 3"/></svg></div>
+        <div class="p-body">
+          <h3>防静电鞋靴</h3>
+          <div class="sub" data-i18n="p2.sub">ESD Footwear</div>
+          <p data-i18n="p2.d">PU / PVC 一体成型防静电鞋、拖鞋与鞋套，电阻稳定，长时间穿着舒适。</p>
+          <div class="p-tags"><span data-i18n="tag.resist">电阻稳定</span><span data-i18n="tag.pu">PU 底</span><span data-i18n="tag.anti">耐油防滑</span></div>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M8 12V6a2 2 0 114 0v6M12 12V4a2 2 0 114 0v8M16 12V7a2 2 0 114 0v8a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 114 0"/></svg></div>
+        <div class="p-body">
+          <h3>防静电手套</h3>
+          <div class="sub" data-i18n="p3.sub">ESD Gloves</div>
+          <p data-i18n="p3.d">导电纤维针织手套、PU 涂指手套、乳胶手套，触感灵敏不伤元件。</p>
+          <div class="p-tags"><span data-i18n="tag.pu">PU 涂指</span><span data-i18n="tag.carbon">碳纤维</span><span data-i18n="tag.multi">多规格</span></div>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M12 2v8"/><circle cx="12" cy="13" r="3"/><path d="M12 16v6"/><path d="M5 4l3 3M19 4l-3 3"/></svg></div>
+        <div class="p-body">
+          <h3>接地与手腕带</h3>
+          <div class="sub" data-i18n="p4.sub">Grounding &amp; Wrist Straps</div>
+          <p data-i18n="p4.d">防静电手腕带、接地线、接地扣、离子风机配套接地系统与监测仪。</p>
+          <div class="p-tags"><span data-i18n="tag.coil">弹簧线</span><span data-i18n="tag.monitor">可带监测</span><span data-i18n="tag.gnd">接地系统</span></div>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M9 7V4h6v3"/><path d="M8 12h8"/></svg></div>
+        <div class="p-body">
+          <h3>无尘清洁耗材</h3>
+          <div class="sub" data-i18n="p5.sub">Cleanroom Consumables</div>
+          <p data-i18n="p5.d">无尘布、擦拭纸、酒精片、粘尘垫、离子风枪等洁净室配套耗材。</p>
+          <div class="p-tags"><span data-i18n="tag.clean">无尘布</span><span data-i18n="tag.mat">粘尘垫</span><span data-i18n="tag.ipa">IPA 擦拭</span></div>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-top"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 10h18"/><path d="M9 14h6"/></svg></div>
+        <div class="p-body">
+          <h3>防静电台垫与胶带</h3>
+          <div class="sub" data-i18n="p6.sub">ESD Mats &amp; Tape</div>
+          <p data-i18n="p6.d">双层防静电台垫、地垫、高温胶带、防静电胶带及配套接地组件。</p>
+          <div class="p-tags"><span data-i18n="tag.dual">双层结构</span><span data-i18n="tag.heat">耐高温</span><span data-i18n="tag.cut">可裁切</span></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= INDUSTRIES ================= -->
+<section class="ind" id="industries">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="ind.kicker">Applications</div>
+      <h2 data-i18n="ind.h2">应用行业</h2>
+      <p data-i18n="ind.p">服务电子制造、半导体、医疗、光伏与精密机械等行业客户。</p>
+    </div>
+    <div class="ind-row">
+      <span data-i18n="ind.1">电子制造</span>
+      <span data-i18n="ind.2">半导体 / 芯片</span>
+      <span data-i18n="ind.3">医疗器械</span>
+      <span data-i18n="ind.4">光伏新能源</span>
+      <span data-i18n="ind.5">精密机械</span>
+      <span data-i18n="ind.6">LCD / 面板</span>
+      <span data-i18n="ind.7">食品与制药</span>
+      <span data-i18n="ind.8">实验室</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="con.kicker">Contact</div>
+      <h2 data-i18n="con.h2">联系我们</h2>
+      <p data-i18n="con.p">扫码直接添加，第一时间回复报价、样品与定制需求。</p>
+    </div>
+
+    <div class="c-grid">
+
+      <!-- WeChat -->
+      <div class="c-card">
+        <div class="c-ico" style="background:rgba(7,193,96,.16)">
+          <svg viewBox="0 0 24 24" fill="#07C160"><path d="M8.7 3C4.9 3 1.8 5.6 1.8 8.8c0 1.8 1 3.4 2.6 4.5l-.7 2 2.3-1.2c.8.2 1.7.4 2.7.4h.5a5.6 5.6 0 01-.2-1.5c0-3.1 3-5.6 6.8-5.6h.6C15.7 4.6 12.5 3 8.7 3zm-2.3 3.1a.9.9 0 110 1.8.9.9 0 010-1.8zm4.6 0a.9.9 0 110 1.8.9.9 0 010-1.8z"/><path d="M22.2 13c0-2.7-2.6-4.8-5.8-4.8s-5.8 2.1-5.8 4.8 2.6 4.8 5.8 4.8c.7 0 1.4-.1 2-.3l1.9 1-.5-1.6c1.5-.9 2.4-2.3 2.4-3.9zm-7.8-1.5a.8.8 0 110 1.6.8.8 0 010-1.6zm4 0a.8.8 0 110 1.6.8.8 0 010-1.6z"/></svg>
+        </div>
+        <h3>WeChat</h3>
+        <div class="c-id">Andy</div>
+        <div class="qr-box"><img src="assets/wechat-qr.jpg" alt="WeChat QR Code"></div>
+        <div class="qr-hint" data-i18n="con.wechat.hint">微信扫码添加好友</div>
+      </div>
+
+      <!-- LINE -->
+      <div class="c-card">
+        <div class="c-ico" style="background:rgba(6,199,85,.16)">
+          <svg viewBox="0 0 24 24" fill="#06C755"><path d="M12 3C6.9 3 2.8 6.2 2.8 10.2c0 3.6 3.3 6.6 7.8 7.1.3.1.7.2.8.5.1.3.1.7 0 1l-.1.8c0 .2-.2.9.8.5 1-.4 5.2-3.1 7.1-5.3 1.3-1.4 1.9-2.9 1.9-4.6C21.2 6.2 17.1 3 12 3zM8.3 12.6H6.6a.5.5 0 01-.5-.5V9a.5.5 0 011 0v2.6h1.2a.5.5 0 010 1zm1.3-.5a.5.5 0 01-1 0V9a.5.5 0 011 0v3.1zm4.4 0a.5.5 0 01-.9.3l-1.5-2.1v1.8a.5.5 0 01-1 0V9a.5.5 0 01.9-.3l1.5 2.1V9a.5.5 0 011 0v3.1zm3.3-1.8a.5.5 0 010 1h-1.3v.6h1.3a.5.5 0 010 1h-1.8a.5.5 0 01-.5-.5V9a.5.5 0 01.5-.5h1.8a.5.5 0 010 1h-1.3v.6h1.3z"/></svg>
+        </div>
+        <h3>LINE</h3>
+        <div class="c-id" data-i18n="con.line.id">LINE Official</div>
+        <div class="qr-box"><img src="assets/line-qr.jpg" alt="LINE QR Code"></div>
+        <div class="qr-hint" data-i18n="con.line.hint">LINE 扫码添加好友</div>
+      </div>
+
+      <!-- Facebook 占位 -->
+      <div class="c-card">
+        <div class="c-ico" style="background:rgba(24,119,242,.16)">
+          <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg>
+        </div>
+        <h3>Facebook</h3>
+        <div class="c-id" data-i18n="con.fb.id">Coming soon</div>
+        <div class="c-soon" data-i18n="con.soon">二维码<br>即将上线</div>
+        <div class="qr-hint" data-i18n="con.fb.hint">待补充</div>
+      </div>
+
+      <!-- Instagram 占位 -->
+      <div class="c-card">
+        <div class="c-ico" style="background:rgba(225,48,108,.16)">
+          <svg viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.4a6.4 6.4 0 100 12.8 6.4 6.4 0 000-12.8zm0 10.6a4.2 4.2 0 110-8.4 4.2 4.2 0 010 8.4zm6.6-10.9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>
+        </div>
+        <h3>Instagram</h3>
+        <div class="c-id" data-i18n="con.ig.id">Coming soon</div>
+        <div class="c-soon" data-i18n="con.soon">二维码<br>即将上线</div>
+        <div class="qr-hint" data-i18n="con.ig.hint">待补充</div>
+      </div>
+
+    </div>
+
+    <div class="c-note" data-i18n="con.note">需要产品目录、报价单或样品？<b>扫码添加后直接留言</b>，我们会在 24 小时内回复。</div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap f-in">
+    <div>© 2026 ESD TECH · <span data-i18n="foot.rights">版权所有</span></div>
+    <div><span data-i18n="foot.slogan">专业 ESD 防静电与洁净室解决方案</span></div>
+  </div>
+</footer>
+
+<script>
+/* ========== 多语言字典 ========== */
+const I18N = {
+  zh: {},   /* 中文为 HTML 原文，无需字典 */
+  en: {
+    "logo.sub":"Anti-Static · Cleanroom",
+    "nav.why":"Why Us","nav.products":"Products","nav.ind":"Applications","nav.contact":"Contact",
+    "hero.tag":"ESD · Cleanroom Solutions",
+    "hero.h1":"Professional <em>ESD</em> &amp; Cleanroom Solutions",
+    "hero.lead":"High-quality anti-static products for electronics manufacturing, semiconductors, medical devices and precision industries. Factory-direct supply with OEM / ODM customization and JIT delivery.",
+    "hero.cta1":"Browse Products","hero.cta2":"Contact Us / Get a Quote",
+    "stats.1":"Years Experience","stats.2":"Product Lines","stats.3":"Customization","stats.4":"On-time Delivery",
+    "why.kicker":"Why Us","why.h2":"Why Choose Us","why.p":"From raw material to finished goods, the whole process meets international ESD standards.",
+    "why.c1.t":"Certified Quality","why.c1.d":"Products comply with international ESD protection standards for cleanroom and production line safety.",
+    "why.c2.t":"Competitive Price","why.c2.d":"Factory-direct supply with better pricing on bulk orders and price matching.",
+    "why.c3.t":"Fast Delivery","why.c3.d":"JIT delivery to reduce your inventory pressure.",
+    "why.c4.t":"Custom Service","why.c4.d":"OEM / ODM supported to meet different industries and specifications.",
+    "prod.kicker":"Products","prod.h2":"Product Categories","prod.p":"Anti-static consumables and equipment covering the full range of production line and cleanroom scenarios.",
+    "p1.sub":"Anti-Static Clothing","p1.d":"Conductive grid fabric: ESD workwear, cleanroom garments, coveralls, lab coats and matching caps &amp; shoes.",
+    "p2.sub":"ESD Footwear","p2.d":"PU / PVC one-piece molded ESD shoes, slippers and shoe covers with stable resistance and all-day comfort.",
+    "p3.sub":"ESD Gloves","p3.d":"Conductive knit gloves, PU coated finger gloves and latex gloves — sensitive touch without damaging components.",
+    "p4.sub":"Grounding &amp; Wrist Straps","p4.d":"ESD wrist straps, ground cords, grounding snaps and ionizer grounding systems with monitors.",
+    "p5.sub":"Cleanroom Consumables","p5.d":"Cleanroom wipes, wiper paper, IPA pads, tacky mats and ionizing air guns.",
+    "p6.sub":"ESD Mats &amp; Tape","p6.d":"Two-layer ESD table mats, floor mats, high-temperature tape, ESD tape and grounding kits.",
+    "tag.fabric":"Conductive Fiber","tag.class100":"Class 100","tag.wash":"Washable",
+    "tag.resist":"Stable Resistance","tag.pu":"PU Sole","tag.anti":"Anti-slip",
+    "tag.carbon":"Carbon Fiber","tag.multi":"Multi-size","tag.coil":"Coil Cord","tag.monitor":"Monitor Ready","tag.gnd":"Grounding System",
+    "tag.clean":"Wipes","tag.mat":"Tacky Mat","tag.ipa":"IPA Cleaning",
+    "tag.dual":"Two-layer","tag.heat":"Heat Resistant","tag.cut":"Cuttable",
+    "ind.kicker":"Applications","ind.h2":"Industries We Serve","ind.p":"Serving electronics, semiconductor, medical, photovoltaic and precision machinery customers.",
+    "ind.1":"Electronics Mfg.","ind.2":"Semiconductor","ind.3":"Medical Devices","ind.4":"Solar / New Energy",
+    "ind.5":"Precision Machinery","ind.6":"LCD / Display","ind.7":"Food &amp; Pharma","ind.8":"Laboratory",
+    "con.kicker":"Contact","con.h2":"Contact Us","con.p":"Scan the code to add us — instant reply for quotes, samples and customization.",
+    "con.wechat.hint":"Scan with WeChat to add","con.line.id":"LINE Official","con.line.hint":"Scan with LINE to add",
+    "con.fb.id":"Coming soon","con.ig.id":"Coming soon","con.soon":"QR code<br>coming soon","con.fb.hint":"To be added","con.ig.hint":"To be added",
+    "con.note":"Need a catalog, quotation or samples? <b>Scan and message us</b> — we reply within 24 hours.",
+    "foot.rights":"All rights reserved","foot.slogan":"Professional ESD &amp; Cleanroom Solutions"
+  },
+  th: {
+    "logo.sub":"ป้องกันไฟฟ้าสถิต · คลีนรูม",
+    "nav.why":"ทำไมต้องเรา","nav.products":"สินค้า","nav.ind":"อุตสาหกรรม","nav.contact":"ติดต่อเรา",
+    "hero.tag":"ESD · โซลูชันคลีนรูม",
+    "hero.h1":"โซลูชัน<em>ป้องกันไฟฟ้าสถิต (ESD)</em>และคลีนรูมระดับมืออาชีพ",
+    "hero.lead":"สินค้าป้องกันไฟฟ้าสถิตคุณภาพสูงสำหรับอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ เครื่องมือแพทย์ และงานวิศวกรรมความละเอียดสูง ส่งตรงจากโรงงาน รองรับ OEM / ODM และจัดส่งแบบ JIT",
+    "hero.cta1":"ดูหมวดหมู่สินค้า","hero.cta2":"ติดต่อเรา / ขอใบเสนอราคา",
+    "stats.1":"ปีประสบการณ์","stats.2":"หมวดสินค้า","stats.3":"รับทำ OEM","stats.4":"จัดส่งตรงเวลา",
+    "why.kicker":"ทำไมต้องเรา","why.h2":"ทำไมต้องเลือกเรา","why.p":"ตั้งแต่วัตถุดิบถึงสินค้าสำเร็จรูป ผ่านมาตรฐาน ESD สากลทุกขั้นตอน",
+    "why.c1.t":"การรับรองคุณภาพ","why.c1.d":"สินค้าได้มาตรฐานป้องกันไฟฟ้าสถิตสากล ปลอดภัยสำหรับคลีนรูมและไลน์ผลิต",
+    "why.c2.t":"ราคาแข่งขันได้","why.c2.d":"ส่งตรงจากโรงงาน สั่งจำนวนมากราคาดีกว่า รองรับการเทียบราคา",
+    "why.c3.t":"จัดส่งรวดเร็ว","why.c3.d":"จัดส่งแบบ JIT ช่วยลดภาระสต็อกของคุณ",
+    "why.c4.t":"บริการ OEM / ODM","why.c4.d":"รับผลิตตามแบบ ตอบโจทย์ทุกอุตสาหกรรมและสเปกที่ต้องการ",
+    "prod.kicker":"สินค้า","prod.h2":"หมวดหมู่สินค้า","prod.p":"วัสดุและอุปกรณ์ป้องกันไฟฟ้าสถิต ครอบคลุมทุกการใช้งานในไลน์ผลิตและคลีนรูม",
+    "p1.sub":"ชุดป้องกันไฟฟ้าสถิต","p1.d":"ผ้าตาข่ายใยนำไฟฟ้า: ชุดทำงานกันไฟ ชุดคลีนรูม ชุดเอี๊ยม เสื้อกาวน์ พร้อมหมวกและรองเท้า",
+    "p2.sub":"รองเท้าป้องกันไฟฟ้าสถิต","p2.d":"รองเท้าแตะและที่คลุมรองเท้าแบบ PU / PVC ขึ้นรูปชิ้นเดียว ค่าความต้านทานคงที่ สวมใส่สบาย",
+    "p3.sub":"ถุงมือป้องกันไฟฟ้าสถิต","p3.d":"ถุงมือถักใยนำไฟฟ้า ถุงมือเคลือบ PU และถุงมือลาเท็กซ์ สัมผัสคล่องมือ ไม่ทำลายชิ้นงาน",
+    "p4.sub":"สายดินและสายรัดข้อมือ","p4.d":"สายรัดข้อมือกันไฟ สายดิน หัวต่อสายดิน และระบบสายดินสำหรับพัดลมไอออนไนเซอร์",
+    "p5.sub":"วัสดุสิ้นเปลืองคลีนรูม","p5.d":"ผ้าเช็ดคลีนรูม กระดาษเช็ด ผ้าเช็ดแอลกอฮอล์ แผ่นกาวดักฝุ่น และปืนลมไอออน",
+    "p6.sub":"แผ่นรองโต๊ะและเทปกันไฟ","p6.d":"แผ่นรองโต๊ะกันไฟฟ้าสถิตแบบสองชั้น แผ่นปูพื้น เทปทนอุณหภูมิสูง และชุดสายดิน",
+    "tag.fabric":"ใยนำไฟฟ้า","tag.class100":"คลาส 100","tag.wash":"ซักได้",
+    "tag.resist":"ค่าคงที่","tag.pu":"พื้น PU","tag.anti":"กันลื่น",
+    "tag.carbon":"คาร์บอนไฟเบอร์","tag.multi":"หลายขนาด","tag.coil":"สายสปริง","tag.monitor":"ต่อมอนิเตอร์ได้","tag.gnd":"ระบบสายดิน",
+    "tag.clean":"ผ้าเช็ด","tag.mat":"แผ่นดักฝุ่น","tag.ipa":"เช็ด IPA",
+    "tag.dual":"สองชั้น","tag.heat":"ทนความร้อน","tag.cut":"ตัดได้",
+    "ind.kicker":"การใช้งาน","ind.h2":"อุตสาหกรรมที่เราให้บริการ","ind.p":"ให้บริการลูกค้าอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ การแพทย์ พลังงานแสงอาทิตย์ และเครื่องกลความละเอียดสูง",
+    "ind.1":"อิเล็กทรอนิกส์","ind.2":"เซมิคอนดักเตอร์","ind.3":"เครื่องมือแพทย์","ind.4":"พลังงานแสงอาทิตย์",
+    "ind.5":"เครื่องกลละเอียด","ind.6":"จอ LCD","ind.7":"อาหารและยา","ind.8":"ห้องแล็บ",
+    "con.kicker":"ติดต่อ","con.h2":"ติดต่อเรา","con.p":"สแกนเพื่อเพิ่มเพื่อน เราตอบกลับทันทีสำหรับใบเสนอราคา ตัวอย่างสินค้า และงานสั่งผลิต",
+    "con.wechat.hint":"สแกนด้วย WeChat เพื่อเพิ่มเพื่อน","con.line.id":"LINE Official","con.line.hint":"สแกนด้วย LINE เพื่อเพิ่มเพื่อน",
+    "con.fb.id":"เร็ว ๆ นี้","con.ig.id":"เร็ว ๆ นี้","con.soon":"คิวอาร์โค้ด<br>เร็ว ๆ นี้","con.fb.hint":"รอเพิ่มเติม","con.ig.hint":"รอเพิ่มเติม",
+    "con.note":"ต้องการแคตตาล็อก ใบเสนอราคา หรือตัวอย่างสินค้า? <b>สแกนแล้วพิมพ์ข้อความหาเราได้เลย</b> เราตอบกลับภายใน 24 ชั่วโมง",
+    "foot.rights":"สงวนลิขสิทธิ์","foot.slogan":"โซลูชันป้องกันไฟฟ้าสถิตและคลีนรูมระดับมืออาชีพ"
+  }
+};
+
+/* ========== 中文原文缓存 ========== */
+const ZH = {};
+document.querySelectorAll("[data-i18n]").forEach(el => { ZH[el.dataset.i18n] = el.innerHTML; });
+
+function setLang(lang){
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : (lang === "th" ? "th" : "en");
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.dataset.i18n;
+    el.innerHTML = lang === "zh" ? ZH[k] : (I18N[lang][k] || ZH[k]);
+  });
+  document.querySelectorAll("#lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  try{ localStorage.setItem("esd_lang", lang); }catch(e){}
+}
+
+document.getElementById("lang").addEventListener("click", e => {
+  const b = e.target.closest("button[data-lang]");
+  if(b) setLang(b.dataset.lang);
+});
+
+/* 记住上次语言 */
+try{
+  const saved = localStorage.getItem("esd_lang");
+  if(saved && saved !== "zh") setLang(saved);
+}catch(e){}
+
+/* 移动端菜单：点击后跳到对应区块 */
+document.getElementById("burger").addEventListener("click", () => {
+  document.getElementById("contact").scrollIntoView({behavior:"smooth"});
+});
+</script>
+</body>
+</html>
