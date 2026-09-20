@@ -185,6 +185,25 @@
     padding:11px 22px;font-size:14.5px;font-weight:600;color:var(--navy-2);
   }
 
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:start}
+  .about-text p{color:var(--muted);font-size:15px;margin-bottom:14px}
+  .about-text p strong{color:var(--navy-2)}
+  .about-list{list-style:none;margin:20px 0 0}
+  .about-list li{position:relative;padding-left:24px;margin-bottom:11px;font-size:14.5px;color:var(--navy-2)}
+  .about-list li::before{
+    content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:50%;
+    background:linear-gradient(135deg,var(--cyan),var(--blue));
+  }
+  .info-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+  .info-card h3{font-size:16px;font-weight:800;margin-bottom:14px;color:var(--navy);letter-spacing:.2px}
+  .info-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--border);font-size:14px}
+  .info-row:last-child{border-bottom:0;padding-bottom:0}
+  .info-row .k{flex:0 0 82px;color:var(--muted);font-weight:600}
+  .info-row .v{flex:1;color:var(--text);word-break:break-word}
+  .info-row .v a{color:var(--blue);font-weight:600}
+  .info-row .v a:hover{text-decoration:underline}
+
   /* ---------- CONTACT ---------- */
   .contact{background:linear-gradient(160deg,var(--navy) 0%,#0E2A52 100%);color:#fff}
   .contact .s-head h2{color:#fff}
@@ -214,6 +233,16 @@
     border-radius:var(--radius);padding:18px;
   }
   .c-note b{color:#fff}
+  .c-info{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px 30px;margin-bottom:32px;
+    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);
+    border-radius:var(--radius);padding:22px 24px;
+  }
+  .c-info .row{display:flex;gap:10px;font-size:14px;align-items:flex-start}
+  .c-info .row .k{color:#8FA8C8;flex:0 0 84px;font-weight:600}
+  .c-info .row .v{color:#fff;flex:1;word-break:break-word}
+  .c-info .row .v a{color:var(--cyan);font-weight:600}
+  .c-info .row .v a:hover{text-decoration:underline}
 
   /* ---------- FOOTER ---------- */
   footer{background:#071528;color:#7C93B4;font-size:13.5px;padding:30px 0}
@@ -223,12 +252,13 @@
   @media(max-width:960px){
     .grid-4,.c-grid{grid-template-columns:repeat(2,1fr)}
     .grid-3,.cat-grid{grid-template-columns:repeat(2,1fr)}
+    .about-grid{grid-template-columns:1fr}
     nav.links{display:none}
     .nav-cta{display:none}
     .burger{display:block}
   }
   @media(max-width:620px){
-    .grid-4,.grid-3,.cat-grid,.c-grid{grid-template-columns:1fr}
+    .grid-4,.grid-3,.cat-grid,.c-grid,.c-info{grid-template-columns:1fr}
     section{padding:56px 0}
     .hero{padding:64px 0 68px}
     .stats{gap:28px}
@@ -249,6 +279,7 @@
       <a href="#products" data-i18n="nav.products">产品分类</a>
       <a href="#catalog" data-i18n="nav.catalog">热销产品</a>
       <a href="#industries" data-i18n="nav.ind">应用行业</a>
+      <a href="#about" data-i18n="nav.about">关于我们</a>
       <a href="#contact" data-i18n="nav.contact">联系我们</a>
     </nav>
     <div class="lang" id="lang">
@@ -595,6 +626,54 @@
   </div>
 </section>
 
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="about.kicker">About Us</div>
+      <h2 data-i18n="about.h2">公司介绍</h2>
+      <p data-i18n="about.p">工厂直供 · OEM / ODM 定制 · 出口泰国与东南亚</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text">
+        <p data-i18n="about.p1">东莞市世鸿包装材料有限公司（Dongguan Shihong Packaging Materials Co., Ltd.）位于广东省东莞市长安镇，专注 <strong>ESD 防静电与洁净室防护耗材</strong> 的生产与供应。产品涵盖防静电服装、鞋靴、手指套、手套及配套耗材，广泛应用于电子制造、半导体、医疗器械、光伏新能源等对静电敏感的行业。</p>
+        <p data-i18n="about.p2">我们坚持工厂直供模式，支持 OEM / ODM 贴牌定制、混柜发货与 JIT 准时制配送，产品已出口泰国及东南亚市场。欢迎泰国客户扫码联系，获取报价与样品。</p>
+        <ul class="about-list">
+          <li data-i18n="about.l1">工厂直供，批量采购价格更有竞争力</li>
+          <li data-i18n="about.l2">支持 OEM / ODM 定制与贴牌</li>
+          <li data-i18n="about.l3">混柜发货，JIT 准时制配送降低库存压力</li>
+          <li data-i18n="about.l4">中泰双语对接，响应及时</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h3 data-i18n="about.card">公司信息</h3>
+        <div class="info-row">
+          <span class="k" data-zh="公司名称" data-en="Company" data-th="ชื่อบริษัท">公司名称</span>
+          <span class="v">东莞市世鸿包装材料有限公司<br>Dongguan Shihong Packaging Materials Co., Ltd.</span>
+        </div>
+        <div class="info-row">
+          <span class="k" data-zh="地址" data-en="Address" data-th="ที่อยู่">地址</span>
+          <span class="v" data-zh="广东省东莞市长安镇镇海海西路69号2号楼503室" data-en="Room 503, Building 2, No. 69, Zhenhai Haixi Road, Chang'an Town, Dongguan, Guangdong, China" data-th="ห้อง 503 อาคาร 2 เลขที่ 69 ถนนเจิ้นไห่ไฮซี เมืองฉางอาน เมืองตงก่วน มณฑลกวางตุ้ง ประเทศจีน">广东省东莞市长安镇镇海海西路69号2号楼503室</span>
+        </div>
+        <div class="info-row">
+          <span class="k" data-zh="联系人" data-en="Contact" data-th="ผู้ติดต่อ">联系人</span>
+          <span class="v">CHEN JIANKAI</span>
+        </div>
+        <div class="info-row">
+          <span class="k" data-zh="电话" data-en="Tel" data-th="โทร">电话</span>
+          <span class="v"><a href="tel:+660835242442">+66 083 524 2442</a>（TH）<br><a href="tel:+8618926283748">+86 189 2628 3748</a>（CN）</span>
+        </div>
+        <div class="info-row">
+          <span class="k" data-zh="邮箱" data-en="Email" data-th="อีเมล">邮箱</span>
+          <span class="v"><a href="mailto:HPJ1151493139@gmail.com">HPJ1151493139@gmail.com</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= CONTACT ================= -->
 <section class="contact" id="contact">
   <div class="wrap">
@@ -602,6 +681,29 @@
       <div class="kicker" data-i18n="con.kicker">Contact</div>
       <h2 data-i18n="con.h2">联系我们</h2>
       <p data-i18n="con.p">扫码直接添加，第一时间回复报价、样品与定制需求。</p>
+    </div>
+
+    <div class="c-info">
+      <div class="row">
+        <span class="k" data-zh="公司" data-en="Company" data-th="บริษัท">公司</span>
+        <span class="v">东莞市世鸿包装材料有限公司</span>
+      </div>
+      <div class="row">
+        <span class="k" data-zh="联系人" data-en="Contact" data-th="ผู้ติดต่อ">联系人</span>
+        <span class="v">CHEN JIANKAI</span>
+      </div>
+      <div class="row">
+        <span class="k" data-zh="电话" data-en="Tel" data-th="โทร">电话</span>
+        <span class="v"><a href="tel:+660835242442">+66 083 524 2442</a> ｜ <a href="tel:+8618926283748">+86 189 2628 3748</a></span>
+      </div>
+      <div class="row">
+        <span class="k" data-zh="邮箱" data-en="Email" data-th="อีเมล">邮箱</span>
+        <span class="v"><a href="mailto:HPJ1151493139@gmail.com">HPJ1151493139@gmail.com</a></span>
+      </div>
+      <div class="row" style="grid-column:1/-1">
+        <span class="k" data-zh="地址" data-en="Address" data-th="ที่อยู่">地址</span>
+        <span class="v" data-zh="广东省东莞市长安镇镇海海西路69号2号楼503室" data-en="Room 503, Building 2, No. 69, Zhenhai Haixi Road, Chang'an Town, Dongguan, Guangdong, China" data-th="ห้อง 503 อาคาร 2 เลขที่ 69 ถนนเจิ้นไห่ไฮซี เมืองฉางอาน เมืองตงก่วน มณฑลกวางตุ้ง ประเทศจีน">广东省东莞市长安镇镇海海西路69号2号楼503室</span>
+      </div>
     </div>
 
     <div class="c-grid">
@@ -659,8 +761,8 @@
 <!-- ================= FOOTER ================= -->
 <footer>
   <div class="wrap f-in">
-    <div>© 2026 ESD TECH · <span data-i18n="foot.rights">版权所有</span></div>
-    <div><span data-i18n="foot.slogan">专业 ESD 防静电与洁净室解决方案</span></div>
+    <div>© 2026 <span data-i18n="foot.company">东莞市世鸿包装材料有限公司</span> · <span data-i18n="foot.rights">版权所有</span></div>
+    <div data-zh="广东省东莞市长安镇镇海海西路69号2号楼503室" data-en="Room 503, Building 2, No. 69, Zhenhai Haixi Road, Chang'an Town, Dongguan, Guangdong, China" data-th="ห้อง 503 อาคาร 2 เลขที่ 69 ถนนเจิ้นไห่ไฮซี เมืองฉางอาน เมืองตงก่วน มณฑลกวางตุ้ง ประเทศจีน">广东省东莞市长安镇镇海海西路69号2号楼503室</div>
   </div>
 </footer>
 
@@ -670,7 +772,7 @@ const I18N = {
   zh: {},   /* 中文为 HTML 原文，无需字典 */
   en: {
     "logo.sub":"Anti-Static · Cleanroom",
-    "nav.why":"Why Us","nav.products":"Products","nav.catalog":"Hot Products","nav.ind":"Applications","nav.contact":"Contact",
+    "nav.why":"Why Us","nav.products":"Products","nav.catalog":"Hot Products","nav.ind":"Applications","nav.about":"About","nav.contact":"Contact",
     "hero.tag":"ESD · Cleanroom Solutions",
     "hero.h1":"Professional <em>ESD</em> &amp; Cleanroom Solutions",
     "hero.lead":"High-quality anti-static products for electronics manufacturing, semiconductors, medical devices and precision industries. Factory-direct supply with OEM / ODM customization and JIT delivery.",
@@ -694,6 +796,14 @@ const I18N = {
     "tag.clean":"Wipes","tag.mat":"Tacky Mat","tag.ipa":"IPA Cleaning",
     "tag.dual":"Two-layer","tag.heat":"Heat Resistant","tag.cut":"Cuttable",
     "cat.kicker":"Hot Products","cat.h2":"Featured Products","cat.p":"Reference wholesale prices below. Better rates for bulk orders — OEM and mixed container shipping supported.",
+    "about.kicker":"About Us","about.h2":"Company Profile","about.p":"Factory-direct supply · OEM / ODM · Exporting to Thailand &amp; Southeast Asia",
+    "about.p1":"Dongguan Shihong Packaging Materials Co., Ltd. is based in Chang'an Town, Dongguan, Guangdong, China, specializing in the production and supply of <strong>ESD anti-static and cleanroom protective consumables</strong>. Our range covers anti-static clothing, footwear, finger cots, gloves and related consumables — widely used in electronics manufacturing, semiconductor, medical devices and photovoltaic industries where static control matters.",
+    "about.p2":"We operate on a factory-direct model, supporting OEM / ODM private labeling, mixed-container shipping and JIT delivery. Our products are already exported to Thailand and Southeast Asia. Thai customers are welcome to scan the code below for quotations and samples.",
+    "about.l1":"Factory-direct supply with competitive bulk pricing",
+    "about.l2":"OEM / ODM customization and private labeling",
+    "about.l3":"Mixed container shipping and JIT delivery to cut inventory pressure",
+    "about.l4":"Bilingual Chinese / Thai support with fast response",
+    "about.card":"Company Information",
     "ind.kicker":"Applications","ind.h2":"Industries We Serve","ind.p":"Serving electronics, semiconductor, medical, photovoltaic and precision machinery customers.",
     "ind.1":"Electronics Mfg.","ind.2":"Semiconductor","ind.3":"Medical Devices","ind.4":"Solar / New Energy",
     "ind.5":"Precision Machinery","ind.6":"LCD / Display","ind.7":"Food &amp; Pharma","ind.8":"Laboratory",
@@ -701,11 +811,12 @@ const I18N = {
     "con.wechat.hint":"Scan with WeChat to add","con.line.id":"LINE Official","con.line.hint":"Scan with LINE to add",
     "con.fb.id":"Coming soon","con.ig.id":"Coming soon","con.soon":"QR code<br>coming soon","con.fb.hint":"To be added","con.ig.hint":"To be added",
     "con.note":"Need a catalog, quotation or samples? <b>Scan and message us</b> — we reply within 24 hours.",
+    "foot.company":"Dongguan Shihong Packaging Materials Co., Ltd.",
     "foot.rights":"All rights reserved","foot.slogan":"Professional ESD &amp; Cleanroom Solutions"
   },
   th: {
     "logo.sub":"ป้องกันไฟฟ้าสถิต · คลีนรูม",
-    "nav.why":"ทำไมต้องเรา","nav.products":"สินค้า","nav.ind":"อุตสาหกรรม","nav.contact":"ติดต่อเรา",
+    "nav.why":"ทำไมต้องเรา","nav.products":"สินค้า","nav.catalog":"สินค้าขายดี","nav.ind":"อุตสาหกรรม","nav.about":"เกี่ยวกับเรา","nav.contact":"ติดต่อเรา",
     "hero.tag":"ESD · โซลูชันคลีนรูม",
     "hero.h1":"โซลูชัน<em>ป้องกันไฟฟ้าสถิต (ESD)</em>และคลีนรูมระดับมืออาชีพ",
     "hero.lead":"สินค้าป้องกันไฟฟ้าสถิตคุณภาพสูงสำหรับอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ เครื่องมือแพทย์ และงานวิศวกรรมความละเอียดสูง ส่งตรงจากโรงงาน รองรับ OEM / ODM และจัดส่งแบบ JIT",
@@ -729,6 +840,14 @@ const I18N = {
     "tag.clean":"ผ้าเช็ด","tag.mat":"แผ่นดักฝุ่น","tag.ipa":"เช็ด IPA",
     "tag.dual":"สองชั้น","tag.heat":"ทนความร้อน","tag.cut":"ตัดได้",
     "cat.kicker":"สินค้าขายดี","cat.h2":"สินค้าขายดี","cat.p":"ราคาส่งอ้างอิง สั่งจำนวนมากราคาดีกว่า รองรับ OEM และจัดส่งแบบรวมตู้คอนเทนเนอร์",
+    "about.kicker":"เกี่ยวกับเรา","about.h2":"ข้อมูลบริษัท","about.p":"ส่งตรงจากโรงงาน · รับ OEM / ODM · ส่งออกไทยและเอเชียตะวันออกเฉียงใต้",
+    "about.p1":"บริษัท ตงก่วน ซื่อหง แพคเกจจิ้ง แมททีเรียลส์ จำกัด ตั้งอยู่ที่เมืองฉางอาน เมืองตงก่วน มณฑลกวางตุ้ง ประเทศจีน เชี่ยวชาญด้านการผลิตและจำหน่าย<strong>วัสดุสิ้นเปลืองป้องกันไฟฟ้าสถิต (ESD) และห้องคลีนรูม</strong> สินค้าครอบคลุมชุดกันไฟฟ้าสถิต รองเท้า ปลอกนิ้ว ถุงมือ และวัสดุที่เกี่ยวข้อง ใช้ในอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ เครื่องมือแพทย์ และพลังงานแสงอาทิตย์ที่ไวต่อไฟฟ้าสถิต",
+    "about.p2":"เราจำหน่ายแบบส่งตรงจากโรงงาน รองรับ OEM / ODM ทำแบรนด์เอง จัดส่งรวมตู้ และจัดส่งแบบ JIT สินค้าส่งออกไปยังประเทศไทยและเอเชียตะวันออกเฉียงใต้แล้ว ลูกค้าไทยสแกน QR ด้านล่างเพื่อขอใบเสนอราคาและตัวอย่างสินค้า",
+    "about.l1":"ส่งตรงจากโรงงาน ราคาจำนวนมากคุ้มกว่า",
+    "about.l2":"รองรับ OEM / ODM และทำแบรนด์เอง",
+    "about.l3":"จัดส่งรวมตู้และแบบ JIT ตรงเวลา ลดภาระสต็อก",
+    "about.l4":"ทีมงานสื่อสารไทย–จีน ตอบกลับรวดเร็ว",
+    "about.card":"ข้อมูลบริษัท",
     "ind.kicker":"การใช้งาน","ind.h2":"อุตสาหกรรมที่เราให้บริการ","ind.p":"ให้บริการลูกค้าอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ การแพทย์ พลังงานแสงอาทิตย์ และเครื่องกลความละเอียดสูง",
     "ind.1":"อิเล็กทรอนิกส์","ind.2":"เซมิคอนดักเตอร์","ind.3":"เครื่องมือแพทย์","ind.4":"พลังงานแสงอาทิตย์",
     "ind.5":"เครื่องกลละเอียด","ind.6":"จอ LCD","ind.7":"อาหารและยา","ind.8":"ห้องแล็บ",
@@ -736,6 +855,7 @@ const I18N = {
     "con.wechat.hint":"สแกนด้วย WeChat เพื่อเพิ่มเพื่อน","con.line.id":"LINE Official","con.line.hint":"สแกนด้วย LINE เพื่อเพิ่มเพื่อน",
     "con.fb.id":"เร็ว ๆ นี้","con.ig.id":"เร็ว ๆ นี้","con.soon":"คิวอาร์โค้ด<br>เร็ว ๆ นี้","con.fb.hint":"รอเพิ่มเติม","con.ig.hint":"รอเพิ่มเติม",
     "con.note":"ต้องการแคตตาล็อก ใบเสนอราคา หรือตัวอย่างสินค้า? <b>สแกนแล้วพิมพ์ข้อความหาเราได้เลย</b> เราตอบกลับภายใน 24 ชั่วโมง",
+    "foot.company":"บริษัท ตงก่วน ซื่อหง แพคเกจจิ้ง แมททีเรียลส์ จำกัด",
     "foot.rights":"สงวนลิขสิทธิ์","foot.slogan":"โซลูชันป้องกันไฟฟ้าสถิตและคลีนรูมระดับมืออาชีพ"
   }
 };
