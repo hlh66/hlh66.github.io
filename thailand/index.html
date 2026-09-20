@@ -133,6 +133,50 @@
   .p-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
   .p-tags span{font-size:11.5px;color:#44607F;background:#EEF5FD;border-radius:6px;padding:3px 9px}
 
+  /* ---------- CATALOG ---------- */
+  .cat{background:#fff;border-top:1px solid var(--border)}
+  .filter-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+  .filter-row button{
+    border:1.5px solid var(--border);background:#fff;color:var(--navy-2);font-family:inherit;
+    font-size:14px;font-weight:600;padding:9px 20px;border-radius:100px;cursor:pointer;transition:.2s;
+  }
+  .filter-row button:hover{border-color:var(--blue);color:var(--blue)}
+  .filter-row button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .p-item{
+    background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column;transition:.25s;
+  }
+  .p-item:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(10,29,58,.12);border-color:#C8DCF5}
+  .p-item.hide{display:none}
+  .p-photo{
+    height:152px;position:relative;display:grid;place-items:center;
+    background:linear-gradient(160deg,#F2F7FD,#E3EDF8);color:#93AECB;
+  }
+  .p-photo svg{width:48px;height:48px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+  .p-photo .hot{
+    position:absolute;top:9px;left:9px;background:#E53935;color:#fff;
+    font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.3px;
+  }
+  .p-photo .noimg{
+    position:absolute;bottom:8px;right:8px;font-size:10px;color:#7C93B4;
+    background:rgba(255,255,255,.85);padding:2px 7px;border-radius:5px;
+  }
+  .p-info{padding:14px 15px 16px;flex:1;display:flex;flex-direction:column}
+  .p-info h4{font-size:14.5px;font-weight:700;line-height:1.45;min-height:42px;margin-bottom:9px}
+  .price{font-size:20px;font-weight:800;color:var(--blue);letter-spacing:-.3px}
+  .price small{font-size:11.5px;color:var(--muted);font-weight:600;margin-left:3px}
+  .p-meta{font-size:11.5px;color:var(--muted);margin:7px 0 13px;letter-spacing:.2px}
+  .p-cta{
+    margin-top:auto;display:block;text-align:center;font-size:13px;font-weight:600;color:var(--blue);
+    border:1px solid #C8DCF5;border-radius:8px;padding:8px;transition:.2s;
+  }
+  .p-cta:hover{background:var(--blue);color:#fff}
+  .cat-note{
+    text-align:center;font-size:13px;color:var(--muted);margin-top:26px;
+    background:var(--bg);border:1px dashed var(--border);border-radius:10px;padding:14px;
+  }
+
   /* ---------- INDUSTRIES ---------- */
   .ind{background:#fff}
   .ind-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
@@ -178,13 +222,13 @@
 
   @media(max-width:960px){
     .grid-4,.c-grid{grid-template-columns:repeat(2,1fr)}
-    .grid-3{grid-template-columns:repeat(2,1fr)}
+    .grid-3,.cat-grid{grid-template-columns:repeat(2,1fr)}
     nav.links{display:none}
     .nav-cta{display:none}
     .burger{display:block}
   }
   @media(max-width:620px){
-    .grid-4,.grid-3,.c-grid{grid-template-columns:1fr}
+    .grid-4,.grid-3,.cat-grid,.c-grid{grid-template-columns:1fr}
     section{padding:56px 0}
     .hero{padding:64px 0 68px}
     .stats{gap:28px}
@@ -203,6 +247,7 @@
     <nav class="links">
       <a href="#why" data-i18n="nav.why">为什么选择我们</a>
       <a href="#products" data-i18n="nav.products">产品分类</a>
+      <a href="#catalog" data-i18n="nav.catalog">热销产品</a>
       <a href="#industries" data-i18n="nav.ind">应用行业</a>
       <a href="#contact" data-i18n="nav.contact">联系我们</a>
     </nav>
@@ -341,6 +386,194 @@
   </div>
 </section>
 
+<!-- ================= CATALOG ================= -->
+<section class="cat" id="catalog">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="kicker" data-i18n="cat.kicker">Hot Products</div>
+      <h2 data-i18n="cat.h2">热销产品</h2>
+      <p data-i18n="cat.p">以下为参考批发价，量大从优；支持 OEM 定制与混柜发货。</p>
+    </div>
+
+    <div class="filter-row" id="filters">
+      <button class="on" data-cat="all" data-zh="全部" data-en="All" data-th="ทั้งหมด">全部</button>
+      <button data-cat="clothing" data-zh="防静电服装" data-en="ESD Clothing" data-th="ชุดกันไฟฟ้าสถิต">防静电服装</button>
+      <button data-cat="shoes" data-zh="防静电鞋靴" data-en="ESD Footwear" data-th="รองเท้า">防静电鞋靴</button>
+      <button data-cat="finger" data-zh="手指套 / 手套" data-en="Finger Cots" data-th="ปลอกนิ้ว">手指套 / 手套</button>
+    </div>
+
+    <div class="cat-grid" id="catGrid">
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <span class="hot">HOT</span>
+          <svg viewBox="0 0 24 24"><path d="M8 3l4 3 4-3 2 5-2 3v10H8V11L6 8z"/><path d="M9 13h6"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电连体服（带帽带口袋）" data-en="ESD Coverall with Hood &amp; Pockets" data-th="ชุดกันไฟฟ้าสถิตแบบเต็มตัว มีหมวกและกระเป๋า">防静电连体服（带帽带口袋）</h4>
+          <div class="price">฿190<small>/pc</small></div>
+          <div class="p-meta">MOQ 50 · S–3XL · Conductive grid fabric</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M8 3l4 3 4-3 2 5-2 3v10H8V11L6 8z"/><path d="M9 13h6"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电连体服（连帽防护工作服）" data-en="ESD Coverall (Protective Workwear)" data-th="ชุดกันไฟฟ้าสถิตแบบเต็มตัว สำหรับงานป้องกัน">防静电连体服（连帽防护工作服）</h4>
+          <div class="price">฿215<small>/pc</small></div>
+          <div class="p-meta">MOQ 50 · S–3XL · Dust-proof &amp; washable</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <span class="hot">HOT</span>
+          <svg viewBox="0 0 24 24"><path d="M8 3l4 3 4-3 2 5-2 3v10H8V11L6 8z"/><path d="M9 13h6"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电分体服（连帽洁净服）" data-en="ESD Two-Piece Suit with Hood" data-th="ชุดกันไฟฟ้าสถิตแยกชิ้น มีหมวก">防静电分体服（连帽洁净服）</h4>
+          <div class="price">฿185<small>/set</small></div>
+          <div class="p-meta">MOQ 50 · S–3XL · Cleanroom grade</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M8 3l4 3 4-3 2 5-2 3v10H8V11L6 8z"/><path d="M9 13h6"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电分体服（喷漆 / 车间防护）" data-en="ESD Two-Piece Suit (Spray / Workshop)" data-th="ชุดกันไฟฟ้าสถิตแยกชิ้น งานพ่นสี">防静电分体服（喷漆 / 车间防护）</h4>
+          <div class="price">฿200<small>/set</small></div>
+          <div class="p-meta">MOQ 50 · S–3XL · Breathable</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M9 3l3 2 3-2 4 3-1 4-2 1v11H8V11l-2-1-1-4z"/><path d="M12 11v8"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电大褂（翻领长款）" data-en="ESD Lab Coat (Lapel, Long)" data-th="เสื้อกาวน์กันไฟฟ้าสถิต แบบยาว">防静电大褂（翻领长款）</h4>
+          <div class="price">฿105<small>/pc</small></div>
+          <div class="p-meta">MOQ 100 · S–3XL · Food &amp; cleanroom safe</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="clothing">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 0116 0v2H4z"/><path d="M20 16v1a3 3 0 01-3 3H8"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电工作帽（鸭舌帽 / 大工帽）" data-en="ESD Cap (Peaked / Bouffant)" data-th="หมวกกันไฟฟ้าสถิต สำหรับคลีนรูม">防静电工作帽（鸭舌帽 / 大工帽）</h4>
+          <div class="price">฿32<small>/pc</small></div>
+          <div class="p-meta">MOQ 200 · One size · Conductive tape</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="shoes">
+        <div class="p-photo">
+          <span class="hot">HOT</span>
+          <svg viewBox="0 0 24 24"><path d="M3 17h12l4-3 2 2-3 4H6a3 3 0 01-3-3z"/><path d="M7 17V9l5-5 3 2-3 3"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电高筒靴（透气网面）" data-en="ESD High Boots (Breathable Mesh)" data-th="รองเท้าบูทกันไฟฟ้าสถิต ระบายอากาศ">防静电高筒靴（透气网面）</h4>
+          <div class="price">฿185<small>/pair</small></div>
+          <div class="p-meta">MOQ 100 · 36–46 · 10⁶–10⁸ Ω</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="shoes">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M3 17h12l4-3 2 2-3 4H6a3 3 0 01-3-3z"/><path d="M7 17V9l5-5 3 2-3 3"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="防静电软底鞋（净化室套靴）" data-en="ESD Soft Sole Shoes / Overshoes" data-th="รองเท้าพื้นนิ่มกันไฟฟ้าสถิต">防静电软底鞋（净化室套靴）</h4>
+          <div class="price">฿85<small>/pair</small></div>
+          <div class="p-meta">MOQ 100 · 36–46 · Lightweight</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="finger">
+        <div class="p-photo">
+          <span class="hot">HOT</span>
+          <svg viewBox="0 0 24 24"><path d="M8 12V6a2 2 0 114 0v6M12 12V4a2 2 0 114 0v8M16 12V7a2 2 0 114 0v8a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 114 0"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="橙色麻点防滑手指套（加厚乳胶）" data-en="Orange Anti-Slip Dotted Finger Cots" data-th="ปลอกนิ้วกันลื่นจุดส้ม ลาเท็กซ์หนา">橙色麻点防滑手指套（加厚乳胶）</h4>
+          <div class="price">฿48<small>/bag</small></div>
+          <div class="p-meta">MOQ 500 bags · Latex · Anti-slip dots</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="finger">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M8 12V6a2 2 0 114 0v6M12 12V4a2 2 0 114 0v8M16 12V7a2 2 0 114 0v8a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 114 0"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="白色防滑手指套（加厚耐磨）" data-en="White Anti-Slip Finger Cots" data-th="ปลอกนิ้วกันลื่นสีขาว หนาพิเศษ">白色防滑手指套（加厚耐磨）</h4>
+          <div class="price">฿55<small>/bag</small></div>
+          <div class="p-meta">MOQ 500 bags · Latex · Wear resistant</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="finger">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M8 12V6a2 2 0 114 0v6M12 12V4a2 2 0 114 0v8M16 12V7a2 2 0 114 0v8a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 114 0"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="米黄色防静电手指套（工业 / 电子）" data-en="Cream ESD Finger Cots (Industrial)" data-th="ปลอกนิ้วกันไฟฟ้าสถิตสีครีม">米黄色防静电手指套（工业 / 电子）</h4>
+          <div class="price">฿49<small>/bag</small></div>
+          <div class="p-meta">MOQ 500 bags · Anti-static · Powder free</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+      <article class="p-item" data-cat="finger">
+        <div class="p-photo">
+          <svg viewBox="0 0 24 24"><path d="M8 12V6a2 2 0 114 0v6M12 12V4a2 2 0 114 0v8M16 12V7a2 2 0 114 0v8a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 114 0"/></svg>
+          <span class="noimg" data-zh="图片补充中" data-en="Photo soon" data-th="รอรูปภาพ">图片补充中</span>
+        </div>
+        <div class="p-info">
+          <h4 data-zh="一次性乳胶手指套（电子 / 劳保）" data-en="Disposable Latex Finger Cots" data-th="ปลอกนิ้วลาเท็กซ์แบบใช้แล้วทิ้ง">一次性乳胶手指套（电子 / 劳保）</h4>
+          <div class="price">฿37<small>/bag</small></div>
+          <div class="p-meta">MOQ 1000 bags · Cleanroom packed</div>
+          <a href="#contact" class="p-cta" data-zh="扫码询价" data-en="Get a Quote" data-th="ขอใบเสนอราคา">扫码询价</a>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="cat-note" data-zh="价格为泰国本地参考价，含税运另议；批量采购、贴牌定制请扫码详谈。"
+         data-en="Prices are Thailand reference prices, excl. tax &amp; freight. Scan to discuss bulk orders and OEM."
+         data-th="ราคานี้เป็นราคาอ้างอิงในประเทศไทย ยังไม่รวมภาษีและค่าขนส่ง สั่งจำนวนมากหรือผลิต OEM สแกนสอบถามได้เลย">
+      价格为泰国本地参考价，含税运另议；批量采购、贴牌定制请扫码详谈。
+    </div>
+  </div>
+</section>
+
 <!-- ================= INDUSTRIES ================= -->
 <section class="ind" id="industries">
   <div class="wrap">
@@ -437,7 +670,7 @@ const I18N = {
   zh: {},   /* 中文为 HTML 原文，无需字典 */
   en: {
     "logo.sub":"Anti-Static · Cleanroom",
-    "nav.why":"Why Us","nav.products":"Products","nav.ind":"Applications","nav.contact":"Contact",
+    "nav.why":"Why Us","nav.products":"Products","nav.catalog":"Hot Products","nav.ind":"Applications","nav.contact":"Contact",
     "hero.tag":"ESD · Cleanroom Solutions",
     "hero.h1":"Professional <em>ESD</em> &amp; Cleanroom Solutions",
     "hero.lead":"High-quality anti-static products for electronics manufacturing, semiconductors, medical devices and precision industries. Factory-direct supply with OEM / ODM customization and JIT delivery.",
@@ -460,6 +693,7 @@ const I18N = {
     "tag.carbon":"Carbon Fiber","tag.multi":"Multi-size","tag.coil":"Coil Cord","tag.monitor":"Monitor Ready","tag.gnd":"Grounding System",
     "tag.clean":"Wipes","tag.mat":"Tacky Mat","tag.ipa":"IPA Cleaning",
     "tag.dual":"Two-layer","tag.heat":"Heat Resistant","tag.cut":"Cuttable",
+    "cat.kicker":"Hot Products","cat.h2":"Featured Products","cat.p":"Reference wholesale prices below. Better rates for bulk orders — OEM and mixed container shipping supported.",
     "ind.kicker":"Applications","ind.h2":"Industries We Serve","ind.p":"Serving electronics, semiconductor, medical, photovoltaic and precision machinery customers.",
     "ind.1":"Electronics Mfg.","ind.2":"Semiconductor","ind.3":"Medical Devices","ind.4":"Solar / New Energy",
     "ind.5":"Precision Machinery","ind.6":"LCD / Display","ind.7":"Food &amp; Pharma","ind.8":"Laboratory",
@@ -494,6 +728,7 @@ const I18N = {
     "tag.carbon":"คาร์บอนไฟเบอร์","tag.multi":"หลายขนาด","tag.coil":"สายสปริง","tag.monitor":"ต่อมอนิเตอร์ได้","tag.gnd":"ระบบสายดิน",
     "tag.clean":"ผ้าเช็ด","tag.mat":"แผ่นดักฝุ่น","tag.ipa":"เช็ด IPA",
     "tag.dual":"สองชั้น","tag.heat":"ทนความร้อน","tag.cut":"ตัดได้",
+    "cat.kicker":"สินค้าขายดี","cat.h2":"สินค้าขายดี","cat.p":"ราคาส่งอ้างอิง สั่งจำนวนมากราคาดีกว่า รองรับ OEM และจัดส่งแบบรวมตู้คอนเทนเนอร์",
     "ind.kicker":"การใช้งาน","ind.h2":"อุตสาหกรรมที่เราให้บริการ","ind.p":"ให้บริการลูกค้าอุตสาหกรรมอิเล็กทรอนิกส์ เซมิคอนดักเตอร์ การแพทย์ พลังงานแสงอาทิตย์ และเครื่องกลความละเอียดสูง",
     "ind.1":"อิเล็กทรอนิกส์","ind.2":"เซมิคอนดักเตอร์","ind.3":"เครื่องมือแพทย์","ind.4":"พลังงานแสงอาทิตย์",
     "ind.5":"เครื่องกลละเอียด","ind.6":"จอ LCD","ind.7":"อาหารและยา","ind.8":"ห้องแล็บ",
@@ -515,6 +750,7 @@ function setLang(lang){
     const k = el.dataset.i18n;
     el.innerHTML = lang === "zh" ? ZH[k] : (I18N[lang][k] || ZH[k]);
   });
+  document.querySelectorAll("[data-zh]").forEach(el => { const v = el.dataset[lang]; if(v) el.textContent = v; });
   document.querySelectorAll("#lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
   try{ localStorage.setItem("esd_lang", lang); }catch(e){}
 }
@@ -529,6 +765,17 @@ try{
   const saved = localStorage.getItem("esd_lang");
   if(saved && saved !== "zh") setLang(saved);
 }catch(e){}
+
+/* 产品筛选 */
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest("button[data-cat]");
+  if(!b) return;
+  document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("on", x === b));
+  const cat = b.dataset.cat;
+  document.querySelectorAll("#catGrid .p-item").forEach(it => {
+    it.classList.toggle("hide", cat !== "all" && it.dataset.cat !== cat);
+  });
+});
 
 /* 移动端菜单：点击后跳到对应区块 */
 document.getElementById("burger").addEventListener("click", () => {
