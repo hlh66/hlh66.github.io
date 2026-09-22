@@ -34,21 +34,17 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .res-card .r-name{font-size:1em;font-weight:600;color:#1e293b;margin-bottom:4px}
 .res-card .r-desc{font-size:.78em;color:#64748b;line-height:1.5}
 
-/* === 今日学校作息（学生版，无班级/教师信息）=== */
-.sched-now{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px}
-.sched-now .label{font-size:.78em;opacity:.9}
-.sched-now .cur{font-size:1.05em;font-weight:bold;margin-top:2px}
-.sched-now .count{font-size:.82em;background:rgba(255,255,255,.22);padding:5px 10px;border-radius:16px;white-space:nowrap}
-.sched-bar{height:8px;background:#e2e8f0;border-radius:5px;overflow:hidden;margin:4px 0 12px}
-.sched-bar>i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);width:0;transition:width .6s}
-.sched-list{display:flex;flex-direction:column;gap:6px}
-.sched-row{display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:9px;background:#f8fafc;border-left:3px solid #cbd5e1;font-size:.82em}
-.sched-row .t{font-variant-numeric:tabular-nums;color:#475569;min-width:108px}
-.sched-row .n{font-weight:500;color:#1e293b;flex:1}
-.sched-row.active{background:#eef2ff;border-left-color:#6366f1;box-shadow:0 2px 10px rgba(99,102,241,.18)}
-.sched-row.active .n{color:#4338ca;font-weight:bold}
-.sched-row.past{opacity:.45}
-.sched-rest{text-align:center;color:#6366f1;font-size:1em;padding:20px 0}
+.calendar{background:rgba(255,255,255,.75);border:2px solid rgba(147,197,253,.25);border-radius:12px;padding:14px;margin:0}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-title{font-size:15px;font-weight:bold;color:#0284c7}
+.cal-nav{cursor:pointer;color:#94a3b8;font-size:18px;user-select:none;padding:4px 10px;border-radius:6px;transition:all .2s}
+.cal-nav:hover{color:#0ea5e9;background:#f0f9ff}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-week{font-size:11px;color:#94a3b8;padding:4px 0;font-weight:600}
+.cal-day{font-size:13px;padding:6px 0;border-radius:6px;color:#475569;transition:all .2s}
+.cal-day:hover{background:#e0f2fe;color:#0284c7}
+.cal-day.today{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;font-weight:bold}
+.cal-day.other{color:#cbd5e1}
 
 .progress-wrap{background:rgba(255,255,255,.75);border:2px solid rgba(147,197,253,.25);border-radius:12px;padding:14px;margin:0}
 .progress-item{margin-bottom:12px}
@@ -74,7 +70,14 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .tip-card .tip-text strong{color:#0284c7}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:600px){.two-col{grid-template-columns:1fr}.header h1{font-size:1.6em}.res-grid{grid-template-columns:1fr}}
+.schedule-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.schedule-table th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:8px 4px;font-weight:600}
+.schedule-table td{padding:6px 4px;text-align:center;border-bottom:1px solid #e0e7ff;color:#334155}
+.schedule-table td:first-child{background:#f8f9fa;font-weight:600;color:#0284c7}
+.schedule-table .math-cell{background:#e8f0fe;color:#667eea;font-weight:600}
+.schedule-table .sci-cell{background:#fef3c7;color:#b45309}
+.schedule-table .other-cell{color:#94a3b8}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}.header h1{font-size:1.6em}.res-grid{grid-template-columns:1fr}.schedule-table{font-size:11px}}
 
 .footer{text-align:center;padding:20px;color:#94a3b8;font-size:.78em}
 </style>
@@ -89,7 +92,6 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 
 <div class="datetime-bar" id="dtBar"></div>
 
-<!-- 学习入口：仅学生向，教师/个人入口不展示 -->
 <div class="section">
   <div class="section-title">学习入口</div>
   <div class="res-grid">
@@ -107,6 +109,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
       <span class="r-icon">🎙️</span>
       <div class="r-name">小智AI语音助手</div>
       <div class="r-desc">STT语音识别 · TTS语音合成<br>智能对话聊天 · 表情反馈 · 实时音量</div>
+    </a>
+    <a class="res-card" href="/jiaoan/" target="_blank" style="border-color:#667eea;background:linear-gradient(135deg,#f5f7fa 0%,#e8f0fe 100%);">
+      <span class="r-icon">📚</span>
+      <div class="r-name">二年级下册·教案导航 ✨新</div>
+      <div class="r-desc">北师大版下册 · 8单元32课时<br>关键词搜索 · 单元学历案 · 课件PPT</div>
     </a>
     <a class="res-card" href="/cf/" target="_blank" style="border-color:#9c27b0;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);">
       <span class="r-icon">🎮</span>
@@ -128,19 +135,28 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
       <div class="r-name">技能卡打印 ✨新</div>
       <div class="r-desc">棋盘游戏配套卡牌 · A4彩印<br>4种技能卡+3种即时卡 共14张<br>尺寸与口诀卡一致 · 剪下即用</div>
     </a>
+    <a class="res-card" href="/kclab/" target="_blank" style="border-color:#6366f1;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);">
+      <span class="r-icon">🔬</span>
+      <div class="r-name">AI科创实验室 🚀新</div>
+      <div class="r-desc">2026顺德区青少年科技创新大赛备赛<br>教学生用AI Agent实现创意项目<br>进度看板·招生·项目方向·时间线</div>
+    </a>
+    <a class="res-card" href="/zifeiji/" target="_blank" style="border-color:#059669;background:linear-gradient(135deg,#34d399 0%,#059669 100%);">
+      <span class="r-icon">✈️</span>
+      <div class="r-name">纸飞机大赛 🚀新</div>
+      <div class="r-desc">2026第三届顺德区纸飞机竞技大赛<br>校内选拔方案·训练计划·竞赛规则<br>距离赛·航母发射·模型组装</div>
+    </a>
   </div>
 </div>
 
 <div class="two-col">
-  <!-- 原课程表 → 学生版学校作息表（无班级/教师信息、无左右导航） -->
   <div class="section">
-    <div class="section-title">📅 今日学校作息</div>
-    <div class="sched-now">
-      <div><div class="label">当前时段</div><div class="cur" id="schedCur">--</div></div>
-      <div class="count" id="schedCount">--</div>
+    <div class="section-title">📅 课程表</div>
+    <div class="schedule-table">
+      <table>
+        <thead><tr><th>时间</th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr></thead>
+        <tbody id="scheduleBody"></tbody>
+      </table>
     </div>
-    <div class="sched-bar"><i id="schedBar"></i></div>
-    <div class="sched-list" id="schedList"></div>
   </div>
   <div class="section">
     <div class="section-title">学期进度</div>
@@ -203,60 +219,31 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 </div>
 
 <script>
-// ========== 今日学校作息（学生版，无班级/教师信息）==========
-var periods=[
-  {s:'07:50',e:'08:05',n:'早读'},
-  {s:'08:05',e:'08:20',n:'休息·如厕整理'},
-  {s:'08:20',e:'09:00',n:'第1节'},
-  {s:'09:00',e:'09:15',n:'早上大课间'},
-  {s:'09:15',e:'09:55',n:'第2节'},
-  {s:'09:55',e:'10:10',n:'课间休息'},
-  {s:'10:10',e:'10:50',n:'第3节'},
-  {s:'10:50',e:'11:05',n:'课间休息'},
-  {s:'11:05',e:'11:45',n:'第4节'},
-  {s:'11:45',e:'12:30',n:'午餐'},
-  {s:'12:30',e:'13:30',n:'午休（午睡）'},
-  {s:'13:30',e:'14:00',n:'午读·自主阅读'},
-  {s:'14:00',e:'14:15',n:'课前准备'},
-  {s:'14:15',e:'14:55',n:'第5节'},
-  {s:'14:55',e:'15:10',n:'课间休息'},
-  {s:'15:10',e:'15:50',n:'第6节'},
-  {s:'15:50',e:'16:20',n:'下午大课间'},
-  {s:'16:20',e:'17:00',n:'托管'},
-  {s:'17:00',e:'17:15',n:'错峰放学'}
+// ========== 课程表数据 ==========
+const scheduleData = [
+  { time: "第1节\n8:20-9:00", mon: "数学(二4)", tue: "体育(二3/二4)", wed: "科学(二1)", thu: "语文/美术(二3)", fri: "数学(二3)" },
+  { time: "第2节\n9:15-9:55", mon: "美术/语文", tue: "数学(二4)", wed: "数学(二3)", thu: "体育(二3/二4)", fri: "体育(二3/二4)" },
+  { time: "第3节\n10:10-10:50", mon: "语文/音乐", tue: "语文(二3/二4)", wed: "美术/语文", thu: "数学(二3)", fri: "语文(二3/二4)" },
+  { time: "第4节\n11:05-11:45", mon: "数学(二3)", tue: "综合实践", wed: "数学(二4)", thu: "数学(二4)", fri: "语文/科学" },
+  { time: "午休\n11:45-12:30", mon: "午托(二3)", tue: "午托(二3)", wed: "午托(二4)", thu: "午托(双周)", fri: "午托(二3)" },
+  { time: "第5节\n14:15-14:55", mon: "科学(二2)", tue: "年级备课", wed: "道法/体育", thu: "音乐/道法", fri: "综合实践" },
+  { time: "第6节\n15:10-15:50", mon: "自习", tue: "集体备课", wed: "自习(二4)", thu: "自习(二3)", fri: "道法(二3/二4)" }
 ];
-function toMin(t){var p=t.split(':');return +p[0]*60+(+p[1]);}
-function renderSched(){
-  var now=new Date(), day=now.getDay();
-  var list=document.getElementById('schedList');
-  var curEl=document.getElementById('schedCur');
-  var cntEl=document.getElementById('schedCount');
-  var bar=document.getElementById('schedBar');
-  if(day===0||day===6){
-    list.innerHTML='';curEl.textContent='周末';cntEl.textContent='好好休息 🌿';bar.style.width='100%';
-    var r=document.createElement('div');r.className='sched-rest';
-    r.textContent='今天是周末，好好休息，周一见！';list.appendChild(r);return;
-  }
-  var m=now.getHours()*60+now.getMinutes();
-  var startDay=toMin(periods[0].s), endDay=toMin(periods[periods.length-1].e);
-  var html='', activeIdx=-1;
-  for(var i=0;i<periods.length;i++){
-    var ps=toMin(periods[i].s), pe=toMin(periods[i].e), cls='sched-row';
-    if(m>=ps&&m<pe){cls+=' active';activeIdx=i;}
-    else if(m>=pe){cls+=' past';}
-    html+='<div class="'+cls+'"><div class="t">'+periods[i].s+' - '+periods[i].e+'</div><div class="n">'+periods[i].n+'</div></div>';
-  }
-  list.innerHTML=html;
-  if(activeIdx>=0){
-    curEl.textContent=periods[activeIdx].n+'（'+periods[activeIdx].s+'）';
-    var pe=toMin(periods[activeIdx].e), ps=toMin(periods[activeIdx].s);
-    cntEl.textContent='还剩 '+ (pe-m) +' 分钟';
-    bar.style.width=Math.max(0,Math.min(100,((m-ps)/(pe-ps)*100)))+'%';
-  } else if(m<startDay){
-    curEl.textContent='未开始';cntEl.textContent='距早读 '+ (startDay-m) +' 分钟';bar.style.width='0%';
-  } else { curEl.textContent='今日结束';cntEl.textContent='已放学 🎉';bar.style.width='100%'; }
+
+function renderSchedule() {
+  const tbody = document.getElementById('scheduleBody');
+  if (!tbody) return;
+  tbody.innerHTML = scheduleData.map(row => {
+    const cells = [row.mon, row.tue, row.wed, row.thu, row.fri].map(val => {
+      let cls = '';
+      if (val.includes('数学')) cls = 'math-cell';
+      else if (val.includes('科学')) cls = 'sci-cell';
+      else if (!val.includes('(二3)') && !val.includes('(二4)')) cls = 'other-cell';
+      return `<td class="${cls}">${val}</td>`;
+    }).join('');
+    return `<tr><td>${row.time}</td>${cells}</tr>`;
+  }).join('');
 }
-renderSched();setInterval(renderSched,30000);
 
 // ========== 原有功能 ==========
 function updateDateTime(){
@@ -273,6 +260,34 @@ function updateDateTime(){
 }
 updateDateTime();
 setInterval(updateDateTime,1000);
+renderSchedule();  // 渲染课程表
+
+var calDate=new Date();
+function renderCal(){
+  var y=calDate.getFullYear(),m=calDate.getMonth();
+  var months=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  var first=new Date(y,m,1).getDay();
+  var dim=new Date(y,m+1,0).getDate();
+  var pd=new Date(y,m,0).getDate();
+  var today=new Date();
+  var isTM=(today.getFullYear()==y && today.getMonth()==m);
+  var html='<div class="cal-header"><span class="cal-nav" onclick="calNav(-1)">‹</span><span class="cal-title">'+y+'年 '+months[m]+'</span><span class="cal-nav" onclick="calNav(1)">›</span></div><div class="cal-grid">';
+  var wk=['日','一','二','三','四','五','六'];
+  for(var i=0;i<7;i++)html+='<div class="cal-week">'+wk[i]+'</div>';
+  for(var i=0;i<first;i++)html+='<div class="cal-day other">'+(pd-first+i+1)+'</div>';
+  for(var d=1;d<=dim;d++){
+    var cls='cal-day';
+    if(isTM && d==today.getDate())cls+=' today';
+    html+='<div class="'+cls+'">'+d+'</div>';
+  }
+  var tot=first+dim;
+  var rem=(7-tot%7)%7;
+  for(var i=1;i<=rem;i++)html+='<div class="cal-day other">'+i+'</div>';
+  html+='</div>';
+  document.getElementById('calendar').innerHTML=html;
+}
+function calNav(n){calDate.setMonth(calDate.getMonth()+n);renderCal();}
+renderCal();
 
 var questions=[
   {q:"小明有35颗糖，分给4个小朋友，每人分几颗？还剩几颗？",a:"35 ÷ 4 = 8（颗）……3（颗）<br>每人分8颗，还剩3颗"},
