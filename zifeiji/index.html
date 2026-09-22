@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026第三届顺德区纸飞机竞技大赛 - 校内选拔方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .card h3 {
+            color: #555;
+            margin: 20px 0 10px;
+        }
+        
+        /* 时间线样式 */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 5px;
+            bottom: 5px;
+            width: 3px;
+            background: #667eea;
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 25px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #667eea;
+        }
+        
+        .timeline-date {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        /* 项目卡片 */
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .projects {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .project {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .project.go {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        }
+        
+        .project.no {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+        
+        .project h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .project .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .project .cost {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d5016;
+            margin: 10px 0;
+        }
+        
+        .project .desc {
+            font-size: 0.85em;
+            color: #555;
+        }
+        
+        /* 步骤流程 */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 20px 15px;
+            background: #f0f4ff;
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .step::after {
+                display: none;
+            }
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9ff;
+            color: #667eea;
+        }
+        
+        tr:hover {
+            background: #f8f9ff;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        /* 注意事项 */
+        .note {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .note h4 {
+            margin-bottom: 10px;
+            color: #8b4513;
+        }
+        
+        .note ul {
+            margin-left: 20px;
+        }
+        
+        .note li {
+            margin-bottom: 5px;
+        }
+        
+        /* 联系方式 */
+        .contact {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .contact h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .contact p {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            padding: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题区域 -->
+        <div class="header">
+            <h1>🚁 纸飞机竞技大赛</h1>
+            <p>2026第三届顺德区纸飞机竞技大赛 - 校内选拔方案</p>
+            <div class="badge">区赛时间：2026年12月13日 | 报名截止：11月30日</div>
+        </div>
+        
+        <!-- 四大比赛项目 -->
+        <div class="card">
+            <h2>📋 四大比赛项目</h2>
+            <div class="projects">
+                <div class="project go">
+                    <div class="icon">✈️</div>
+                    <h4>直线距离赛</h4>
+                    <div class="cost">0元</div>
+                    <div class="desc">
+                        比谁飞得远<br>
+                        全员可参加<br>
+                        <span class="highlight">破40米 = 高手！</span>
+                    </div>
+                </div>
+                <div class="project go">
+                    <div class="icon">🎯</div>
+                    <h4>航母发射赛</h4>
+                    <div class="cost">99元</div>
+                    <div class="desc">
+                        航母弹射纸飞机<br>
+                        落入靶框得分<br>
+                        趣味性强
+                    </div>
+                </div>
+                <div class="project go">
+                    <div class="icon">📐</div>
+                    <h4>模型组装还原</h4>
+                    <div class="cost">99元</div>
+                    <div class="desc">
+                        照样机折3架<br>
+                        20分钟内完成<br>
+                        考验动手能力
+                    </div>
+                </div>
+                <div class="project no">
+                    <div class="icon">🛸</div>
+                    <h4>纸造飞行器</h4>
+                    <div class="cost">199-499元</div>
+                    <div class="desc">
+                        无人机越障飞行<br>
+                        需设备+场地<br>
+                        <span class="highlight">暂不考虑</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 参赛策略 -->
+        <div class="card">
+            <h2>🎯 我们的参赛策略</h2>
+            
+            <h3>第一阶段：校内海选（学生自己搞定）</h3>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>参与方式</th>
+                    <th>费用</th>
+                    <th>选拔目标</th>
+                </tr>
+                <tr>
+                    <td>直线距离赛</td>
+                    <td>全校各班海选</td>
+                    <td>0元</td>
+                    <td>选出前3名</td>
+                </tr>
+                <tr>
+                    <td>模型组装还原</td>
+                    <td>有兴趣者参加</td>
+                    <td>家长自愿99元</td>
+                    <td>选出前2名</td>
+                </tr>
+            </table>
+            
+            <div class="note">
+                <h4>💡 操作要点</h4>
+                <ul>
+                    <li>直线距离赛：体育课就能练，用废纸就行，门槛最低</li>
+                    <li>模型组装：找平时手工课表现好的学生，老师先学再教</li>
+                </ul>
+            </div>
+            
+            <h3 style="margin-top: 25px;">第二阶段：重点培养（学校采购）</h3>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>购置器材</th>
+                    <th>预算</th>
+                </tr>
+                <tr>
+                    <td>航母发射赛</td>
+                    <td>航母套装×3-5套</td>
+                    <td>约 300-500元</td>
+                </tr>
+            </table>
+        </div>
+        
+        
+        <!-- 分步计划 -->
+        <div class="card">
+            <h2>📅 分步实施计划</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">第一步：今日起（9月22日）</div>
+                    <div class="timeline-content">
+                        <strong>🏫 教师培训 & 宣传启动</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>你参加区里教练培训（今天14:00-17:00，德胜学校）</li>
+                            <li>回校后召开班主任/体育老师会议</li>
+                            <li>发放比赛通知，宣布校内选拔计划</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">第二步：10月1日-10月15日</div>
+                    <div class="timeline-content">
+                        <strong>📢 各班启动训练</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>体育课：练习直线距离赛（5分钟小比赛）</li>
+                            <li>科学课/社团：感兴趣的学生练模型组装还原</li>
+                            <li>班主任：鼓励学生回家用废纸练习</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">第三步：10月16日-10月31日</div>
+                    <div class="timeline-content">
+                        <strong>🏆 校内海选比赛</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>10月20日：直线距离赛年级初赛</li>
+                            <li>10月24日：直线距离赛校级决赛</li>
+                            <li>10月25日：模型组装还原校级比赛</li>
+                            <li>公布晋级名单</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">第四步：11月1日-11月15日</div>
+                    <div class="timeline-content">
+                        <strong>🎯 确定种子选手</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>直线距离赛：各组前3名（共6-12人）</li>
+                            <li>模型组装还原：前2名</li>
+                            <li>启动航母发射赛训练（从海选中挑人）</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">第五步：11月16日-11月30日</div>
+                    <div class="timeline-content">
+                        <strong>🚀 备赛冲刺</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>购置航母套装，重点训练种子选手</li>
+                            <li>每天课后30分钟集训</li>
+                            <li>11月25日：确定最终参赛名单</li>
+                            <li>11月30日前：提交报名</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">第六步：12月13日</div>
+                    <div class="timeline-content">
+                        <strong>🏅 区赛冲刺！</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li>赛前：检查器材、确认名单</li>
+                            <li>比赛日：带队参赛</li>
+                            <li>赛后：总结经验</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 器材清单 -->
+        <div class="card">
+            <h2>🛒 器材采购清单</h2>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>器材</th>
+                    <th>数量</th>
+                    <th>预算</th>
+                    <th>购买方式</th>
+                </tr>
+                <tr>
+                    <td>直线距离赛</td>
+                    <td>无（用废纸）</td>
+                    <td>-</td>
+                    <td>0元</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>模型组装还原</td>
+                    <td>折纸工具包</td>
+                    <td>按需</td>
+                    <td>99元/套</td>
+                    <td>家长自愿</td>
+                </tr>
+                <tr>
+                    <td>航母发射赛</td>
+                    <td>航母套装（含纸）</td>
+                    <td>3-5套</td>
+                    <td>99元/套</td>
+                    <td>学校采购</td>
+                </tr>
+            </table>
+            <p style="margin-top: 15px; color: #666;">
+                <strong>总预算：约 300-500元</strong>（仅航母套装，其余学生自理）
+            </p>
+        </div>
+        
+        <!-- 注意事项 -->
+        <div class="card">
+            <h2>⚠️ 重要提醒</h2>
+            <div class="note" style="margin-top: 0;">
+                <h4>比赛信息</h4>
+                <ul>
+                    <li>报名截止：<strong>2026年11月30日下午5点</strong></li>
+                    <li>区赛时间：<strong>2026年12月13日</strong></li>
+                    <li>报名邮箱：228379672@qq.com</li>
+                    <li>联系人：刘老师 13724995126</li>
+                </ul>
+            </div>
+            <div class="note" style="margin-top: 15px;">
+                <h4>关键要点</h4>
+                <ul>
+                    <li>直线距离赛门槛最低，人人都能参加，重点突破项目</li>
+                    <li>破40米是高水平，校内海选35米以上就有希望</li>
+                    <li>模型组装还原要找手工好的学生，不是成绩好的</li>
+                    <li>航母赛有趣味性，99元套装可重复使用</li>
+                    <li>无人机项目暂不考虑（没设备场地）</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 联系方式 -->
+        <div class="card contact">
+            <h3>📞 比赛官方联系</h3>
+            <p>联系人：刘老师 13724995126（电话微信同号）</p>
+            <p>报名邮箱：228379672@qq.com</p>
+            <p>公众号：顺德区青少年成长促进会</p>
+        </div>
+        
+        <div class="footer">
+            <p>📄 2026第三届顺德区纸飞机竞技大赛校内选拔方案</p>
+            <p>生成时间：2026年9月22日</p>
+        </div>
+    </div>
+</body>
+</html>
