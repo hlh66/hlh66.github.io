@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>学生端 · 班级看板</title>
+<style>
+:root{
+  --bg:#0b1220;--bg2:#121c2e;--bg3:#1a2740;
+  --line:rgba(255,255,255,.10);
+  --fg:#eaf2ff;--fg2:#93a4bf;
+  --acc:#38d39f;--blue:#4fa8ff;--warn:#ffb347;--err:#ff6b6b;--gold:#ffd166;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{
+  background:radial-gradient(1200px 700px at 15% -10%,#17335a 0%,transparent 60%),
+             radial-gradient(900px 600px at 95% 110%,#1b3a2f 0%,transparent 55%),
+             var(--bg);
+  color:var(--fg);
+  font:16px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  display:flex;flex-direction:column;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* 顶栏 */
+header{display:flex;align-items:center;gap:18px;padding:18px 28px 12px}
+.logo{font-size:34px}
+.htitle{font-size:26px;font-weight:800;letter-spacing:.5px}
+.hsub{font-size:13px;color:var(--fg2);margin-top:2px}
+.sp{flex:1}
+.clock{text-align:right}
+.clock b{display:block;font-size:40px;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.clock span{font-size:13px;color:var(--fg2)}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;
+  background:var(--bg2);border:1px solid var(--line);font-size:13px;color:var(--fg2)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--fg2)}
+.dot.on{background:var(--acc);box-shadow:0 0 10px var(--acc)}
+
+/* 主体 */
+main{flex:1;display:grid;grid-template-columns:1.25fr .95fr;gap:18px;padding:0 28px 14px;min-height:0}
+.col{display:flex;flex-direction:column;gap:16px;min-height:0}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  border:1px solid var(--line);border-radius:20px;padding:18px 20px;min-height:0;
+  display:flex;flex-direction:column}
+.ct{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--fg2);margin-bottom:12px;letter-spacing:.5px}
+.ct b{color:var(--fg);font-size:17px}
+
+/* 光荣榜 */
+.rank{flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.rk{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:14px;
+  background:rgba(255,255,255,.035);border:1px solid transparent;transition:.4s}
+.rk.top1{background:linear-gradient(90deg,rgba(255,209,102,.20),rgba(255,209,102,.04));border-color:rgba(255,209,102,.45)}
+.rk.top2{background:linear-gradient(90deg,rgba(200,214,229,.16),transparent)}
+.rk.top3{background:linear-gradient(90deg,rgba(205,127,50,.16),transparent)}
+.medal{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;
+  font-size:16px;background:rgba(255,255,255,.08);flex:none}
+.rk.top1 .medal{background:var(--gold);color:#3a2c00}
+.rk.top2 .medal{background:#c8d6e5;color:#22303f}
+.rk.top3 .medal{background:#cd7f32;color:#2b1500}
+.nm{font-size:24px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt{font-size:26px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.pt small{font-size:13px;color:var(--fg2);font-weight:500;margin-left:3px}
+.bump{animation:bump .8s}
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.14)}100%{transform:scale(1)}}
+
+/* 出勤 */
+.att{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.st{border-radius:16px;padding:14px 8px;text-align:center;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.st b{display:block;font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.st span{font-size:13px;color:var(--fg2)}
+.st.p b{color:var(--acc)}.st.l b{color:var(--warn)}.st.v b{color:var(--blue)}.st.x b{color:var(--err)}
+.rate{margin-top:12px;font-size:14px;color:var(--fg2);display:flex;align-items:center;gap:10px}
+.bar{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),#7ef0c0);border-radius:99px;transition:width .6s}
+
+/* 公告 */
+.notes{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.nt{padding:11px 14px;border-radius:14px;background:rgba(79,168,255,.10);border-left:4px solid var(--blue)}
+.nt.pin{background:rgba(56,211,159,.13);border-left-color:var(--acc)}
+.nt time{font-size:12px;color:var(--fg2);display:block;margin-bottom:3px}
+.nt p{margin:0;font-size:19px;line-height:1.5;word-break:break-word}
+
+/* 底部工具 */
+footer{display:flex;align-items:center;gap:12px;padding:10px 28px calc(14px + env(safe-area-inset-bottom))}
+.tbtn{padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:14px}
+.tbtn:active{background:rgba(255,255,255,.14)}
+.timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--acc)}
+.timer.run{animation:pulse 1.6s infinite}
+.timer.end{color:var(--err);animation:pulse .8s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.hint{font-size:12.5px;color:var(--fg2)}
+
+/* 作业 */
+.hws{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:hidden}
+.hws .d{font-size:12.5px;color:var(--fg2)}
+.hws .b{font-size:17px;font-weight:700;line-height:1.4;word-break:break-word}
+.hws ol{margin:2px 0 0;padding-left:22px;font-size:16px;line-height:1.65;color:var(--fg)}
+.hws .empty{font-size:14px;color:var(--fg2);padding:6px 0}
+
+/* 通知横幅 */
+#banner{position:fixed;inset:0;z-index:60;display:none;place-items:center;
+  background:rgba(6,10,18,.88);backdrop-filter:blur(10px);padding:40px}
+#banner.on{display:grid;animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#banner .big{max-width:1100px;text-align:center}
+#banner .tag{font-size:16px;color:var(--acc);letter-spacing:6px;margin-bottom:18px}
+#banner .txt{font-size:clamp(30px,5vw,62px);font-weight:800;line-height:1.35;word-break:break-word}
+#banner .close{margin-top:34px;font-size:16px;color:var(--fg2);border:1px solid var(--line);padding:12px 28px;border-radius:99px}
+
+/* 抽签 */
+#pick{position:fixed;inset:0;z-index:55;display:none;place-items:center;background:rgba(6,10,18,.9);backdrop-filter:blur(6px)}
+#pick.on{display:grid}
+#pick .box{text-align:center}
+#pick .who{font-size:clamp(46px,9vw,120px);font-weight:900;letter-spacing:8px;min-height:1.2em}
+#pick .who.rolling{opacity:.55}
+@media (max-width:820px){
+  main{grid-template-columns:1fr;grid-template-rows:1.1fr .9fr}
+  .nm{font-size:19px}.pt{font-size:21px}
+  .clock b{font-size:28px}.htitle{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏫</div>
+  <div>
+    <div class="htitle" id="hClass">班级看板</div>
+    <div class="hsub" id="hSub">学生端 · 教室大屏</div>
+  </div>
+  <div class="sp"></div>
+  <div class="pill" id="hSync"><i class="dot"></i><span>连接中</span></div>
+  <div class="clock"><b id="clk">--:--</b><span id="dat">—</span></div>
+</header>
+
+<main>
+  <div class="col">
+    <div class="card">
+      <div class="ct">🏆 <b>光荣榜</b><span class="sp"></span><span class="hint" id="rankTip">累计积分</span></div>
+      <div class="rank" id="rank"></div>
+    </div>
+    <div class="card" style="flex:0 0 auto">
+      <div class="ct">📋 <b>今日出勤</b><span class="sp"></span><span class="hint" id="attTip"></span></div>
+      <div class="att">
+        <div class="st p"><b id="cP">0</b><span>到校</span></div>
+        <div class="st l"><b id="cL">0</b><span>迟到</span></div>
+        <div class="st v"><b id="cV">0</b><span>请假</span></div>
+        <div class="st x"><b id="cX">0</b><span>缺勤</span></div>
+      </div>
+      <div class="rate"><span id="rateTxt">—</span><div class="bar"><i id="rateBar" style="width:0"></i></div></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card">
+      <div class="ct">📢 <b>班级公告</b><span class="sp"></span><span class="hint" id="noteTip"></span></div>
+      <div class="notes" id="notes"></div>
+    </div>
+    <div class="card" style="flex:0 0 auto">
+      <div class="ct">📝 <b>作业</b><span class="sp"></span><span class="hint" id="hwTip"></span></div>
+      <div class="hws" id="hwBox"></div>
+    </div>
+    <div class="card" style="flex:0 0 auto">
+      <div class="ct">⚡ <b>课堂工具</b><span class="sp"></span><span class="hint">老师在教师端操作</span></div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div class="timer" id="tDisp">05:00</div>
+        <button class="tbtn" onclick="setT(60)">1分</button>
+        <button class="tbtn" onclick="setT(180)">3分</button>
+        <button class="tbtn" onclick="setT(300)">5分</button>
+        <button class="tbtn" id="tBtn" onclick="toggleT()">开始</button>
+        <button class="tbtn" onclick="resetT()">归零</button>
+        <span class="sp"></span>
+        <button class="tbtn" onclick="rollPick()">🎲 抽一位</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span class="hint" id="footTip">数据每 3 秒自动刷新 · 只读</span>
+  <span class="sp"></span>
+  <button class="tbtn" onclick="speakOn=!speakOn;this.style.opacity=speakOn?1:.5">🔊 播报</button>
+  <button class="tbtn" onclick="location.reload()">↻ 刷新</button>
+</footer>
+
+<div id="banner"><div class="big">
+  <div class="tag">老 师 通 知</div>
+  <div class="txt" id="bTxt"></div>
+  <button class="close" onclick="closeBanner()">知道了</button>
+</div></div>
+
+<div id="pick"><div class="box">
+  <div class="who" id="pickWho">—</div>
+  <div style="margin-top:30px;display:flex;gap:12px;justify-content:center">
+    <button class="tbtn" onclick="rollPick(true)">再抽一次</button>
+    <button class="tbtn" onclick="$('#pick').classList.remove('on')">关闭</button>
+  </div>
+</div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+/* 同源优先；静态版（共享文件夹/公网）兜底到手机服务器 */
+let API = '/kanban/api';
+const API_BASES = ['/kanban', 'http://192.168.123.51:5000/kanban'];
+async function pickApi(){
+  if (API_BASES.length < 2) return;
+  for (const b of API_BASES){
+    try{
+      const r = await fetch(b + '/api/ping', { cache:'no-store', signal: AbortSignal.timeout(2500) });
+      if (r.ok){ API = b + '/api'; return; }
+    }catch(e){}
+  }
+}
+const WD = ['日','一','二','三','四','五','六'];
+const pad = n => String(n).padStart(2,'0');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let S = null, lastRev = -1, lastAnn = 0, speakOn = true, pool = [], prevPts = {};
+
+/* ── 拉数据 ── */
+async function pull(){
+  try{
+    const r = await fetch(API + '/state', { cache:'no-store', signal: AbortSignal.timeout(6000) });
+    const j = await r.json();
+    if (!j || !j.ok) throw 0;
+    setOnline(true);
+    if ((j.rev || 0) !== lastRev){
+      lastRev = j.rev || 0;
+      S = j.state || {};
+      render();
+    }
+  }catch(e){ setOnline(false); }
+}
+function setOnline(on){
+  $('#hSync').innerHTML = on
+    ? '<i class="dot on"></i><span>已同步</span>'
+    : '<i class="dot"></i><span>连不上（重试中）</span>';
+}
+
+/* ── 渲染 ── */
+function render(){
+  const m = S.meta || {};
+  document.title = (m.className || '班级') + ' · 学生端';
+  $('#hClass').textContent = m.className || '班级看板';
+  $('#hSub').textContent = '学生端 · ' + (m.teacher || '老师') + ' · ' + (S.students || []).length + ' 人';
+
+  // 光荣榜
+  const stu = S.students || [];
+  const pts = S.pts || {};
+  const list = stu.map(s => ({ ...s, p: Number(pts[s.id] || 0) }))
+    .sort((a,b) => b.p - a.p || (a.no || 0) - (b.no || 0))
+    .slice(0, 8);
+  $('#rank').innerHTML = list.length ? list.map((x,i) => {
+    const bump = prevPts[x.id] !== undefined && prevPts[x.id] !== x.p;
+    return `<div class="rk${i<3?' top'+(i+1):''}">
+      <div class="medal">${i+1}</div>
+      <div class="nm">${esc(x.name)}</div>
+      <div class="pt${bump?' bump':''}">${x.p}<small>分</small></div>
+    </div>`;
+  }).join('') : '<div class="hint">还没有名单，请老师在教师端导入。</div>';
+  prevPts = Object.fromEntries(stu.map(s => [s.id, Number(pts[s.id] || 0)]));
+  $('#rankTip').textContent = list.length ? '累计积分 · 前 ' + list.length + ' 名' : '';
+
+  // 出勤
+  const key = todayKey();
+  const a = (S.att || {})[key] || {};
+  const n = { P:0, L:0, V:0, X:0 };
+  stu.forEach(s => { const k = a[s.id]; if (n[k] !== undefined) n[k]++; });
+  $('#cP').textContent = n.P; $('#cL').textContent = n.L;
+  $('#cV').textContent = n.V; $('#cX').textContent = n.X;
+  const done = n.P + n.L + n.V + n.X;
+  const rate = stu.length ? Math.round((n.P + n.L) / stu.length * 100) : 0;
+  $('#rateTxt').textContent = stu.length ? `已点 ${done}/${stu.length} · 到校率 ${rate}%` : '未导入名单';
+  $('#rateBar').style.width = (stu.length ? rate : 0) + '%';
+  $('#attTip').textContent = key;
+
+  // 公告
+  const notes = (S.notes || []).slice().sort((x,y) => (y.pin?1:0)-(x.pin?1:0) || (y.ts||0)-(x.ts||0)).slice(0, 4);
+  $('#notes').innerHTML = notes.length ? notes.map(x => {
+    const d = new Date(x.ts || Date.now());
+    return `<div class="nt${x.pin?' pin':''}"><time>${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}${x.pin?' · 置顶':''}</time>
+      <p>${esc(x.text)}</p></div>`;
+  }).join('') : '<div class="hint" style="padding:8px 0">今天暂时没有公告。</div>';
+  $('#noteTip').textContent = notes.length ? notes.length + ' 条' : '';
+
+  // 作业（只显示最新一天的）
+  const hw = (S.hw || []).slice().sort((x, y) => String(y.date || '').localeCompare(String(x.date || '')) || (Number(x.order) || 99) - (Number(y.order) || 99));
+  const hb = $('#hwBox');
+  if (hb){
+    if (!hw.length){
+      hb.innerHTML = '<div class="empty">老师还没有布置作业。</div>';
+      $('#hwTip').textContent = '';
+    } else {
+      const latest = String(hw[0].date || '');
+      const cur = hw.filter(x => String(x.date || '') === latest);
+      const it = String(cur[0].items || '').split('\n').map(x => x.trim()).filter(Boolean);
+      hb.innerHTML = `<div class="d">${esc(hwLabel(latest))} · ${esc(cur[0].subj || '')}${cur[0].star ? ' · ⭐重点' : ''}</div>
+        <div class="b">${esc(cur[0].brief || it[0] || '')}</div>
+        ${it.length ? `<ol>${it.slice(0, 6).map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}`;
+      $('#hwTip').textContent = it.length > 6 ? `共 ${it.length} 项` : '';
+    }
+  }
+
+  // 名单变了就重置抽签池
+  const ids = stu.map(s => s.id).join(',');
+  if ($('#poolKey').value !== ids){
+    $('#poolKey').value = ids;
+    pool = stu.map(s => s.name);
+  }
+
+  // 新通知 → 全屏横幅 + 朗读
+  const an = S.announce;
+  if (an && an.ts && an.ts !== lastAnn){
+    lastAnn = an.ts;
+    showBanner(an.text);
+  }
+}
+
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function hwLabel(d){
+  if (!d) return '';
+  const p = String(d).split('-');
+  const dt = new Date(+p[0], +p[1] - 1, +p[2]);
+  return `${+p[1]}月${+p[2]}日 星期${WD[dt.getDay()]}`;
+}
+
+/* ── 通知横幅 ── */
+let bannerTimer = null;
+function showBanner(txt){
+  $('#bTxt').textContent = txt;
+  $('#banner').classList.add('on');
+  speak(txt);
+  clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(closeBanner, 25000);
+}
+function closeBanner(){
+  $('#banner').classList.remove('on');
+  clearTimeout(bannerTimer);
+  try{ speechSynthesis.cancel(); }catch(e){}
+}
+function speak(txt){
+  if (!speakOn || !window.speechSynthesis) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'zh-CN'; u.rate = .95; u.pitch = 1.05;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ── 抽签 ── */
+async function rollPick(again){
+  if (!pool.length){
+    pool = (S && S.students ? S.students : []).map(s => s.name);
+    if (!pool.length) return;
+  }
+  const el = $('#pickWho');
+  $('#pick').classList.add('on');
+  el.classList.add('rolling');
+  const all = (S && S.students ? S.students : []).map(s => s.name);
+  for (let i = 0; i < 18; i++){
+    el.textContent = all[Math.floor(Math.random() * all.length)];
+    await new Promise(r => setTimeout(r, 45 + i * 6));
+  }
+  const idx = Math.floor(Math.random() * pool.length);
+  const name = pool.splice(idx, 1)[0];
+  el.classList.remove('rolling');
+  el.textContent = name;
+}
+
+/* ── 计时器 ── */
+let tLeft = 300, tRun = false, tTick = null;
+function fmtT(s){ return pad(Math.floor(s/60)) + ':' + pad(s%60); }
+function drawT(){
+  const el = $('#tDisp');
+  el.textContent = fmtT(tLeft);
+  el.className = 'timer' + (tLeft === 0 ? ' end' : (tRun ? ' run' : ''));
+  $('#tBtn').textContent = tRun ? '暂停' : '开始';
+}
+function setT(s){ tLeft = s; tRun = false; clearInterval(tTick); tTick = null; drawT(); }
+function toggleT(){
+  if (tRun){ tRun = false; clearInterval(tTick); tTick = null; }
+  else {
+    if (tLeft <= 0) tLeft = 300;
+    tRun = true;
+    tTick = setInterval(() => {
+      if (tLeft > 0) tLeft--;
+      if (tLeft === 0){ clearInterval(tTick); tTick = null; tRun = false; speak('时间到了'); }
+      drawT();
+    }, 1000);
+  }
+  drawT();
+}
+function resetT(){ tLeft = 300; tRun = false; clearInterval(tTick); tTick = null; drawT(); }
+
+/* ── 时钟 ── */
+function clock(){
+  const d = new Date();
+  $('#clk').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  $('#dat').textContent = `${d.getMonth()+1}月${d.getDate()}日 星期${WD[d.getDay()]}`;
+}
+
+/* ── 启动 ── */
+document.body.insertAdjacentHTML('beforeend', '<input id="poolKey" style="display:none">');
+clock(); setInterval(clock, 10000);
+drawT();
+(async () => { await pickApi(); pull(); })();
+setInterval(pull, 3000);
+document.addEventListener('click', () => { if (speakOn) try{ speechSynthesis.resume(); }catch(e){} }, { once:true });
+</script>
+</body>
+</html>

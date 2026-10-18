@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d1117">
+<title>看班 · 班级小管家</title>
+<style>
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--bg4:#2d333b;
+  --line:#30363d;--fg:#e6edf3;--fg2:#8b949e;--fg3:#6e7681;
+  --acc:#3fb950;--accbg:rgba(63,185,80,.15);
+  --blue:#58a6ff;--bluebg:rgba(88,166,255,.15);
+  --warn:#d29922;--warnbg:rgba(210,153,34,.15);
+  --err:#f85149;--errbg:rgba(248,81,73,.15);
+  --pur:#bc8cff;
+  --r:14px;--sh:0 8px 24px rgba(1,4,9,.5);
+}
+[data-theme="light"]{
+  --bg:#f4f6f8;--bg2:#fff;--bg3:#eef1f4;--bg4:#e3e8ee;
+  --line:#d6dce3;--fg:#1b232c;--fg2:#5b6570;--fg3:#8a949e;
+  --acc:#1a7f37;--accbg:#e6f4ea;--blue:#0969da;--bluebg:#e7f0fb;
+  --warn:#9a6700;--warnbg:#fff4d6;--err:#cf222e;--errbg:#ffe9e9;
+  --sh:0 6px 18px rgba(31,45,61,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--fg);
+  font:15px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  padding-bottom:calc(74px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg3);
+  border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none;width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--blue)}
+::placeholder{color:var(--fg3)}
+
+/* ── 顶栏 ── */
+header{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+}
+.hrow{display:flex;align-items:center;gap:10px;max-width:900px;margin:0 auto}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;
+  background:linear-gradient(135deg,#1a7f37,#2ea043);box-shadow:0 2px 10px rgba(46,160,67,.35)}
+.htitle{font-size:16px;font-weight:650;letter-spacing:.3px}
+.hsub{font-size:11.5px;color:var(--fg2);margin-top:1px}
+.hsp{flex:1}
+.pill{font-size:11px;padding:4px 9px;border-radius:20px;border:1px solid var(--line);
+  background:var(--bg2);color:var(--fg2);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--fg3)}
+.dot.on{background:var(--acc);box-shadow:0 0 0 3px var(--accbg)}
+.dot.off{background:var(--err)}
+
+/* ── 布局 ── */
+main{max-width:900px;margin:0 auto;padding:14px}
+.tab{display:none;animation:fade .18s ease}
+.tab.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.ctitle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;
+  color:var(--fg2);letter-spacing:.4px;margin-bottom:12px;text-transform:none}
+.ctitle .sp{flex:1}
+.ctitle small{font-weight:400;color:var(--fg3);font-size:11px}
+.muted{color:var(--fg2);font-size:12.5px}
+.center{text-align:center}
+
+/* ── 首页大数字 ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:var(--bg3);border-radius:12px;padding:11px 8px;text-align:center}
+.stat b{display:block;font-size:22px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--fg2)}
+.s-p b{color:var(--acc)}.s-l b{color:var(--warn)}.s-v b{color:var(--blue)}.s-x b{color:var(--err)}
+.bar{height:8px;border-radius:6px;background:var(--bg3);overflow:hidden;display:flex;margin-top:12px}
+.bar i{display:block;height:100%}
+
+/* ── 按钮 ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--bg3);border:1px solid var(--line);border-radius:10px;
+  padding:10px 13px;font-size:13.5px;font-weight:520;transition:.12s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn:hover{border-color:var(--fg3)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#04170a;font-weight:650}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#04121f;font-weight:650}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--err);border-color:color-mix(in srgb,var(--err) 45%,transparent)}
+.btn.sm{padding:7px 10px;font-size:12.5px;border-radius:9px}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── 学生行 ── */
+.slist{display:flex;flex-direction:column;gap:7px}
+.srow{display:flex;align-items:center;gap:9px;background:var(--bg3);
+  border:1px solid transparent;border-radius:11px;padding:8px 10px}
+.srow.done{border-color:color-mix(in srgb,var(--acc) 32%,transparent)}
+.av{width:31px;height:31px;flex:0 0 31px;border-radius:50%;display:grid;place-items:center;
+  font-size:12.5px;font-weight:650;background:var(--bg4);color:var(--fg2)}
+.sname{flex:1;min-width:0;font-size:14px;font-weight:520;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sname em{font-style:normal;color:var(--fg3);font-size:11px;margin-left:5px}
+.abtns{display:flex;gap:5px}
+.ab{width:30px;height:30px;border-radius:9px;background:var(--bg4);color:var(--fg2);
+  font-size:12px;font-weight:650;display:grid;place-items:center;transition:.12s}
+.ab:active{transform:scale(.92)}
+.ab[data-k="P"].sel{background:var(--accbg);color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.ab[data-k="L"].sel{background:var(--warnbg);color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn)}
+.ab[data-k="V"].sel{background:var(--bluebg);color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.ab[data-k="X"].sel{background:var(--errbg);color:var(--err);box-shadow:inset 0 0 0 1px var(--err)}
+.pt{min-width:38px;text-align:right;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--acc)}
+.pt.neg{color:var(--err)}
+.ptctrl{display:flex;gap:4px}
+.ptbtn{width:26px;height:26px;border-radius:8px;background:var(--bg4);color:var(--fg2);
+  font-size:15px;line-height:1;display:grid;place-items:center}
+.ptbtn.up{color:var(--acc)}.ptbtn.dn{color:var(--err)}
+
+/* ── 光荣榜 ── */
+.rank{display:flex;flex-direction:column;gap:9px}
+.rk{display:flex;align-items:center;gap:9px}
+.rk .no{width:19px;font-size:12px;color:var(--fg3);text-align:center;font-weight:700}
+.rk .no.top{color:var(--warn)}
+.rk .nm{width:62px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .pb{flex:1;height:9px;background:var(--bg3);border-radius:6px;overflow:hidden}
+.rk .pb i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#2ea043,#56d364)}
+.rk .vl{width:32px;text-align:right;font-size:12.5px;font-weight:650;color:var(--acc);font-variant-numeric:tabular-nums}
+
+/* ── 列表/记录 ── */
+.log{display:flex;flex-direction:column;gap:2px}
+.lg{display:flex;gap:9px;align-items:baseline;padding:7px 2px;border-bottom:1px dashed var(--line);font-size:13px}
+.lg:last-child{border:0}
+.lg time{font-size:11px;color:var(--fg3);font-variant-numeric:tabular-nums;flex:0 0 38px}
+.lg span{flex:1;color:var(--fg)}
+.lg b{color:var(--acc);font-weight:600}
+.lg b.n{color:var(--err)}
+.empty{padding:26px 10px;text-align:center;color:var(--fg3);font-size:13px}
+
+/* ── 定时任务 ── */
+.tk{display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:11px;padding:10px 11px;margin-bottom:7px}
+.tk .tmm{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--blue);flex:0 0 48px}
+.tk .bd{flex:1;min-width:0}
+.tk .bd b{display:block;font-size:13px;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tk .bd small{color:var(--fg3);font-size:11px}
+.sw{width:40px;height:23px;border-radius:20px;background:var(--bg4);position:relative;flex:0 0 40px;transition:.15s}
+.sw i{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--fg2);transition:.15s}
+.sw.on{background:var(--acc)}
+.sw.on i{left:20px;background:#fff}
+
+/* ── 底部导航 ── */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:var(--bg2);background:color-mix(in srgb,var(--bg2) 94%,transparent);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);
+  display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:5px 2px;color:var(--fg3);font-size:10.5px;border-radius:10px;transition:.12s}
+nav button .ic{font-size:19px;line-height:1.15;filter:grayscale(.5) opacity(.75)}
+nav button.on{color:var(--acc)}
+nav button.on .ic{filter:none}
+
+/* ── toast / 弹层 ── */
+#toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(14px);
+  background:#000d;color:#fff;padding:9px 16px;border-radius:22px;font-size:13px;z-index:60;
+  opacity:0;pointer-events:none;transition:.22s;max-width:86vw;text-align:center;backdrop-filter:blur(6px)}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.mask{position:fixed;inset:0;background:#000a;z-index:50;display:none;align-items:flex-end;justify-content:center}
+.mask.on{display:flex}
+.sheet{background:var(--bg2);border-radius:18px 18px 0 0;width:100%;max-width:900px;
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom));animation:up .22s ease;max-height:86vh;overflow:auto}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet h3{margin:0 0 12px;font-size:15.5px}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:12px;color:var(--fg2);margin-bottom:5px}
+.hint{font-size:11.5px;color:var(--fg3);margin-top:5px;line-height:1.45}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:7px 11px;border-radius:20px;background:var(--bg3);border:1px solid var(--line);font-size:12.5px;color:var(--fg2)}
+.chip.sel{background:var(--accbg);color:var(--acc);border-color:var(--acc)}
+
+/* ── 计时器 ── */
+.timer{display:grid;place-items:center;padding:8px 0 4px}
+.timer b{font-size:52px;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.timer b.run{color:var(--acc)}
+.timer b.end{color:var(--err);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.presets{display:flex;gap:7px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+
+/* ── 公告 ── */
+.nt{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:9px;background:var(--bg3)}
+.nt.pin{border-color:var(--acc);background:var(--accbg)}
+.nt-h{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);margin-bottom:5px}
+.nt-b{font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+
+/* ── 学生专属链接 ── */
+.slbox{margin-top:10px;max-height:300px;overflow:auto}
+.slrow{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
+.slrow:first-child{border-top:0}
+.slrow b{font-size:14px;min-width:52px;white-space:nowrap}
+.slrow em{font-style:normal;font-size:11.5px;color:var(--fg2);min-width:18px}
+.slrow input{flex:1;min-width:0;font-size:11.5px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg3);color:var(--fg2)}
+.slrow button{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--fg)}
+
+/* ── 作业 ── */
+.hw{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-top:9px;background:var(--bg3)}
+.hw.star{border-color:var(--acc);background:var(--accbg)}
+.hw-h{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--fg2);margin-bottom:6px;flex-wrap:wrap}
+.hw-h b{font-size:14px;color:var(--fg)}
+.hw-h .sp{flex:1;min-width:6px}
+.hw-brief{font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.hw-sub{font-size:11.5px;color:var(--fg3);margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="logo">🏫</div>
+    <div>
+      <div class="htitle" id="hClass">看班 · 班级小管家</div>
+      <div class="hsub" id="hDate">—</div>
+    </div>
+    <div class="hsp"></div>
+    <div class="pill" id="hSync"><i class="dot"></i><span>本地</span></div>
+  </div>
+</header>
+
+<main>
+  <!-- ══ 今日 ══ -->
+  <section class="tab on" id="t-home">
+    <div class="card">
+      <div class="ctitle">今日出勤 <span class="sp"></span><small id="attRate">—</small></div>
+      <div class="stats">
+        <div class="stat s-p"><b id="cP">0</b><span>到</span></div>
+        <div class="stat s-l"><b id="cL">0</b><span>迟到</span></div>
+        <div class="stat s-v"><b id="cV">0</b><span>请假</span></div>
+        <div class="stat s-x"><b id="cX">0</b><span>缺勤</span></div>
+      </div>
+      <div class="bar" id="attBar"></div>
+      <div class="btnrow" style="margin-top:13px">
+        <button class="btn pri" style="flex:1" onclick="allPresent()">✓ 全部到齐</button>
+        <button class="btn" onclick="go('roll')">逐一点名</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">快捷操作</div>
+      <div class="btnrow">
+        <button class="btn blue" onclick="openAnnounce()">📢 发通知到大屏</button>
+        <button class="btn" onclick="openScreen()">🖥 打开大屏</button>
+        <button class="btn" onclick="go('points')">🌺 积分</button>
+        <button class="btn" onclick="toggleTimerCard()">⏱ 计时器</button>
+      </div>
+    </div>
+
+    <div class="card" id="timerCard" style="display:none">
+      <div class="ctitle">课堂计时器 <span class="sp"></span>
+        <button class="btn sm ghost" onclick="toggleTimerCard()">收起</button></div>
+      <div class="timer"><b id="tDisp">05:00</b></div>
+      <div class="presets">
+        <button class="btn sm" onclick="setTimer(60)">1 分</button>
+        <button class="btn sm" onclick="setTimer(180)">3 分</button>
+        <button class="btn sm" onclick="setTimer(300)">5 分</button>
+        <button class="btn sm" onclick="setTimer(600)">10 分</button>
+        <button class="btn sm" onclick="setTimer(900)">15 分</button>
+      </div>
+      <div class="btnrow" style="margin-top:12px">
+        <button class="btn pri" style="flex:1" id="tStart" onclick="startTimer()">开始</button>
+        <button class="btn" onclick="resetTimer()">归零</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">今日记录 <span class="sp"></span><small id="logCount"></small></div>
+      <div class="log" id="todayLog"></div>
+    </div>
+  </section>
+
+  <!-- ══ 点名 ══ -->
+  <section class="tab" id="t-roll">
+    <div class="card">
+      <div class="ctitle">随机点名 <span class="sp"></span><small id="poolTip"></small></div>
+      <div class="center" style="padding:6px 0 12px">
+        <div id="pickName" style="font-size:34px;font-weight:750;letter-spacing:2px;min-height:46px">— — —</div>
+      </div>
+      <div class="btnrow">
+        <button class="btn pri" style="flex:1" onclick="pickOne()">🎲 抽一位</button>
+        <button class="btn" onclick="resetPool()">重置池</button>
+        <button class="btn blue" onclick="pickAndPoint()">抽中 +1 分</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">考勤点名 <span class="sp"></span>
+        <small>到 · 迟 · 假 · 缺</small></div>
+      <div class="slist" id="rollList"></div>
+    </div>
+  </section>
+
+  <!-- ══ 积分 ══ -->
+  <section class="tab" id="t-points">
+    <div class="card">
+      <div class="ctitle">光荣榜 <span class="sp"></span><small>累计积分</small></div>
+      <div class="rank" id="rankList"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">加分理由 <span class="sp"></span><small>点选后按此理由记</small></div>
+      <div class="chips" id="reasonChips"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">逐个加减 <span class="sp"></span><small id="ptsSum"></small></div>
+      <div class="slist" id="ptsList"></div>
+    </div>
+  </section>
+
+  <!-- ══ 作业 ══ -->
+  <section class="tab" id="t-hw">
+    <div class="card">
+      <div class="ctitle">布置作业 <span class="sp"></span><small id="hwCount"></small></div>
+      <div class="btnrow">
+        <button class="btn pri" style="flex:1" onclick="openHwEdit()">＋ 布置作业</button>
+        <button class="btn blue" onclick="copyHwToday()">📋 复制发群</button>
+      </div>
+      <div class="hint">按「作业布置方案」来的字段：简要一句发群、详细内容给家长看。家长端和学生端会自动出现，往期作业自动折叠。</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">已布置 <span class="sp"></span><small>最新在上</small></div>
+      <div id="hwList"></div>
+    </div>
+  </section>
+
+  <!-- ══ 提醒 ══ -->
+  <section class="tab" id="t-task">
+    <div class="card">
+      <div class="ctitle">教室电脑 <span class="sp"></span><span class="pill" id="pcPill"><i class="dot"></i><span>未连接</span></span></div>
+      <div class="btnrow">
+        <button class="btn sm" onclick="loadPc()">🔄 刷新机器</button>
+        <button class="btn sm" onclick="openPcPick()">选择机器</button>
+        <button class="btn sm" onclick="pcShot()">📸 截屏</button>
+        <button class="btn sm" onclick="pcOpenScreen()">🖥 大屏</button>
+      </div>
+      <div class="hint" id="pcHint">连的是「多端控制台」的教室电脑（被控端要先开机运行）。</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">教室电脑 · 直连 <span class="sp"></span><span class="pill" id="agPill"><i class="dot"></i><span>—</span></span></div>
+      <div class="field"><label>电脑（exe 直连手机服务器，内网直达）</label><select id="agSel" style="width:100%"></select></div>
+      <div class="field"><label>要执行的命令（如 <code>!https://...</code> 开网页 · <code>__screenshot__</code> 截屏 · 或任意 cmd）</label>
+        <input id="agCmd" placeholder="dir C:\ 或 !网址 或 __ping__" onclick="this.select()"></div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="agSend()">▶ 执行</button>
+        <button class="btn" onclick="loadAg()">🔄 刷新</button>
+        <button class="btn" onclick="agQuick('__ping__')">测延迟</button>
+        <button class="btn" onclick="agQuick('__screenshot__')">截屏</button>
+      </div>
+      <div id="agOut" style="max-height:200px;overflow:auto"></div>
+      <div class="hint">这是 v3 新通道：电脑上的 exe 直接连手机服务器（不依赖公网中转）。电脑上第一次运行后点「刷新」就会出现。</div>
+      <div class="hint">📥 教室电脑还没装？下载单个文件即可：<a href="/kanban/down/pc_agent_web.exe" style="color:#7fd4ff">pc_agent_web.exe</a>（200KB，C 语言编译，双击就能用，首次运行自动生成配置）· 也可下 <a href="/kanban/down/pc_agent.zip" style="color:#7fd4ff">zip 整包</a>（多一份说明）</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">定时任务 <span class="sp"></span>
+        <button class="btn sm ghost" onclick="openTaskEdit()">＋ 新增</button></div>
+      <div id="taskList"></div>
+      <div class="hint">服务端在手机上跑时会自动执行；纯网页（离线）模式需要页面开着。</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">班级公告 <span class="sp"></span><small id="noteCount"></small></div>
+      <div class="field"><textarea id="noteBox" rows="2" placeholder="如：明天带跳绳，穿校服"></textarea></div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="addNote()">发布公告</button>
+      </div>
+      <div id="noteList"></div>
+      <div class="hint">公告会显示在学生端和家长端，家长回家也能看到。</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">一键场景</div>
+      <div class="btnrow">
+        <button class="btn" onclick="scene('morning')">☀️ 早读提醒</button>
+        <button class="btn" onclick="scene('duty')">🧹 值日提醒</button>
+        <button class="btn" onclick="scene('off')">🌙 放学整理</button>
+        <button class="btn" onclick="scene('quiet')">🤫 安静一下</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 设置 ══ -->
+  <section class="tab" id="t-set">
+    <div class="card">
+      <div class="ctitle">三端入口 <span class="sp"></span><small>同一份数据</small></div>
+      <div class="field"><label>👩‍🏫 教师端（本页 · 地址别外传）</label><input id="urlT" readonly onclick="this.select()"></div>
+      <div class="field"><label>🧑‍🎓 学生端（教室大屏 / 一体机）</label><input id="urlS" readonly onclick="this.select()"></div>
+      <div class="field"><label>👨‍👩‍👧 家长端（回家看）</label><input id="urlP" readonly onclick="this.select()"></div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="openTrio('s')">打开学生端</button>
+        <button class="btn blue" onclick="openTrio('p')">打开家长端</button>
+        <button class="btn" onclick="copyTrio()">复制链接</button>
+      </div>
+      <div class="hint">教师端在 <b>/kanban/teacher</b>，根路径 <b>/kanban/</b> 打开的是学生端 —— 学生在一体机上翻不到管理页。三端读同一份数据，教师端改动后 3 秒内另两端自动刷新。</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">学生专属入口 <span class="sp"></span><small id="stuLinkCount">—</small></div>
+      <div class="hint">每个学生一条独立链接：<b>/kanban/s/学号</b>。发给对应家长，打开就是自家孩子，不用选、也看不到别人。</div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="copyAllStuLinks()">复制全部链接</button>
+        <button class="btn" onclick="downloadStuLinks()">导出 CSV</button>
+      </div>
+      <div id="stuLinks" class="slbox"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">班级信息</div>
+      <div class="field"><label>班级名称</label><input id="setClass" placeholder="如 二年（3）班"></div>
+      <div class="field"><label>老师</label><input id="setTeacher" placeholder="如 洪老师"></div>
+      <button class="btn pri" onclick="saveMeta()">保存</button>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">名单 <span class="sp"></span><small id="stuCount"></small></div>
+      <div class="field">
+        <label>批量导入（一行一个，可写「1 张三」或「张三 男」）</label>
+        <textarea id="importBox" rows="4" placeholder="张三&#10;李四&#10;3 王五"></textarea>
+      </div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="importNames()">导入名单</button>
+        <button class="btn" onclick="exportCsv()">导出 CSV</button>
+        <button class="btn danger" onclick="clearStudents()">清空名单</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">数据与同步 <span class="sp"></span><span class="pill" id="modePill">本地</span></div>
+      <div class="field">
+        <label>数据源</label>
+        <select id="setSrc" onchange="srcChange()">
+          <option value="auto">自动（有服务端就用服务端）</option>
+          <option value="local">只用本机（离线）</option>
+          <option value="server">指定服务器地址</option>
+        </select>
+      </div>
+      <div class="field" id="srvField" style="display:none">
+        <label>服务器地址（手机服务器）</label>
+        <input id="setSrv" placeholder="http://192.168.123.51:5000/kanban">
+        <div class="hint">页面放共享文件夹/公网时，填手机服务器地址即可共用一份数据。</div>
+      </div>
+      <div class="field"><label>多端控制台地址（教室电脑）</label>
+        <input id="setApi" placeholder="http://192.168.123.51:5002/pc_agent_server.php">
+      </div>
+      <div class="btnrow">
+        <button class="btn pri" onclick="saveSrc()">保存并重连</button>
+        <button class="btn" onclick="doSync()">立即同步</button>
+        <button class="btn" onclick="exportJson()">导出备份</button>
+        <button class="btn" onclick="pickImportJson()">导入备份</button>
+      </div>
+      <input type="file" id="fileJson" accept=".json" style="display:none">
+      <div class="hint" id="syncHint"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">维护</div>
+      <div class="btnrow">
+        <button class="btn" onclick="resetToday()">重填今日考勤</button>
+        <button class="btn danger" onclick="resetPoints()">积分清零</button>
+      </div>
+      <div class="hint" style="margin-top:10px">看班 v1.0 · 数据存在你指定的地方，不上传任何第三方。</div>
+    </div>
+  </section>
+
+  <section class="tab" id="t-wb">
+    <div class="card" style="padding:0;overflow:hidden">
+      <iframe id="wbFrame" style="width:100%;height:calc(100vh - 120px);border:0;display:block;background:#111"></iframe>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-t="home" onclick="go('home')"><span class="ic">🏠</span>今日</button>
+  <button data-t="roll" onclick="go('roll')"><span class="ic">🙋</span>点名</button>
+  <button data-t="points" onclick="go('points')"><span class="ic">🌺</span>积分</button>
+  <button data-t="hw" onclick="go('hw')"><span class="ic">📝</span>作业</button>
+  <button data-t="task" onclick="go('task')"><span class="ic">⏰</span>提醒</button>
+  <button data-t="wb" onclick="go('wb')"><span class="ic">🧰</span>工作台</button>
+  <button data-t="set" onclick="go('set')"><span class="ic">⚙️</span>设置</button>
+</nav>
+
+<div id="toast"></div>
+<div class="mask" id="mask" onclick="if(event.target.id==='mask')closeSheet()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ════════════════════ 基础 ════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2, 9);
+const pad = n => String(n).padStart(2, '0');
+const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DOW = ['日','一','二','三','四','五','六'];
+const ATT = {P:'到', L:'迟', V:'假', X:'缺'};
+
+const LS_KEY = 'kanban_state_v1';
+const DEF = () => ({
+  v: 1, rev: 0, updated: 0,
+  meta: { className: '', teacher: '' },
+  students: [],
+  att: {},            // { '2026-10-18': { sid: 'P' } }
+  pts: {},            // { sid: 12 }
+  log: [],            // [{t,sid,d,reason}]
+  tasks: [],          // [{id,time,days:[1..5],type,text,url,on}]
+  announce: null,     // {text,ts}
+  notes: [],          // [{id,ts,text,pin}] 班级公告，学生端/家长端可见
+  hw: [],             // [{id,date,subj,star,order,title,brief,items,req,guide,learn,print,url,boost,mins,tip}]
+  cfg: { src: 'auto', srv: '', api: '', cid: '', cname: '' }
+});
+let S = DEF();
+let MODE = 'local';        // local | server
+let ONLINE = false;        // 服务端是否可写
+let BASE = '';             // 服务端根地址（空=同源）
+let DIRTY = false, SAVING = false, LAST_REV = 0;
+
+/* ════════════════════ 存储 ════════════════════ */
+function loadLocal(){
+  try { const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (s && s.v === 1) return s; } catch(e){}
+  return null;
+}
+function saveLocal(){ try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch(e){} }
+
+function apiUrl(p){ return (BASE || '') + p; }
+
+/* 三端共用 5000 端口的 /kanban/api。静态版（共享文件夹/公网）用绝对地址探测。 */
+const SRV_GUESS = 'http://192.168.123.51:5000';
+
+async function detectMode(){
+  const cfg = S.cfg || {};
+  if (cfg.src === 'local') { MODE = 'local'; BASE = ''; return false; }
+  const here = /^https?:$/.test(location.protocol) ? location.origin + '/kanban' : '';
+  let bases = [];
+  if (cfg.src === 'server' && cfg.srv) bases = [cfg.srv.replace(/\/+$/, '')];
+  else bases = [ here, SRV_GUESS + '/kanban' ].filter((b,i,a)=> b && a.indexOf(b)===i);
+  for (const b of bases){
+    try{
+      const r = await fetch(b + '/api/ping', { cache:'no-store', signal: AbortSignal.timeout(2500) });
+      if (r.ok){ const j = await r.json(); if (j && j.ok){ MODE='server'; BASE=b; return true; } }
+    }catch(e){}
+  }
+  MODE = 'local'; BASE = ''; return false;
+}
+
+async function fetchState(){
+  try{
+    const r = await fetch(apiUrl('/api/state'), { cache:'no-store', signal: AbortSignal.timeout(6000) });
+    const j = await r.json();
+    return (j && j.ok) ? j : null;
+  }catch(e){ return null; }
+}
+
+async function pull(force){
+  if (MODE !== 'server') return false;
+  const j = await fetchState();
+  if (!j) return false;
+  if (j.state && (force || ((j.state.rev || 0) > LAST_REV && !DIRTY))){
+    S = Object.assign(DEF(), j.state);
+    LAST_REV = S.rev || 0;
+    saveLocal(); renderAll(); return true;
+  }
+  LAST_REV = Math.max(LAST_REV, j.rev || 0);
+  return true;
+}
+
+let saveTimer = null;
+function save(now){
+  DIRTY = true; saveLocal(); renderSync();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(push, now ? 0 : 550);
+}
+async function push(){
+  if (MODE !== 'server'){ DIRTY = false; saveLocal(); renderSync(); return; }
+  if (SAVING) return;
+  SAVING = true;
+  try{
+    S.rev = (S.rev || 0) + 1; S.updated = Date.now();
+    const r = await fetch(apiUrl('/api/state'), {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ state: S, base_rev: LAST_REV }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const j = await r.json();
+    if (j && j.ok){ LAST_REV = j.rev || S.rev; DIRTY = false; saveLocal(); }
+    else if (j && j.conflict){
+      DIRTY = false;
+      await pull(true);
+      toast('已采用服务器的最新数据');
+    }
+  }catch(e){ /* 断网就留在本地，下次再推 */ }
+  SAVING = false; renderSync();
+}
+
+/* ════════════════════ 渲染 ════════════════════ */
+function go(t){
+  $$('.tab').forEach(e => e.classList.remove('on'));
+  const el = $('#t-' + t); if (el) el.classList.add('on');
+  $$('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  window.scrollTo({top:0,behavior:'instant'});
+  if (t === 'set') fillSettings();
+  if (t === 'task') drawTasks();
+  if (t === 'wb' && !$('#wbFrame').src) $('#wbFrame').src = '/kanban/workbench';
+  renderAll();
+}
+
+function renderAll(){
+  const d = new Date();
+  $('#hClass').textContent = S.meta.className || '看班 · 班级小管家';
+  $('#hDate').textContent = `${d.getMonth()+1}月${d.getDate()}日 星期${DOW[d.getDay()]} · ${S.students.length} 人`;
+  renderAtt(); renderRoll(); renderPoints(); renderLog(); renderSync(); renderNotes(); renderStuLinks(); renderHw();
+  if ($('#t-task').classList.contains('on')) drawTasks();
+}
+
+function attOf(key = todayKey()){ return S.att[key] || {}; }
+function setAtt(sid, k){
+  const key = todayKey();
+  const a = S.att[key] || (S.att[key] = {});
+  if (a[sid] === k) delete a[sid]; else a[sid] = k;
+  if (k === 'P' && a[sid] === 'P') addLog(sid, '考勤 · 到');
+  save(true); renderAll();
+}
+
+function renderAtt(){
+  const a = attOf();
+  const c = {P:0,L:0,V:0,X:0};
+  S.students.forEach(s => { if (a[s.id]) c[a[s.id]] = (c[a[s.id]]||0) + 1; });
+  $('#cP').textContent = c.P; $('#cL').textContent = c.L;
+  $('#cV').textContent = c.V; $('#cX').textContent = c.X;
+  const n = S.students.length || 1;
+  $('#attRate').textContent = S.students.length
+    ? `已记 ${(c.P+c.L+c.V+c.X)}/${S.students.length} · 实到 ${Math.round(c.P/n*100)}%` : '还没导入名单';
+  const seg = [['P','var(--acc)'],['L','var(--warn)'],['V','var(--blue)'],['X','var(--err)']];
+  $('#attBar').innerHTML = seg.map(([k,col]) =>
+    `<i style="width:${(c[k]/n*100).toFixed(2)}%;background:${col}"></i>`).join('');
+}
+
+function stuHTML(s, mode){
+  const a = attOf();
+  const cur = a[s.id] || '';
+  const p = S.pts[s.id] || 0;
+  if (mode === 'roll'){
+    return `<div class="srow ${cur?'done':''}">
+      <div class="av">${esc(s.name.slice(-2))}</div>
+      <div class="sname">${esc(s.name)}${s.group?`<em>${esc(s.group)}</em>`:''}</div>
+      <div class="abtns">${Object.keys(ATT).map(k =>
+        `<button class="ab ${cur===k?'sel':''}" data-k="${k}" data-sid="${s.id}">${ATT[k]}</button>`).join('')}</div>
+    </div>`;
+  }
+  return `<div class="srow">
+    <div class="av">${esc(s.name.slice(-2))}</div>
+    <div class="sname">${esc(s.name)}</div>
+    <div class="pt ${p<0?'neg':''}">${p>0?'+':''}${p}</div>
+    <div class="ptctrl">
+      <button class="ptbtn dn" data-p="-1" data-sid="${s.id}">−</button>
+      <button class="ptbtn up" data-p="1" data-sid="${s.id}">＋</button>
+    </div>
+  </div>`;
+}
+
+function renderRoll(){
+  const box = $('#rollList');
+  if (!S.students.length){ box.innerHTML = `<div class="empty">还没有学生名单<br>去「设置 → 批量导入名单」贴一份</div>`; return; }
+  box.innerHTML = S.students.map(s => stuHTML(s, 'roll')).join('');
+  box.querySelectorAll('.ab').forEach(b => b.onclick = () => setAtt(b.dataset.sid, b.dataset.k));
+}
+
+const REASONS = ['发言', '作业', '纪律', '助人', '进步', '卫生'];
+let curReason = '发言';
+
+function renderPoints(){
+  const list = S.students.map(s => ({ s, p: S.pts[s.id] || 0 })).sort((x,y) => y.p - x.p);
+  const max = Math.max(1, ...list.map(x => x.p));
+  const box = $('#rankList');
+  if (!list.length){ box.innerHTML = `<div class="empty">导入名单后自动出榜</div>`; }
+  else {
+    box.innerHTML = list.slice(0, 8).map((x, i) => `
+      <div class="rk">
+        <div class="no ${i<3?'top':''}">${i+1}</div>
+        <div class="nm">${esc(x.s.name)}</div>
+        <div class="pb"><i style="width:${Math.max(0,x.p)/max*100}%"></i></div>
+        <div class="vl">${x.p}</div>
+      </div>`).join('');
+  }
+  $('#reasonChips').innerHTML = REASONS.map(r =>
+    `<button class="chip ${r===curReason?'sel':''}" data-r="${r}">${r}</button>`).join('');
+  $$('#reasonChips .chip').forEach(c => c.onclick = () => { curReason = c.dataset.r; renderPoints(); });
+
+  const pbox = $('#ptsList');
+  if (!S.students.length) pbox.innerHTML = `<div class="empty">还没有名单</div>`;
+  else {
+    pbox.innerHTML = S.students.map(s => stuHTML(s, 'pts')).join('');
+    pbox.querySelectorAll('.ptbtn').forEach(b => b.onclick = () => {
+      addPoint(b.dataset.sid, +b.dataset.p, curReason);
+    });
+  }
+  const sum = Object.values(S.pts).reduce((a,b) => a+b, 0);
+  $('#ptsSum').textContent = `共 ${sum} 分`;
+}
+
+function renderLog(){
+  const items = S.log.slice(-8).reverse();
+  const box = $('#todayLog');
+  box.innerHTML = items.length ? items.map(l => {
+    const st = S.students.find(x => x.id === l.sid);
+    const nm = st ? st.name + ' · ' : '';
+    const d = new Date(l.t);
+    return `<div class="lg"><time>${pad(d.getHours())}:${pad(d.getMinutes())}</time>
+      <span>${esc(nm + l.reason)}</span>
+      <b class="${l.d<0?'n':''}">${l.d>0?'+':''}${l.d}</b></div>`;
+  }).join('') : `<div class="empty">今天还没有记录</div>`;
+  $('#logCount').textContent = `${S.log.length} 条`;
+}
+
+function renderSync(){
+  const el = $('#hSync'), modePill = $('#modePill');
+  const txt = MODE === 'server' ? (DIRTY || SAVING ? '同步中' : '已同步') : '本地';
+  el.innerHTML = `<i class="dot ${MODE==='server'?(DIRTY?'':'on'):''}"></i><span>${txt}</span>`;
+  if (modePill) modePill.textContent = MODE === 'server' ? '服务器' : '本机';
+  const sh = $('#syncHint');
+  if (sh) sh.textContent = MODE === 'server'
+    ? `数据存在 ${BASE || location.origin}——手机、电脑、平板打开都是同一份。`
+    : '当前是本机模式：数据只在这个浏览器里，换设备请用「导出/导入备份」。';
+}
+
+/* ════════════════════ 动作 ════════════════════ */
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+function addLog(sid, reason, d = 1){
+  S.log.push({ t: Date.now(), sid, reason, d });
+  if (S.log.length > 500) S.log = S.log.slice(-500);
+}
+function addPoint(sid, d, reason){
+  S.pts[sid] = (S.pts[sid] || 0) + d;
+  addLog(sid, reason, d);
+  const st = S.students.find(x => x.id === sid);
+  toast(`${st ? st.name : ''} ${d>0?'+':''}${d} · ${reason}`);
+  save(true); renderAll();
+}
+
+function allPresent(){
+  if (!S.students.length) return toast('先导入名单');
+  const key = todayKey();
+  const a = S.att[key] || (S.att[key] = {});
+  S.students.forEach(s => { if (!a[s.id]) a[s.id] = 'P'; });
+  addLog(S.students[0]?.id || '', '全部到齐', 0);
+  save(true); renderAll(); toast('已全部记为「到」');
+}
+
+/* 随机点名 */
+let pool = [];
+function resetPool(){ pool = S.students.map(s => s.id); $('#pickName').textContent = '— — —'; renderPool(); toast('点名池已重置'); }
+function renderPool(){ $('#poolTip').textContent = `池中 ${pool.length} 人`; }
+function pickOne(){
+  if (!S.students.length) return toast('先导入名单');
+  if (!pool.length) pool = S.students.map(s => s.id);
+  const el = $('#pickName');
+  let n = 0;
+  const iv = setInterval(() => {
+    const s = S.students[Math.floor(Math.random() * S.students.length)];
+    el.textContent = s ? s.name : '—';
+    if (++n > 14){
+      clearInterval(iv);
+      const idx = Math.floor(Math.random() * pool.length);
+      const sid = pool.splice(idx, 1)[0];
+      const st = S.students.find(x => x.id === sid);
+      el.textContent = st ? st.name : '—';
+      el.dataset.sid = sid; renderPool();
+      navigator.vibrate && navigator.vibrate(30);
+    }
+  }, 55);
+}
+function pickAndPoint(){
+  const sid = $('#pickName').dataset.sid;
+  if (!sid) return toast('先抽一位');
+  addPoint(sid, 1, '点名');
+}
+
+/* 计时器 */
+let tSec = 300, tTimer = null, tLeft = 300;
+function toggleTimerCard(){
+  const c = $('#timerCard');
+  c.style.display = c.style.display === 'none' ? 'block' : 'none';
+  if (c.style.display === 'block') c.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function setTimer(sec){
+  stopTimer(); tSec = tLeft = sec; drawTimer();
+}
+function drawTimer(){
+  const el = $('#tDisp'); if (!el) return;
+  el.textContent = `${pad(Math.floor(tLeft/60))}:${pad(tLeft%60)}`;
+  el.className = tLeft === 0 ? 'end' : (tTimer ? 'run' : '');
+}
+function startTimer(){
+  if (tTimer){ stopTimer(); return; }
+  if (tLeft <= 0) tLeft = tSec;
+  $('#tStart').textContent = '暂停';
+  tTimer = setInterval(() => {
+    tLeft--;
+    if (tLeft <= 0){
+      tLeft = 0; stopTimer();
+      toast('⏰ 时间到');
+      announce('⏰ 时间到，请停下手中事情。');
+      navigator.vibrate && navigator.vibrate([120,80,120]);
+    }
+    drawTimer();
+  }, 1000);
+  drawTimer();
+}
+function stopTimer(){
+  clearInterval(tTimer); tTimer = null;
+  const b = $('#tStart'); if (b) b.textContent = '继续';
+}
+function resetTimer(){ stopTimer(); tLeft = tSec; drawTimer(); const b = $('#tStart'); if (b) b.textContent = '开始'; }
+
+/* 通知 / 大屏 */
+function announce(text){
+  if (!text) return;
+  S.announce = { text, ts: Date.now() };
+  save(true);
+  pcSend('announce', text);
+}
+function openAnnounce(){
+  sheet(`<h3>📢 发通知到大屏</h3>
+    <div class="field"><textarea id="annText" rows="3" placeholder="如：下节课数学，请准备好课本"></textarea></div>
+    <div class="chips" style="margin-bottom:12px">
+      ${['请安静','准备上课','交作业','值日生留下','排队集合'].map(t=>`<button class="chip" data-q="${t}">${t}</button>`).join('')}
+    </div>
+    <div class="btnrow"><button class="btn pri" style="flex:1" onclick="doAnnounce()">发送</button>
+      <button class="btn" onclick="closeSheet()">取消</button></div>
+    <div class="hint">大屏页开着就会自动弹出；也可以顺手让教室电脑打开大屏。</div>`);
+  $$('.chip[data-q]').forEach(c => c.onclick = () => { $('#annText').value = c.dataset.q; });
+}
+function doAnnounce(){
+  const t = ($('#annText')?.value || '').trim();
+  if (!t) return toast('写点内容');
+  announce(t); closeSheet(); toast('已发送到大屏');
+}
+function screenUrl(){
+  const base = MODE === 'server' ? (BASE || (location.origin + '/kanban')) : (location.origin + '/kanban');
+  return base.replace(/\/+$/,'') + '/student';
+}
+function parentUrl(){
+  return screenUrl().replace(/\/student$/, '/parent');
+}
+function openScreen(){
+  const u = screenUrl();
+  window.open(u, '_blank');
+  toast('若本机没开大屏，用「提醒 → 大屏」推给教室电脑');
+}
+
+/* 多端控制台 */
+async function pcClients(){
+  const cfg = S.cfg || {};
+  try{
+    const r = await fetch(apiUrl('/api/pc/clients'), { cache:'no-store', signal: AbortSignal.timeout(9000) });
+    const j = await r.json();
+    return (j && j.clients) || [];
+  }catch(e){ return []; }
+}
+async function loadPc(){
+  const p = $('#pcPill');
+  p.innerHTML = `<i class="dot"></i><span>查询中…</span>`;
+  const cs = await pcClients();
+  const on = cs.filter(c => c.online);
+  if (!on.length){
+    p.innerHTML = `<i class="dot off"></i><span>无在线机器</span>`;
+    $('#pcHint').textContent = '教室电脑没上线：去那台电脑双击「启动被控端.bat」。';
+    return cs;
+  }
+  S.cfg.cid = on[0].id; S.cfg.cname = on[0].name || on[0].hostname || '教室电脑';
+  save(true);
+  p.innerHTML = `<i class="dot on"></i><span>${esc(S.cfg.cname)}</span>`;
+  $('#pcHint').textContent = `已连 ${S.cfg.cname}${on.length>1?`（另有 ${on.length-1} 台在线）`:''}`;
+  return cs;
+}
+/* ════════════════════ Agent 直连（v3 通道） ════════════════════ */
+let AGS = [];
+async function loadAg(){
+  const p = $('#agPill');
+  try{
+    const r = await fetch(apiUrl('/api/agent?api=clients'), { cache:'no-store', signal: AbortSignal.timeout(9000) });
+    const j = await r.json();
+    AGS = (j.clients || []);
+    const sel = $('#agSel');
+    sel.innerHTML = AGS.map(c => `<option value="${esc(c.id)}">${c.online?'🟢':'⚪'} ${esc(c.name||c.id)}${c.online?'':'（离线）'}</option>`).join('')
+      || '<option value="">（还没有电脑上线）</option>';
+    if (AGS.some(c => c.online)) p.innerHTML = `<i class="dot on"></i><span>${AGS.filter(c=>c.online).length} 台在线</span>`;
+    else p.innerHTML = `<i class="dot off"></i><span>无在线</span>`;
+  }catch(e){
+    p.innerHTML = `<i class="dot off"></i><span>连不上服务</span>`;
+  }
+}
+async function agRun(cmd){
+  const cid = $('#agSel').value;
+  if (!cid){ toast('先刷新，让电脑连上来'); return; }
+  const r = await fetch(apiUrl('/api/agent?api=send'), {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cid, cmd}), signal: AbortSignal.timeout(9000)
+  });
+  const j = await r.json();
+  if (!j.ok){ toast(j.error || '下发失败'); return; }
+  toast('已下发，等电脑执行…');
+  // 轮询结果（最多 20 秒）
+  const t0 = Date.now();
+  const box = $('#agOut');
+  box.innerHTML = `<div class="hint">⏳ ${esc(cmd)} — 等待结果…</div>`;
+  for(let i=0;i<20;i++){
+    await new Promise(r2 => setTimeout(r2, 1000));
+    try{
+      const rr = await fetch(apiUrl('/api/agent?api=results&cid=' + encodeURIComponent(cid)),
+                             { cache:'no-store', signal: AbortSignal.timeout(6000) });
+      const jj = await rr.json();
+      const hit = (jj.results || []).find(x => x.ts * 1000 > t0);
+      if (hit){
+        box.innerHTML = `<pre style="margin:6px 0;padding:10px;border-radius:8px;background:var(--bg);` +
+          `font-size:12px;white-space:pre-wrap;word-break:break-all;max-height:190px;overflow:auto">` +
+          `${hit.ok?'✅':'❌'} ${esc(hit.cmd)}\n${esc((hit.output||'').slice(0,4000))}</pre>`;
+        return;
+      }
+    }catch(e){ /* 继续等 */ }
+  }
+  box.innerHTML = `<div class="hint">⏰ 20 秒内没等到结果（电脑可能离线）。</div>`;
+}
+function agQuick(cmd){
+  $('#agCmd').value = cmd;
+  agRun(cmd);
+}
+function agSend(){ const c = ($('#agCmd').value || '').trim(); if (c) agRun(c); }
+
+async function openPcPick(){
+  const cs = await loadPc();
+  if (!cs.length) return;
+  sheet(`<h3>选择教室电脑</h3>` + cs.map(c => `
+    <div class="srow" style="margin-bottom:8px">
+      <div class="av">${c.online?'🟢':'⚪'}</div>
+      <div class="sname">${esc(c.name || c.hostname || c.id)}</div>
+      <button class="btn sm ${c.id===S.cfg.cid?'pri':''}" data-cid="${c.id}" data-cn="${esc(c.name||'')}">
+        ${c.id===S.cfg.cid?'当前':'选它'}</button>
+    </div>`).join('') + `<button class="btn ghost" style="width:100%;margin-top:6px" onclick="closeSheet()">关闭</button>`);
+  $$('[data-cid]').forEach(b => b.onclick = () => {
+    S.cfg.cid = b.dataset.cid; S.cfg.cname = b.dataset.cn || '教室电脑';
+    save(true); closeSheet(); loadPc(); toast('已选定');
+  });
+}
+async function pcSend(kind, text){
+  if (kind === 'announce') return null;         // 通知走服务端广播，不用惊动电脑
+  if (!S.cfg.cid) return null;
+  let cmd = '';
+  if (kind === 'open') cmd = '!' + text;
+  else if (kind === 'shot') cmd = '__screenshot__';
+  else cmd = text;
+  try{
+    const r = await fetch(apiUrl('/api/pc/send'), {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ cid: S.cfg.cid, cmd, api: S.cfg.api }),
+      signal: AbortSignal.timeout(20000)
+    });
+    return await r.json();
+  }catch(e){ return { ok:false, error:String(e) }; }
+}
+async function pcShot(){
+  const r = await pcSend('shot');
+  toast(r && r.ok ? '截屏已下发' : ('失败：' + (r?.error || '没连上')));
+}
+async function pcOpenScreen(){
+  if (!S.cfg.cid) await loadPc();
+  if (!S.cfg.cid) return toast('没有在线教室电脑');
+  const r = await pcSend('open', screenUrl());
+  toast(r && r.ok ? '已在教室电脑打开大屏' : ('失败：' + (r?.error || '没连上')));
+}
+
+/* 场景 */
+const SCENES = {
+  morning: { text: '☀️ 早读开始，请拿出语文书，大声朗读。', url: null },
+  duty:    { text: '🧹 值日同学请留下打扫：扫地、擦黑板、摆桌椅。', url: null },
+  off:     { text: '🌙 放学整理：桌面清空、椅子推进、关灯关窗。', url: null },
+  quiet:   { text: '🤫 请安静，老师在等大家坐好。', url: null }
+};
+function scene(k){
+  const s = SCENES[k]; if (!s) return;
+  announce(s.text); toast('已发送：' + s.text.slice(0, 10) + '…');
+}
+
+/* ════════════════════ 定时任务 ════════════════════ */
+function drawTasks(){
+  const box = $('#taskList');
+  if (!S.tasks.length){ box.innerHTML = `<div class="empty">还没有定时任务</div>`; return; }
+  box.innerHTML = S.tasks.slice().sort((a,b) => a.time.localeCompare(b.time)).map(t => `
+    <div class="tk">
+      <div class="tmm">${esc(t.time)}</div>
+      <div class="bd"><b>${esc(t.text || t.url || '')}</b>
+        <small>${t.days.map(d => '周' + DOW[d]).join(' ')} · ${t.type === 'open' ? '打开网页' : '发通知'}</small></div>
+      <div class="sw ${t.on?'on':''}" data-tid="${t.id}"><i></i></div>
+      <button class="btn sm ghost" data-del="${t.id}" style="color:var(--err)">删</button>
+    </div>`).join('');
+  box.querySelectorAll('.sw').forEach(el => el.onclick = () => {
+    const t = S.tasks.find(x => x.id === el.dataset.tid);
+    t.on = !t.on; save(true); drawTasks(); toast(t.on ? '已开启' : '已暂停');
+  });
+  box.querySelectorAll('[data-del]').forEach(el => el.onclick = () => {
+    S.tasks = S.tasks.filter(x => x.id !== el.dataset.del); save(true); drawTasks();
+  });
+}
+let editingTask = null;
+function openTaskEdit(){
+  editingTask = { id: uid(), time: '07:50', days: [1,2,3,4,5], type: 'announce', text: '', url: '', on: true };
+  drawTaskSheet();
+}
+function drawTaskSheet(){
+  const t = editingTask;
+  sheet(`<h3>新增定时任务</h3>
+    <div class="field"><label>时间</label><input type="time" id="tkTime" value="${t.time}"></div>
+    <div class="field"><label>重复</label><div class="chips" id="tkDays">
+      ${[1,2,3,4,5,6,0].map(d => `<button class="chip ${t.days.includes(d)?'sel':''}" data-d="${d}">周${DOW[d]}</button>`).join('')}
+    </div></div>
+    <div class="field"><label>类型</label>
+      <select id="tkType">
+        <option value="announce" ${t.type==='announce'?'selected':''}>发通知到大屏</option>
+        <option value="open" ${t.type==='open'?'selected':''}>让教室电脑打开网页</option>
+      </select></div>
+    <div class="field"><label>内容</label><textarea id="tkText" rows="2" placeholder="提醒文字，或要打开的网址">${esc(t.text)}</textarea></div>
+    <div class="btnrow"><button class="btn pri" style="flex:1" onclick="saveTask()">保存</button>
+      <button class="btn" onclick="closeSheet()">取消</button></div>`);
+  $$('#tkDays .chip').forEach(c => c.onclick = () => {
+    const d = +c.dataset.d;
+    const i = t.days.indexOf(d);
+    if (i >= 0) t.days.splice(i,1); else t.days.push(d);
+    c.classList.toggle('sel');
+  });
+}
+function saveTask(){
+  const t = editingTask;
+  t.time = $('#tkTime').value || '07:50';
+  t.type = $('#tkType').value;
+  t.text = $('#tkText').value.trim();
+  if (!t.text) return toast('写点内容');
+  if (!t.days.length) t.days = [1,2,3,4,5];
+  S.tasks.push(t);
+  save(true); drawTasks(); closeSheet(); toast('已添加');
+}
+
+/* ════════════════════ 作业 ════════════════════ */
+function hwList(){
+  return (S.hw || []).slice().sort((a, b) =>
+    String(b.date || '').localeCompare(String(a.date || '')) ||
+    (Number(a.order) || 99) - (Number(b.order) || 99));
+}
+function hwItems(h){
+  return String(h.items || '').split('\n').map(x => x.trim()).filter(Boolean);
+}
+function hwDateLabel(d){
+  if (!d) return '—';
+  const p = String(d).split('-');
+  const dt = new Date(+p[0], +p[1] - 1, +p[2]);
+  return `${+p[1]}月${+p[2]}日 星期${DOW[dt.getDay()]}`;
+}
+function renderHw(){
+  const box = $('#hwList');
+  if (!box) return;
+  const arr = hwList();
+  if ($('#hwCount')) $('#hwCount').textContent = arr.length ? arr.length + ' 条' : '暂无';
+  box.innerHTML = arr.length ? arr.map(h => {
+    const it = hwItems(h);
+    return `<div class="hw ${h.star ? 'star' : ''}">
+      <div class="hw-h"><b>${esc(hwDateLabel(h.date))}</b><span>· ${esc(h.subj || '作业')}</span>
+        ${h.star ? '<span style="color:var(--acc);font-size:11.5px">⭐ 重点</span>' : ''}<span class="sp"></span>
+        <button class="btn sm ghost" onclick="copyHwText('${h.id}')">📋</button>
+        <button class="btn sm ghost" onclick="openHwEdit('${h.id}')">✏️</button>
+        <button class="btn sm ghost" onclick="delHw('${h.id}')">🗑</button></div>
+      <div class="hw-brief">${esc(h.brief || it[0] || '—')}</div>
+      <div class="hw-sub">${it.length} 项${it.length ? ' · ' + esc(it[0]) + (it.length > 1 ? ' 等' : '') : ''}</div>
+    </div>`;
+  }).join('') : '<div class="hint">还没布置作业。点上面「＋ 布置作业」。</div>';
+}
+
+let editingHw = null;
+function openHwEdit(id){
+  const h = (S.hw || []).find(x => x.id === id);
+  editingHw = h ? JSON.parse(JSON.stringify(h)) : {
+    id: uid(), date: todayKey(), subj: '数学', star: false, order: 1,
+    title: '', brief: '', items: '', req: '', guide: '', learn: '',
+    print: '', url: '', boost: '', mins: '', tip: ''
+  };
+  drawHwSheet();
+}
+function drawHwSheet(){
+  const h = editingHw;
+  const isNew = !(S.hw || []).some(x => x.id === h.id);
+  sheet(`<h3>${isNew ? '布置作业' : '修改作业'}</h3>
+    <div class="field"><label>日期（可填未来，提前布置）</label><input type="date" id="hwDate" value="${esc(h.date || todayKey())}"></div>
+    <div class="field"><label>科目</label><input id="hwSubj" value="${esc(h.subj || '数学')}" placeholder="数学 / 语文 / 手抄报"></div>
+    <div class="field"><label>简要版一句话（发群用，也是家长端首行）</label><textarea id="hwBrief" rows="2" placeholder="如：口算 20 题 + 课本 P32">${esc(h.brief || '')}</textarea></div>
+    <div class="field"><label>作业内容（一行一项）★</label><textarea id="hwItems" rows="5" placeholder="课本 P32 第 1-4 题&#10;口算练习纸 20 题">${esc(h.items || '')}</textarea></div>
+    <div class="field"><label>完成要求</label><input id="hwReq" value="${esc(h.req || '')}" placeholder="如：写完自己检查一遍，家长签字"></div>
+    <div class="field"><label>📖 学习指导（看第几页、先预习什么）</label><textarea id="hwGuide" rows="2">${esc(h.guide || '')}</textarea></div>
+    <div class="field"><label>📚 学的是什么（给家长的辅导提示）</label><textarea id="hwLearn" rows="2">${esc(h.learn || '')}</textarea></div>
+    <div class="field"><label>🖨️ 可以打印的资料</label><input id="hwPrint" value="${esc(h.print || '')}" placeholder="如：口算练习纸（群文件）"></div>
+    <div class="field"><label>资料链接</label><input id="hwUrl" value="${esc(h.url || '')}" placeholder="https://..."></div>
+    <div class="field"><label>🌟 提升版（给学有余力的）</label><textarea id="hwBoost" rows="2">${esc(h.boost || '')}</textarea></div>
+    <div style="display:flex;gap:10px">
+      <div class="field" style="flex:1"><label>⏱ 预计时长（分钟）</label><input id="hwMins" type="number" min="0" value="${esc(h.mins || '')}"></div>
+      <div class="field" style="flex:1"><label>⭐ 重点 / 序号</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="chip ${h.star ? 'sel' : ''}" id="hwStar" onclick="toggleHwStar()">重点</button>
+          <input id="hwOrder" type="number" value="${esc(h.order || 1)}" style="width:60px">
+        </div></div>
+    </div>
+    <div class="field"><label>💡 提示</label><input id="hwTip" value="${esc(h.tip || '')}" placeholder="如：注意进位、用尺子"></div>
+    <div class="btnrow"><button class="btn pri" style="flex:1" onclick="saveHw()">保存</button>
+      <button class="btn" onclick="closeSheet()">取消</button></div>`);
+}
+function toggleHwStar(){
+  editingHw.star = !editingHw.star;
+  const b = $('#hwStar'); if (b) b.classList.toggle('sel', editingHw.star);
+}
+function saveHw(){
+  const h = editingHw;
+  h.date = $('#hwDate').value || todayKey();
+  h.subj = ($('#hwSubj').value || '').trim() || '数学';
+  h.brief = ($('#hwBrief').value || '').trim();
+  h.items = ($('#hwItems').value || '').trim();
+  if (!h.items) return toast('作业内容至少写一项');
+  if (!h.brief) h.brief = hwItems(h)[0];
+  h.req = ($('#hwReq').value || '').trim();
+  h.guide = ($('#hwGuide').value || '').trim();
+  h.learn = ($('#hwLearn').value || '').trim();
+  h.print = ($('#hwPrint').value || '').trim();
+  h.url = ($('#hwUrl').value || '').trim();
+  h.boost = ($('#hwBoost').value || '').trim();
+  h.mins = ($('#hwMins').value || '').trim();
+  h.order = Number($('#hwOrder').value) || 1;
+  h.tip = ($('#hwTip').value || '').trim();
+  S.hw = S.hw || [];
+  const i = S.hw.findIndex(x => x.id === h.id);
+  if (i >= 0) S.hw[i] = h; else S.hw.push(h);
+  save(true); renderHw(); closeSheet(); toast(i >= 0 ? '已修改' : '已布置');
+}
+function delHw(id){
+  if (!confirm('删掉这条作业？')) return;
+  S.hw = (S.hw || []).filter(x => x.id !== id);
+  save(true); renderHw(); toast('已删除');
+}
+function hwText(h){
+  const it = hwItems(h);
+  const lines = [`📚 ${h.subj || ''}作业 · ${hwDateLabel(h.date)}`];
+  if (h.brief) lines.push(h.brief);
+  it.forEach((x, i) => lines.push(`${i + 1}. ${x}`));
+  if (h.req) lines.push(`✅ 要求：${h.req}`);
+  if (h.guide) lines.push(`📖 指导：${h.guide}`);
+  if (h.learn) lines.push(`📚 学的是：${h.learn}`);
+  if (h.print) lines.push(`🖨️ 可打印：${h.print}`);
+  if (h.url) lines.push(`🔗 ${h.url}`);
+  if (h.boost) lines.push(`🌟 提升：${h.boost}`);
+  if (h.mins) lines.push(`⏱ 约 ${h.mins} 分钟`);
+  if (h.tip) lines.push(`💡 ${h.tip}`);
+  return lines.join('\n');
+}
+function copyHwText(id){
+  const h = (S.hw || []).find(x => x.id === id);
+  if (!h) return;
+  copyText(hwText(h), '已复制，粘到班级群就行');
+}
+function copyHwToday(){
+  const arr = hwList();
+  if (!arr.length) return toast('还没布置作业');
+  const t = arr.filter(x => x.date === todayKey());
+  const use = t.length ? t : [arr[0]];
+  copyText(use.map(hwText).join('\n\n'), `已复制 ${use.length} 条作业`);
+}
+
+/* 离线模式下的定时执行（服务端模式由后端跑） */
+let lastTickMin = '';
+setInterval(() => {
+  const d = new Date();
+  const key = `${d.getHours()}:${d.getMinutes()}`;
+  if (key === lastTickMin) return;
+  lastTickMin = key;
+  if (MODE === 'server') return;
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  S.tasks.filter(t => t.on && t.time === hm && t.days.includes(d.getDay()))
+    .forEach(t => t.type === 'open' ? window.open(t.text, '_blank') : announce(t.text));
+}, 15000);
+
+/* ════════════════════ 设置 ════════════════════ */
+function fillSettings(){
+  $('#setClass').value = S.meta.className || '';
+  $('#setTeacher').value = S.meta.teacher || '';
+  $('#stuCount').textContent = `${S.students.length} 人`;
+  $('#setSrc').value = S.cfg.src || 'auto';
+  $('#setSrv').value = S.cfg.srv || '';
+  $('#setApi').value = S.cfg.api || 'http://192.168.123.51:5002/pc_agent_server.php';
+  $('#srvField').style.display = S.cfg.src === 'server' ? 'block' : 'none';
+  renderSync();
+}
+function saveMeta(){
+  S.meta.className = $('#setClass').value.trim();
+  S.meta.teacher = $('#setTeacher').value.trim();
+  save(true); renderAll(); toast('已保存');
+}
+function srcChange(){ $('#srvField').style.display = $('#setSrc').value === 'server' ? 'block' : 'none'; }
+async function saveSrc(){
+  S.cfg.src = $('#setSrc').value;
+  S.cfg.srv = $('#setSrv').value.trim();
+  S.cfg.api = $('#setApi').value.trim();
+  save(true);
+  const ok = await detectMode();
+  if (ok) await pull(); else await push();
+  renderSync(); toast(ok ? '已连上服务器' : '连不上服务器，先用本机模式');
+}
+async function doSync(){ const ok = await detectMode(); if (ok) { await pull(); toast('已同步'); } else toast('当前是本机模式'); renderSync(); }
+
+function importNames(){
+  const raw = $('#importBox').value.trim();
+  if (!raw) return toast('先贴名单');
+  const names = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.match(/^(\d+)[\s.、,，:：]+(.+)$/);
+    return m ? { no: +m[1], name: m[2].trim() } : { no: null, name: l.split(/[\s,，、]+/)[0] };
+  }).filter(x => x.name);
+  if (!names.length) return toast('没解析出名字');
+  const exist = new Set(S.students.map(s => s.name));
+  let added = 0;
+  names.forEach(x => {
+    if (exist.has(x.name)) return;
+    const st = { id: uid(), name: x.name, no: x.no || S.students.length + 1 };
+    S.students.push(st); S.pts[st.id] = 0; added++;
+  });
+  save(true); renderAll(); fillSettings(); resetPool();
+  toast(`导入 ${added} 人`);
+}
+function clearStudents(){
+  if (!confirm('清空整个名单和积分？（考勤记录保留）')) return;
+  S.students = []; S.pts = {}; save(true); renderAll(); fillSettings(); resetPool(); toast('已清空');
+}
+function exportCsv(){
+  const key = todayKey(), a = attOf(key);
+  const rows = [['学号','姓名','考勤','积分']].concat(
+    S.students.map(s => [s.no || '', s.name, ATT[a[s.id]] || '', S.pts[s.id] || 0]));
+  const csv = '\ufeff' + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  dl(blob, `看班_${key}.csv`);
+}
+function exportJson(){
+  dl(new Blob([JSON.stringify(S, null, 2)], { type:'application/json' }), `看班备份_${todayKey()}.json`);
+}
+function pickImportJson(){ $('#fileJson').click(); }
+document.addEventListener('change', e => {
+  if (e.target.id !== 'fileJson') return;
+  const f = e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const j = JSON.parse(fr.result);
+      if (!j || j.v !== 1) throw new Error('格式不对');
+      S = Object.assign(DEF(), j); save(true); renderAll(); fillSettings(); toast('已导入备份');
+    }catch(err){ toast('导入失败：' + err.message); }
+  };
+  fr.readAsText(f); e.target.value = '';
+});
+function dl(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+function resetToday(){
+  if (!confirm('清空今天的考勤记录（积分不动）？')) return;
+  delete S.att[todayKey()]; save(true); renderAll(); toast('已清空今日考勤');
+}
+function resetPoints(){
+  if (!confirm('把所有积分清零？')) return;
+  Object.keys(S.pts).forEach(k => S.pts[k] = 0);
+  S.log = []; save(true); renderAll(); toast('积分已清零');
+}
+
+/* 弹层 */
+function sheet(html){ $('#sheet').innerHTML = html; $('#mask').classList.add('on'); }
+function closeSheet(){ $('#mask').classList.remove('on'); }
+
+/* ════════════════════ 启动 ════════════════════ */
+/* ════════════════════ 三端入口 ════════════════════ */
+function trio(){
+  let root = (MODE === 'server' && BASE) ? BASE : '';
+  if (!root){
+    root = /^https?:$/.test(location.protocol) ? location.origin + '/kanban' : SRV_GUESS + '/kanban';
+  }
+  root = root.replace(/\/+$/, '');
+  /* 教师端独占 /teacher；根路径给学生端，学生打开看不到管理界面 */
+  return { t: root + '/teacher', s: root + '/', p: root + '/parent' };
+}
+function fillUrls(){
+  const u = trio();
+  if ($('#urlT')) $('#urlT').value = u.t;
+  if ($('#urlS')) $('#urlS').value = u.s;
+  if ($('#urlP')) $('#urlP').value = u.p;
+}
+function openTrio(k){
+  const u = trio();
+  window.open(k === 's' ? u.s : u.p, '_blank');
+}
+function copyTrio(){
+  const u = trio();
+  const txt = `教师端 ${u.t}\n学生端 ${u.s}\n家长端 ${u.p}`;
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast('已复制三个链接'), ()=>toast('复制失败，长按输入框选'));
+  else toast('长按输入框复制');
+}
+
+/* ════════════════════ 学生专属入口（一人一链接） ════════════════════ */
+function stuUrl(s){
+  const root = trio().s.replace(/\/+$/, '');   // …/kanban
+  const key = s.no != null && s.no !== '' ? String(s.no) : s.id;
+  return root + '/s/' + encodeURIComponent(key);
+}
+function renderStuLinks(){
+  const box = $('#stuLinks');
+  if (!box) return;
+  const arr = (S.students || []).slice().sort((a, b) => (Number(a.no) || 0) - (Number(b.no) || 0));
+  if ($('#stuLinkCount')) $('#stuLinkCount').textContent = arr.length ? arr.length + ' 人' : '暂无名单';
+  box.innerHTML = arr.length ? arr.map(s => `<div class="slrow"><em>${esc(s.no || '')}</em><b>${esc(s.name)}</b>
+      <input readonly value="${esc(stuUrl(s))}" onclick="this.select()">
+      <button onclick="copyStuLink('${esc(s.id)}')">复制</button></div>`).join('')
+    : '<div class="hint">还没有学生，先去「名单」导入。</div>';
+}
+function copyStuLink(id){
+  const s = (S.students || []).find(x => x.id === id);
+  if (!s) return;
+  copyText(stuUrl(s), '已复制 ' + s.name + ' 的链接');
+}
+function copyText(txt, tip){
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast(tip), () => toast('复制失败，长按输入框手动复制'));
+  else toast('长按输入框手动复制');
+}
+function copyAllStuLinks(){
+  const arr = (S.students || []).slice().sort((a, b) => (Number(a.no) || 0) - (Number(b.no) || 0));
+  if (!arr.length) return toast('还没有学生');
+  copyText(arr.map(s => `${s.no || ''} ${s.name} ${stuUrl(s)}`).join('\n'), '已复制 ' + arr.length + ' 条链接');
+}
+function downloadStuLinks(){
+  const arr = (S.students || []).slice().sort((a, b) => (Number(a.no) || 0) - (Number(b.no) || 0));
+  if (!arr.length) return toast('还没有学生');
+  const rows = [['学号', '姓名', '专属链接']].concat(arr.map(s => [s.no || '', s.name, stuUrl(s)]));
+  const csv = '\ufeff' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = (S.meta.className || '班级') + '_学生专属链接.csv';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast('已导出 CSV');
+}
+
+/* ════════════════════ 班级公告 ════════════════════ */
+function renderNotes(){
+  const box = $('#noteList');
+  if (!box) return;
+  const arr = (S.notes || []).slice().sort((a, b) =>
+    (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || (b.ts || 0) - (a.ts || 0));
+  if ($('#noteCount')) $('#noteCount').textContent = arr.length ? arr.length + ' 条' : '暂无';
+  box.innerHTML = arr.length ? arr.map(n => {
+    const d = new Date(n.ts || Date.now());
+    return `<div class="nt${n.pin ? ' pin' : ''}">
+      <div class="nt-h"><b>${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}</b>
+        <span class="sp" style="flex:1"></span>
+        <button class="btn sm ghost" onclick="pinNote('${n.id}')">${n.pin ? '取消置顶' : '置顶'}</button>
+        <button class="btn sm ghost" onclick="delNote('${n.id}')">删除</button></div>
+      <div class="nt-b">${esc(n.text)}</div></div>`;
+  }).join('') : '<div class="hint">还没有公告。写一条发出去，学生端和家长端都能看到。</div>';
+}
+function addNote(){
+  const t = ($('#noteBox')?.value || '').trim();
+  if (!t) return toast('写点内容');
+  S.notes = S.notes || [];
+  S.notes.unshift({ id: 'n' + Date.now().toString(36), ts: Date.now(), text: t, pin: false });
+  if (S.notes.length > 40) S.notes.length = 40;
+  $('#noteBox').value = '';
+  save(true); renderNotes(); toast('公告已发布');
+}
+function delNote(id){
+  S.notes = (S.notes || []).filter(n => n.id !== id);
+  save(true); renderNotes();
+}
+function pinNote(id){
+  const n = (S.notes || []).find(x => x.id === id);
+  if (!n) return;
+  n.pin = !n.pin;
+  save(true); renderNotes();
+}
+
+(async function boot(){
+  const local = loadLocal();
+  if (local) S = Object.assign(DEF(), local);
+  LAST_REV = S.rev || 0;
+  renderAll(); fillSettings(); renderPool(); drawTimer(); fillUrls(); loadAg(); setInterval(loadAg, 30000);
+
+  const ok = await detectMode();
+  if (ok){
+    const j = await fetchState();
+    if (j && j.state){
+      const srvEmpty = !(j.state.students || []).length;
+      if (srvEmpty && S.students.length){
+        // 服务器还是空的、本机有名单 → 把本机的推上去（首次接通）
+        LAST_REV = j.rev || 0; S.rev = LAST_REV;
+        await push();
+      } else {
+        LAST_REV = j.rev || 0;
+        await pull(true);
+      }
+    }
+    renderSync(); fillUrls();
+  }
+  pool = S.students.map(s => s.id); renderPool();
+
+  // 服务端模式下定时刷新（别的设备改了也能看到）
+  setInterval(async () => {
+    if (MODE !== 'server' || DIRTY) return;
+    const before = JSON.stringify(S).length + S.rev;
+    await pull();
+    if ((S.rev || 0) !== LAST_REV) renderAll();
+  }, 8000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && MODE === 'server') pull().then(r => r && renderAll());
+  });
+})();
+</script>
+</body>
+</html>

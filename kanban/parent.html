@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>家长端 · 孩子在校表现</title>
+<style>
+:root{
+  --bg:#f2f5f9;--card:#fff;--line:#e3e9f0;
+  --fg:#17222f;--fg2:#6b7a8d;--fg3:#9aa8b8;
+  --acc:#1a7f37;--accbg:#e8f5ec;
+  --blue:#1f6feb;--bluebg:#eaf2fe;
+  --warn:#9a6700;--warnbg:#fff6e0;
+  --err:#cf222e;--errbg:#ffeceb;
+  --gold:#b8860b;
+  --r:18px;--sh:0 4px 18px rgba(23,34,47,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--bg);color:var(--fg);
+  font:15.5px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  padding-bottom:34px;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:var(--fg);background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;outline:none;width:100%}
+input:focus{border-color:var(--blue)}
+
+/* 顶栏 */
+header{
+  background:linear-gradient(135deg,#1f6feb,#2ea3f2 55%,#38bdf8);
+  color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 22px;
+  border-radius:0 0 26px 26px;
+}
+.hrow{display:flex;align-items:center;gap:12px;max-width:760px;margin:0 auto}
+.htitle{font-size:19px;font-weight:750}
+.hsub{font-size:12.5px;opacity:.85;margin-top:2px}
+.avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:grid;place-items:center;font-size:20px}
+.sp{flex:1}
+.gbtn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  color:#fff;padding:7px 13px;border-radius:99px;font-size:13px}
+
+main{max-width:760px;margin:0 auto;padding:0 14px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:16px 17px;margin-top:14px}
+.ct{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--fg2);margin-bottom:12px}
+.ct b{color:var(--fg);font-size:16px}
+
+/* 学生卡 */
+.hero{margin-top:-14px;position:relative;z-index:2}
+.hname{font-size:26px;font-weight:800;letter-spacing:.5px}
+.hmeta{font-size:13px;color:var(--fg2);margin-top:3px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:99px;
+  font-size:14px;font-weight:650}
+.badge.P{background:var(--accbg);color:var(--acc)}
+.badge.L{background:var(--warnbg);color:var(--warn)}
+.badge.V{background:var(--bluebg);color:var(--blue)}
+.badge.X{background:var(--errbg);color:var(--err)}
+.badge.N{background:#f0f3f7;color:var(--fg2)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.kpi{background:#f7f9fc;border-radius:14px;padding:12px 8px;text-align:center}
+.kpi b{display:block;font-size:25px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--fg2)}
+.kpi.gold b{color:var(--gold)}
+.kpi.blue b{color:var(--blue)}
+
+/* 一周出勤 */
+.week{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.day{text-align:center;border-radius:13px;padding:10px 4px;background:#f7f9fc}
+.day em{display:block;font-style:normal;font-size:11.5px;color:var(--fg3);margin-bottom:5px}
+.day b{font-size:16px;font-weight:750}
+.day.P b{color:var(--acc)}.day.L b{color:var(--warn)}
+.day.V b{color:var(--blue)}.day.X b{color:var(--err)}
+.day.N b{color:var(--fg3)}
+
+/* 记录 */
+.rec{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #f0f3f7}
+.rec:last-child{border:0}
+.rec time{font-size:12.5px;color:var(--fg3);width:44px;flex:none}
+.rec .rn{flex:1;font-size:14.5px}
+.rec .rd{font-weight:800;font-size:16px;color:var(--acc)}
+.rec .rd.neg{color:var(--err)}
+
+/* 公告 */
+.nt{padding:12px 14px;border-radius:14px;background:#f7f9fc;border-left:4px solid var(--blue);margin-bottom:9px}
+.nt.pin{background:var(--accbg);border-left-color:var(--acc)}
+.nt time{display:block;font-size:12px;color:var(--fg3);margin-bottom:4px}
+.nt p{margin:0;font-size:15px;line-height:1.6;word-break:break-word}
+
+.empty{color:var(--fg3);font-size:14px;padding:10px 0}
+.hint{font-size:12.5px;color:var(--fg3);margin-top:10px;line-height:1.6}
+.sync{text-align:center;font-size:12px;color:var(--fg3);margin-top:16px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--fg3);margin-right:5px;vertical-align:1px}
+.dot.on{background:var(--acc)}
+
+/* 选择孩子 */
+#who{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;overflow:auto}
+#who.on{display:block}
+#who .wrap{max-width:640px;margin:0 auto;padding:26px 18px 40px}
+#who h2{font-size:20px;margin:0 0 6px}
+#who p{color:var(--fg2);font-size:13.5px;margin:0 0 16px}
+.slist{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:8px}
+.sbtn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 6px;
+  font-size:16px;font-weight:600;box-shadow:var(--sh)}
+.sbtn:active{background:#eef4fb}
+
+/* 作业 */
+.hwitem{padding:13px 0;border-bottom:1px solid #f0f3f7}
+.hwitem:first-child{padding-top:2px}
+.hwitem:last-child{border-bottom:0;padding-bottom:2px}
+.hwh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:12.5px;color:var(--fg3);margin-bottom:7px}
+.hwh b{font-size:13.5px;color:#c9762c}
+.hwb{font-size:15.5px;line-height:1.6;font-weight:650;white-space:pre-wrap;word-break:break-word}
+.hwl{margin:9px 0 0;padding-left:20px;font-size:14.5px;line-height:1.8}
+.hwl li{margin-bottom:2px}
+.hwm{font-size:13.5px;line-height:1.7;color:var(--fg2);margin-top:10px;background:#f7f9fc;border-radius:12px;padding:10px 12px}
+.hwm div+div{margin-top:6px}
+.hwm b{color:var(--fg)}
+.hwck{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:13px;color:var(--fg2);
+  background:#f2f6fb;border:1px solid #dbe6f3;border-radius:20px;padding:7px 13px;cursor:pointer}
+.hwck.on{background:#fdf3e8;border-color:#f0d6b8;color:#b2691f;font-weight:600}
+.hwlink{color:#1f6feb;word-break:break-all}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="avatar">👨‍👩‍👧</div>
+    <div>
+      <div class="htitle" id="hTitle">家长端</div>
+      <div class="hsub" id="hSub">孩子今天在学校的表现</div>
+    </div>
+    <div class="sp"></div>
+    <button class="gbtn" id="switchBtn" onclick="openWho()">切换孩子</button>
+  </div>
+</header>
+
+<main>
+  <div class="card hero">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="flex:1">
+        <div class="hname" id="sName">—</div>
+        <div class="hmeta" id="sMeta">—</div>
+      </div>
+      <div id="sBadge" class="badge N">未点名</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi gold"><b id="kPts">0</b><span>累计积分</span></div>
+      <div class="kpi blue"><b id="kRank">—</b><span>班级排名</span></div>
+      <div class="kpi"><b id="kWeek">—</b><span>本周到校</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📅 <b>本周出勤</b><span class="sp"></span><span style="font-size:12.5px" id="weekTip"></span></div>
+    <div class="week" id="week"></div>
+    <div class="hint">到 = 正常到校 · 迟 = 迟到 · 假 = 请假 · 缺 = 未到</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 <b>作业</b><span class="sp"></span><span style="font-size:12.5px" id="hwTip"></span></div>
+    <div id="hwNow"></div>
+    <details id="hwPastBox" style="margin-top:4px">
+      <summary style="font-size:13.5px;color:#1f6feb;padding:8px 0;cursor:pointer">🗂️ 往期作业</summary>
+      <div id="hwPast"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div class="ct">🌟 <b>今日表现</b><span class="sp"></span><span style="font-size:12.5px" id="logTip"></span></div>
+    <div id="recs"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📢 <b>班级公告</b><span class="sp"></span><span style="font-size:12.5px" id="noteTip"></span></div>
+    <div id="notes"></div>
+  </div>
+
+  <div class="sync" id="sync"><span class="dot"></span>连接中…</div>
+</main>
+
+<div id="who">
+  <div class="wrap">
+    <h2>选择您的孩子</h2>
+    <p>选一次就会记住，下次直接进入。换设备重新选一下即可。</p>
+    <input id="q" placeholder="输入姓名或学号" oninput="drawWho()">
+    <div class="slist" id="whoList"></div>
+    <div style="margin-top:20px"><button class="gbtn" style="background:#eef4fb;color:#1f6feb;border-color:#cfe1fb" onclick="document.getElementById('who').classList.remove('on')">取消</button></div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+/* 同源优先；静态版（共享文件夹/公网）兜底到手机服务器 */
+let API = '/kanban/api';
+const API_BASES = ['/kanban', 'http://192.168.123.51:5000/kanban'];
+async function pickApi(){
+  if (API_BASES.length < 2) return;
+  for (const b of API_BASES){
+    try{
+      const r = await fetch(b + '/api/ping', { cache:'no-store', signal: AbortSignal.timeout(2500) });
+      if (r.ok){ API = b + '/api'; return; }
+    }catch(e){}
+  }
+}
+const WD = ['日','一','二','三','四','五','六'];
+const KEY = 'kanban_parent_sid';
+const pad = n => String(n).padStart(2,'0');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ATTN = { P:'到校', L:'迟到', V:'请假', X:'未到' };
+
+let S = null, sid = localStorage.getItem(KEY) || '', lastRev = -1, online = false;
+
+/* ── 专属入口：/kanban/s/01 → 锁定在这个学生，不再出现「选择孩子」 ── */
+const _pm = location.pathname.match(/\/(?:s|student|学生|parent)\/([^\/]+)\/?$/);
+const PATH_KEY = _pm ? decodeURIComponent(_pm[1]) : '';
+const _qs = new URLSearchParams(location.search);
+const LOCK_KEY = PATH_KEY || _qs.get('no') || _qs.get('name') || '';
+const LOCKED = !!LOCK_KEY;
+
+function normNo(v){ return String(v == null ? '' : v).trim().replace(/^0+(?=\d)/, ''); }
+function resolveKey(k){
+  if (!k || !S) return '';
+  const arr = S.students || [];
+  const kk = String(k).trim();
+  const hit = arr.find(x => x.id === kk)
+    || arr.find(x => normNo(x.no) === normNo(kk))
+    || arr.find(x => (x.name || '').trim() === kk);
+  return hit ? hit.id : '';
+}
+
+function todayKey(d){ d = d || new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+async function pull(){
+  try{
+    const r = await fetch(API + '/state', { cache:'no-store', signal: AbortSignal.timeout(7000) });
+    const j = await r.json();
+    if (!j || !j.ok) throw 0;
+    online = true;
+    if ((j.rev || 0) !== lastRev){ lastRev = j.rev || 0; S = j.state || {}; render(); }
+    drawSync();
+  }catch(e){ online = false; drawSync(); }
+}
+function drawSync(){
+  $('#sync').innerHTML = online
+    ? '<span class="dot on"></span>已同步 · ' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + ' 更新'
+    : '<span class="dot"></span>连不上服务器，稍后自动重试';
+}
+
+function me(){ return (S && S.students || []).find(x => x.id === sid); }
+
+function render(){
+  const m = S.meta || {};
+
+  if (LOCKED){
+    const rid = resolveKey(LOCK_KEY);
+    if (rid && rid !== sid){ sid = rid; localStorage.setItem(KEY, rid); }
+  }
+
+  const s = me();
+  if (LOCKED){
+    if (!s){
+      $('#hTitle').textContent = '学生专属页';
+      $('#hSub').textContent = '没有找到「' + LOCK_KEY + '」，请向老师要新链接';
+      const sb0 = $('#switchBtn'); if (sb0) sb0.style.display = 'none';
+      return;
+    }
+    $('#hTitle').textContent = (s.name || '') + ' · 在校表现';
+    $('#hSub').textContent = [m.className, m.teacher].filter(Boolean).join(' · ') || '孩子今天在学校的表现';
+    document.title = (s.name || '学生') + ' · 在校表现';
+    const sb = $('#switchBtn'); if (sb) sb.style.display = 'none';   // 专属页不允许切换
+  } else {
+    $('#hTitle').textContent = m.className ? m.className + ' · 家长端' : '家长端';
+    $('#hSub').textContent = m.teacher ? m.teacher + ' 发布' : '孩子今天在学校的表现';
+  }
+
+  if (!s){ openWho(); return; }
+
+  const name = s.name || '—';
+  $('#sName').textContent = name;
+  $('#sMeta').textContent = [m.className, s.no ? '学号 ' + s.no : ''].filter(Boolean).join(' · ') || '—';
+
+  // 今日考勤
+  const key = todayKey();
+  const st = ((S.att || {})[key] || {})[sid];
+  const bd = $('#sBadge');
+  bd.className = 'badge ' + (st || 'N');
+  bd.textContent = st ? ATTN[st] : '今天还没点名';
+
+  // 积分 / 排名 / 本周到校
+  const pts = S.pts || {};
+  const myPts = Number(pts[sid] || 0);
+  $('#kPts').textContent = myPts;
+  const all = (S.students || []).map(x => ({ id: x.id, p: Number(pts[x.id] || 0) }))
+    .sort((a,b) => b.p - a.p);
+  const rank = all.findIndex(x => x.id === sid) + 1;
+  $('#kRank').textContent = rank > 0 ? rank + '/' + all.length : '—';
+
+  // 本周（本周一起 5 天）
+  const mon = new Date(); const dow = (mon.getDay() + 6) % 7; mon.setDate(mon.getDate() - dow);
+  let arrive = 0, days = [];
+  for (let i = 0; i < 5; i++){
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
+    const k = todayKey(d);
+    const v = ((S.att || {})[k] || {})[sid];
+    if (v === 'P' || v === 'L') arrive++;
+    days.push({ k, d, v });
+  }
+  $('#kWeek').textContent = arrive + '/5';
+  $('#week').innerHTML = days.map((x, i) => {
+    const today = x.k === key;
+    const label = x.v ? ATTN[x.v].replace('到校','到').replace('未到','缺').replace('请假','假').replace('迟到','迟') : '—';
+    return `<div class="day ${x.v || 'N'}"${today ? ' style="outline:2px solid var(--blue);outline-offset:-2px"' : ''}>
+      <em>周${WD[x.d.getDay()]}</em><b>${label}</b></div>`;
+  }).join('');
+  $('#weekTip').textContent = '本周到校 ' + arrive + ' 天';
+
+  // 今日记录
+  const logs = (S.log || []).filter(l => l.sid === sid).slice(-12).reverse();
+  $('#recs').innerHTML = logs.length ? logs.map(l => {
+    const d = new Date(l.t);
+    return `<div class="rec"><time>${pad(d.getHours())}:${pad(d.getMinutes())}</time>
+      <span class="rn">${esc(l.reason || '')}</span>
+      <b class="rd${l.d < 0 ? ' neg' : ''}">${l.d > 0 ? '+' : ''}${l.d}</b></div>`;
+  }).join('') : '<div class="empty">今天还没有记录。老师加分后会显示在这里。</div>';
+  $('#logTip').textContent = logs.length ? '最近 ' + logs.length + ' 条' : '';
+
+  // 公告
+  const notes = (S.notes || []).slice().sort((a,b) => (b.pin?1:0)-(a.pin?1:0) || (b.ts||0)-(a.ts||0)).slice(0, 8);
+  $('#notes').innerHTML = notes.length ? notes.map(n => {
+    const d = new Date(n.ts || Date.now());
+    return `<div class="nt${n.pin?' pin':''}"><time>${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}${n.pin?' · 置顶':''}</time>
+      <p>${esc(n.text)}</p></div>`;
+  }).join('') : '<div class="empty">暂时没有公告。</div>';
+  $('#noteTip').textContent = notes.length ? notes.length + ' 条' : '';
+
+  renderHw();
+}
+
+/* ── 作业 ── */
+const HW_DONE_KEY = () => 'kanban_hw_done_' + (sid || 'anon');
+function hwDoneMap(){
+  try{ return JSON.parse(localStorage.getItem(HW_DONE_KEY()) || '{}') || {}; }catch(e){ return {}; }
+}
+function hwDone(id){ return !!hwDoneMap()[id]; }
+function toggleHwDone(id){
+  const m = hwDoneMap();
+  if (m[id]) delete m[id]; else m[id] = Date.now();
+  try{ localStorage.setItem(HW_DONE_KEY(), JSON.stringify(m)); }catch(e){}
+  renderHw();
+}
+function hwDateLabel(d){
+  if (!d) return '—';
+  const p = String(d).split('-');
+  const dt = new Date(+p[0], +p[1] - 1, +p[2]);
+  return `${+p[1]}月${+p[2]}日 星期${WD[dt.getDay()]}`;
+}
+function hwItems(h){
+  return String(h.items || '').split('\n').map(x => x.trim()).filter(Boolean);
+}
+function hwCard(h){
+  const it = hwItems(h), done = hwDone(h.id);
+  const meta = [];
+  if (h.req) meta.push(`<div><b>完成要求：</b>${esc(h.req)}</div>`);
+  if (h.guide) meta.push(`<div><b>📖 学习指导：</b>${esc(h.guide)}</div>`);
+  if (h.learn) meta.push(`<div><b>📚 学的是什么：</b>${esc(h.learn)}</div>`);
+  if (h.print) meta.push(`<div><b>🖨️ 可以打印：</b>${esc(h.print)}</div>`);
+  if (h.url) meta.push(`<div><b>🔗 资料：</b><a class="hwlink" href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.url)}</a></div>`);
+  if (h.boost) meta.push(`<div><b>🌟 提升版：</b>${esc(h.boost)}</div>`);
+  if (h.mins) meta.push(`<div><b>⏱ 预计：</b>约 ${esc(h.mins)} 分钟</div>`);
+  if (h.tip) meta.push(`<div><b>💡 提示：</b>${esc(h.tip)}</div>`);
+  return `<div class="hwitem">
+    <div class="hwh"><b>${esc(hwDateLabel(h.date))}</b><span>${esc(h.subj || '作业')}</span>${h.star ? '<span>⭐ 重点</span>' : ''}</div>
+    <div class="hwb">${esc(h.brief || it[0] || '')}</div>
+    ${it.length ? `<ol class="hwl">${it.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
+    ${meta.length ? `<div class="hwm">${meta.join('')}</div>` : ''}
+    <div class="hwck ${done ? 'on' : ''}" onclick="toggleHwDone('${h.id}')">${done ? '✓ 已完成' : '○ 标记已完成'}</div>
+  </div>`;
+}
+function renderHw(){
+  const box = $('#hwNow');
+  if (!box) return;
+  const arr = (S.hw || []).slice().sort((a, b) =>
+    String(b.date || '').localeCompare(String(a.date || '')) ||
+    (Number(a.order) || 99) - (Number(b.order) || 99));
+  const pb = $('#hwPastBox'), pl = $('#hwPast');
+  if (!arr.length){
+    box.innerHTML = '<div class="empty">老师还没有布置作业。</div>';
+    if (pb) pb.style.display = 'none';
+    if ($('#hwTip')) $('#hwTip').textContent = '';
+    return;
+  }
+  const dates = [...new Set(arr.map(x => String(x.date || '')))].sort().reverse();
+  const latest = dates[0];
+  const now = arr.filter(x => String(x.date || '') === latest);
+  const past = arr.filter(x => String(x.date || '') !== latest);
+  box.innerHTML = now.map(hwCard).join('');
+  if (pb && pl){
+    pb.style.display = past.length ? '' : 'none';
+    pl.innerHTML = past.map(hwCard).join('');
+  }
+  if ($('#hwTip')) $('#hwTip').textContent = past.length ? '往期 ' + past.length + ' 条' : '';
+}
+
+/* 选择孩子 */
+function openWho(){ $('#who').classList.add('on'); if (S) drawWho(); }
+function drawWho(){
+  const q = ($('#q').value || '').trim();
+  const list = (S && S.students || []).filter(s =>
+    !q || (s.name || '').includes(q) || String(s.no || '') === q);
+  $('#whoList').innerHTML = list.length ? list.map(s =>
+    `<button class="sbtn" onclick="pick('${s.id}')">${esc(s.name)}</button>`).join('')
+    : '<div class="empty">没有匹配的名字。若是首次使用，请等老师把名单导好。</div>';
+}
+function pick(id){
+  sid = id; localStorage.setItem(KEY, id);
+  $('#who').classList.remove('on');
+  render();
+}
+
+/* 启动 */
+const urlSid = new URLSearchParams(location.search).get('sid');
+if (urlSid) { sid = urlSid; localStorage.setItem(KEY, urlSid); }
+(async () => { await pickApi(); pull(); })();
+setInterval(pull, 5000);
+setInterval(() => { if (!document.hidden) pull(); }, 15000);
+</script>
+</body>
+</html>
