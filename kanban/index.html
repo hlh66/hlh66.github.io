@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--line:#30363d;
-  --fg:#e6edf3;--fg2:#8b949e;--acc:#3fb950;--blue:#58a6ff;--warn:#d29922;
+  --fg:#e6edf3;--fg2:#8b949e;--acc:#3fb950;--blue:#58a6ff;--warn:#d29922;--pur:#bc8cff;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -17,15 +17,9 @@ body{background:var(--bg);color:var(--fg);font-family:-apple-system,'PingFang SC
 h1{font-size:20px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .sub{color:var(--fg2);font-size:12.5px;margin-bottom:16px;line-height:1.6}
 .sub b{color:var(--warn)}
-.ipcard{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:16px}
-.ipcard label{font-size:12px;color:var(--fg2);display:block;margin-bottom:6px}
-.iprow{display:flex;gap:8px}
-.iprow input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;
-  color:var(--fg);padding:9px 12px;font-size:14px;font-family:ui-monospace,Consolas,monospace}
-.iprow input:focus{outline:none;border-color:var(--blue)}
-.iprow button{background:var(--bg3);border:1px solid var(--line);border-radius:10px;color:var(--fg);
-  padding:9px 14px;font-size:13px;cursor:pointer}
-.iprow button:active{background:var(--line)}
+h2{font-size:13px;color:var(--fg2);font-weight:600;margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+h2 .tag{font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:20px;border:1px solid var(--line);color:var(--fg2)}
+h2 .tag.on{color:var(--acc);border-color:rgba(63,185,80,.5);background:rgba(63,185,80,.10)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 a.card{display:block;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
   padding:14px;text-decoration:none;color:var(--fg);transition:transform .1s}
@@ -36,52 +30,68 @@ a.card .d{font-size:11.5px;color:var(--fg2);line-height:1.5;display:block;word-b
 a.card.wide{grid-column:1/-1}
 a.card.pri{border-color:var(--acc);background:linear-gradient(135deg,rgba(63,185,80,.10),var(--bg2))}
 a.card.pri .t{color:var(--acc)}
+a.card.pub{border-color:rgba(188,140,255,.45);background:linear-gradient(135deg,rgba(188,140,255,.10),var(--bg2))}
+a.card.pub .t{color:var(--pur)}
+.ipcard{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:4px}
+.ipcard label{font-size:12px;color:var(--fg2);display:block;margin-bottom:6px}
+.iprow{display:flex;gap:8px}
+.iprow input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  color:var(--fg);padding:9px 12px;font-size:14px;font-family:ui-monospace,Consolas,monospace}
+.iprow input:focus{outline:none;border-color:var(--blue)}
+.iprow button{background:var(--bg3);border:1px solid var(--line);border-radius:10px;color:var(--fg);
+  padding:9px 14px;font-size:13px;cursor:pointer}
+.iprow button:active{background:var(--line)}
 .tip{margin-top:16px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
   padding:12px 14px;font-size:12px;color:var(--fg2);line-height:1.7}
 .tip b{color:var(--warn)}
 </style>
 </head>
 <body>
-<h1>🧭 看班 · 手机服务器导航</h1>
-<div class="sub">从这里一键跳转手机服务器（洪老师专用）<br>
-<b>注意：手机服务器在局域网，需和它连同一个 WiFi 才打得开</b></div>
+<h1>🧭 看班 · 服务器导航</h1>
+<div class="sub">公网随时可用；同一 WiFi 时用内网更快<br>
+<span style="color:var(--pur)">■ 公网隧道（SakuraFrp）</span> · <span style="color:var(--acc)">■ 内网直连</span></div>
 
+<h2>🌍 公网访问 <span class="tag on">任何网络都能开</span></h2>
+<div class="grid" id="pubGrid"></div>
+
+<h2>🏠 内网直连 <span class="tag">同一 WiFi 下最快</span></h2>
 <div class="ipcard">
-  <label>服务器 IP（换网/IP 变了就改这里，自动记住）</label>
+  <label>服务器 IP（IP 变了改这里，自动记住）</label>
   <div class="iprow">
     <input id="ip" placeholder="192.168.123.51">
     <button onclick="saveIp()">保存</button>
     <button onclick="resetIp()">默认</button>
   </div>
 </div>
-
-<div class="grid" id="grid"></div>
+<div class="grid" id="lanGrid"></div>
 
 <div class="tip">
-💡 教师端路径是独立的 <b>/kanban/teacher</b>，别把这条链接发给学生。<br>
-📱 学生链接在教师端「学生专属入口」里，每人一条。<br>
-🌐 本页由 GitHub Pages 托管，外网永远打得开；跳转目标是手机服务器。
+💡 教师端路径独立（<b>/kanban/teacher</b>），别把这条发给学生或家长。<br>
+🔐 公网走 HTTPS，浏览器可能提示证书不受信任（SakuraFrp 免费隧道），点「继续访问」即可。<br>
+📥 教室电脑装被控端：公网/内网下载都可以，首次运行自动生成配置。
 </div>
 
 <script>
 const DEF_IP = '192.168.123.51';
+const PUB = 'https://frp-off.com:40476';
 const ip = () => (localStorage.getItem('kanban_srv_ip') || DEF_IP).trim() || DEF_IP;
-const base = () => 'http://' + ip() + ':5000';
+const lan = () => 'http://' + ip() + ':5000';
 
-const LINKS = [
+const ITEMS = [
   {ic:'🧑‍🏫', t:'教师端 · 管理', d:'/kanban/teacher', u:'/kanban/teacher', pri:1, wide:1},
   {ic:'🧰', t:'我的工作台', d:'个人总工作台', u:'/kanban/workbench'},
   {ic:'📺', t:'学生端 · 大屏', d:'教室大屏只读', u:'/kanban/'},
   {ic:'👨‍👩‍👧', t:'家长端', d:'回家看自家孩子', u:'/kanban/parent'},
-  {ic:'📥', t:'被控端 exe', d:'down/pc_agent_web.exe', u:'/kanban/down/pc_agent_web.exe', wide:1},
+  {ic:'📥', t:'被控端 exe', d:'首次运行自动配置', u:'/kanban/down/pc_agent_web.exe', wide:1},
 ];
 
+function card(l, base, extra){
+  return '<a class="card '+(l.pri?'pri ':'')+(extra||'')+(l.wide?' wide':'')+'" href="'+base+l.u+'" target="_blank" rel="noopener">' +
+    '<span class="ic">'+l.ic+'</span><span class="t">'+l.t+'</span><span class="d">'+l.d+'</span></a>';
+}
 function render(){
-  const g = document.getElementById('grid');
-  g.innerHTML = LINKS.map(l =>
-    '<a class="card'+(l.pri?' pri':'')+(l.wide?' wide':'')+'" href="'+base()+l.u+'" target="_blank" rel="noopener">' +
-    '<span class="ic">'+l.ic+'</span><span class="t">'+l.t+'</span><span class="d">'+l.d+'</span></a>'
-  ).join('');
+  document.getElementById('pubGrid').innerHTML = ITEMS.map(l => card(l, PUB, 'pub')).join('');
+  document.getElementById('lanGrid').innerHTML = ITEMS.map(l => card(l, lan(), '')).join('');
   document.getElementById('ip').value = ip();
 }
 function saveIp(){
