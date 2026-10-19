@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>看班 · 手机服务器导航</title>
+<style>
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--line:#30363d;
+  --fg:#e6edf3;--fg2:#8b949e;--acc:#3fb950;--blue:#58a6ff;--warn:#d29922;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  min-height:100vh;padding:18px 14px 40px;max-width:520px;margin:0 auto}
+h1{font-size:20px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sub{color:var(--fg2);font-size:12.5px;margin-bottom:16px;line-height:1.6}
+.sub b{color:var(--warn)}
+.ipcard{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:16px}
+.ipcard label{font-size:12px;color:var(--fg2);display:block;margin-bottom:6px}
+.iprow{display:flex;gap:8px}
+.iprow input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  color:var(--fg);padding:9px 12px;font-size:14px;font-family:ui-monospace,Consolas,monospace}
+.iprow input:focus{outline:none;border-color:var(--blue)}
+.iprow button{background:var(--bg3);border:1px solid var(--line);border-radius:10px;color:var(--fg);
+  padding:9px 14px;font-size:13px;cursor:pointer}
+.iprow button:active{background:var(--line)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+a.card{display:block;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px;text-decoration:none;color:var(--fg);transition:transform .1s}
+a.card:active{transform:scale(.97)}
+a.card .ic{font-size:26px;display:block;margin-bottom:8px}
+a.card .t{font-size:14.5px;font-weight:650;display:block;margin-bottom:3px}
+a.card .d{font-size:11.5px;color:var(--fg2);line-height:1.5;display:block;word-break:break-all}
+a.card.wide{grid-column:1/-1}
+a.card.pri{border-color:var(--acc);background:linear-gradient(135deg,rgba(63,185,80,.10),var(--bg2))}
+a.card.pri .t{color:var(--acc)}
+.tip{margin-top:16px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 14px;font-size:12px;color:var(--fg2);line-height:1.7}
+.tip b{color:var(--warn)}
+</style>
+</head>
+<body>
+<h1>🧭 看班 · 手机服务器导航</h1>
+<div class="sub">从这里一键跳转手机服务器（洪老师专用）<br>
+<b>注意：手机服务器在局域网，需和它连同一个 WiFi 才打得开</b></div>
+
+<div class="ipcard">
+  <label>服务器 IP（换网/IP 变了就改这里，自动记住）</label>
+  <div class="iprow">
+    <input id="ip" placeholder="192.168.123.51">
+    <button onclick="saveIp()">保存</button>
+    <button onclick="resetIp()">默认</button>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="tip">
+💡 教师端路径是独立的 <b>/kanban/teacher</b>，别把这条链接发给学生。<br>
+📱 学生链接在教师端「学生专属入口」里，每人一条。<br>
+🌐 本页由 GitHub Pages 托管，外网永远打得开；跳转目标是手机服务器。
+</div>
+
+<script>
+const DEF_IP = '192.168.123.51';
+const ip = () => (localStorage.getItem('kanban_srv_ip') || DEF_IP).trim() || DEF_IP;
+const base = () => 'http://' + ip() + ':5000';
+
+const LINKS = [
+  {ic:'🧑‍🏫', t:'教师端 · 管理', d:'/kanban/teacher', u:'/kanban/teacher', pri:1, wide:1},
+  {ic:'🧰', t:'我的工作台', d:'个人总工作台', u:'/kanban/workbench'},
+  {ic:'📺', t:'学生端 · 大屏', d:'教室大屏只读', u:'/kanban/'},
+  {ic:'👨‍👩‍👧', t:'家长端', d:'回家看自家孩子', u:'/kanban/parent'},
+  {ic:'📥', t:'被控端 exe', d:'down/pc_agent_web.exe', u:'/kanban/down/pc_agent_web.exe', wide:1},
+];
+
+function render(){
+  const g = document.getElementById('grid');
+  g.innerHTML = LINKS.map(l =>
+    '<a class="card'+(l.pri?' pri':'')+(l.wide?' wide':'')+'" href="'+base()+l.u+'" target="_blank" rel="noopener">' +
+    '<span class="ic">'+l.ic+'</span><span class="t">'+l.t+'</span><span class="d">'+l.d+'</span></a>'
+  ).join('');
+  document.getElementById('ip').value = ip();
+}
+function saveIp(){
+  const v = document.getElementById('ip').value.trim();
+  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(v)){ alert('IP 格式不对，例如 192.168.123.51'); return; }
+  localStorage.setItem('kanban_srv_ip', v); render();
+}
+function resetIp(){ localStorage.removeItem('kanban_srv_ip'); render(); }
+render();
+</script>
+</body>
+</html>
