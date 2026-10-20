@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>多端控制 · 教室电脑</title>
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--line:#30363d;--fg:#e6edf3;--fg2:#8b949e;
+  --acc:#3fb950;--blue:#58a6ff;--warn:#d29922;--red:#f85149;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  min-height:100vh;padding:16px 13px 40px;max-width:560px;margin:0 auto;font-size:15px}
+h1{font-size:19px;display:flex;align-items:center;gap:8px}
+.sub{color:var(--fg2);font-size:12.5px;margin:5px 0 14px;line-height:1.6}
+.bar{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--line);
+  border-radius:var(--r);padding:11px 13px;margin-bottom:12px;font-size:13px}
+.bar .dot{width:8px;height:8px;border-radius:50%;background:var(--fg2);flex:none}
+.bar .dot.on{background:var(--acc);box-shadow:0 0 8px rgba(63,185,80,.7)}
+.bar .sp{flex:1}
+.bar b{font-size:15px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:13px;margin-bottom:12px}
+.card h3{font-size:13px;color:var(--fg2);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pcs{display:flex;flex-direction:column;gap:8px}
+.pc{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);
+  border-radius:11px;padding:10px 12px;cursor:pointer}
+.pc.on{border-color:var(--acc);background:rgba(63,185,80,.08)}
+.pc .nm{font-size:14px;font-weight:600;flex:1;word-break:break-all}
+.pc .st{font-size:11.5px;color:var(--fg2)}
+.pc .st.live{color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+button{font-family:inherit;font-size:13px;border-radius:10px;border:1px solid var(--line);
+  background:var(--bg3);color:var(--fg);padding:11px 6px;cursor:pointer;transition:transform .08s}
+button:active{transform:scale(.96)}
+button.pri{background:rgba(63,185,80,.16);border-color:rgba(63,185,80,.55);color:var(--acc);font-weight:650}
+button.dg{background:rgba(248,81,73,.12);border-color:rgba(248,81,73,.45);color:var(--red)}
+.cmdrow{display:flex;gap:8px}
+.cmdrow input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  color:var(--fg);padding:11px 12px;font-size:13.5px;font-family:ui-monospace,Consolas,monospace}
+.cmdrow input:focus{outline:none;border-color:var(--blue)}
+.cmdrow button{flex:none;padding:11px 16px}
+#out{background:#010409;border:1px solid var(--line);border-radius:11px;padding:12px;
+  font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.65;color:#c9d1d9;
+  max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all;min-height:70px}
+#out .t{color:var(--fg2)}
+#out .ok{color:var(--acc)}
+#out .bad{color:var(--red)}
+.hint{font-size:11.5px;color:var(--fg2);line-height:1.6;margin-top:9px}
+.hint a{color:var(--blue);text-decoration:none}
+.mask{position:fixed;inset:0;background:rgba(1,4,9,.86);display:flex;align-items:center;
+  justify-content:center;padding:20px;z-index:9}
+.mask .box{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:18px;
+  width:100%;max-width:340px}
+.mask h3{font-size:15px;margin-bottom:6px}
+.mask p{font-size:12.5px;color:var(--fg2);line-height:1.6;margin-bottom:12px}
+.mask input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  color:var(--fg);padding:11px 12px;font-size:14px;margin-bottom:10px}
+.mask button{width:100%}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:20px;border:1px solid var(--line);color:var(--fg2)}
+</style>
+</head>
+<body>
+<h1>🖥 多端控制 · 教室电脑</h1>
+<div class="sub">这台服务器：<b id="svName">…</b> · 电脑上的被控端 exe 连上来后就能在这里操作</div>
+
+<div class="bar">
+  <span class="dot" id="dot"></span>
+  <span id="stat">正在连接…</span>
+  <span class="sp"></span>
+  <span class="tag" id="cnt">0 台在线</span>
+</div>
+
+<div class="card">
+  <h3>💻 在线电脑 <span class="tag" id="selTag">未选择</span></h3>
+  <div class="pcs" id="pcs"><div class="hint">正在读取…</div></div>
+  <div class="hint">电脑上双击 <code>pc_agent_web.exe</code> 后，几秒内会出现在这里。没装？
+    <a href="/mctl/down/">下载被控端</a></div>
+</div>
+
+<div class="card">
+  <h3>🌐 打开网页（在教室电脑上打开）</h3>
+  <div class="cmdrow">
+    <input id="url" placeholder="https://www.baidu.com" onkeydown="if(event.key==='Enter')openUrl()">
+    <button class="pri" onclick="openUrl()">打开</button>
+  </div>
+  <div class="grid" style="margin-top:8px">
+    <button onclick="openUrl('https://hlh66.github.io/kanban/')">导航页</button>
+    <button onclick="openUrl('http://192.168.123.51:5000/kanban/')">学生端大屏</button>
+    <button onclick="openUrl('http://192.168.123.51:5000/kanban/parent')">家长端</button>
+  </div>
+  <div class="hint">不写 https:// 也行，会自动补。电脑上没开浏览器会顺手启动默认浏览器。</div>
+</div>
+
+<div class="card">
+  <h3>⚡ 常用操作 <label style="float:right;font-size:12px;font-weight:500;color:#bc8cff;cursor:pointer"><input type="checkbox" id="mq" style="vertical-align:-2px"> MQTT 广播</label></h3>
+  <div class="grid">
+    <button onclick="quick('__ping__')">PING</button>
+    <button onclick="quick('__status__')">状态</button>
+    <button onclick="quick('ipconfig')">IP 配置</button>
+    <button onclick="quick('tasklist | findstr /i chrome')">查 Chrome</button>
+    <button onclick="quick('whoami')">当前用户</button>
+    <button onclick="quick('wmic logicaldisk get caption,freespace')">磁盘空间</button>
+    <button onclick="quick('start taskmgr')">任务管理器</button>
+    <button onclick="quick('shutdown /a')">取消关机</button>
+    <button class="dg" onclick="danger('rundll32.exe user32.dll,LockWorkStation','锁屏')">锁屏</button>
+  </div>
+  <div class="grid" style="margin-top:8px;grid-template-columns:1fr 1fr">
+    <button class="dg" onclick="danger('shutdown /r /t 0 /f','重启电脑')">重启</button>
+    <button class="dg" onclick="danger('shutdown /s /t 0 /f','关机')">关机</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>⌨️ 自定义命令（Windows CMD）</h3>
+  <div class="cmdrow">
+    <input id="cmd" placeholder="例如  dir  /  tasklist  /  start calc" onkeydown="if(event.key==='Enter')send()">
+    <button class="pri" onclick="send()">执行</button>
+  </div>
+  <div class="hint">命令在<b>教室电脑</b>上执行（不是服务器）；输出最多显示 6 万字符。</div>
+</div>
+
+<div class="card">
+  <h3>📤 执行结果</h3>
+  <div id="out"><span class="t">（还没有下发过命令）</span></div>
+  <div class="hint"><a href="javascript:clearOut()">清空</a> · 结果只保留最近 30 条</div>
+</div>
+
+<div class="mask" id="mask" style="display:none">
+  <div class="box">
+    <h3>🔑 输入管理口令</h3>
+    <p>防止别人在外网随意操控教室电脑。口令在服务器的「多端控制」模块里（MCTL_KEY，默认 kban2026）。</p>
+    <input id="keyIn" type="password" placeholder="管理口令" onkeydown="if(event.key==='Enter')saveKey()">
+    <button class="pri" onclick="saveKey()">进入</button>
+  </div>
+</div>
+
+<script>
+const q = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const K = () => localStorage.getItem('mctl_key') || '';
+let SEL = '', PCS = [], POLL = null;
+
+function keyUrl(p){
+  return p + (p.indexOf('?') >= 0 ? '&' : '?') + 'key=' + encodeURIComponent(K());
+}
+async function req(p, opt){
+  const r = await fetch(keyUrl(p), Object.assign({cache:'no-store', signal:AbortSignal.timeout(12000)}, opt||{}));
+  if (r.status === 401) { showMask(); throw new Error('需要口令'); }
+  return r.json();
+}
+function showMask(){ q('#mask').style.display = 'flex'; q('#keyIn').focus(); }
+function saveKey(){
+  const v = q('#keyIn').value.trim();
+  if (!v) return;
+  localStorage.setItem('mctl_key', v);
+  q('#mask').style.display = 'none';
+  boot();
+}
+async function clearOut(){ q('#out').innerHTML = '<span class="t">（已清空）</span>'; }
+
+async function loadHealth(){
+  try {
+    const j = await req('/mctl/admin/health');
+    q('#dot').classList.add('on');
+    q('#stat').innerHTML = '服务器在线 · 已登记 ' + j.agents + ' 台';
+    q('#svName').textContent = j.server || location.host;
+  } catch(e) {
+    q('#dot').classList.remove('on');
+    q('#stat').textContent = '连不上服务器';
+  }
+}
+
+async function loadClients(){
+  try {
+    const j = await req('/mctl/admin/clients');
+    PCS = j.clients || [];
+    const on = PCS.filter(c => c.online).length;
+    q('#cnt').textContent = on + ' 台在线';
+    if (!PCS.length) {
+      q('#pcs').innerHTML = '<div class="hint">还没有电脑连上来。到教室电脑上双击 exe，几秒后刷新。</div>';
+      return;
+    }
+    if (!SEL && PCS.length) SEL = (PCS.find(c => c.online) || PCS[0]).id;
+    q('#pcs').innerHTML = PCS.map(c =>
+      '<div class="pc ' + (c.id === SEL ? 'on' : '') + '" onclick="pick(\'' + c.id + '\')">' +
+        '<span class="dot" style="width:8px;height:8px;border-radius:50%;background:' +
+          (c.online ? 'var(--acc)' : 'var(--fg2)') + '"></span>' +
+        '<span class="nm">' + esc(c.name || c.id) + '</span>' +
+        '<span class="st ' + (c.online ? 'live' : '') + '">' +
+          (c.online ? '在线' : (c.ago ? Math.round(c.ago/60) + ' 分钟前' : '离线')) + '</span>' +
+      '</div>').join('');
+    const cur = PCS.find(c => c.id === SEL);
+    q('#selTag').textContent = cur ? (cur.name || cur.id) : '未选择';
+  } catch(e) {}
+}
+function pick(id){ SEL = id; loadClients(); }
+
+function log(html){ q('#out').innerHTML += html; q('#out').scrollTop = 1e9; }
+
+async function run(cmd){
+  const mq = q('#mq') && q('#mq').checked;
+  if (!SEL && !mq) { log('<div class="bad">⚠ 先选一台在线电脑（或勾选 MQTT 广播）</div>'); return; }
+  log('<div class="t">▶ ' + esc(cmd) + (mq ? '  <span style="color:#bc8cff">[MQTT]</span>' : '') + '  <span style="opacity:.6">下发中…</span></div>');
+  try {
+    const j = await req('/mctl/admin/send', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(mq ? {cmd, via:'mqtt'} : {cid: SEL, cmd})
+    });
+    if (!j.ok) { log('<div class="bad">✗ ' + esc(j.error || '下发失败') + '</div>'); return; }
+    const tid = j.tid; let shown = false;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      const rr = await req('/mctl/admin/results?cid=' + encodeURIComponent(SEL) + (mq ? '&via=mqtt' : ''));
+      const hit = (rr.results || []).slice().reverse().find(x => x.tid === tid);
+      if (hit && !shown) {
+        shown = true;
+        log('<div class="' + (hit.ok ? 'ok' : 'bad') + '">' + (hit.ok ? '✓' : '✗ 失败') +
+            ' <span class="t">' + new Date(hit.ts * 1000).toLocaleTimeString() + '</span>\n' +
+            esc(hit.output || '（无输出）') + '</div><div class="t">──────────</div>');
+        break;
+      }
+    }
+    if (!shown) log('<div class="t">… 还没回结果（电脑可能离线或命令在执行，稍后点「最近结果」）</div>' +
+                    '<div class="t">──────────</div>');
+  } catch(e) {
+    log('<div class="bad">✗ ' + esc(e.message) + '</div>');
+  }
+}
+function quick(c){ run(c); }
+function openUrl(u){
+  let v = (u || q('#url').value || '').trim();
+  if (!v) return;
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  q('#url').value = v;
+  // start 后的第一个引号参数会被当窗口标题，必须留一对空引号
+  run('start "" "' + v + '"');
+}
+function danger(c, label){
+  if (!confirm('确定要对这台电脑执行「' + label + '」吗？')) return;
+  run(c);
+}
+async function send(){
+  const v = q('#cmd').value.trim();
+  if (!v) return;
+  q('#cmd').value = '';
+  run(v);
+}
+
+let first = true;
+async function boot(){
+  // 支持直接带口令打开：/mctl/?key=xxx （会记住并清理地址栏）
+  const m = location.search.match(/[?&]key=([^&]+)/);
+  if (m) {
+    localStorage.setItem('mctl_key', decodeURIComponent(m[1]));
+    history.replaceState(null, '', location.pathname);
+  }
+  if (!K()) { showMask(); return; }
+  if (first) { first = false; }
+  await loadHealth();
+  await loadClients();
+  if (!POLL) POLL = setInterval(() => { if (!document.hidden) { loadHealth(); loadClients(); } }, 5000);
+}
+boot();
+</script>
+</body>
+</html>
