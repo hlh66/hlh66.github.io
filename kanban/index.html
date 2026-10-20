@@ -65,10 +65,14 @@ a.card.pub .t{color:var(--pur)}
 </div>
 <div class="grid" id="lanGrid"></div>
 
+<h2>📥 教室电脑 · 被控端下载 <span class="tag on">4 个下载点</span></h2>
+<div class="grid" id="dlGrid"></div>
+
 <div class="tip">
 💡 教师端路径独立（<b>/kanban/teacher</b>），别把这条发给学生或家长。<br>
 🔐 公网走 HTTPS，浏览器可能提示证书不受信任（SakuraFrp 免费隧道），点「继续访问」即可。<br>
-📥 教室电脑装被控端：公网/内网下载都可以，首次运行自动生成配置。
+📥 教室电脑装被控端：<b>只下一个 exe（207KB）双击就行</b>，首次运行自动生成配置；默认收托盘不弹窗。<br>
+🖥 手机服务器、平板服务器里都放了这份 exe，任何一个下载点拿到的文件完全一样。
 </div>
 
 <script>
@@ -82,7 +86,14 @@ const ITEMS = [
   {ic:'🧰', t:'我的工作台', d:'个人总工作台', u:'/kanban/workbench'},
   {ic:'📺', t:'学生端 · 大屏', d:'教室大屏只读', u:'/kanban/'},
   {ic:'👨‍👩‍👧', t:'家长端', d:'回家看自家孩子', u:'/kanban/parent'},
-  {ic:'📥', t:'被控端 exe', d:'首次运行自动配置', u:'/kanban/down/pc_agent_web.exe', wide:1},
+];
+
+// exe 下载点：手机服务器 / 平板服务器 各内网 + 公网
+const DLS = [
+  {ic:'📱', t:'手机服务器 · 公网', d:'frp-off.com:40476', u:'https://frp-off.com:40476/mctl/down/pc_agent_web.exe'},
+  {ic:'📟', t:'平板服务器 · 公网', d:'hlh66.fucku.top', u:'http://hlh66.fucku.top/mctl/down/pc_agent_web.exe'},
+  {ic:'🏠', t:'手机服务器 · 内网', d:'同一 WiFi 更快', u:'__LAN__/mctl/down/pc_agent_web.exe'},
+  {ic:'🏠', t:'平板服务器 · 内网', d:'同一 WiFi 更快', u:'__TAB__/mctl/down/pc_agent_web.exe'},
 ];
 
 function card(l, base, extra){
@@ -92,6 +103,14 @@ function card(l, base, extra){
 function render(){
   document.getElementById('pubGrid').innerHTML = ITEMS.map(l => card(l, PUB, 'pub')).join('');
   document.getElementById('lanGrid').innerHTML = ITEMS.map(l => card(l, lan(), '')).join('');
+  const tab = 'http://' + (localStorage.getItem('kanban_tab_ip') || '192.168.123.38') + ':5000';
+  document.getElementById('dlGrid').innerHTML = DLS.map(l => {
+    let u = l.u.replace('__LAN__', lan()).replace('__TAB__', tab);
+    let extra = l.u.indexOf('hlh66') >= 0 ? 'pub' : '';
+    return '<a class="card ' + extra + '" href="' + u + '">' +
+      '<span class="ic">' + l.ic + '</span><span class="t">' + l.t + '</span>' +
+      '<span class="d">' + l.d + '</span></a>';
+  }).join('');
   document.getElementById('ip').value = ip();
 }
 function saveIp(){
