@@ -159,13 +159,6 @@ def page_student_one(key):
     return send_from_directory(WEB, 'parent.html')
 
 
-# 洪老师个人工作台（应用/网站/待办/常用指令/项目索引），只在教师端页签里内嵌
-@bp.route('/workbench')
-@bp.route('/workbench/')
-def page_workbench():
-    return send_from_directory(WEB, 'workbench.html')
-
-
 @bp.route('/<path:f>')
 def page_asset(f):
     if f.startswith('api/'):
@@ -175,6 +168,26 @@ def page_asset(f):
     if f not in ('student.html', 'parent.html'):
         return jsonify(ok=False, error='not found'), 404
     return send_from_directory(WEB, f)
+
+
+# ── 模块页面文件夹：/kanban/pages/<文件> ──
+# 工作台、数学工作台等扩展模块都放 web/pages/ 里，加新模块丢文件即可，不用改代码
+# （send_from_directory 自带目录穿越防护，.. 会被拒）
+PAGES = os.path.join(WEB, 'pages')
+
+
+@bp.route('/pages/<path:f>')
+def page_module(f):
+    if not os.path.isdir(PAGES):
+        return jsonify(ok=False, error='not found'), 404
+    return send_from_directory(PAGES, f)
+
+
+# 兼容旧入口：/kanban/workbench → pages/workbench.html
+@bp.route('/workbench')
+@bp.route('/workbench.html')
+def page_workbench_alias():
+    return send_from_directory(PAGES, 'workbench.html')
 
 
 # ── 工具下载（白名单，只放 /kanban/down/ 里的指定文件） ──
