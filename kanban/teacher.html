@@ -355,6 +355,12 @@ nav button.on .ic{filter:none}
       <div id="agOut" style="max-height:200px;overflow:auto"></div>
       <div class="hint">这是 v3 新通道：电脑上的 exe 直接连手机服务器（不依赖公网中转）。电脑上第一次运行后点「刷新」就会出现。</div>
       <div class="hint">📥 教室电脑还没装？下载单个文件即可：<a href="/kanban/down/pc_agent_web.exe" style="color:#7fd4ff">pc_agent_web.exe</a>（200KB，C 语言编译，双击就能用，首次运行自动生成配置）· 也可下 <a href="/kanban/down/pc_agent.zip" style="color:#7fd4ff">zip 整包</a>（多一份说明）</div>
+      <div class="hint">🖥 下载点（任选一个，文件完全一样 207KB）：
+        <a href="http://192.168.123.51:5000/mctl/down/pc_agent_web.exe" style="color:#7fd4ff">手机服务器·内网</a> ·
+        <a href="https://frp-off.com:40476/mctl/down/pc_agent_web.exe" style="color:#7fd4ff">手机服务器·公网</a> ·
+        <a href="http://192.168.123.38:5000/mctl/down/pc_agent_web.exe" style="color:#7fd4ff">平板服务器·内网</a> ·
+        <a href="http://hlh66.fucku.top/mctl/down/pc_agent_web.exe" style="color:#7fd4ff">平板服务器·公网</a>
+      </div>
     </div>
 
     <div class="card">
@@ -883,16 +889,22 @@ async function loadPc(){
   $('#pcHint').textContent = `已连 ${S.cfg.cname}${on.length>1?`（另有 ${on.length-1} 台在线）`:''}`;
   return cs;
 }
-/* ════════════════════ Agent 直连（v3 通道） ════════════════════ */
+/* ════════════════════ Agent 直连（v3 通道 + 多端控制 /mctl） ════════════════════ */
 let AGS = [];
 async function loadAg(){
   const p = $('#agPill');
   try{
-    const r = await fetch(apiUrl('/api/agent?api=clients'), { cache:'no-store', signal: AbortSignal.timeout(9000) });
-    const j = await r.json();
-    AGS = (j.clients || []);
+    // 新 exe 注册在 /mctl（多端控制），旧版注册在 /api/agent（看班），两边合并显示
+    const fetch1 = async u => { try{
+      const r = await fetch(apiUrl(u), { cache:'no-store', signal: AbortSignal.timeout(9000) });
+      return (await r.json()).clients || [];
+    }catch(e){ return []; } };
+    const mctl = (await fetch1('/mctl/api/agent?api=clients')).map(c => ({...c, src:'mctl'}));
+    const kb   = (await fetch1('/api/agent?api=clients')).map(c => ({...c, src:'kb'}));
+    const seen = new Set();
+    AGS = mctl.concat(kb).filter(c => !seen.has(c.id) && seen.add(c.id));
     const sel = $('#agSel');
-    sel.innerHTML = AGS.map(c => `<option value="${esc(c.id)}">${c.online?'🟢':'⚪'} ${esc(c.name||c.id)}${c.online?'':'（离线）'}</option>`).join('')
+    sel.innerHTML = AGS.map(c => `<option value="${esc(c.id)}">${c.online?'🟢':'⚪'} ${esc(c.name||c.id)}${c.src==='mctl'?'':'（旧版）'}${c.online?'':'（离线）'}</option>`).join('')
       || '<option value="">（还没有电脑上线）</option>';
     if (AGS.some(c => c.online)) p.innerHTML = `<i class="dot on"></i><span>${AGS.filter(c=>c.online).length} 台在线</span>`;
     else p.innerHTML = `<i class="dot off"></i><span>无在线</span>`;
@@ -902,8 +914,10 @@ async function loadAg(){
 }
 async function agRun(cmd){
   const cid = $('#agSel').value;
+  const rec = AGS.find(c => c.id === cid);
+  const base = rec && rec.src === 'kb' ? '/api/agent' : '/mctl/api/agent';
   if (!cid){ toast('先刷新，让电脑连上来'); return; }
-  const r = await fetch(apiUrl('/api/agent?api=send'), {
+  const r = await fetch(apiUrl(base + '?api=send'), {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({cid, cmd}), signal: AbortSignal.timeout(9000)
   });
@@ -917,7 +931,7 @@ async function agRun(cmd){
   for(let i=0;i<20;i++){
     await new Promise(r2 => setTimeout(r2, 1000));
     try{
-      const rr = await fetch(apiUrl('/api/agent?api=results&cid=' + encodeURIComponent(cid)),
+      const rr = await fetch(apiUrl(base + '?api=results&cid=' + encodeURIComponent(cid)),
                              { cache:'no-store', signal: AbortSignal.timeout(6000) });
       const jj = await rr.json();
       const hit = (jj.results || []).find(x => x.ts * 1000 > t0);
