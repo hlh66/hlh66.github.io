@@ -20,6 +20,7 @@
 """
 import json
 import os
+import socket
 import time
 import threading
 
@@ -28,8 +29,11 @@ from flask import Blueprint, jsonify, request, send_from_directory
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, 'data')
 DOWN = os.path.join(HERE, 'down')
+WEB = os.path.join(HERE, 'web')
 # 只有列在这里的文件能下载，路径乱猜一律 404
 DOWN_OK = ('pc_agent_web.exe', 'pc_agent.zip', '使用说明.txt')
+# 管理网页口令（页面下发命令要它；被控端 exe 走 /mctl/api/agent 不需要）
+MGMT_KEY = os.environ.get('MCTL_KEY', 'kban2026')
 AGENTS = os.path.join(DATA, 'agents.json')
 _lock = threading.Lock()
 
@@ -180,6 +184,84 @@ def down_file(name):
     if not os.path.isfile(os.path.join(DOWN, name)):
         return jsonify(ok=False, error='not found'), 404
     return send_from_directory(DOWN, name, as_attachment=True)
+
+
+# ════════════ 管理网页（/mctl/）+ 口令接口（/mctl/admin/*） ════════════
+def _key_ok():
+    k = request.args.get('key', '') or request.headers.get('X-Mctl-Key', '')
+    return k == MGMT_KEY
+
+
+def _deny():
+    return jsonify(ok=False, error='口令不对'), 401
+
+
+@bp.route('/')
+@bp.route('/index.html')
+def home():
+    if not os.path.isfile(os.path.join(WEB, 'mctl.html')):
+        return jsonify(ok=False, error='web/mctl.html 未上传'), 404
+    return send_from_directory(WEB, 'mctl.html')
+
+
+@bp.route('/admin/health')
+def admin_health():
+    if not _key_ok():
+        return _deny()
+    with _lock:
+        ags = _read()
+    now = int(time.time())
+    online = sum(1 for v in ags.values() if now - v.get('last_seen', 0) < 90)
+    return jsonify(ok=True, service='multi-control', agents=len(ags), online=online,
+                   server=request.host, host=socket.gethostname(),
+                   key_default=(MGMT_KEY == 'kban2026'))
+
+
+@bp.route('/admin/clients')
+def admin_clients():
+    if not _key_ok():
+        return _deny()
+    with _lock:
+        ags = _read()
+    now = int(time.time())
+    out = [{'id': k, 'name': v.get('name'),
+            'online': (now - v.get('last_seen', 0)) < 90,
+            'ago': now - v.get('last_seen', 0)} for k, v in ags.items()]
+    out.sort(key=lambda x: (not x['online'], x['ago']))
+    return jsonify(ok=True, clients=out)
+
+
+@bp.route('/admin/send', methods=['POST'])
+def admin_send():
+    if not _key_ok():
+        return _deny()
+    b = request.get_json(silent=True) or {}
+    cid = (b.get('cid') or '').strip()
+    cmd = (b.get('cmd') or '').strip()
+    if not cid or not cmd:
+        return jsonify(ok=False, error='cid & cmd 必填')
+    with _lock:
+        ags = _read()
+        if cid not in ags:
+            return jsonify(ok=False, error='没有这台电脑，让它先连一次')
+        tid = 't%06x' % (int(time.time() * 1000) & 0xFFFFFF)
+        ags[cid].setdefault('pending', []).append({'tid': tid, 'cmd': cmd})
+        ags[cid]['last_seen'] = int(time.time())
+        _write(ags)
+    _log('网页下发 [%s] %s → %s' % (tid, cmd[:60], cid))
+    return jsonify(ok=True, tid=tid)
+
+
+@bp.route('/admin/results')
+def admin_results():
+    if not _key_ok():
+        return _deny()
+    cid = request.args.get('cid', '')
+    with _lock:
+        ags = _read()
+    if cid not in ags:
+        return jsonify(ok=True, results=[])
+    return jsonify(ok=True, results=ags[cid].get('results', [])[-10:])
 
 
 _started = False
