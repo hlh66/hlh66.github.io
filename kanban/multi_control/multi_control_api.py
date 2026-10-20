@@ -37,6 +37,17 @@ MGMT_KEY = os.environ.get('MCTL_KEY', 'kban2026')
 AGENTS = os.path.join(DATA, 'agents.json')
 _lock = threading.Lock()
 
+# ══════ MQTT 通道（复制平板 nav_server 的连接方式：paho → broker.emqx.io） ══════
+# 被控端 exe 的 [mqtt] 配置：订阅 pcagent/<token>/cmd，结果发回 pcagent/<token>/res
+# token 双保险：payload 里也必须带同样的 token，exe 才会执行
+MQTT_HOST = os.environ.get('MCTL_MQTT_HOST', 'broker.emqx.io')
+MQTT_PORT = int(os.environ.get('MCTL_MQTT_PORT', '1883'))
+MQTT_TOKEN = os.environ.get('MCTL_MQTT_TOKEN', '9c53a8a2fe2f8ee45d9190c6c97a88b3')
+TOPIC_CMD = 'pcagent/%s/cmd' % MQTT_TOKEN
+TOPIC_RES = 'pcagent/%s/res' % MQTT_TOKEN
+MQTT_RESULTS = os.path.join(DATA, 'mqtt_results.json')
+MQTT_STATE = {'ok': False, 'err': '', 'since': 0, 'res_n': 0, 'pub_n': 0}
+
 bp = Blueprint('mctl', __name__, url_prefix='/mctl')
 
 
@@ -152,6 +163,91 @@ def agent_entry():
     return jsonify(ok=False, error='unknown api: %s' % api)
 
 
+# ════════════ MQTT 桥（与被控端 exe 的 mqtt_client.c 协议对接） ════════════
+def _mqtt_client(cid_prefix):
+    """兼容 paho 1.x / 2.x 建客户端。"""
+    import paho.mqtt.client as pm
+    try:
+        return pm.Client(pm.CallbackAPIVersion.VERSION1,
+                         client_id='%s_%d' % (cid_prefix, int(time.time() * 1000)))
+    except Exception:
+        return pm.Client(client_id='%s_%d' % (cid_prefix, int(time.time() * 1000)))
+
+
+def _mqtt_pub(topic, payload):
+    """一次性发布（平板 nav_server 同款方式：connect → publish → disconnect）。"""
+    c = _mqtt_client('mctl_pub')
+    c.connect(MQTT_HOST, MQTT_PORT, 10)
+    info = c.publish(topic, payload, qos=0)
+    try:
+        info.wait_for_publish(timeout=6)
+    except Exception:
+        time.sleep(0.4)
+    c.disconnect()
+    MQTT_STATE['pub_n'] += 1
+
+
+def _mqtt_results_read():
+    try:
+        with open(MQTT_RESULTS, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def _mqtt_results_write(rs):
+    os.makedirs(DATA, exist_ok=True)
+    tmp = MQTT_RESULTS + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(rs[-50:], f, ensure_ascii=False, indent=1)
+    os.replace(tmp, MQTT_RESULTS)
+
+
+def _mqtt_sub_worker():
+    """常驻订阅 pcagent/<token>/res，把 exe 的执行结果落盘。"""
+    while True:
+        try:
+            c = _mqtt_client('mctl_sub')
+
+            def on_conn(cl, ud, rc, *a):
+                cl.subscribe(TOPIC_RES, qos=0)
+                MQTT_STATE['ok'] = True
+                MQTT_STATE['since'] = int(time.time())
+                MQTT_STATE['err'] = ''
+                _log('MQTT 已连接并订阅 %s' % TOPIC_RES)
+
+            def on_msg(cl, ud, m):
+                try:
+                    d = json.loads(m.payload.decode('utf-8', 'replace'))
+                except Exception:
+                    return
+                if d.get('token') != MQTT_TOKEN:
+                    _log('[安全] MQTT 结果 token 不匹配，丢弃')
+                    return
+                rec = {'tid': d.get('tid'), 'ok': bool(d.get('ok')),
+                       'output': str(d.get('output') or '')[:20000],
+                       'ts': int(time.time()), 'via': 'mqtt'}
+                with _lock:
+                    rs = _mqtt_results_read()
+                    rs.append(rec)
+                    _mqtt_results_write(rs)
+                    MQTT_STATE['res_n'] += 1
+                _log('MQTT 结果 [%s] ok=%s' % (rec['tid'], rec['ok']))
+
+            def on_disc(cl, ud, rc, *a):
+                MQTT_STATE['ok'] = False
+
+            c.on_connect = on_conn
+            c.on_message = on_msg
+            c.on_disconnect = on_disc
+            c.connect(MQTT_HOST, MQTT_PORT, 30)
+            c.loop_forever(retry_first_connection=True)
+        except Exception as e:
+            MQTT_STATE['ok'] = False
+            MQTT_STATE['err'] = str(e)[:120]
+            time.sleep(8)
+
+
 # ════════════ 工具下载（exe 就在服务器上，点链接直接下） ════════════
 @bp.route('/down/')
 def down_index():
@@ -214,7 +310,9 @@ def admin_health():
     online = sum(1 for v in ags.values() if now - v.get('last_seen', 0) < 90)
     return jsonify(ok=True, service='multi-control', agents=len(ags), online=online,
                    server=request.host, host=socket.gethostname(),
-                   key_default=(MGMT_KEY == 'kban2026'))
+                   key_default=(MGMT_KEY == 'kban2026'),
+                   mqtt={'enabled': True, 'connected': MQTT_STATE['ok'],
+                         'host': MQTT_HOST, 'err': MQTT_STATE['err']})
 
 
 @bp.route('/admin/clients')
@@ -238,8 +336,24 @@ def admin_send():
     b = request.get_json(silent=True) or {}
     cid = (b.get('cid') or '').strip()
     cmd = (b.get('cmd') or '').strip()
-    if not cid or not cmd:
-        return jsonify(ok=False, error='cid & cmd 必填')
+    if not cmd:
+        return jsonify(ok=False, error='cmd 必填')
+
+    # ── MQTT 通道：广播发给所有在线 exe（token 相同的都会收到并执行）──
+    if (b.get('via') or '').strip().lower() == 'mqtt':
+        tid = 'm%06x' % (int(time.time() * 1000) & 0xFFFFFF)
+        payload = json.dumps({'token': MQTT_TOKEN, 'tid': tid, 'cmd': cmd}, ensure_ascii=False)
+        try:
+            _mqtt_pub(TOPIC_CMD, payload)
+        except Exception as e:
+            _log('MQTT 下发失败: %s' % e)
+            MQTT_STATE['err'] = str(e)[:120]
+            return jsonify(ok=False, error='MQTT 发送失败: %s' % str(e)[:80])
+        _log('网页 MQTT 下发 [%s] %s' % (tid, cmd[:60]))
+        return jsonify(ok=True, tid=tid, via='mqtt', topic=TOPIC_CMD)
+
+    if not cid:
+        return jsonify(ok=False, error='cid 必填（或带 via:"mqtt" 走 MQTT 广播）')
     with _lock:
         ags = _read()
         if cid not in ags:
@@ -256,12 +370,26 @@ def admin_send():
 def admin_results():
     if not _key_ok():
         return _deny()
+    if (request.args.get('via') or '').lower() == 'mqtt':
+        with _lock:
+            rs = _mqtt_results_read()
+        return jsonify(ok=True, results=rs[-10:])
     cid = request.args.get('cid', '')
     with _lock:
         ags = _read()
     if cid not in ags:
         return jsonify(ok=True, results=[])
     return jsonify(ok=True, results=ags[cid].get('results', [])[-10:])
+
+
+@bp.route('/admin/mqtt')
+def admin_mqtt():
+    if not _key_ok():
+        return _deny()
+    return jsonify(ok=True, enabled=True, host=MQTT_HOST, port=MQTT_PORT,
+                   connected=MQTT_STATE['ok'], err=MQTT_STATE['err'],
+                   topic_cmd=TOPIC_CMD, topic_res=TOPIC_RES,
+                   pub_n=MQTT_STATE['pub_n'], res_n=MQTT_STATE['res_n'])
 
 
 _started = False
@@ -275,3 +403,10 @@ def init_multi_control(app):
     app.register_blueprint(bp)
     _started = True
     _log('多端控制已挂载 /mctl（data=%s）' % DATA)
+    # MQTT 结果订阅线程（paho 缺失时降级：HTTP 通道照常，只是没 MQTT）
+    try:
+        import paho.mqtt.client  # noqa: F401
+        threading.Thread(target=_mqtt_sub_worker, daemon=True).start()
+    except Exception as e:
+        _log('MQTT 未启用（缺 paho-mqtt）: %s' % e)
+        MQTT_STATE['err'] = 'no paho: %s' % str(e)[:80]
