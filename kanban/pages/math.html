@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>数学教师工作台 · 全年级通用</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+  --text:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --green:#3fb950;
+  --orange:#d29922; --red:#f85149; --purple:#bc8cff; --cyan:#39d0d8;
+  --radius:10px;
+}
+body.light{
+  --bg:#f6f8fa; --panel:#fff; --panel2:#f0f3f6; --border:#d0d7de;
+  --text:#1f2328; --muted:#636c76; --accent:#0969da; --green:#1a7f37;
+  --orange:#9a6700; --red:#cf222e; --purple:#8250df; --cyan:#1b7c83;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;
+  font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+h2{margin:0;font-size:15px}
+.hidden{display:none!important}
+
+/* header */
+header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.hd{max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;white-space:nowrap}
+.brand em{font-style:normal;color:var(--accent);font-size:12px;font-weight:500;margin-left:6px}
+.sel{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted)}
+.sel select{background:var(--panel);color:var(--text);border:1px solid var(--border);
+  border-radius:7px;padding:6px 8px;font-size:13px;outline:none}
+.hd .sp{flex:1}
+.hbtn{background:var(--panel);color:var(--muted);border:1px solid var(--border);
+  border-radius:7px;padding:6px 11px;font-size:12.5px}
+.hbtn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* nav */
+nav{max-width:1280px;margin:0 auto;padding:0 16px 8px;display:flex;gap:6px;overflow-x:auto}
+nav button{background:transparent;border:none;color:var(--muted);font-size:13px;
+  padding:6px 12px;border-radius:8px;white-space:nowrap}
+nav button:hover{color:var(--text);background:var(--panel2)}
+nav button.on{color:#fff;background:var(--accent);font-weight:600}
+@media print{header,nav,.noprint{display:none!important}main{max-width:none!important}}
+
+/* main */
+main{max-width:1280px;margin:0 auto;padding:14px 16px 60px}
+.view{display:none}.view.on{display:block}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:14px;overflow:hidden}
+.panel>.ph{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel2);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:650;font-size:13.5px}
+.panel>.ph .tag{font-weight:400;font-size:11.5px;color:var(--muted)}
+.panel>.ph .sp{flex:1}
+.panel>.pb{padding:13px 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+label.f{display:block;font-size:12px;color:var(--muted);margin:9px 0 4px}
+input.i,select.i,textarea.i{width:100%;background:var(--bg);color:var(--text);
+  border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-size:13px;outline:none}
+input.i:focus,textarea.i:focus{border-color:var(--accent)}
+textarea.i{resize:vertical;line-height:1.6}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px 15px;
+  font-size:13px;font-weight:600}
+.btn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--border);font-weight:500}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.green{background:var(--green)}
+.btn.red{background:var(--red)}
+.btn.sm{padding:4px 9px;font-size:12px;font-weight:500}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:4px 11px;border-radius:999px;border:1px solid var(--border);background:var(--bg);
+  font-size:12.5px;color:var(--text);transition:.12s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);border-color:transparent;color:#fff;font-weight:600}
+
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.stat .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .l{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* table */
+.tbl{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:var(--panel2);color:var(--muted);font-size:11.5px;font-weight:600;white-space:nowrap}
+tbody tr:hover{background:var(--panel2)}
+td.num{font-variant-numeric:tabular-nums}
+td.up{color:var(--red)}td.dn{color:var(--green)}
+
+/* bars */
+.bars{display:flex;align-items:flex-end;gap:10px;height:130px;padding:8px 4px 0}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.bar .b{width:70%;max-width:46px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;
+  transition:.3s}
+.bar .n{font-size:11px;color:var(--muted);white-space:nowrap}
+.bar .c{font-size:12px;font-weight:600}
+
+/* roll call */
+#rollStage{display:none;position:fixed;inset:0;background:var(--bg);z-index:60;
+  flex-direction:column;align-items:center;justify-content:center;gap:26px}
+#rollStage.on{display:flex}
+#rollName{font-size:min(16vw,140px);font-weight:800;letter-spacing:4px}
+#rollSub{color:var(--muted);font-size:15px}
+
+/* timer */
+#timerBig{font-size:64px;font-weight:800;font-variant-numeric:tabular-nums;text-align:center;margin:6px 0}
+
+/* print area */
+#printArea{display:none}
+@media print{
+  #printArea{display:block!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{color:#000;background:#fff;font-size:15px}
+  #printArea h1{font-size:20px;text-align:center;margin:6px 0 2px}
+  #printArea .meta{text-align:center;font-size:12px;color:#333;margin-bottom:12px}
+  .qcols{column-count:3;column-gap:26px}
+  .qcols.two{column-count:2}
+  .qitem{break-inside:avoid;margin:0 0 13px;font-size:15px;font-family:"Times New Roman",serif}
+  .anspage{page-break-before:always}
+  .ansline{font-size:13px;line-height:2;font-family:"Times New Roman",serif}
+  .vbar{display:inline-block;border-bottom:1px solid #000;min-width:110px;margin:0 6px}
+}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,16px);opacity:0;
+  pointer-events:none;background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:9px 16px;font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:.2s;z-index:99}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* modal */
+#mask{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;display:none;
+  align-items:center;justify-content:center;padding:18px}
+#mask.on{display:flex}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  max-width:640px;width:100%;max-height:86vh;overflow:auto}
+.modal .mh{padding:12px 16px;border-bottom:1px solid var(--border);font-weight:650;display:flex;align-items:center}
+.modal .mh .x{margin-left:auto;background:none;border:none;color:var(--muted);font-size:18px}
+.modal .mb{padding:14px 16px}
+.kbd{background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:0 5px;font-size:11px}
+.stu-pill{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:999px;padding:4px 6px 4px 12px;font-size:12.5px;margin:3px}
+.stu-pill button{border:none;background:transparent;color:var(--muted);font-size:13px;line-height:1}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <div class="brand">数学教师工作台<em id="whoami"></em></div>
+    <div class="sel">年级
+      <select id="selGrade"></select>
+    </div>
+    <div class="sel">班级
+      <select id="selClass"></select>
+      <button class="hbtn" id="btnClassMgr">管理</button>
+    </div>
+    <div class="sp"></div>
+    <button class="hbtn" id="btnTheme">亮色</button>
+    <button class="hbtn" id="btnBak">备份</button>
+    <button class="hbtn" id="btnRes">恢复</button>
+    <input type="file" id="fileIn" accept="application/json" class="hidden">
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<main>
+  <!-- ===== 总览 ===== -->
+  <section class="view on" id="v-home">
+    <div class="panel"><div class="ph">快捷入口<span class="tag">点了就去</span></div>
+      <div class="pb" id="homeQuick"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><div class="ph">待办<span class="tag" id="homeTodoTag"></span></div>
+        <div class="pb">
+          <div class="row" style="margin-bottom:8px">
+            <input class="i" id="homeTodoIn" placeholder="加一条，回车" style="flex:1">
+            <button class="btn sm" id="homeTodoAdd">加</button>
+          </div>
+          <ul id="homeTodoList" style="list-style:none;margin:0;padding:0"></ul>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">本班概况</div>
+        <div class="pb" id="homeClassInfo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 出题打印 ===== -->
+  <section class="view" id="v-gen">
+    <div class="grid2">
+      <div class="panel"><div class="ph">口算 / 计算练习<span class="tag">生成 → 打印，答案自动验算</span></div>
+        <div class="pb">
+          <div class="chips" id="genType"></div>
+          <div id="genCfg"></div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="genGo">生成题目</button>
+            <button class="btn ghost" id="genPrint">打印（含答案页）</button>
+            <span class="hint" id="genStat"></span>
+          </div>
+          <div id="genPrev" style="margin-top:12px;font-size:13.5px;line-height:2.1;
+            font-variant-numeric:tabular-nums;max-height:260px;overflow:auto;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">应用题 / 卷子骨架<span class="tag">按年级出框架，粘到 AI 或直接用</span></div>
+        <div class="pb">
+          <label class="f">题型</label>
+          <div class="chips" id="appType"></div>
+          <label class="f">情境 / 主题（可留空）</label>
+          <input class="i" id="appTopic" placeholder="如：超市购物、校园运动会">
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="appGo">生成</button>
+            <button class="btn ghost" id="appCopy">复制</button>
+          </div>
+          <textarea class="i" id="appOut" rows="12" style="margin-top:10px" readonly></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 乘法口诀 ===== -->
+  <section class="view" id="v-kb">
+    <div class="panel"><div class="ph">口诀表<span class="tag">点一句 → 高亮 + 读法</span></div>
+      <div class="pb"><div id="kbTable" style="font-size:14px;line-height:2.2;font-variant-numeric:tabular-nums"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><div class="ph">口诀填空练习<span class="tag">生成 → 打印</span></div>
+        <div class="pb">
+          <div class="row">
+            <span class="sel">范围
+              <select class="i" id="kbFrom" style="width:70px"></select> ~
+              <select class="i" id="kbTo" style="width:70px"></select>
+            </span>
+            <span class="sel">数量 <input class="i" id="kbCount" value="20" style="width:60px"></span>
+            <button class="btn sm" id="kbGen">生成</button>
+            <button class="btn ghost sm" id="kbPrint">打印</button>
+          </div>
+          <div id="kbPrev" style="margin-top:10px;font-size:14px;line-height:2.2;color:var(--muted);
+            font-variant-numeric:tabular-nums"></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">配套项目<span class="tag">桌面已有 · 点击直达</span></div>
+        <div class="pb" id="kbLinks"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 备课 ===== -->
+  <section class="view" id="v-prep">
+    <div class="grid2">
+      <div class="panel"><div class="ph">教案生成<span class="tag">结构化详案骨架 · 可复制再润色</span></div>
+        <div class="pb">
+          <label class="f">课题</label>
+          <input class="i" id="pTopic" placeholder="如：乘法的初步认识">
+          <label class="f">课型</label>
+          <div class="chips" id="pType"></div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="pGo">生成教案</button>
+            <button class="btn ghost" id="pCopy">复制全文</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">板书设计<span class="tag">按课型给版式</span></div>
+        <div class="pb">
+          <div id="pBoard" style="font-size:12.5px;color:var(--muted);white-space:pre-wrap;
+            line-height:1.8;font-family:ui-monospace,Consolas,monospace"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="ph">教案预览<span class="tag">全选可编辑</span></div>
+      <div class="pb"><textarea class="i" id="pOut" rows="20" style="font-size:13px"></textarea></div>
+    </div>
+  </section>
+
+  <!-- ===== 成绩 ===== -->
+  <section class="view" id="v-score">
+    <div class="panel"><div class="ph">考试管理
+      <span class="sp"></span>
+      <button class="btn sm ghost" id="examNew">新建考试</button>
+    </div>
+      <div class="pb" id="examList"></div>
+    </div>
+    <div id="scoreBody"></div>
+  </section>
+
+  <!-- ===== 评语 ===== -->
+  <section class="view" id="v-cmt">
+    <div class="panel"><div class="ph">学生评语<span class="tag">按名单批量生成骨架 → 再逐条润色</span></div>
+      <div class="pb">
+        <label class="f">整体印象（会被随机织进每条评语）</label>
+        <div class="chips" id="cmtTags"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="cmtGo">给全班生成</button>
+          <button class="btn ghost" id="cmtCopy">复制全部</button>
+          <span class="hint">每条 80~120 字 · 三段式 · 用词不重复</span>
+        </div>
+        <textarea class="i" id="cmtOut" rows="16" style="margin-top:10px" readonly></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 课堂 ===== -->
+  <section class="view" id="v-class">
+    <div class="grid2">
+      <div class="panel"><div class="ph">随机点名<span class="tag">全屏投屏 · 可不重复</span></div>
+        <div class="pb">
+          <div class="row">
+            <label style="font-size:12.5px"><input type="checkbox" id="rollNoRepeat" checked> 不重复（抽完一轮再重开）</label>
+            <button class="btn green" id="rollStart">开始点名</button>
+          </div>
+          <div class="hint" id="rollInfo"></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">倒计时<span class="tag">课堂练习 / 游戏</span></div>
+        <div class="pb">
+          <div class="row" style="justify-content:center">
+            <button class="btn ghost sm" data-min="1">1 分</button>
+            <button class="btn ghost sm" data-min="2">2 分</button>
+            <button class="btn ghost sm" data-min="3">3 分</button>
+            <button class="btn ghost sm" data-min="5">5 分</button>
+            <button class="btn ghost sm" data-min="10">10 分</button>
+          </div>
+          <div id="timerBig">00:00</div>
+          <div class="row" style="justify-content:center">
+            <button class="btn sm green" id="timerGo">开始</button>
+            <button class="btn sm ghost" id="timerPause">暂停</button>
+            <button class="btn sm ghost" id="timerReset">归零</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="ph">小组积分<span class="tag">本班名单 · 自动保存</span>
+      <span class="sp"></span><button class="btn sm ghost" id="ptsResetAll">全部清零</button></div>
+      <div class="pb" id="ptsList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 沟通 ===== -->
+  <section class="view" id="v-comm">
+    <div class="grid2">
+      <div class="panel"><div class="ph">家校沟通话术<span class="tag">三语气 · 直接可发</span></div>
+        <div class="pb">
+          <label class="f">场景</label><div class="chips" id="cmScene"></div>
+          <label class="f">学生情况（一句话）</label>
+          <input class="i" id="cmDesc" placeholder="如：作业连续三天没交">
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="cmGo">生成三条</button>
+            <button class="btn ghost" id="cmCopy">复制</button>
+          </div>
+          <textarea class="i" id="cmOut" rows="10" style="margin-top:10px" readonly></textarea>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">家长会讲稿骨架<span class="tag">填空即用</span></div>
+        <div class="pb">
+          <div class="row"><button class="btn" id="pmGo">生成</button>
+            <button class="btn ghost" id="pmCopy">复制</button></div>
+          <textarea class="i" id="pmOut" rows="10" style="margin-top:10px" readonly></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 名单 ===== -->
+  <section class="view" id="v-stu">
+    <div class="panel"><div class="ph">本班名单<span class="tag" id="stuCount"></span></div>
+      <div class="pb">
+        <label class="f">粘贴名单（一行一个，或逗号/顿号分隔）</label>
+        <textarea class="i" id="stuIn" rows="6" placeholder="张小明&#10;李小红&#10;王小刚"></textarea>
+        <div class="row" style="margin-top:9px">
+          <button class="btn" id="stuSave">保存名单（覆盖）</button>
+          <button class="btn ghost" id="stuAppend">追加</button>
+          <button class="btn ghost" id="stuExport">导出 CSV</button>
+          <span class="hint">名单是点名 / 积分 / 成绩 / 评语的底子，先把它建好</span>
+        </div>
+        <div id="stuPills" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 数据 ===== -->
+  <section class="view" id="v-data">
+    <div class="panel"><div class="ph">数据与备份</div>
+      <div class="pb" id="dataInfo"></div>
+    </div>
+  </section>
+</main>
+
+<!-- 点名全屏 -->
+<div id="rollStage">
+  <div id="rollName">?</div>
+  <div id="rollSub"></div>
+  <div class="row">
+    <button class="btn green" id="rollAgain">再抽一个</button>
+    <button class="btn ghost" id="rollStop">结束</button>
+  </div>
+</div>
+
+<div id="mask"><div class="modal"><div class="mh"><span id="mTitle"></span>
+  <button class="x" onclick="document.getElementById('mask').classList.remove('on')">×</button></div>
+  <div class="mb" id="mBody"></div></div>
+</div>
+
+<div id="printArea"></div>
+<div id="toast"></div>
+
+<script>
+/* =============== 基础 =============== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const KEY='math_wb_v1';
+const GRADES=['一年级','二年级','三年级','四年级','五年级','六年级'];
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800)}
+function copy(x){const ok=()=>toast('已复制');
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(x).then(ok).catch(fb)}else fb();
+  function fb(){const ta=document.createElement('textarea');ta.value=x;ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(e){toast('复制失败')}
+    document.body.removeChild(ta)}}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[rnd(0,a.length-1)]}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* =============== 数据 =============== */
+function blank(){return{
+  theme:'dark', curGrade:'二年级', curCls:'',
+  classes:{},            /* id:{name,grade,students:[],points:{name:n},rollPool:[] } */
+  exams:{},              /* id:{clsId,name,date,full,marks:{name:score}} */
+  timetable:{}, todos:[], savedAt:''
+}}
+let DB=load();
+function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
+function save(){DB.savedAt=new Date().toLocaleString('zh-CN',{hour12:false});
+  try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('存不下：浏览器空间满了')}}
+
+function curCls(){return DB.classes[DB.curCls]||null}
+function curStudents(){const c=curCls();return c?c.students:[]}
+function ensureClass(){
+  if(DB.classes[DB.curCls])return;
+  const id='c'+Date.now();
+  DB.classes[id]={name:DB.curGrade+'（1）班',grade:DB.curGrade,students:[],points:{},rollPool:[]};
+  DB.curCls=id;
+}
+
+/* =============== 班级选择 =============== */
+function renderClassSel(){
+  const g=$('#selGrade');g.innerHTML=GRADES.map(x=>`<option ${x===DB.curGrade?'selected':''}>${x}</option>`).join('');
+  const c=$('#selClass');
+  const list=Object.entries(DB.classes).filter(([,v])=>v.grade===DB.curGrade);
+  if(!list.length){c.innerHTML='<option>（无班级）</option>'}
+  else c.innerHTML=list.map(([id,v])=>`<option value="${id}" ${id===DB.curCls?'selected':''}>${esc(v.name)}</option>`).join('');
+  $('#whoami').textContent=DB.curGrade+(curCls()?' · '+curCls().name:' · 还没建班');
+}
+$('#selGrade').onchange=e=>{DB.curGrade=e.target.value;
+  const first=Object.entries(DB.classes).find(([,v])=>v.grade===DB.curGrade);
+  DB.curCls=first?first[0]:''; if(!first) ensureClass();
+  save();renderClassSel();renderAll()};
+$('#selClass').onchange=e=>{DB.curCls=e.target.value;save();renderClassSel();renderAll()};
+
+$('#btnClassMgr').onclick=()=>{
+  const list=Object.entries(DB.classes);
+  openModal('班级管理',`
+    <label class="f">新建班级（选好年级后点这里建）</label>
+    <div class="row"><input class="i" id="ncName" placeholder="如：二（3）班" style="flex:1">
+      <button class="btn sm" id="ncGo">新建</button></div>
+    <label class="f">已有班级（${list.length}）</label>
+    ${list.map(([id,v])=>`<div class="row" style="margin:4px 0;padding:6px 8px;border:1px solid var(--border);border-radius:7px">
+      <b style="font-size:13px">${esc(v.name)}</b><span class="hint">${v.grade} · ${v.students.length}人</span>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" data-ren="${id}">改名</button>
+      <button class="btn red sm" data-del="${id}">删除</button></div>`).join('')}`);
+  $('#ncGo').onclick=()=>{
+    const n=$('#ncName').value.trim();if(!n)return toast('先填班级名');
+    const id='c'+Date.now();DB.classes[id]={name:n,grade:DB.curGrade,students:[],points:{},rollPool:[]};
+    DB.curCls=id;save();renderClassSel();closeModal();renderAll();toast('已建 '+n)};
+  $$('#mBody [data-del]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.del;
+    if(!confirm('删除班级会连名单、积分、成绩一起删，确定？'))return;
+    delete DB.classes[id];if(DB.curCls===id)DB.curCls='';
+    Object.keys(DB.exams).forEach(k=>{if(DB.exams[k].clsId===id)delete DB.exams[k]});
+    ensureClass();save();renderClassSel();closeModal();renderAll()});
+  $$('#mBody [data-ren]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.ren;const n=prompt('新名字',DB.classes[id].name);
+    if(n&&n.trim()){DB.classes[id].name=n.trim();save();renderClassSel();closeModal();renderAll()}});
+};
+
+/* =============== modal =============== */
+function openModal(t,html){$('#mTitle').textContent=t;$('#mBody').innerHTML=html;
+  $('#mask').classList.add('on')}
+function closeModal(){$('#mask').classList.remove('on')}
+
+/* =============== 导航 =============== */
+const VIEWS=[
+  ['v-home','总览'],['v-gen','出题打印'],['v-kb','乘法口诀'],['v-prep','备课'],
+  ['v-score','成绩'],['v-cmt','评语'],['v-class','课堂'],['v-comm','沟通'],
+  ['v-stu','名单'],['v-data','数据']
+];
+$('#nav').innerHTML=VIEWS.map(([id,n],i)=>`<button data-v="${id}" class="${i?'':'on'}">${n}</button>`).join('');
+$$('#nav button').forEach(b=>b.onclick=()=>{
+  $$('#nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  $$('.view').forEach(v=>v.classList.remove('on'));$('#'+b.dataset.v).classList.add('on');
+});
+function goView(id){$$('#nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===id));
+  $$('.view').forEach(v=>v.classList.toggle('on',v.id===id))}
+
+/* =============== 总览 =============== */
+const QUICK=[
+  ['出一份口算','v-gen'],['乘法口诀表','v-kb'],['备一节课','v-prep'],
+  ['录成绩看分析','v-score'],['全班评语','v-cmt'],['随机点名','v-class'],
+  ['家校话术','v-comm'],['管名单','v-stu']
+];
+function renderHome(){
+  $('#homeQuick').innerHTML='<div class="chips">'+QUICK.map(([n,v])=>
+    `<button class="chip" data-v="${v}">${n}</button>`).join('')+'</div>';
+  $$('#homeQuick .chip').forEach(b=>b.onclick=()=>goView(b.dataset.v));
+  const list=$('#homeTodoList');
+  if(!DB.todos.length){list.innerHTML='<li class="hint" style="padding:6px 0">没有待办</li>'}
+  else list.innerHTML=DB.todos.map((t,i)=>`<li style="display:flex;gap:8px;padding:5px 0;align-items:flex-start">
+    <input type="checkbox" data-i="${i}" ${t.d?'checked':''} style="margin-top:3px">
+    <span style="flex:1;font-size:13px;${t.d?'text-decoration:line-through;color:var(--muted)':''}">${esc(t.t)}</span>
+    <button class="hbtn" data-del="${i}" style="padding:1px 7px">×</button></li>`).join('');
+  list.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{DB.todos[+c.dataset.i].d=c.checked;save();renderHome()});
+  list.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{DB.todos.splice(+b.dataset.del,1);save();renderHome()});
+  $('#homeTodoTag').textContent=DB.todos.filter(t=>!t.d).length?`剩 ${DB.todos.filter(t=>!t.d).length} 条`:'清空';
+  const c=curCls(),exs=Object.values(DB.exams).filter(e=>e.clsId===DB.curCls);
+  $('#homeClassInfo').innerHTML=!c?'<span class="hint">先点右上「管理」建一个班</span>':`
+    <div class="stats">
+      <div class="stat"><div class="v">${c.students.length}</div><div class="l">学生</div></div>
+      <div class="stat"><div class="v">${exs.length}</div><div class="l">考试次数</div></div>
+      <div class="stat"><div class="v">${Object.values(c.points).reduce((s,v)=>s+v,0)}</div><div class="l">班级总积分</div></div>
+    </div>
+    <div class="hint">年级 ${c.grade} · 名单在「名单」页维护</div>`;
+}
+$('#homeTodoAdd').onclick=addTodo;
+$('#homeTodoIn').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addTodo()}};
+function addTodo(){const v=$('#homeTodoIn').value.trim();if(!v)return;
+  DB.todos.unshift({t:v,d:false});$('#homeTodoIn').value='';save();renderHome()}
+
+/* =============== 出题（核心：生成+自动验算） =============== */
+const GEN_TYPES=[
+  ['add','加法'],['sub','减法'],['mul','乘法'],['div','除法(整除)'],
+  ['mix2','加减混合'],['mixk','带括号'],['muladd','乘加乘减']
+];
+const GEN_PRESET={
+  '一年级':{add:[1,20],sub:[1,20],mul:null,div:null,mix2:[1,20],mixk:[1,20],muladd:null,def:'add',cols:3},
+  '二年级':{add:[10,100],sub:[10,100],mul:[1,9],div:[1,9],mix2:[10,100],mixk:[1,20],muladd:[1,9],def:'mul',cols:3},
+  '三年级':{add:[100,999],sub:[100,999],mul:[2,9],div:[2,9],mix2:[100,999],mixk:[1,100],muladd:[2,9],def:'mix2',cols:3},
+  '四年级':{add:[1000,9999],sub:[1000,9999],mul:[12,99],div:[2,9],mix2:[100,999],mixk:[1,100],muladd:[12,99],def:'mix2',cols:3},
+  '五年级':{add:[1000,9999],sub:[1000,9999],mul:[12,99],div:[2,12],mix2:[100,999],mixk:[1,100],muladd:[12,99],def:'mix2',cols:4},
+  '六年级':{add:[1000,99999],sub:[1000,99999],mul:[12,99],div:[2,12],mix2:[100,999],mixk:[1,100],muladd:[12,99],def:'mix2',cols:4}
+};
+let genSel={type:'add',cfg:{}};
+function gradePreset(){return GEN_PRESET[DB.curGrade]||GEN_PRESET['二年级']}
+function renderGen(){
+  const p=gradePreset();
+  genSel.type=p.def;
+  $('#genType').innerHTML=GEN_TYPES.map(([k,n])=>{
+    const ok=p[k];return `<button class="chip ${k===genSel.type?'on':''}" data-k="${k}" ${ok?'':'disabled style="opacity:.35"'}>${n}</button>`}).join('');
+  $$('#genType .chip').forEach(b=>b.onclick=()=>{if(b.disabled)return;genSel.type=b.dataset.k;
+    $$('#genType .chip').forEach(x=>x.classList.toggle('on',x===b));renderGenCfg();$('#genPrev').innerHTML='';$('#genStat').textContent=''});
+  renderGenCfg();
+}
+function renderGenCfg(){
+  const p=gradePreset(),rg=p[genSel.type];
+  if(!rg){$('#genCfg').innerHTML='<span class="hint">本年级预设不开这个题型</span>';return}
+  $('#genCfg').innerHTML=`
+    <div class="row" style="margin-top:10px">
+      <span class="sel">数字范围 <input class="i" id="gcMin" value="${rg[0]}" style="width:76px"> ~
+        <input class="i" id="gcMax" value="${rg[1]}" style="width:76px"></span>
+      <span class="sel">题量 <input class="i" id="gcN" value="60" style="width:60px"></span>
+      ${genSel.type==='mix2'||genSel.type==='mixk'||genSel.type==='muladd'?
+        `<span class="sel">进退位 <select class="i" id="gcCarry" style="width:90px">
+          <option value="any">不限</option><option value="yes">必须进/退位</option>
+          <option value="no">不进/退位</option></select></span>`:''}
+    </div>
+    <div class="hint">按 ${DB.curGrade} 预设填好了，可改 · 打印自动带答案页（另起一页）</div>`;
+}
+function genOne(type,min,max,carry,used){
+  for(let t=0;t<60;t++){
+    let q,a;
+    if(type==='add'){let x=rnd(min,max),y=rnd(min,max);if(carry==='yes'&&x+y<10&&x+y<=max){continue}
+      if(carry==='no'&&((x%10)+(y%10)>=10)){continue}q=`${x} + ${y} =`;a=x+y}
+    else if(type==='sub'){let x=rnd(Math.max(min,max/2+1),max),y=rnd(min,Math.min(max,x));if(x<=y)continue;
+      if(carry==='no'&&((x%10)-(y%10)<0))continue;
+      if(carry==='yes'&&((x%10)-(y%10)>=0))continue;q=`${x} − ${y} =`;a=x-y}
+    else if(type==='mul'){let x=rnd(min,max),y=rnd(min,max);q=`${x} × ${y} =`;a=x*y}
+    else if(type==='div'){let y=rnd(min,max),a=rnd(min,max);let x=y*a;q=`${x} ÷ ${y} =`;a=a}
+    else if(type==='mix2'){let x=rnd(min,max),y=rnd(min,max),z=rnd(min,max);
+      if(pick([0,1])){q=`${x} + ${y} − ${z} =`;a=x+y-z}else{q=`${x} − ${y} + ${z} =`;a=x-y+z}
+      if(a<0)continue}
+    else if(type==='mixk'){let x=rnd(min,max),y=rnd(min,max),z=rnd(min,max);
+      if(x+y-z<0)continue;q=`(${x} + ${y}) − ${z} =`;a=x+y-z}
+    else if(type==='muladd'){let x=rnd(min,max),y=rnd(min,max),z=rnd(min,max*3);
+      if(pick([0,1])){q=`${x} × ${y} + ${z} =`;a=x*y+z}else{if(x*y<z)continue;q=`${x} × ${y} − ${z} =`;a=x*y-z}}
+    const key=q.replace(/\s/g,'');
+    if(used.has(key))continue;used.add(key);
+    return {q,a};
+  }
+  return null;
+}
+$('#genGo').onclick=()=>{
+  const min=+$('#gcMin').value,max=+$('#gcMax').value,n=+$('#gcN').value;
+  const carry=$('#gcCarry')?$('#gcCarry').value:'any';
+  if(!(min<max&&n>0&&n<=300))return toast('范围或题量不对（题量≤300）');
+  const used=new Set(),qs=[];
+  for(let i=0;i<n;i++){const it=genOne(genSel.type,min,max,carry,used);if(it)qs.push(it)}
+  if(!qs.length)return toast('这范围出不出题，放宽一点');
+  const p=gradePreset();
+  window._papers={title:`${DB.curGrade}数学口算练习（${GEN_TYPES.find(t=>t[0]===genSel.type)[1]}）`,
+    date:new Date().toLocaleDateString('zh-CN'),qs,cols:p.cols};
+  const pcol=qs.length>80?4:p.cols;
+  $('#genPrev').innerHTML=qs.slice(0,24).map(x=>`<span style="display:inline-block;width:${pcol>3?'24%':'31%'}">${x.q} <b style="color:var(--green)">${x.a}</b></span>`).join('')
+    +(qs.length>24?`<div class="hint">… 共 ${qs.length} 题，打印看全部</div>`:'');
+  const bad=qs.filter(x=>{try{return eval(x.q.replace(/−/g,'-').replace(/×/g,'*').replace(/÷/g,'/').replace(/=/g,''))!==x.a}catch(e){return true}});
+  $('#genStat').textContent=`${qs.length} 题 · 已逐题验算 ${bad.length?'⚠ 有错!':'全对'}`;
+};
+$('#genPrint').onclick=()=>{
+  if(!window._papers)return toast('先点「生成题目」');
+  const P=window._papers;
+  $('#printArea').innerHTML=`
+    <h1>${esc(P.title)}</h1><div class="meta">姓名：________　班级：________　日期：${P.date}　用时：______ 分　对：____ 题</div>
+    <div class="qcols ${P.qs.length>80?'two':''}">${P.qs.map(x=>`<div class="qitem">${x.q}</div>`).join('')}</div>
+    <div class="anspage"><h1>参考答案</h1>
+      <div class="ansline">${P.qs.map((x,i)=>`${i+1}. ${x.q.replace('=','')} <b>${x.a}</b>；`).join(' ')}</div></div>`;
+  window.print();
+};
+
+/* 应用题骨架 */
+const APP_TYPES=[
+  [' SHOP','购物找零 / 单价数量总价'],['ADD','加减两步应用'],['MUL','乘除应用（倍数、平均）'],
+  ['TIME','时间 / 日期计算'],['GEO','周长面积图形题'],['STAT','统计表读图题']
+];
+$('#appType').innerHTML=APP_TYPES.map(([k,n],i)=>`<button class="chip ${i?'':'on'}" data-k="${k}">${n.trim()}</button>`).join('');
+let appSel=APP_TYPES[0][0];
+$$('#appType .chip').forEach(b=>b.onclick=()=>{appSel=b.dataset.k;
+  $$('#appType .chip').forEach(x=>x.classList.toggle('on',x===b))});
+$('#appGo').onclick=()=>{
+  const g=DB.curGrade,t=$('#appTopic').value.trim()||'校园生活';
+  const T={
+    'SHOP':`【${g} · 解决问题 · 情境：${t}】（共 5 题，附答案）\n\n1. 一支钢笔 8 元，买 3 支要多少钱？付出 50 元，应找回多少？\n2. 一箱牛奶 24 盒，卖了 15 盒，剩下的每 3 盒装一袋，能装几袋？\n3. 每本笔记本 6 元，书包的价钱是笔记本的 9 倍，书包多少钱？买一套（笔+书包）一共多少？\n4. 妈妈买 5 千克苹果，每千克 7 元；又买 2 千克橘子花了 18 元。哪种贵？每千克贵多少？\n5.（挑战）小明有 100 元，先花 36 元买书，剩下的钱买 8 元一本的本子，能买几本？还剩多少？\n\n【答案】1. 24 元、26 元　2. 3 袋　3. 54 元、62 元　4. 苹果 7 元/kg、橘子 9 元/kg，橘子贵 2 元　5. 8 本、剩 4 元`,
+    'ADD':`【${g} · 两步计算应用 · 情境：${t}】（共 5 题）\n\n1. 图书角原有 45 本书，借出 18 本，又还回 9 本，现在有多少本？\n2. 上半年节水 128 吨，下半年比上半年多节 35 吨，全年共节水多少吨？\n3. 三只猴子摘桃：摘了 86 个，第一次运走 27 个，第二次运走 34 个，还剩多少个在树上？\n4. 甲数是 156，比乙数多 48，乙数是多少？两数之和是多少？\n5.（挑战）车队往灾区送物资，第一天运 4 车每车 45 箱，第二天运 150 箱，两天共运多少箱？\n\n【答案】1. 36 本　2. 291 吨　3. 25 个　4. 108、264　5. 330 箱`,
+    'MUL':`【${g} · 乘除法应用 · 情境：${t}】（共 5 题）\n\n1. 每盘放 6 个苹果，8 盘一共多少个？平均分给 4 个班，每班几个？\n2. 小华买了 3 盒彩笔每盒 12 元；小红买一盒 45 元的。谁花得多？多多少？\n3. 56 个同学做操，每 7 人一排，能站几排？改成每 8 人一排呢？\n4. 3 只燕子一天吃害虫 240 只，平均每只一天吃多少？照这样，5 只一天吃多少？\n5.（挑战）老师买来 4 箱橘子，每箱 25 个，分给 5 个小组，每组分到几个？\n\n【答案】1. 48 个、12 个　2. 小红多 9 元　3. 8 排、7 排　4. 80 只、400 只　5. 20 个`,
+    'TIME':`【${g} · 时间问题 · 情境：${t}】（共 5 题）\n\n1. 8:20 上早读，8:55 结束，早读多少分钟？\n2. 一节课 40 分钟，10:10 上课，几时几分下课？\n3. 动画片一集 25 分钟，连播 3 集要多少分钟？合几小时几分？\n4. 小明 7:50 从家出发，8:15 到校，路上用多久？如果想在 8:00 到校，应几点出发？\n5.（挑战）周日 9:30 开始写作业，先写数学 30 分钟，休息 10 分钟，再写语文 40 分钟，几时几分写完？\n\n【答案】1. 35 分钟　2. 10:50　3. 75 分钟=1 小时 15 分　4. 25 分钟、7:35　5. 10:50`,
+    'GEO':`【${g} · 图形与周长面积 · 情境：${t}】（共 5 题）\n\n1. 正方形手帕边长 25 厘米，周长多少厘米？\n2. 长方形操场长 80 米、宽 45 米，沿边跑一圈是多少米？\n3. 一根铁丝正好围成边长 9 厘米的正方形，改围成长 12 厘米的长方形，宽是多少？\n4. 一块长方形菜地长 16 米宽 7 米，一面靠墙，篱笆至少要多少米？\n5.（挑战）两个边长 6 厘米的正方形拼成一个长方形，拼成的长方形周长比两个正方形周长之和少多少？\n\n【答案】1. 100 厘米　2. 250 米　3. 6 厘米　4. 46 米　5. 12 厘米`,
+    'STAT':`【${g} · 统计 · 情境：${t}】\n\n下面是本班同学最喜欢的运动记录表：\n  跳绳：正正正正（20 人）　踢毽：正正（10 人）　跑步：正正正（15 人）　打球：正（5 人）\n\n1. 一共调查了多少人？\n2. 喜欢哪种运动的人最多？哪种最少？\n3. 喜欢跳绳的比喜欢打球的多几人？\n4. 喜欢跳绳和踢毽的一共多少人？\n5.（挑战）如果每种运动买 3 个器材（毽子/跳绳/球各按人数准备每人一个），一共要准备多少个？\n\n【答案】1. 50 人　2. 跳绳最多、打球最少　3. 15 人　4. 30 人　5. 150 个`
+  };
+  $('#appOut').value=T[appSel]||'';
+};
+$('#appCopy').onclick=()=>copy($('#appOut').value);
+
+/* =============== 口诀 =============== */
+const KBN=['一','二','三','四','五','六','七','八','九'];
+function kbText(i,j){return `${KBN[j-1]}${KBN[i-1]}得${i*j}`}  /* 大九九口诀读法 */
+function renderKb(){
+  const rows=[];
+  rows.push('<div style="font-weight:700;margin-bottom:4px">九九表（点击高亮）</div>');
+  for(let i=1;i<=9;i++){
+    let row='';
+    for(let j=1;j<=i;j++){row+=`<span class="chip" style="margin:2px" data-kb="${i}x${j}">${j}×${i}=${i*j}</span> `}
+    rows.push(`<div>${row}</div>`);
+  }
+  rows.push('<div style="font-weight:700;margin:10px 0 4px">大九九（含 10 以上口诀，点读）</div>');
+  for(let i=2;i<=9;i++){
+    let row='';
+    for(let j=1;j<=9;j++){row+=`<span class="chip" style="margin:2px" data-kb="${i}x${j}">${kbText(i,j)}</span> `}
+    rows.push(`<div>${row}</div>`);
+  }
+  $('#kbTable').innerHTML=rows.join('');
+  $$('#kbTable [data-kb]').forEach(s=>s.onclick=()=>{
+    const [a,b]=s.dataset.kb.split('x').map(Number);
+    s.style.outline='2px solid var(--orange)';
+    setTimeout(()=>s.style.outline='',1200);
+    if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(`${a}乘${b}等于${a*b}`);u.lang='zh-CN';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}
+    toast(`${a} × ${b} = ${a*b}`);
+  });
+  const opts=[1,2,3,4,5,6,7,8,9].map(n=>`<option>${n}</option>`).join('');
+  $('#kbFrom').innerHTML=opts;$('#kbTo').innerHTML=opts;
+  $('#kbFrom').value='2';$('#kbTo').value='9';
+  window._kbLinks=[['乘法口诀卡片（个人迷你版）','D:\\Desktop\\乘法口诀卡片\\个人迷你版\\index.html'],
+    ['口诀卡牌游戏（13 种玩法）','D:\\Desktop\\乘法口诀卡片\\乘法口诀卡牌网页游戏\\00_游戏玩法大全.html'],
+    ['全班集体版 V6 大字','D:\\Desktop\\乘法口诀卡片\\全班集体版\\V6_大字版_全班展示.html']];
+  $('#kbLinks').innerHTML='<div class="cards">'+window._kbLinks.map(l=>
+    `<a class="card" href="file:///${encodeURI(l[1].replace(/\\/g,'/'))}"><span class="t">${l[0]}</span>
+     <span class="d">${l[1]}</span></a>`).join('')+'</div>';
+}
+let _kbPaper=null;
+$('#kbGen').onclick=()=>{
+  const f=+$('#kbFrom').value,t=+$('#kbTo').value,n=+$('#kbCount').value;
+  if(!(f<=t&&n>0&&n<=200))return toast('范围/数量不对');
+  const pool=[];for(let i=f;i<=t;i++)for(let j=1;j<=9;j++)pool.push([i,j]);
+  const qs=[];const used=new Set();
+  for(let k=0;k<n;k++){const [i,j]=pick(pool);const hole=pick(['a','b','c']);
+    const key=i+'x'+j+hole;if(used.has(key)){k--;continue}used.add(key);
+    if(hole==='a')qs.push({q:`${KBN[j-1]}（　）${KBN[i-1]}得${i*j}`,a:i});
+    else if(hole==='b')qs.push({q:`${KBN[j-1]}${KBN[i-1]}（　）得${i*j}`,a:'得'});
+    else qs.push({q:`${j} × ${i} =`,a:i*j});
+  }
+  _kbPaper={qs,title:`乘法口诀练习（${f}~${t} 的口诀）`,date:new Date().toLocaleDateString('zh-CN')};
+  $('#kbPrev').innerHTML=qs.slice(0,30).map(x=>`<span style="display:inline-block;width:30%">${esc(x.q)}</span>`).join('')
+    +(n>30?`<div class="hint">… 共 ${n} 题</div>`:'');
+};
+$('#kbPrint').onclick=()=>{
+  if(!_kbPaper)return toast('先生成');
+  const P=_kbPaper;
+  $('#printArea').innerHTML=`<h1>${esc(P.title)}</h1>
+    <div class="meta">姓名：________　日期：${P.date}　用时：______ 分　对：____ 题</div>
+    <div class="qcols two">${P.qs.map((x,i)=>`<div class="qitem">${i+1}. ${x.q.replace('（　）','______')}</div>`).join('')}</div>
+    <div class="anspage"><h1>参考答案</h1>
+      <div class="ansline">${P.qs.map((x,i)=>`${i+1}. ${x.a}`).join('　')}</div></div>`;
+  window.print();
+};
+
+/* =============== 备课 =============== */
+const P_TYPES=[['新授'],['练习'],['复习'],['实践活动']];
+$('#pType').innerHTML=P_TYPES.map(([n],i)=>`<button class="chip ${i?'':'on'}" data-t="${n}">${n}课</button>`).join('');
+let pSel='新授';
+$$('#pType .chip').forEach(b=>b.onclick=()=>{pSel=b.dataset.t;
+  $$('#pType .chip').forEach(x=>x.classList.toggle('on',x===b));drawBoard()});
+function drawBoard(){
+  const t=$('#pTopic').value.trim()||'课题';
+  const B={
+    '新授':`主板书：${t}\n  ├─ 情境导入（从生活事例提出数学问题）\n  ├─ 核心概念 / 关键结论（关键词≤5个，红笔标）\n  ├─ 探究过程：动手操作 → 观察 → 发现 → 归纳\n  ├─ 例题示范（分步编号）\n  └─ 方法小结（口诀化/一句话）\n副板书：学生生成性答案、易错点、临时演算`,
+    '练习':`主板书：${t} · 练习课\n  ├─ 基础题组（对标课本例题）\n  ├─ 变式题组（换情境/逆向问）\n  ├─ 易错门诊（ collect 作业里的 3 个典型错例）\n  └─ 挑战题（1 道，供学有余力）\n副板书：错因归类、正确率统计`,
+    '复习':`主板书：${t} 单元知识网络\n  ├─ 一级分支：核心概念群（3~5 个）\n  ├─ 二级分支：每个概念下的要点\n  ├─ 高频考点（★）与易错点（▲）\n  └─ 综合应用：1 道跨知识点题目\n副板书：学生补充、遗漏点`,
+    '实践活动':`主板书：${t} · 实践活动\n  ├─ 活动任务与规则（3 条以内）\n  ├─ 分工：每组角色（记录/操作/汇报）\n  ├─ 数据记录表（空表）\n  └─ 汇报与评价标准\n副板书：各组数据对比、生成性问题`
+  };
+  $('#pBoard').textContent=B[pSel];
+}
+$('#pTopic').oninput=drawBoard;
+$('#pGo').onclick=()=>{
+  const topic=$('#pTopic').value.trim();
+  if(!topic)return toast('先填课题');
+  const g=DB.curGrade,c=curCls();
+  const F={
+    '新授':[['一、教学基本信息',()=>[`年级学科：${g} 数学`,`课　　题：《${topic}》`,'课　　型：新授课','课　　时：1 课时（40 分钟）','授课教师：________']],
+      ['二、教学目标',()=>['1. 知识技能：理解并掌握《'+topic+'》的核心方法，能正确运用。','2. 过程方法：经历"情境—操作—发现—归纳"的探究过程，积累活动经验。','3. 情感态度：感受数学与生活的联系，愿意表达自己的想法。']],
+      ['三、教学重难点',()=>['重点：'+topic+' 的算理 / 概念建构。','难点：从具体操作抽象出数学表达；易错点的预防。']],
+      ['四、教学准备',()=>['教具：多媒体课件、计数器/小棒/方格纸（按需）。','学具：同桌一份操作材料；课前口算热身 2 分钟。']],
+      ['五、教学过程（40 分钟）',()=>['① 情境导入（5′）：出示生活情境，提出要解决的数学问题。','② 探究新知（15′）：动手操作 → 同桌交流 → 全班汇报，教师板书关键结论。','③ 例题精讲（8′）：一道例题分步示范，请学生复述每步道理。','④ 分层练习（9′）：基础 3 题 → 变式 2 题 → 挑战 1 题；巡视批改，错例上板。','⑤ 总结提升（3′）：学生说收获，教师用一句话口诀收尾；布置作业。']],
+      ['六、作业设计',()=>['必做：课本对应练习 X 题；选做：给家长讲一遍今天的方法（费曼式）。']],
+      ['七、板书设计',()=>[($('#pBoard').textContent||'').split('\n').join('\n  ')]],
+      ['八、教学反思（课后填）',()=>['达成度：＿＿　亮点：＿＿　改进：＿＿']]]
+,
+    '练习':[['一、基本信息',()=>[`${g} 数学 ·《${topic}》练习课 · 1 课时`]],
+      ['二、练习目标',()=>['1. 巩固《'+topic+'》的基本方法，正确率达 90%。','2. 通过变式与纠错，突破 2~3 个典型易错点。','3. 分层：学困生保底、学优生有挑战。']],
+      ['三、练习设计（40 分钟）',()=>['① 热身（5′）：口算 10 题，同桌互批。','② 基础巩固（10′）：3 题对标例题；独立做 → 投影订正。','③ 易错门诊（10′）：出示课前收集的 3 个错例，小组"会诊"说错因。','④ 变式提升（10′）：逆向问、换情境各 1 题。','⑤ 挑战与总结（5′）：1 道挑战题；一句话总结方法。']],
+      ['四、板书设计',()=>[($('#pBoard').textContent||'').split('\n').join('\n  ')]],
+      ['五、教学反思（课后填）',()=>['正确率：＿＿　仍需关注：＿＿']]]
+,
+    '复习':[['一、基本信息',()=>[`${g} 数学 ·《${topic}》复习课 · 1 课时`]],
+      ['二、复习目标',()=>['1. 串起本单元知识网络，能自己画出来。','2. 高频考点过关，易错点再纠。']],
+      ['三、复习流程（40 分钟）',()=>['① 知识梳理（10′）：学生先说，教师补全网络图。','② 考点过关（15′）：按 ★ 考点逐个小题检验。','③ 易错再纠（10′）：▲ 易错点对比练。','④ 综合应用（5′）：1 道跨知识点综合题。']],
+      ['四、板书设计',()=>[($('#pBoard').textContent||'').split('\n').join('\n  ')]],
+      ['五、教学反思（课后填）',()=>[]]]
+,
+    '实践活动':[['一、基本信息',()=>[`${g} 数学 ·《${topic}》实践活动 · 1 课时`]],
+      ['二、活动目标',()=>['1. 经历完整的"做数学"过程：任务 → 数据 → 结论。','2. 合作分工，会用数学语言记录与汇报。']],
+      ['三、活动流程（40 分钟）',()=>['① 明确任务与规则（5′）。','② 小组活动（20′）：操作/测量/记录，教师巡视指导。','③ 汇报交流（10′）：各组展示数据与结论，互相评价。','④ 总结延伸（5′）：数学就在身边；布置延伸小任务。']],
+      ['四、板书设计',()=>[($('#pBoard').textContent||'').split('\n').join('\n  ')]],
+      ['五、教学反思（课后填）',()=>[]]
+    ]
+  };
+  let L=[`${g} 数学《${topic}》教学设计`,'（${pSel}课）'.replace('${pSel}',pSel)+''];
+  if(c)L.push(`班级：${c.name}　人数：${c.students.length}`);
+  L.push('');
+  F[pSel].forEach(([h,fn])=>{L.push(h);L.push(...fn().map(x=>'  '+x));L.push('')});
+  $('#pOut').value=L.join('\n');
+  toast('生成好了，可改可复制');
+};
+$('#pCopy').onclick=()=>copy($('#pOut').value);
+
+/* =============== 成绩 =============== */
+let curExam='';
+$('#examNew').onclick=()=>{
+  if(!curCls())return toast('先建班');
+  const id='e'+Date.now();
+  DB.exams[id]={clsId:DB.curCls,name:'第 X 次测验',date:new Date().toLocaleDateString('zh-CN'),full:100,marks:{}};
+  curExam=id;save();renderExams();renderScore();
+  openModal('考试信息',`<label class="f">名称</label><input class="i" id="exName" value="第一次单元测验">
+    <label class="f">日期</label><input class="i" id="exDate" value="${new Date().toLocaleDateString('zh-CN')}">
+    <label class="f">满分</label><input class="i" id="exFull" value="100">
+    <div class="row" style="margin-top:12px"><button class="btn" id="exSave">确定</button></div>`);
+  $('#exSave').onclick=()=>{const e=DB.exams[id];
+    e.name=$('#exName').value.trim()||e.name;e.date=$('#exDate').value;e.full=+$('#exFull').value||100;
+    save();closeModal();renderExams();renderScore()};
+};
+function renderExams(){
+  const list=Object.entries(DB.exams).filter(([,e])=>e.clsId===DB.curCls);
+  if(!list.length){$('#examList').innerHTML='<span class="hint">本班还没有考试，点右上「新建考试」</span>';return}
+  $('#examList').innerHTML='<div class="chips">'+list.map(([id,e])=>
+    `<button class="chip ${id===curExam?'on':''}" data-id="${id}">${esc(e.name)} · ${e.date}</button>`).join('')+'</div>';
+  $$('#examList .chip').forEach(b=>b.onclick=()=>{curExam=b.dataset.id;renderExams();renderScore()});
+}
+function examStats(e){
+  const vals=Object.values(e.marks).filter(v=>!isNaN(v)&&v!==''&&v!==null).map(Number);
+  if(!vals.length)return null;
+  const n=vals.length,avg=vals.reduce((a,b)=>a+b,0)/n;
+  const pass=e.full*.6,exc=e.full*.85;
+  const segs=[[.9,'90%+'],[.8,'80-89'],[.7,'70-79'],[.6,'60-69'],[0,'<60']];
+  const segCount={};segs.forEach(([,l])=>segCount[l]=0);
+  vals.forEach(v=>{for(const [p,l] of segs){if(v>=e.full*p||p===0){segCount[l]++;break}}});
+  return {n,avg,passRate:vals.filter(v=>v>=pass).length/n*100,
+    excRate:vals.filter(v=>v>=exc).length/n*100,max:Math.max(...vals),min:Math.min(...vals),segCount};
+}
+function renderScore(){
+  const box=$('#scoreBody');
+  const e=DB.exams[curExam];
+  if(!e){box.innerHTML='';return}
+  const st=examStats(e);
+  const c=curCls();
+  let html=`<div class="panel"><div class="ph">${esc(e.name)}<span class="tag">满分 ${e.full} · ${e.date}</span>
+    <span class="sp"></span>
+    <button class="btn sm ghost" id="scBatch">批量粘分</button>
+    <button class="btn sm ghost" id="scEdit">改考试信息</button>
+    <button class="btn sm red" id="scDel">删除考试</button></div><div class="pb">`;
+  if(!st){html+='<span class="hint">还没录分数，用「批量粘分」或下表逐个填</span></div></div>';box.innerHTML=html;bindScore();return}
+  html+=`<div class="stats">
+    <div class="stat"><div class="v">${st.avg.toFixed(1)}</div><div class="l">平均分</div></div>
+    <div class="stat"><div class="v">${st.passRate.toFixed(0)}%</div><div class="l">及格率</div></div>
+    <div class="stat"><div class="v">${st.excRate.toFixed(0)}%</div><div class="l">优秀率</div></div>
+    <div class="stat"><div class="v">${st.max}</div><div class="l">最高</div></div>
+    <div class="stat"><div class="v">${st.min}</div><div class="l">最低</div></div>
+    <div class="stat"><div class="v">${st.n}</div><div class="l">人数</div></div></div>`;
+  const segOrder=['90%+','80-89','70-79','60-69','<60'];
+  const mx=Math.max(...segOrder.map(k=>st.segCount[k]),1);
+  html+=`<div class="bars">${segOrder.map(k=>`<div class="bar">
+    <span class="c">${st.segCount[k]}</span>
+    <div class="b" style="height:${Math.round(st.segCount[k]/mx*100)}%"></div>
+    <span class="n">${k}</span></div>`).join('')}</div>`;
+  /* 排名表 */
+  const rows=c.students.map(n=>({n,s:e.marks[n]===undefined||e.marks[n]===''?null:+e.marks[n]}));
+  const ranked=rows.filter(r=>r.s!==null).sort((a,b)=>b.s-a.s);
+  const rankMap={};ranked.forEach((r,i)=>{rankMap[r.n]=i+1});
+  html+=`<div class="tbl" style="margin-top:12px"><table><thead><tr>
+    <th>姓名</th><th>分数</th><th>排名</th><th>与班均差</th><th>标记</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    let cls='',diff='—';
+    if(r.s!==null){diff=(r.s-st.avg);cls=diff>=0?'up':'dn';diff=(diff>=0?'+':'')+diff.toFixed(1)}
+    const flag=r.s!==null&&r.s<e.full*.6?'<span style="color:var(--red)">关注</span>':
+      (r.s!==null&&r.s>=e.full*.9?'<span style="color:var(--green)">优</span>':'');
+    html+=`<tr><td>${esc(r.n)}</td>
+      <td class="num"><input class="i" style="width:64px;padding:3px 6px" data-mk="${esc(r.n)}"
+        value="${r.s===null?'':r.s}" placeholder="—"></td>
+      <td class="num">${r.s===null?'—':rankMap[r.n]}</td>
+      <td class="num ${cls}">${diff}</td><td>${flag}</td></tr>`;
+  });
+  html+='</tbody></table></div></div></div>';
+  box.innerHTML=html;bindScore();
+}
+function bindScore(){
+  const e=DB.exams[curExam];if(!e)return;
+  $$('#scoreBody [data-mk]').forEach(inp=>inp.onchange=()=>{
+    const v=inp.value.trim();e.marks[inp.dataset.mk]=v===''?'':+v;save();renderScore()});
+  const bb=$('#scBatch');
+  if(bb)bb.onclick=()=>{
+    openModal('批量粘分',`<label class="f">每行一个：姓名 分数（空格或逗号分隔）</label>
+      <textarea class="i" id="bmTa" rows="10" placeholder="张小明 95&#10;李小红, 88"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn" id="bmGo">导入</button></div>`);
+    $('#bmGo').onclick=()=>{
+      let ok=0;
+      $('#bmTa').value.split('\n').forEach(line=>{
+        const m=line.trim().split(/[\s,，:：]+/);
+        if(m.length>=2&&e.marks.hasOwnProperty(m[0])){const v=parseFloat(m[1]);
+          if(!isNaN(v)){e.marks[m[0]]=v;ok++}}});
+      save();closeModal();renderScore();toast(`导入 ${ok} 条（没匹配到的名字检查名单）`)}};
+  const ed=$('#scEdit');
+  if(ed)ed.onclick=()=>{openModal('改考试信息',`
+    <label class="f">名称</label><input class="i" id="eeN" value="${esc(e.name)}">
+    <label class="f">日期</label><input class="i" id="eeD" value="${esc(e.date)}">
+    <label class="f">满分</label><input class="i" id="eeF" value="${e.full}">
+    <div class="row" style="margin-top:12px"><button class="btn" id="eeS">保存</button></div>`);
+    $('#eeS').onclick=()=>{e.name=$('#eeN').value.trim()||e.name;e.date=$('#eeD').value;
+      e.full=+$('#eeF').value||e.full;save();closeModal();renderExams();renderScore()}};
+  const del=$('#scDel');
+  if(del)del.onclick=()=>{if(confirm('删除这场考试和全部分数？')){
+    delete DB.exams[curExam];curExam='';save();renderExams();renderScore()}};
+}
+
+/* =============== 评语 =============== */
+const CMT_TAGS=['学习认真','思维活跃','计算扎实','课堂积极','作业工整','乐于助人',
+  '需更专注','需多发言','粗心丢分','进步明显'];
+$('#cmtTags').innerHTML=CMT_TAGS.map((t,i)=>`<button class="chip ${i<4?'on':''}" data-t="${t}">${t}</button>`).join('');
+$$('#cmtTags .chip').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+const CMT_OPEN=['你是一个{a}的孩子，','老师欣喜地看到，{a}的你，','这学期的你{a}，','在老师眼里，你{a}，'];
+const CMT_MATH=['计算又快又准，口算本上的红勾就是证明；','遇到难题愿意多想一步，这种钻研劲很珍贵；','对数字很敏感，找规律类题目总能第一个举手；','动手操作课上专注又细致，量一量、摆一摆都做得又快又好；'];
+const CMT_MID=['课堂上能把想法讲得清清楚楚；','作业书写越来越工整；','小组活动时是可靠的小伙伴；'];
+const CMT_IMP=['如果做题时再细心一点，圈出关键词再动笔，你会更棒；','勇敢举手发言，说错了也没关系，说本身就是成长；','把每天十道口算坚持下去，下学期你会看到自己的变化；'];
+$('#cmtGo').onclick=()=>{
+  const stus=curStudents();
+  if(!stus.length)return toast('本班还没有名单，先去「名单」页录入');
+  const on=$$('#cmtTags .chip.on').map(b=>b.dataset.t);
+  const pos=on.filter(t=>!/需/.test(t)),imp=on.filter(t=>/需/.test(t));
+  const used=new Set();const out=[];
+  stus.forEach((name,idx)=>{
+    const o=pick(CMT_OPEN).replace('{a}',pos.length?pick(pos):'学习认真');
+    const m=CMT_MATH[(idx+Math.floor(idx/2))%CMT_MATH.length];
+    const mid=CMT_MID[(idx*3+1)%CMT_MID.length];
+    const i2=imp.length?pick(imp).replace('需',''):'再细心一点';
+    const tail=(CMT_IMP[(idx+2)%CMT_IMP.length]).replace(/如果|把|勇敢/,'');
+    const txt=`${o}${m}${mid}不过老师也想送你一个小建议：${i2}。${tail}`;
+    if(used.has(txt)){out.push(`${name}：${o}${m}继续加油，期待你更精彩的表现。`)}
+    else{used.add(txt);out.push(`${name}：${txt}`)}
+  });
+  $('#cmtOut').value=out.join('\n\n');
+  toast(`已生成 ${out.length} 条骨架，逐条润色后更自然`);
+};
+$('#cmtCopy').onclick=()=>copy($('#cmtOut').value);
+
+/* =============== 课堂 =============== */
+let rollPool=[];
+$('#rollStart').onclick=startRoll;
+function startRoll(){
+  const stus=curStudents();
+  if(!stus.length)return toast('先建名单');
+  if($('#rollNoRepeat').checked){
+    if(!rollPool.length)rollPool=shuffle(stus);
+  }else rollPool=shuffle(stus);
+  $('#rollStage').classList.add('on');
+  $('#rollSub').textContent=`${DB.curGrade} · ${curCls().name} · 剩 ${rollPool.length} 人`;
+  spin();
+}
+function spin(){
+  const el=$('#rollName');let i=0;
+  const tm=setInterval(()=>{el.textContent=pick(curStudents());
+    if(++i>14){clearInterval(tm);
+      const name=rollPool.shift();
+      el.textContent=name;
+      $('#rollSub').textContent=`${DB.curGrade} · ${curCls().name} · 剩 ${rollPool.length} 人`;
+      if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(name);u.lang='zh-CN';speechSynthesis.cancel();speechSynthesis.speak(u)}
+    }},70);
+}
+$('#rollAgain').onclick=spin;
+$('#rollStop').onclick=()=>{$('#rollStage').classList.remove('on');
+  $('#rollInfo').textContent=`本轮剩余 ${rollPool.length} 人（切走再点「开始点名」会重开一轮，取消勾选"不重复"则完全随机）`};
+
+/* 计时 */
+let tLeft=0,tTm=null;
+$$('.view [data-min]').forEach(b=>b.onclick=()=>{tLeft=(+b.dataset.min)*60;drawT();toast(b.dataset.min+' 分钟')});
+function drawT(){const m=Math.floor(tLeft/60),s=tLeft%60;
+  $('#timerBig').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+$('#timerGo').onclick=()=>{if(!tLeft)return toast('先选时长');
+  clearInterval(tTm);
+  tTm=setInterval(()=>{tLeft--;drawT();
+    if(tLeft<=0){clearInterval(tTm);toast('时间到');
+      try{const u=new SpeechSynthesisUtterance('时间到');u.lang='zh-CN';speechSynthesis.speak(u)}catch(e){}
+    }},1000)};
+$('#timerPause').onclick=()=>clearInterval(tTm);
+$('#timerReset').onclick=()=>{clearInterval(tTm);tLeft=0;drawT()};
+
+/* 积分 */
+function renderPts(){
+  const c=curCls();
+  if(!c||!c.students.length){$('#ptsList').innerHTML='<span class="hint">先建名单</span>';return}
+  const rows=c.students.map(n=>({n,p:c.points[n]||0})).sort((a,b)=>b.p-a.p);
+  $('#ptsList').innerHTML='<div class="tbl"><table><thead><tr><th>姓名</th><th>积分</th><th style="width:210px">操作</th></tr></thead><tbody>'+
+    rows.map(r=>`<tr><td>${esc(r.n)}</td><td class="num" style="font-weight:700">${r.p}</td>
+      <td><div class="row">
+        <button class="btn sm green" data-p1="${esc(r.n)}">+1</button>
+        <button class="btn sm green" data-p5="${esc(r.n)}">+5</button>
+        <button class="btn sm ghost" data-m1="${esc(r.n)}">-1</button>
+        <button class="btn sm ghost" data-z="${esc(r.n)}">清零</button></div></td></tr>`).join('')+
+    '</tbody></table></div>';
+  $$('#ptsList [data-p1]').forEach(b=>b.onclick=()=>chg(b.dataset.p1,1));
+  $$('#ptsList [data-p5]').forEach(b=>b.onclick=()=>chg(b.dataset.p5,5));
+  $$('#ptsList [data-m1]').forEach(b=>b.onclick=()=>chg(b.dataset.m1,-1));
+  $$('#ptsList [data-z]').forEach(b=>b.onclick=()=>chg(b.dataset.z,0,true));
+  function chg(n,d,zero){c.points[n]=zero?0:(c.points[n]||0)+d;if(c.points[n]<0)c.points[n]=0;
+    save();renderPts()}
+}
+$('#ptsResetAll').onclick=()=>{if(!curCls())return;
+  if(confirm('全班积分清零？')){curCls().points={};save();renderPts()}};
+
+/* =============== 沟通 =============== */
+const CM_SCENES=[['报喜','p'],['提醒作业','h'],['违纪告知','d'],['约谈','m'],['请假关怀','l']];
+$('#cmScene').innerHTML=CM_SCENES.map(([n],i)=>`<button class="chip ${i?'':'on'}" data-k="${n}">${n}</button>`).join('');
+let cmSel='报喜';
+$$('#cmScene .chip').forEach(b=>b.onclick=()=>{cmSel=b.dataset.k;
+  $$('#cmScene .chip').forEach(x=>x.classList.toggle('on',x===b))});
+$('#cmGo').onclick=()=>{
+  const d=$('#cmDesc').value.trim()||'（学生近况）';
+  const T={
+    '报喜':[`【温和】X 妈妈/爸爸您好，跟您报个喜：${d}，孩子在课堂上被表扬了，替他高兴，也谢谢您的配合。`,
+      `【中性】家长您好，向您反馈：${d}，表现稳定，请在家也多鼓励，保持这个状态。`,
+      `【正式】尊敬的家长：近期${d}，学习状态良好，希望家校继续携手，帮孩子稳步提升。`],
+    '提醒作业':[`【温和】家长您好，${d}，孩子最近可能有点忙忘了，麻烦您提醒一下，有问题随时跟我说。`,
+      `【中性】家长您好，${d}，请您今晚帮忙核对一次作业完成情况，明早交给我即可。`,
+      `【正式】家长您好：${d}，已多次未交，请务必今晚督促补齐，并在作业本上签字确认。`],
+    '违纪告知':[`【温和】家长您好，今天${d}，孩子已经认识到不对了，您回家再多聊聊，咱们一起帮他改过来。`,
+      `【中性】家长您好，向您反馈：今天${d}，已按班规处理，请您配合教育，关注孩子情绪。`,
+      `【正式】家长您好：今天${d}，情节已超出班级常规处理范围，请您本周内到校面谈一次。`],
+    '约谈':[`【温和】家长您好，${d}，想跟您当面聊聊孩子的近况，您看本周哪天方便？`,
+      `【中性】家长您好，关于${d}，需要您抽 20 分钟来校一趟，我们一起商量怎么帮孩子。`,
+      `【正式】家长您好：因${d}，请您本周五前与班主任电话联系并预约到校时间。`],
+    '请假关怀':[`【温和】X 妈妈/爸爸您好，听说孩子生病请假了，别担心功课，回来我单独给他补，祝早日康复。`,
+      `【中性】家长您好，收到请假信息。孩子休息期间可适量完成口算保持手感，作业回来统一补。`,
+      `【正式】家长您好：已记录请假事宜。如需连续请假三天以上，请按规定提交书面请假条。`]
+  };
+  $('#cmOut').value=(T[cmSel]||[]).join('\n\n');
+};
+$('#cmCopy').onclick=()=>copy($('#cmOut').value);
+$('#pmGo').onclick=()=>{
+  const c=curCls(),g=DB.curGrade;
+  const exs=Object.values(DB.exams).filter(e=>e.clsId===DB.curCls);
+  const last=exs.length?`上次测验（${exs[exs.length-1].name}）班均 ${examStats(exs[exs.length-1])?examStats(exs[exs.length-1]).avg.toFixed(1):'—'} 分`:'近期学习状态稳定';
+  $('#pmOut').value=
+`【${g}${c?' · '+c.name:''} 家长会讲稿】（时长约 25 分钟）
+
+一、开场（2′）
+  感谢到场；今天三件事：看整体、看孩子、定配合方式。
+
+二、班级整体情况（6′）
+  · ${last}；整体氛围积极。
+  · 好的方面：＿＿＿＿＿＿；需要共建的方面：＿＿＿＿＿＿。
+
+三、本学期数学学什么（6′）
+  · 核心内容：＿＿＿＿＿＿＿＿（按教学进度填）。
+  · 家长最关心的：计算能力 → 每天口算 10 题；应用题 → 让孩子把题目讲给你听。
+
+四、请家长配合的三件事（6′）
+  1. 每天检查作业"完成"而非"对错"（对错交给老师批）。
+  2. 口算打卡：10 分钟内完成 __ 题，记录用时。
+  3. 有问题先联系我，别在小群里猜。
+
+五、个别交流（5′）
+  需要单独聊的家长，会后留 10 分钟，我在这边。`;
+};
+$('#pmCopy').onclick=()=>copy($('#pmOut').value);
+
+/* =============== 名单 =============== */
+function parseNames(t){return t.split(/[\n,，、]+/).map(s=>s.trim()).filter(Boolean)}
+function renderStu(){
+  const c=curCls();
+  $('#stuCount').textContent=c?`${c.students.length} 人`:'未建班';
+  $('#stuPills').innerHTML=c?c.students.map((n,i)=>
+    `<span class="stu-pill">${esc(n)}<button data-i="${i}">×</button></span>`).join(''):
+    '<span class="hint">右上「管理」先建班</span>';
+  $$('#stuPills button').forEach(b=>b.onclick=()=>{
+    c.students.splice(+b.dataset.i,1);delete c.points[''];save();renderStu();renderHome();renderPts()});
+}
+$('#stuSave').onclick=()=>{
+  const c=curCls();if(!c)return toast('先建班');
+  const ns=parseNames($('#stuIn').value);if(!ns.length)return toast('没读到名字');
+  if(c.students.length&&!confirm(`已有 ${c.students.length} 人，覆盖成 ${ns.length} 人？（积分同名保留）`))return;
+  const old=c.points;c.students=ns;c.points={};
+  ns.forEach(n=>{if(old[n])c.points[n]=old[n]});
+  save();renderStu();renderHome();renderPts();toast('名单已保存');
+};
+$('#stuAppend').onclick=()=>{
+  const c=curCls();if(!c)return toast('先建班');
+  const ns=parseNames($('#stuIn').value).filter(n=>!c.students.includes(n));
+  if(!ns.length)return toast('没有新名字');
+  c.students.push(...ns);save();renderStu();renderHome();renderPts();toast(`追加 ${ns.length} 人`)};
+$('#stuExport').onclick=()=>{
+  const c=curCls();if(!c||!c.students.length)return toast('没数据');
+  const e=DB.exams[curExam];
+  let csv='\uFEFF姓名,积分'+(e?`,${e.name}(满分${e.full})`:'')+'\n';
+  c.students.forEach(n=>{csv+=`${n},${c.points[n]||0}`+(e&&e.marks[n]!==undefined&&e.marks[n]!==''?','+e.marks[n]:(e?',':''))+'\n'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`${c.name}_名单${e?'_'+e.name:''}.csv`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+};
+
+/* =============== 数据页 =============== */
+function renderData(){
+  const nCls=Object.keys(DB.classes).length;
+  const nEx=Object.keys(DB.exams).length;
+  const size=(new Blob([JSON.stringify(DB)]).size/1024).toFixed(1);
+  $('#dataInfo').innerHTML=`
+    <div class="stats">
+      <div class="stat"><div class="v">${nCls}</div><div class="l">班级</div></div>
+      <div class="stat"><div class="v">${nEx}</div><div class="l">考试</div></div>
+      <div class="stat"><div class="v">${size} KB</div><div class="l">数据大小</div></div>
+      <div class="stat"><div class="v">${DB.savedAt||'—'}</div><div class="l">最后保存</div></div></div>
+    <div class="hint" style="margin-bottom:10px">全部数据存这台电脑的浏览器里。<b style="color:var(--orange)">换电脑 / 清缓存会丢</b>——每月点一次「备份」，把 JSON 文件存到 U 盘或网盘。</div>
+    <div class="row">
+      <button class="btn" onclick="document.getElementById('btnBak').click()">导出备份 JSON</button>
+      <button class="btn ghost" onclick="document.getElementById('btnRes').click()">从备份恢复</button>
+    </div>
+    <div class="hint" style="margin-top:12px">隐私提醒：学生姓名和成绩不出这台电脑（除非你自己发备份文件）。公开场合演示建议用「学生01」这类代号。</div>`;
+}
+
+/* =============== 备份/恢复/主题 =============== */
+$('#btnBak').onclick=()=>{
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a=document.createElement('a');const d=new Date();
+  a.href=URL.createObjectURL(blob);
+  a.download=`数学工作台备份_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);toast('备份已导出')};
+$('#btnRes').onclick=()=>$('#fileIn').click();
+$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const fr=new FileReader();
+  fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!o.classes)throw 0;
+    DB=Object.assign(blank(),o);save();boot();toast('已恢复')}catch(err){toast('文件不对，要用本工作台导出的 JSON')}};
+  fr.readAsText(f)};
+$('#btnTheme').onclick=()=>{document.body.classList.toggle('light');
+  const l=document.body.classList.contains('light');
+  DB.theme=l?'light':'dark';$('#btnTheme').textContent=l?'暗色':'亮色';save()};
+
+/* =============== 启动 =============== */
+function renderAll(){renderHome();renderGen();drawBoard();renderExams();renderScore();
+  renderPts();renderStu();renderData()}
+function boot(){
+  document.body.classList.toggle('light',DB.theme==='light');
+  $('#btnTheme').textContent=DB.theme==='light'?'暗色':'亮色';
+  ensureClass();renderClassSel();renderKb();renderAll();
+}
+boot();
+</script>
+</body>
+</html>
