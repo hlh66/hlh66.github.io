@@ -480,6 +480,12 @@ nav button.on .ic{filter:none}
       <iframe id="wbFrame" style="width:100%;height:calc(100vh - 120px);border:0;display:block;background:#111"></iframe>
     </div>
   </section>
+
+  <section class="tab" id="t-math">
+    <div class="card" style="padding:0;overflow:hidden">
+      <iframe id="mathFrame" style="width:100%;height:calc(100vh - 120px);border:0;display:block;background:#111"></iframe>
+    </div>
+  </section>
 </main>
 
 <nav>
@@ -489,6 +495,7 @@ nav button.on .ic{filter:none}
   <button data-t="hw" onclick="go('hw')"><span class="ic">📝</span>作业</button>
   <button data-t="task" onclick="go('task')"><span class="ic">⏰</span>提醒</button>
   <button data-t="wb" onclick="go('wb')"><span class="ic">🧰</span>工作台</button>
+  <button data-t="math" onclick="go('math')"><span class="ic">📐</span>数学</button>
   <button data-t="set" onclick="go('set')"><span class="ic">⚙️</span>设置</button>
 </nav>
 
@@ -613,7 +620,8 @@ function go(t){
   window.scrollTo({top:0,behavior:'instant'});
   if (t === 'set') fillSettings();
   if (t === 'task') drawTasks();
-  if (t === 'wb' && !$('#wbFrame').src) $('#wbFrame').src = '/kanban/workbench';
+  if (t === 'wb' && !$('#wbFrame').src) $('#wbFrame').src = '/kanban/pages/workbench.html';
+  if (t === 'math' && !$('#mathFrame').src) $('#mathFrame').src = '/kanban/pages/math.html';
   renderAll();
 }
 
