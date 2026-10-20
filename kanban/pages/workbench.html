@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>洪老师 · 个人总工作台</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+  --text:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --green:#3fb950;
+  --orange:#d29922; --red:#f85149; --purple:#bc8cff; --cyan:#39d0d8;
+  --radius:10px; --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+body.light{
+  --bg:#f6f8fa; --panel:#ffffff; --panel2:#f0f3f6; --border:#d0d7de;
+  --text:#1f2328; --muted:#636c76; --accent:#0969da; --green:#1a7f37;
+  --orange:#9a6700; --red:#cf222e; --purple:#8250df; --cyan:#1b7c83;
+  --shadow:0 1px 3px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text); font-size:14px; line-height:1.55;
+  font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased; padding-bottom:40px;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+
+/* ============ 顶栏 ============ */
+header{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--border);
+}
+.hd{max-width:1460px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:9px;font-weight:650;font-size:15px;letter-spacing:.3px;white-space:nowrap}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);align-self:center}
+.brand small{font-weight:400;color:var(--muted);font-size:12px}
+.search{flex:1;min-width:180px;max-width:520px;position:relative}
+.search input{
+  width:100%;padding:8px 12px 8px 32px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel);color:var(--text);font-size:13px;outline:none;
+}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.search svg{position:absolute;left:10px;top:9px;opacity:.55}
+.acts{display:flex;gap:7px;margin-left:auto}
+.acts button{
+  background:var(--panel);color:var(--text);border:1px solid var(--border);
+  border-radius:7px;padding:6px 11px;font-size:12.5px;transition:.15s;
+}
+.acts button:hover{border-color:var(--accent);color:var(--accent)}
+.subline{max-width:1460px;margin:0 auto;padding:0 18px 9px;display:flex;gap:16px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
+.subline b{color:var(--text);font-weight:600}
+
+/* ============ 布局 ============ */
+main{max-width:1460px;margin:0 auto;padding:16px 18px 0;display:grid;grid-template-columns:1fr 1.08fr 1fr;gap:16px;align-items:start}
+@media (max-width:1180px){main{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){main{grid-template-columns:1fr;padding:12px}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.panel>h2{
+  margin:0;padding:11px 14px;font-size:13px;font-weight:650;letter-spacing:.4px;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+  background:var(--panel2);
+}
+.panel>h2 .tag{font-weight:500;font-size:11.5px;color:var(--muted);margin-left:auto}
+.panel .body{padding:12px 14px}
+.panel .body.tight{padding:8px}
+
+/* ============ 卡片 ============ */
+.card{
+  display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:8px;
+  border:1px solid transparent;transition:.13s;cursor:pointer;
+}
+.card:hover{background:var(--panel2);border-color:var(--border);text-decoration:none}
+.card .mark{
+  width:26px;height:26px;border-radius:7px;flex:0 0 26px;display:grid;place-items:center;
+  font-size:12px;font-weight:700;color:#0d1117;background:var(--accent);
+}
+.card .t{font-size:13px;font-weight:550;color:var(--text);line-height:1.35}
+.card .d{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.cards{display:flex;flex-direction:column;gap:2px}
+
+/* 芯片链接 */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
+  background:var(--panel2);border:1px solid var(--border);font-size:12px;color:var(--text);
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+
+/* ============ 待办 ============ */
+.todo-form{display:flex;gap:7px;padding:0 14px 10px}
+.todo-form input{
+  flex:1;padding:8px 10px;border-radius:7px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text);font-size:13px;outline:none;min-width:0;
+}
+.todo-form input:focus{border-color:var(--accent)}
+.todo-form button{
+  border:1px solid var(--border);background:var(--accent);color:#fff;border-radius:7px;
+  padding:0 14px;font-size:13px;font-weight:600;border-color:transparent;
+}
+ul.todos{list-style:none;margin:0;padding:0 8px 8px}
+ul.todos li{
+  display:flex;gap:9px;align-items:flex-start;padding:8px 8px;border-radius:7px;font-size:13px;
+  group;transition:.12s;
+}
+ul.todos li:hover{background:var(--panel2)}
+ul.todos li.done .txt{text-decoration:line-through;color:var(--muted)}
+.cb{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex:0 0 16px;
+  margin-top:2px;display:grid;place-items:center;font-size:11px;color:transparent;background:transparent;
+}
+li.done .cb{background:var(--green);border-color:var(--green);color:#0d1117}
+.txt{flex:1;word-break:break-word}
+.del{opacity:0;border:none;background:transparent;color:var(--muted);font-size:15px;line-height:1;padding:0 3px}
+li:hover .del{opacity:.75}
+.del:hover{color:var(--red)}
+.empty{color:var(--muted);font-size:12.5px;padding:10px 12px;text-align:center}
+
+/* ============ 指令卡 ============ */
+.prompt{border:1px solid var(--border);border-radius:8px;margin-bottom:7px;overflow:hidden;background:var(--bg)}
+.prompt .ph{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer}
+.prompt .ph:hover{background:var(--panel2)}
+.prompt .pn{font-size:12.5px;font-weight:600;flex:1}
+.prompt .cp{
+  border:1px solid var(--border);background:var(--panel);color:var(--muted);
+  border-radius:6px;padding:3px 8px;font-size:11.5px;
+}
+.prompt .cp:hover{color:var(--accent);border-color:var(--accent)}
+.prompt pre{
+  display:none;margin:0;padding:10px 11px;font-size:11.5px;line-height:1.6;white-space:pre-wrap;
+  color:var(--muted);border-top:1px solid var(--border);background:var(--panel);
+  font-family:ui-monospace,"Cascadia Code",Consolas,monospace;max-height:260px;overflow:auto;
+}
+.prompt.open pre{display:block}
+
+/* ============ 文档卡 ============ */
+.doc{border-left:2px solid var(--border);padding:7px 0 7px 11px;margin-bottom:11px}
+.doc:last-child{margin-bottom:0}
+.doc .dt{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.doc .dt .lvl{font-size:10.5px;padding:1px 5px;border-radius:4px;background:var(--panel2);color:var(--muted);font-weight:500}
+.doc .dm{font-size:12px;color:var(--muted);margin-top:3px}
+.doc ul{margin:5px 0 0;padding-left:16px;font-size:12.2px;color:var(--muted)}
+.doc ul li{margin:2px 0}
+.doc .lnk{font-size:11.5px;word-break:break-all}
+
+/* ============ 表格 ============ */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12px;min-width:430px}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--panel2);font-weight:600;font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--accent)}
+tr:last-child td{border-bottom:none}
+td.mem{color:var(--cyan);white-space:nowrap;font-variant-numeric:tabular-nums}
+td.sc{color:var(--orange);white-space:nowrap}
+tbody tr:hover{background:var(--panel2)}
+
+/* ============ 项目索引 ============ */
+.projects{max-width:1460px;margin:18px auto 0;padding:0 18px}
+@media (max-width:760px){.projects{padding:0 12px}}
+.proj-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.proj-head h2{margin:0;font-size:14px;font-weight:650}
+.proj-head small{color:var(--muted);font-weight:400;font-size:12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{
+  border:1px solid var(--border);background:var(--panel);color:var(--muted);border-radius:999px;
+  padding:4px 12px;font-size:12px;transition:.13s;
+}
+.tab:hover{color:var(--text);border-color:var(--accent)}
+.tab.on{background:var(--accent);color:#fff;border-color:transparent;font-weight:600}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:8px}
+.pitem{
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 11px;
+  cursor:pointer;transition:.13s;position:relative;overflow:hidden;
+}
+.pitem:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.pitem .pname{font-size:12.8px;font-weight:550;display:flex;align-items:center;gap:6px}
+.pitem .ppath{font-size:10.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:rtl;text-align:left}
+.pitem .badge{font-size:9.5px;padding:0 4px;border-radius:3px;background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green);font-weight:600}
+
+/* ============ toast ============ */
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 16px;
+  font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:.22s;z-index:99;max-width:90vw;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer{max-width:1460px;margin:26px auto 0;padding:14px 18px 0;border-top:1px solid var(--border);color:var(--muted);font-size:11.5px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.hidden{display:none !important}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <div class="brand"><span class="dot"></span>洪老师 · 个人总工作台 <small id="modeTag"></small></div>
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" placeholder="搜项目 / 应用 / 指令…  (按 / 聚焦)">
+    </div>
+    <div class="acts">
+      <button id="btnTheme">亮色</button>
+      <button id="btnExport">备份</button>
+      <button id="btnImport">恢复</button>
+      <input type="file" id="fileIn" accept="application/json" class="hidden">
+    </div>
+  </div>
+  <div class="subline">
+    <span id="dateLine"></span>
+    <span>待办 <b id="todoCount">0</b> 条</span>
+    <span>项目 <b id="projCount">0</b> 个</span>
+    <span>链接库 <b>5</b> 篇已学</span>
+  </div>
+</header>
+
+<main>
+  <!-- 左列 -->
+  <div class="col">
+    <div class="panel">
+      <h2>我的应用 <span class="tag">线上成品</span></h2>
+      <div class="body tight" id="appList"></div>
+    </div>
+    <div class="panel">
+      <h2>常用网站 <span class="tag">点开即用</span></h2>
+      <div class="body"><div class="chips" id="siteList"></div></div>
+    </div>
+  </div>
+
+  <!-- 中列 -->
+  <div class="col">
+    <div class="panel">
+      <h2>今日待办 <span class="tag" id="todoTag"></span></h2>
+      <form class="todo-form" id="todoForm">
+        <input id="todoInput" placeholder="加一条，回车确认" autocomplete="off">
+        <button type="submit">加</button>
+      </form>
+      <ul class="todos" id="todoList"></ul>
+    </div>
+    <div class="panel">
+      <h2>常用指令 <span class="tag">点标题展开 · 右侧复制</span></h2>
+      <div class="body" id="promptList"></div>
+    </div>
+  </div>
+
+  <!-- 右列 -->
+  <div class="col">
+    <div class="panel">
+      <h2>链接库 · 已学 5 篇 <span class="tag">飞书文档</span></h2>
+      <div class="body" id="docList"></div>
+    </div>
+    <div class="panel">
+      <h2>私有网盘 · 10 种方案 <span class="tag">点表头排序</span></h2>
+      <div class="body tight">
+        <div class="tbl-wrap">
+          <table id="nasTable">
+            <thead><tr><th data-k="n">方案</th><th data-k="mem">内存</th><th data-k="sc">适合</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<section class="projects">
+  <div class="proj-head">
+    <h2>项目索引 <small id="projHint"></small></h2>
+    <div class="tabs" id="catTabs"></div>
+  </div>
+  <div class="pgrid" id="projGrid"></div>
+</section>
+
+<footer>
+  <span>数据存浏览器本地 · 换机或清缓存会丢，记得每月点「备份」</span>
+  <span id="savedAt"></span>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   0. 基础
+   ========================================================= */
+const LOCAL = location.protocol === 'file:';
+const ROOT = 'D:\\Desktop\\';
+const $ = s => document.querySelector(s);
+const KEY = 'hls_workbench_v1';
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tm); t._tm = setTimeout(()=>t.classList.remove('show'), 1900);
+}
+function copy(text){
+  const done = ()=>toast('已复制');
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallback());
+  } else fallback();
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('复制失败，请手动选中'); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* =========================================================
+   1. 数据
+   ========================================================= */
+const APPS = [
+  {n:'教师工作台（主）', d:'26 模块 · 一至六年级 · 功能最全', u:'https://242a6f62d51a4600a94cd441d1dda31a.app.workbuddy.link/', k:'教'},
+  {n:'精简版工作台', d:'轻量版 · 打开更快', u:'https://5a41c65843c84a4fa8be161a3a2d6765.app.workbuddy.link/', k:'简'},
+  {n:'英语教师版', d:'英语学科专用', u:'https://881624073262402a924f9382961967d7.app.workbuddy.link/', k:'英'},
+  {n:'邀请同事注册', d:'新用户注册立得 2000 积分', u:'https://www.workbuddy.cn/events/invite?inviteCode=jcrbzwdsd2', k:'邀'},
+  {n:'数学教师工作台', d:'云端版 · 手机号登录 · Excel 导入成绩', p:'数学\\教师工作台\\index.html', k:'数'},
+  {n:'我的日常相册', d:'照片归集站点', p:'每日相册\\站点\\index.html', k:'相'},
+  {n:'桌面导航', d:'本地项目 file:// 直连', p:'导航\\index.html', k:'导'},
+  {n:'聚合搜索导航站', d:'多引擎聚合搜索', p:'聚合搜索导航站\\index.html', k:'搜'},
+  {n:'刷题网页', d:'二年级练习', p:'刷题网页\\index.html', k:'题'},
+  {n:'作业布置导航', d:'作业与批改入口', p:'作业布置导航\\index.html', k:'作'},
+  {n:'日历预测未来', d:'日程推演', p:'日历预测未来\\index.html', k:'历'},
+  {n:'文件终端', d:'网页端文件管理', p:'文件终端\\index.html', k:'文'},
+  {n:'自动笔记提取', d:'语音/文本自动归档', p:'自动笔记提取\\index.html', k:'记'}
+];
+
+const SITES = [
+  ['WorkBuddy','https://www.workbuddy.cn'],
+  ['飞书文档','https://feishu.doubao.com'],
+  ['ima 知识库','https://ima.qq.com'],
+  ['希沃白板','https://easinote.seewo.com'],
+  ['希沃胶囊','https://capsule.seewo.com'],
+  ['智慧教育平台','https://basic.smartedu.cn'],
+  ['人教社','https://www.pep.com.cn'],
+  ['学科网','https://www.zxxk.com'],
+  ['之江汇','https://www.zjer.cn'],
+  ['DeepSeek','https://chat.deepseek.com'],
+  ['通义千问','https://tongyi.aliyun.com'],
+  ['豆包','https://www.doubao.com'],
+  ['秘塔搜索','https://metaso.cn'],
+  ['GitHub','https://github.com'],
+  ['阿里云盘','https://www.alipan.com'],
+  ['百度网盘','https://pan.baidu.com']
+];
+
+const PROMPTS = [
+  {n:'① 按规范建项目文件夹', t:`按我的「Agent 任务标准化管理规范」办事：
+1. 在 D:\\Desktop 下新建专属项目文件夹，名字写清主题（必要时带日期）；
+2. 内部按 01_原始素材 / 02_工作文件 / 03_最终输出 / 04_配置脚本 / 05_任务说明 分层；
+3. 附一份「说明.md」，固定五段：任务概述、目录释义、执行流程、使用方法、迭代记录；
+4. 所有产出只放这一个文件夹，不许散落到别处；
+5. 做完把目录结构回给我看。`},
+  {n:'② 把这次结论落盘', t:`把这次对话的结论写到指定项目文件夹里：
+- 结论、关键数据、踩过的坑，写成 md；
+- 交付物（脚本/图片/成品）跟说明.md 放同一目录；
+- 已有说明.md 的，追加「## 追加对话（日期）」，不要覆盖旧内容；
+- 最后把文件路径列给我。`},
+  {n:'③ 组一份单元测试卷', t:`用组卷能力为【二年级数学 · 第 X 单元】出一份测试卷：
+- 满分 100，时间 40 分钟，题型：填空 / 选择 / 计算 / 解决问题；
+- 难度比 7:2:1，附双向细目表（题号-知识点-分值-难度）；
+- 输出可直接打印的 A4 版 + 参考答案与评分标准；
+- 题目要能口算验算，答案经脚本核对。`},
+  {n:'④ 成绩分析报告', t:`这是我班这次考试的成绩（粘贴分数，一行一个学生）：
+【粘贴区】
+请输出：
+1. 平均分 / 及格率 / 优秀率 / 最高最低分；
+2. 分数段分布（90-100、80-89、70-79、60-69、60 以下）；
+3. 需要重点关注的学生名单 + 各自薄弱点推测；
+4. 一段可直接发家长群的班级学情小结（150 字内）。`},
+  {n:'⑤ 全班评语（10 分钟）', t:`按下面的学生名单生成期末评语：
+每位 80-120 字，结构：肯定具体表现 → 指出一点不足 → 给一个可执行的小目标；
+语气温和不套话，不用「该生」开头，多用「你」；
+不要出现分数排名对比；同一班级里用词不要重复。
+名单：【粘贴姓名 + 一句特征】`},
+  {n:'⑥ 家校沟通话术', t:`场景：【报喜 / 提醒作业 / 约谈 / 违纪告知】
+学生情况：【一句话】
+帮我写三条不同语气的话术（温和 / 中性 / 严肃），每条 100 字内，
+可直接发微信，不指责家长，结尾都给一个具体可做的建议。`},
+  {n:'⑦ 让 Agent 自己往下跑', t:`接下来这件事你自己判断着推进，不要每一步都问我：
+- 遇到需要在两个方案里选，选更省事、更稳的那个，并在结尾说明你为什么选它；
+- 缺信息就先按最合理的假设做，把假设列出来；
+- 只有涉及删文件、发外部消息、花钱这三件事，才停下来问我。`}
+];
+
+const DOCS = [
+  {n:'待办事项', lvl:'L1', u:'https://feishu.doubao.com/docx/VSxIdyj7uoTC6Pxp1bHcbAssnsd',
+   d:'8/30、9/01 两条旧记录，未见 10 月更新',
+   pts:['第一优先：论文事宜（核查提交时间 / 填报资料 / 二次修改）',
+        '第二优先：到校集中事务——与祝老师沟通班级情况、与新老师交接',
+        '同期：乘法口诀卡牌游戏比赛筹备（对接志华、玉华，定玩法规则、流程、评价表、录教学视频）',
+        '第三：搬办公桌、回家拿排插；9/01 新增加「买鼠标垫」']},
+  {n:'笔记 · Agent 任务标准化管理规范', lvl:'L1', u:'https://feishu.doubao.com/docx/Sd4ldWNCloaoU2xlR6IcM49rnjd',
+   d:'你所有项目的目录规范都出自这里（已全线落地）',
+   pts:['固定四步：建专属文件夹 → 集中处理 → 优化目录 → 写读取说明',
+        '目录：01_原始素材 / 02_工作文件 / 03_最终输出 / 04_配置脚本 / 05_任务说明',
+        '说明文档固定五段：任务概述、目录释义、执行流程、使用方法、迭代记录',
+        '目的：模块化隔离、机器可读、可复用、可迭代']},
+  {n:'Agent 预设任务指令库', lvl:'L1', u:'https://feishu.doubao.com/docx/BIOXdhTjqoWIzzx96YychmHMn74',
+   d:'目前只有 1 条任务——这个库基本还是空的',
+   pts:['定位：可被程序直接读取、逐条自动执行，全程无询问无弹窗',
+        '现有任务 1：打开计算器（调用系统程序启动）',
+        '缺口：常用动作（备份、整理、归档、日报）都还没写成指令',
+        '建议：把左侧「常用指令」里的 7 条迁进去，形成真正的任务库']},
+  {n:'资源链接总表', lvl:'L1', u:'https://feishu.doubao.com/docx/MNn1dRTf9oUvyNx9c13cIWoSn3g',
+   d:'工具 / 教程 / 源码 / 网盘 / 部署服务的归集处',
+   pts:['目前只有一条内嵌子链接（本地云盘方案），其余条目仍空',
+        '设计意图：每条链接都备注用途，便于查阅复用',
+        '待办：把工作台「常用网站」这 16 条同步进去']},
+  {n:'本地云盘 / 私有网盘 10 方案对比', lvl:'L2', u:'https://feishu.doubao.com/docx/XDeRdsu4XoHdC2xb8L4cwlUFncd',
+   d:'内存占用 + 优缺点 + 选型建议 + 部署安全红线',
+   pts:['仅局域网：Windows 原生 SMB（120–200MB）',
+        '个人外网、低内存：FileBrowser（80–150MB，Go 单文件）',
+        '要预览与权限、内存够：可道云 KodBox（1000–1500MB）',
+        '整机专用存储：飞牛 fnOS（1200–1600MB）',
+        '拒绝暴露公网端口：虚拟组网 + SMB',
+        '红线：原生 SMB / 普通 FTP 严禁直接公网端口转发']}
+];
+
+const NAS = [
+  {n:'Windows SMB',      mem:'120–200 MB',  sc:'局域网首选',      m:150},
+  {n:'Windows FTP',      mem:'100–250 MB',  sc:'内网简单共享',    m:175},
+  {n:'可道云 KodBox',    mem:'1000–1500 MB',sc:'预览+权限',       m:1250},
+  {n:'腾飞 WebOS',       mem:'2500–3500 MB',sc:'多网盘聚合办公',  m:3000},
+  {n:'飞牛 fnOS',        mem:'1200–1600 MB',sc:'整机专用存储',    m:1400},
+  {n:'FileBrowser',      mem:'80–150 MB',   sc:'个人外网访问',    m:115},
+  {n:'DUFS',             mem:'50–120 MB',   sc:'极简个人存取',    m:85},
+  {n:'Python FastAPI',   mem:'20–40 MB',    sc:'自研练手',        m:30},
+  {n:'C 自研 HTTP',      mem:'5–15 MB',     sc:'技术研究',        m:10},
+  {n:'虚拟组网 + SMB',   mem:'仅网卡开销',  sc:'安全最高',        m:5}
+];
+
+const PROJECTS = [
+  {c:'教学课堂', items:[
+    ['数学','数学'],['教师','教师'],['26学年上工作','26学年上工作'],['精品课2026','精品课2026'],
+    ['作业布置','作业布置'],['作业布置导航','作业布置导航',1],['刷题网页','刷题网页',1],
+    ['乘法口诀卡片','乘法口诀卡片'],['板书小纸条','板书小纸条'],['板书贴生成器','板书贴生成器'],
+    ['座位表工具','座位表工具'],['课程表作息','课程表作息'],['查作业','查作业'],
+    ['小练习纸-√','小练习纸-√'],['二年级上册数学练习-答案版','二年级上册数学练习-答案版'],
+    ['六年级英语资料','六年级英语资料'],['英语补习课','英语补习课'],['周三编程课','周三编程课'],
+    ['26顺德区青少年科创大赛','26顺德区青少年科创大赛',1],['师徒结对','师徒结对'],
+    ['教资作文备考','教资作文备考'],['教资作文审题朗读','教资作文审题朗读',1],
+    ['惠东教师招聘考试','惠东教师招聘考试'],['2026年心理A证','2026年心理A证'],
+    ['现代教育技术考研','现代教育技术考研']
+  ]},
+  {c:'AI 与 Agent', items:[
+    ['Agent','Agent',1],['Agent使用技巧','Agent使用技巧'],['Agent配置管理','Agent配置管理'],
+    ['Claw','Claw'],['QClaw迁移','QClaw迁移'],['CodeX学习之旅','CodeX学习之旅'],
+    ['模型切换工具','模型切换工具'],['调用Agent','调用Agent'],['WorkBuddy播报','WorkBuddy播报'],
+    ['WorkBuddy架构分析','WorkBuddy架构分析报告'],['WorkBuddy远程控制','WorkBuddy远程控制'],
+    ['WB_Remote','WB_Remote'],['第二大脑','第二大脑'],['对话咨询','对话咨询'],
+    ['对话沉淀','对话沉淀'],['找技能','找技能'],['找资源','找资源'],['workbuddy教程','workbuddy教程']
+  ]},
+  {c:'服务器远程', items:[
+    ['服务器','服务器'],['PHPStudy服务器','PHPStudy服务器'],['内网穿透','内网穿透'],
+    ['Tailscale组网','Tailscale组网'],['电脑SSH与内网穿透','电脑SSH与内网穿透'],
+    ['电脑SSH服务端','电脑SSH服务端配置'],['远程方案','远程方案'],
+    ['远程管理信息汇总','远程管理信息汇总'],['小米手机服务器','小米手机服务器'],
+    ['平板Termux部署Alist','平板Termux部署Alist'],['文件同步中心','文件同步中心'],
+    ['本地云盘与NAS方案','本地云盘与NAS方案'],['一键SMB共享','一键SMB共享'],
+    ['宝塔面板管理','宝塔面板管理'],['云服务','云服务'],['多端控制台','多端控制台'],
+    ['内网穿透工具','内网穿透']
+  ]},
+  {c:'工具效率', items:[
+    ['电脑优化','电脑优化'],['电脑维护','电脑维护'],['电脑自动优化','电脑自动优化'],
+    ['释放内存','释放内存'],['电脑熄屏设置','电脑熄屏设置'],['息屏唤醒方案','息屏唤醒方案讨论'],
+    ['电脑扩音','电脑扩音'],['蓝牙麦克风','蓝牙麦克风'],['窗口识别发送','窗口识别发送'],
+    ['快捷键','快捷键'],['学校快捷键','学校快捷键'],['电脑定时任务','电脑定时任务'],
+    ['定时任务API网页','定时任务API网页'],['链接任务派发','链接任务派发'],
+    ['导航','导航',1],['聚合搜索导航站','聚合搜索导航站',1],['文件终端','文件终端',1],
+    ['手机机器人助手','手机机器人助手'],['语音随手记','语音随手记'],
+    ['自动笔记提取','自动笔记提取',1],['笔记','笔记'],['笔记优化','笔记优化'],
+    ['书签整理','书签整理'],['每日相册','每日相册'],['我的工作台','我的工作台',1]
+  ]},
+  {c:'内容素材', items:[
+    ['3D建模','3D建模'],['SVG矢量库','SVG矢量库'],['视频','视频'],['视频制作比赛','视频制作比赛'],
+    ['视频解析与模仿','视频解析与模仿'],['摄影剪辑书籍','摄影剪辑书籍'],
+    ['文字转音频视频','文字转音频视频'],['千问聊天整理','千问聊天整理'],
+    ['微信整理','微信整理'],['相片视频管理','相片视频管理'],['泰国','泰国'],
+    ['国防主题标语艺术字','国防主题标语艺术字'],['我心中的解放军叔叔艺术字','我心中的解放军叔叔艺术字'],
+    ['国庆红色教育素材','国庆红色教育素材'],['科创','科创'],['链接库','链接库']
+  ]}
+];
+
+/* =========================================================
+   2. 状态
+   ========================================================= */
+const DEFAULT_TODOS = [
+  {t:'把「待办事项」飞书文档更新到 10 月（还停在 9/01）', d:false},
+  {t:'给 Agent 指令库存第 2 条任务（现在只有「打开计算器」）', d:false},
+  {t:'资源链接总表还空着，把工作台 16 条常用网站录进去', d:false},
+  {t:'教师工作台浏览器数据备份一次（换机会丢）', d:false}
+];
+let ST = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {todos: DEFAULT_TODOS.map(x=>({...x})), theme:'dark', savedAt:''};
+}
+function save(){
+  ST.savedAt = new Date().toLocaleString('zh-CN',{hour12:false});
+  try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){}
+  $('#savedAt').textContent = '最后保存 ' + ST.savedAt;
+}
+
+/* =========================================================
+   3. 渲染
+   ========================================================= */
+function renderApps(){
+  const box = $('#appList');
+  box.innerHTML = APPS.map(a=>{
+    const href = a.u || (LOCAL ? 'file:///' + encodeURI((ROOT + a.p).replace(/\\/g,'/')) : '');
+    return `<a class="card" data-search="${a.n} ${a.d}" data-href="${a.u||''}" data-path="${a.p||''}">
+      <span class="mark">${a.k}</span>
+      <span><span class="t">${a.n}</span><span class="d">${a.d}</span></span>
+    </a>`;
+  }).join('');
+  box.querySelectorAll('.card').forEach(el=>{
+    el.addEventListener('click', e=>{
+      const url = el.dataset.href;
+      const path = el.dataset.path;
+      if(url){ return; }             // 外链走默认跳转
+      e.preventDefault();
+      if(LOCAL){ window.location.href = 'file:///' + encodeURI((ROOT + path).replace(/\\/g,'/')); }
+      else { copy(ROOT + path); toast('已复制本地路径，粘到资源管理器打开'); }
+    });
+  });
+  if(!LOCAL){
+    box.querySelectorAll('.card').forEach(el=>{ if(!el.dataset.href) el.removeAttribute('href'); });
+    $('#modeTag').textContent = '· 线上模式（本地路径只能复制）';
+  } else {
+    $('#modeTag').textContent = '· 本地模式（可直达文件夹）';
+  }
+}
+
+function renderSites(){
+  $('#siteList').innerHTML = SITES.map(([n,u])=>`<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('');
+}
+
+function renderTodos(){
+  const list = $('#todoList');
+  const arr = ST.todos;
+  if(!arr.length){ list.innerHTML = '<div class="empty">还没有待办，上面加一条</div>'; }
+  else {
+    list.innerHTML = arr.map((x,i)=>`<li class="${x.d?'done':''}" data-i="${i}">
+      <button class="cb" aria-label="勾选">✓</button>
+      <span class="txt">${escapeHtml(x.t)}</span>
+      <button class="del" aria-label="删除">×</button></li>`).join('');
+  }
+  const left = arr.filter(x=>!x.d).length;
+  $('#todoCount').textContent = left;
+  $('#todoTag').textContent = left ? `剩 ${left} 条` : '全部完成';
+  list.querySelectorAll('li').forEach(li=>{
+    const i = +li.dataset.i;
+    li.querySelector('.cb').onclick = ()=>{ ST.todos[i].d = !ST.todos[i].d; save(); renderTodos(); };
+    li.querySelector('.del').onclick = ()=>{ ST.todos.splice(i,1); save(); renderTodos(); };
+  });
+}
+
+function renderPrompts(){
+  $('#promptList').innerHTML = PROMPTS.map((p,i)=>`<div class="prompt" data-search="${p.n}">
+    <div class="ph"><span class="pn">${p.n}</span><button class="cp" data-i="${i}">复制</button></div>
+    <pre>${escapeHtml(p.t)}</pre>
+  </div>`).join('');
+  const wrap = $('#promptList');
+  wrap.querySelectorAll('.prompt .ph .pn').forEach(n=>{
+    n.onclick = ()=> n.closest('.prompt').classList.toggle('open');
+  });
+  wrap.querySelectorAll('.cp').forEach(b=>{
+    b.onclick = e=>{ e.stopPropagation(); copy(PROMPTS[+b.dataset.i].t); };
+  });
+}
+
+function renderDocs(){
+  $('#docList').innerHTML = DOCS.map(d=>`<div class="doc" data-search="${d.n} ${d.d}">
+    <div class="dt">${d.n}<span class="lvl">${d.lvl}</span></div>
+    <div class="dm">${d.d}</div>
+    <ul>${d.pts.map(p=>`<li>${p}</li>`).join('')}</ul>
+    <div class="lnk"><a href="${d.u}" target="_blank" rel="noopener">打开飞书原文</a></div>
+  </div>`).join('');
+}
+
+let nasSort = {k:'m', asc:true};
+function renderNas(){
+  const tb = $('#nasTable tbody');
+  const data = [...NAS].sort((a,b)=>{
+    const k = nasSort.k;
+    let r;
+    if(k==='m') r = a.m - b.m;
+    else r = String(a[k]).localeCompare(String(b[k]),'zh');
+    return nasSort.asc ? r : -r;
+  });
+  tb.innerHTML = data.map(x=>`<tr data-search="${x.n} ${x.sc}"><td>${x.n}</td><td class="mem">${x.mem}</td><td class="sc">${x.sc}</td></tr>`).join('');
+}
+document.querySelectorAll('#nasTable th').forEach(th=>{
+  th.onclick = ()=>{
+    const k = th.dataset.k;
+    nasSort.asc = (nasSort.k===k) ? !nasSort.asc : true;
+    nasSort.k = k;
+    renderNas();
+  };
+});
+
+function renderProjects(cat){
+  const grid = $('#projGrid');
+  const cats = PROJECTS.map(p=>p.c);
+  $('#catTabs').innerHTML = cats.map(c=>`<button class="tab ${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('');
+  $('#catTabs').querySelectorAll('.tab').forEach(b=>{
+    b.onclick = ()=> renderProjects(b.dataset.c);
+  });
+  const group = PROJECTS.find(p=>p.c===cat) || PROJECTS[0];
+  grid.innerHTML = group.items.map(([n,p,open])=>`
+    <div class="pitem" data-search="${n} ${p}" data-p="${p}" data-open="${open?1:0}">
+      <div class="pname">${n}${open?'<span class="badge">可用</span>':''}</div>
+      <div class="ppath">${p}</div>
+    </div>`).join('');
+  grid.querySelectorAll('.pitem').forEach(el=>{
+    el.onclick = ()=>{
+      const p = el.dataset.p;
+      const isOpen = el.dataset.open === '1';
+      if(LOCAL){
+        window.location.href = 'file:///' + encodeURI((ROOT + p).replace(/\\/g,'/') + (isOpen?'\\index.html':''));
+      } else {
+        copy(ROOT + p); toast('已复制路径');
+      }
+    };
+  });
+  const total = PROJECTS.reduce((s,p)=>s+p.items.length,0);
+  $('#projCount').textContent = total;
+  $('#projHint').textContent = `共 ${total} 个 · ${LOCAL?'点击直达':'点击复制路径'}`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+/* =========================================================
+   4. 交互
+   ========================================================= */
+$('#todoForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const v = $('#todoInput').value.trim();
+  if(!v) return;
+  ST.todos.unshift({t:v, d:false});
+  $('#todoInput').value = '';
+  save(); renderTodos();
+});
+
+$('#q').addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('[data-search]').forEach(el=>{
+    const hit = !q || el.dataset.search.toLowerCase().includes(q);
+    el.classList.toggle('hidden', !hit);
+  });
+  if(q){
+    document.querySelectorAll('.panel').forEach(p=>{
+      const any = [...p.querySelectorAll('[data-search]')].some(x=>!x.classList.contains('hidden'));
+      p.classList.toggle('hidden', !any && p.querySelectorAll('[data-search]').length>0);
+    });
+  } else {
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('hidden'));
+  }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key === '/' && document.activeElement.tagName !== 'INPUT'){
+    e.preventDefault(); $('#q').focus();
+  }
+  if(e.key === 'Escape'){ $('#q').value = ''; $('#q').dispatchEvent(new Event('input')); }
+});
+
+$('#btnTheme').onclick = ()=>{
+  document.body.classList.toggle('light');
+  const light = document.body.classList.contains('light');
+  ST.theme = light ? 'light' : 'dark';
+  $('#btnTheme').textContent = light ? '暗色' : '亮色';
+  save();
+};
+
+$('#btnExport').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(ST,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = URL.createObjectURL(blob);
+  a.download = `工作台备份_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+  toast('已导出备份文件');
+};
+$('#btnImport').onclick = ()=> $('#fileIn').click();
+$('#fileIn').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const fr = new FileReader();
+  fr.onload = ()=>{
+    try{
+      const obj = JSON.parse(fr.result);
+      if(!obj.todos) throw new Error('格式不对');
+      ST = obj; save(); boot(); toast('已恢复');
+    }catch(err){ toast('文件读不了，确认是备份 JSON'); }
+  };
+  fr.readAsText(f);
+};
+
+/* =========================================================
+   5. 启动
+   ========================================================= */
+function boot(){
+  renderApps(); renderSites(); renderTodos(); renderPrompts();
+  renderDocs(); renderNas(); renderProjects('教学课堂');
+  if(ST.theme === 'light'){ document.body.classList.add('light'); $('#btnTheme').textContent = '暗色'; }
+  const now = new Date();
+  const wd = ['日','一','二','三','四','五','六'][now.getDay()];
+  $('#dateLine').textContent = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日 · 周${wd}`;
+  if(ST.savedAt) $('#savedAt').textContent = '最后保存 ' + ST.savedAt;
+}
+boot();
+</script>
+</body>
+</html>
