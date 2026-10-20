@@ -78,15 +78,29 @@ button.dg{background:rgba(248,81,73,.12);border-color:rgba(248,81,73,.45);color:
 </div>
 
 <div class="card">
+  <h3>🌐 打开网页（在教室电脑上打开）</h3>
+  <div class="cmdrow">
+    <input id="url" placeholder="https://www.baidu.com" onkeydown="if(event.key==='Enter')openUrl()">
+    <button class="pri" onclick="openUrl()">打开</button>
+  </div>
+  <div class="grid" style="margin-top:8px">
+    <button onclick="openUrl('https://hlh66.github.io/kanban/')">导航页</button>
+    <button onclick="openUrl('http://192.168.123.51:5000/kanban/')">学生端大屏</button>
+    <button onclick="openUrl('http://192.168.123.51:5000/kanban/parent')">家长端</button>
+  </div>
+  <div class="hint">不写 https:// 也行，会自动补。电脑上没开浏览器会顺手启动默认浏览器。</div>
+</div>
+
+<div class="card">
   <h3>⚡ 常用操作</h3>
   <div class="grid">
     <button onclick="quick('__ping__')">PING</button>
     <button onclick="quick('__status__')">状态</button>
     <button onclick="quick('ipconfig')">IP 配置</button>
-    <button onclick="quick('start https://hlh66.github.io/kanban/')">开导航页</button>
     <button onclick="quick('tasklist | findstr /i chrome')">查 Chrome</button>
     <button onclick="quick('whoami')">当前用户</button>
-    <button onclick="quick('start http://192.168.123.51:5000/kanban/')">开学生端</button>
+    <button onclick="quick('wmic logicaldisk get caption,freespace')">磁盘空间</button>
+    <button onclick="quick('start taskmgr')">任务管理器</button>
     <button onclick="quick('shutdown /a')">取消关机</button>
     <button class="dg" onclick="danger('rundll32.exe user32.dll,LockWorkStation','锁屏')">锁屏</button>
   </div>
@@ -212,6 +226,14 @@ async function run(cmd){
   }
 }
 function quick(c){ run(c); }
+function openUrl(u){
+  let v = (u || q('#url').value || '').trim();
+  if (!v) return;
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  q('#url').value = v;
+  // start 后的第一个引号参数会被当窗口标题，必须留一对空引号
+  run('start "" "' + v + '"');
+}
 function danger(c, label){
   if (!confirm('确定要对这台电脑执行「' + label + '」吗？')) return;
   run(c);
