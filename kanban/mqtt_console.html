@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MQTT 直连控制台 · 多端控制</title>
+<style>
+  :root{
+    --bg:#0f1218; --panel:#161b24; --panel2:#1c2331; --line:#28313f;
+    --fg:#e6edf7; --fg2:#9fb0c7; --fg3:#66788f;
+    --acc:#4f9dff; --ok:#34d17a; --warn:#f2b23c; --err:#ff5f6d;
+    --mono:"Consolas","Cascadia Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:18px;max-width:1080px;margin:0 auto}
+  h1{font-size:17px;margin:0 0 2px;letter-spacing:.3px}
+  .sub{color:var(--fg3);font-size:12px;margin-bottom:14px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:14px;margin-bottom:12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;
+    background:var(--panel2);border:1px solid var(--line);font-size:12px;color:var(--fg2)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--fg3)}
+  .dot.on{background:var(--ok);box-shadow:0 0 8px rgba(52,209,122,.7)}
+  .dot.err{background:var(--err)}
+  input,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+    border-radius:9px;padding:9px 12px;font:13px/1.4 var(--mono);outline:none}
+  input:focus,textarea:focus{border-color:var(--acc)}
+  input.grow{flex:1;min-width:180px}
+  button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+    border-radius:9px;padding:9px 14px;cursor:pointer;font-size:13px;transition:.15s}
+  button:hover{background:#232c3c;border-color:#3a475c}
+  button.primary{background:var(--acc);border-color:var(--acc);color:#06111f;font-weight:600}
+  button.primary:hover{filter:brightness(1.08)}
+  button.ghost{background:transparent}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .lbl{color:var(--fg3);font-size:12px}
+  #term{background:#0b0e14;border:1px solid var(--line);border-radius:10px;padding:12px;
+    height:340px;overflow:auto;font:12.5px/1.65 var(--mono);white-space:pre-wrap;word-break:break-all}
+  .t-cmd{color:#7fb7ff}
+  .t-ok{color:var(--ok)}
+  .t-err{color:var(--err)}
+  .t-sys{color:var(--fg3)}
+  .t-res{color:#d7e3f5}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+  .hint{color:var(--fg3);font-size:11.5px;margin-top:8px}
+  a{color:var(--acc);text-decoration:none}
+  .sep{height:1px;background:var(--line);margin:12px 0}
+</style>
+</head>
+<body>
+<h1>MQTT 直连控制台</h1>
+<div class="sub">浏览器直连公共 broker（broker.emqx.io），不经过平板/手机服务器 · 被控端 exe 自己订阅命令</div>
+
+<div class="card">
+  <div class="row">
+    <span class="pill"><span class="dot" id="dot"></span><span id="state">未连接</span></span>
+    <span class="lbl" id="epinfo"></span>
+    <span style="flex:1"></span>
+    <button id="btnConn" class="primary">连接</button>
+  </div>
+  <div class="sep"></div>
+  <div class="row">
+    <span class="lbl">通信 Token</span>
+    <input id="token" class="grow" value="9c53a8a2fe2f8ee45d9190c6c97a88b3" spellcheck="false">
+    <button class="ghost" id="btnSaveToken">记住</button>
+  </div>
+  <div class="hint">Token 必须和被控端 <code>pc_agent.ini → [mqtt] token</code> 完全一致。出厂默认就是上面这个；自己该过的机器请换成它 ini 里的值。</div>
+</div>
+
+<div class="card">
+  <div class="row" style="margin-bottom:8px"><span class="lbl">快捷操作（全部走 MQTT，秒到）</span></div>
+  <div class="grid">
+    <button data-cmd="PING">PING 探活</button>
+    <button data-cmd="systeminfo | findstr /C:&quot;OS 名称&quot; /C:&quot;系统型号&quot;">系统信息</button>
+    <button data-cmd="ipconfig | findstr IPv4">本机 IP</button>
+    <button data-cmd="tasklist | findstr /I &quot;chrome msedge winword excel ppt&quot;">常用进程</button>
+    <button data-cmd="__update__">检查并自动升级</button>
+    <button id="btnLock" data-cmd="rundll32.exe user32.dll,LockWorkStation">锁屏</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <input id="url" placeholder="https://www.baidu.com" style="flex:1;min-width:200px">
+    <button id="btnOpenUrl">让电脑打开这个网页</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row" style="margin-bottom:8px">
+    <span class="lbl">输出</span><span style="flex:1"></span>
+    <button class="ghost" id="btnClear" style="padding:5px 10px;font-size:12px">清屏</button>
+  </div>
+  <div id="term"></div>
+  <div class="row" style="margin-top:10px">
+    <input id="cmd" class="grow" placeholder="输入任意 CMD 命令，回车发送（例：dir C:\  /  shutdown /r /t 0）">
+    <button class="primary" id="btnSend">发送</button>
+  </div>
+  <div class="hint">同一 token 的所有被控端都会执行（广播）。回执里带 tid，可对上你发的那一条。</div>
+</div>
+
+<script>
+/* ── 极简 MQTT 3.1.1 over WebSocket（无依赖，浏览器原生 WebSocket） ── */
+// ---- MiniMqtt 开始 ----
+class MiniMqtt {
+  constructor(){
+    this.ws=null; this.buf=new Uint8Array(0); this.pid=1;
+    this.onState=()=>{}; this.onMessage=()=>{};
+  }
+  connect(url, clientId){
+    return new Promise((res, rej)=>{
+      let ws;
+      try { ws = new WebSocket(url, 'mqtt'); }
+      catch(e){ return rej(e); }
+      ws.binaryType='arraybuffer';
+      const to = setTimeout(()=>{ try{ws.close()}catch(e){} rej(new Error('连接超时')); }, 12000);
+      ws.onopen = ()=>{
+        this.ws = ws;
+        const cid = new TextEncoder().encode(clientId);
+        const body = [];
+        body.push(0,4,...new TextEncoder().encode('MQTT'),4,0x02,0,60); // 协议名/级别/clean/keepalive
+        body.push(cid.length>>8, cid.length&255, ...cid);
+        ws.send(this._pkt(0x10, body));
+      };
+      ws.onmessage = (ev)=>{
+        const data = new Uint8Array(ev.data);
+        const merged = new Uint8Array(this.buf.length + data.length);
+        merged.set(this.buf); merged.set(data, this.buf.length); this.buf = merged;
+        this._drain(()=>{ clearTimeout(to); res(); });
+      };
+      ws.onerror = ()=>{ clearTimeout(to); rej(new Error('连接失败')); };
+      ws.onclose = (ev)=>{
+        this.ws=null; this.buf=new Uint8Array(0);
+        this.onState('closed');
+        if (!this._opened) { clearTimeout(to); rej(new Error('已断开 ('+ev.code+')')); }
+      };
+    });
+  }
+  _pkt(type, body){
+    const len = body.length, out=[type];
+    let x = len;
+    do { let d = x % 128; x = Math.floor(x/128); if (x>0) d|=0x80; out.push(d); } while (x>0);
+    return new Uint8Array(out.concat(body));
+  }
+  _drain(onConnack){
+    while (this.buf.length >= 2){
+      // 解析剩余长度（变长）
+      let mul=1, rem=0, i=1, ok=false;
+      for (; i < this.buf.length && i <= 4; i++){
+        const d = this.buf[i]; rem += (d & 0x7f) * mul; mul *= 128;
+        if (!(d & 0x80)) { ok=true; i++; break; }
+      }
+      if (!ok) return;
+      const total = i + rem;
+      if (this.buf.length < total) return;
+      const pkt = this.buf.slice(0, total);
+      this.buf = this.buf.slice(total);
+      const type = pkt[0] >> 4;
+      if (type === 2){ // CONNACK
+        this._opened = true;
+        if (pkt[total-1] !== 0){ this.onState('err'); return; }
+        this.onState('online');
+        if (onConnack) onConnack();
+      } else if (type === 9){ // SUBACK
+        this.onMessage({sys:'已订阅命令回执主题'});
+      } else if (type === 3){ // PUBLISH
+        let hp = i, tl = (pkt[hp]<<8) | pkt[hp+1], p = hp+2+tl;
+        const topic = new TextDecoder().decode(pkt.slice(hp+2, p));
+        const payload = new TextDecoder().decode(pkt.slice(p));
+        this.onMessage({topic, payload});
+      } else if (type === 13){ /* PINGRESP */ }
+    }
+  }
+  subscribe(topic){
+    if (!this.ws) return;
+    const t = new TextEncoder().encode(topic);
+    const pid = this.pid = (this.pid % 65535) + 1;
+    const body = [pid>>8, pid&255, t.length>>8, t.length&255, ...t, 0];
+    this.ws.send(this._pkt(0x82, body));
+  }
+  publish(topic, text){
+    if (!this.ws) return false;
+    const t = new TextEncoder().encode(topic), pl = new TextEncoder().encode(text);
+    this.ws.send(this._pkt(0x30, [...[t.length>>8, t.length&255], ...t, ...pl]));
+    return true;
+  }
+  close(){ try{ this.ws && this.ws.close(); }catch(e){} this.ws=null; }
+}
+
+/* ── 页面逻辑 ── */
+const $ = s => document.querySelector(s);
+const term = $('#term');
+// ---- MiniMqtt 结束 ----
+const mq = new MiniMqtt();
+let connected = false;
+
+function log(text, cls='t-res'){
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  const div = document.createElement('div');
+  div.className = cls;
+  div.textContent = `[${t}] ${text}`;
+  term.appendChild(div);
+  term.scrollTop = term.scrollHeight;
+}
+function setName(on, err){
+  const dot = $('#dot');
+  dot.className = 'dot' + (on ? ' on' : (err ? ' err' : ''));
+  $('#state').textContent = on ? '已连接 broker' : (err ? '连接失败' : '未连接');
+  $('#btnConn').textContent = on ? '断开' : '连接';
+  $('#btnConn').classList.toggle('primary', !on);
+}
+function endpoint(){
+  // https 页面只能用 wss；file:// 或 http 用 ws（更省事，不加密）
+  return location.protocol === 'https:'
+    ? 'wss://broker.emqx.io:8084/mqtt'
+    : 'ws://broker.emqx.io:8083/mqtt';
+}
+function token(){ return ($('#token').value || '').trim(); }
+
+async function connect(){
+  const tk = token();
+  if (!tk){ log('请先填 Token', 't-err'); return; }
+  localStorage.setItem('mctl_mqtt_token', tk);
+  const ep = endpoint();
+  $('#epinfo').textContent = ep;
+  log('正在连接 ' + ep, 't-sys');
+  try{
+    await mq.connect(ep, 'webctl-' + Math.random().toString(16).slice(2,10));
+    connected = true; setName(true);
+    log('broker 已接受连接，订阅 pcagent/' + tk.slice(0,8) + '…/res', 't-ok');
+    mq.subscribe('pcagent/' + tk + '/res');
+  }catch(e){
+    connected = false; setName(false, true);
+    log('连接失败：' + e.message, 't-err');
+  }
+}
+
+mq.onState = (s)=>{
+  if (s === 'closed' && connected){
+    connected = false; setName(false);
+    log('broker 连接断开（网络或超时）', 't-err');
+  }
+};
+mq.onMessage = (m)=>{
+  if (m.sys){ log(m.sys, 't-sys'); return; }
+  if (!m.topic || !m.topic.endsWith('/res')) return;
+  let obj = null;
+  try { obj = JSON.parse(m.payload); } catch(e){}
+  if (!obj){ log(m.payload, 't-res'); return; }
+  const ok = obj.ok ? '✔' : '✘';
+  log(`${ok} [${obj.tid || '?'}] ${(obj.output || '').trim() || '(无输出)'}`,
+      obj.ok ? 't-res' : 't-err');
+};
+
+async function sendCmd(cmd){
+  cmd = (cmd || '').trim();
+  if (!cmd) return;
+  if (!connected){ log('还没连上 broker，先点「连接」', 't-err'); return; }
+  const tid = 'w' + Date.now().toString(36).slice(-6);
+  const payload = JSON.stringify({ token: token(), tid, cmd });
+  const topic = 'pcagent/' + token() + '/cmd';
+  if (mq.publish(topic, payload)){
+    log('→ ' + cmd, 't-cmd');
+  } else {
+    log('发送失败：WebSocket 未就绪', 't-err');
+  }
+}
+
+$('#btnConn').onclick = ()=>{ if (connected){ mq.close(); connected=false; setName(false); log('已断开','t-sys'); } else connect(); };
+$('#btnSend').onclick = ()=>{ sendCmd($('#cmd').value); $('#cmd').value=''; };
+$('#cmd').addEventListener('keydown', e=>{ if (e.key === 'Enter'){ sendCmd($('#cmd').value); $('#cmd').value=''; } });
+$('#btnClear').onclick = ()=>{ term.innerHTML=''; };
+$('#btnSaveToken').onclick = ()=>{ localStorage.setItem('mctl_mqtt_token', token()); log('Token 已保存到本机浏览器','t-sys'); };
+$('#btnOpenUrl').onclick = ()=>{
+  let u = ($('#url').value || '').trim();
+  if (!u){ log('先填一个网址', 't-err'); return; }
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  sendCmd(`start "" "${u}"`);
+};
+document.querySelectorAll('[data-cmd]').forEach(b=>{
+  b.onclick = ()=> sendCmd(b.dataset.cmd);
+});
+
+// 恢复上次的 token，并自动连一次
+(()=>{
+  const saved = localStorage.getItem('mctl_mqtt_token');
+  if (saved) $('#token').value = saved;
+  log('页面已就绪。点「连接」后即可远程控制所有在线被控端。', 't-sys');
+  log('提示：被控端 exe 需在运行且 [mqtt] 已启用（v6 默认启用，走 WebSocket 8083）。', 't-sys');
+  connect();
+})();
+</script>
+</body>
+</html>
