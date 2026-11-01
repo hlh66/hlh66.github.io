@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日一题 · 二年级数学挑战</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);background-attachment:fixed;color:#334155}
+.container{max-width:820px;margin:0 auto;padding:18px}
+.header{text-align:center;padding:26px 12px 12px;color:#fff}
+.header h1{font-size:2em;text-shadow:2px 2px 6px rgba(0,0,0,.25);font-weight:800}
+.header p{margin-top:8px;font-size:.95em;color:rgba(255,255,255,.92)}
+.daybar{background:rgba(255,255,255,.2);color:#fff;border-radius:14px;padding:12px 16px;margin:14px 0 18px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:.9em;backdrop-filter:blur(4px)}
+.daybar b{font-size:1.05em}
+.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 6px 24px rgba(0,0,0,.14)}
+.card-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.badge{font-size:.78em;padding:4px 12px;border-radius:20px;font-weight:700;color:#fff}
+.b1{background:linear-gradient(135deg,#34d399,#059669)}
+.b2{background:linear-gradient(135deg,#60a5fa,#2563eb)}
+.b3{background:linear-gradient(135deg,#fbbf24,#d97706)}
+.card-top .unit{font-size:.8em;color:#94a3b8}
+.q{font-size:1.5em;line-height:1.7;font-weight:700;color:#1e293b;margin:6px 0 14px;letter-spacing:.5px}
+.q.small{font-size:1.15em;font-weight:600}
+.answer-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=number]{flex:1;min-width:130px;font-size:1.3em;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;
+  outline:none;font-family:inherit;color:#1e293b;background:#f8fafc}
+input[type=number]:focus{border-color:#6366f1;background:#fff}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;font-weight:700;transition:.2s}
+.btn-check{padding:13px 22px;font-size:1em;color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 12px rgba(99,102,241,.35)}
+.btn-check:active{transform:scale(.97)}
+.btn-ghost{padding:9px 16px;font-size:.85em;color:#6366f1;background:#eef2ff}
+.fb{margin-top:14px;border-radius:12px;padding:14px;font-size:1em;display:none;line-height:1.8}
+.fb.ok{display:block;background:#ecfdf5;border:2px solid #6ee7b7;color:#065f46}
+.fb.no{display:block;background:#fef2f2;border:2px solid #fca5a5;color:#991b1b}
+.fb .big{font-size:1.15em;font-weight:800;display:block;margin-bottom:4px}
+.hint{font-size:.9em;color:#64748b;margin-top:10px;line-height:1.7;display:none;background:#f8fafc;border-radius:10px;padding:10px 12px}
+.hint.show{display:block}
+.tip{background:rgba(255,255,255,.9);border-radius:16px;padding:16px 18px;font-size:.9em;color:#475569;line-height:1.9;margin-bottom:16px}
+.tip b{color:#4338ca}
+.back{display:block;text-align:center;color:#fff;text-decoration:none;padding:14px;font-size:.95em;opacity:.9}
+@media(max-width:520px){.header h1{font-size:1.6em}.q{font-size:1.25em}.q.small{font-size:1.05em}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📅 每日一题</h1>
+    <p>每天三道题 · 基础 → 提升 → 挑战</p>
+  </div>
+
+  <div class="daybar">
+    <div><b id="today">今天</b></div>
+    <div id="streak">连续打卡：0 天</div>
+  </div>
+
+  <div id="cards"></div>
+
+  <div class="tip">
+    <b>小提示：</b>同一天打开，题目是一样的，全班同学可以一起比一比谁先做出来 👏<br>
+    做完基础题再去做提升题，挑战题用来"动动脑筋"，做不出也没关系，明天再来 💪
+  </div>
+
+  <a class="back" href="../">← 返回学习主页</a>
+</div>
+
+<script>
+/* ============ 1. 按日期生成固定题目 ============ */
+function seedFrom(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){let a=seed;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function rint(r,a,b){return a+Math.floor(r()*(b-a+1));}
+const CN=['零','一','二','三','四','五','六','七','八','九'];
+function koujue(a,b){
+  const s=Math.min(a,b),l=Math.max(a,b),p=['','一','二','三','四','五','六','七','八','九'];
+  const res=s*l, head=p[s]+p[l];
+  if(res<10) return head+'得'+p[res];
+  if(res===10) return head+'一十';
+  const shi=Math.floor(res/10), ge=res%10;
+  let tail=(shi===1?'十':p[shi]+'十');
+  if(ge>0) tail+=p[ge];
+  return head+tail;
+}
+
+const D=new Date();
+const key=D.getFullYear()+'-'+String(D.getMonth()+1).padStart(2,'0')+'-'+String(D.getDate()).padStart(2,'0');
+const R=rng(seedFrom(key));
+
+/* 基础题生成器 */
+function basic(){
+  const t=rint(R,1,5);
+  if(t===1){const a=rint(R,35,95),b=rint(R,11,a-6);
+    return{u:'加与减',q:`${a} − ${b} = ?`,a:a-b,h:`个位减个位，不够减向十位借 1。`};}
+  if(t===2){const a=rint(R,23,68),b=rint(R,12,99-a);
+    return{u:'加与减',q:`${a} + ${b} = ?`,a:a+b,h:`先算整十：${Math.floor(a/10)*10} + ${Math.floor(b/10)*10}，再加个位。`};}
+  if(t===3){const a=rint(R,2,9),b=rint(R,2,9);
+    return{u:'乘法口诀',q:`${a} × ${b} = ?`,a:a*b,h:`口诀：${koujue(a,b)}`};}
+  if(t===4){const y=rint(R,2,9),j=rint(R,1,9);
+    return{u:'购物',q:`${y} 元 ${j} 角 = ( ) 角`,a:y*10+j,h:`1 元 = 10 角，${y} 元就是 ${y*10} 角，再加上 ${j} 角。`};}
+  const b=rint(R,2,9),q=rint(R,2,9);
+  return{u:'分一分与除法',q:`${b*q} ÷ ${b} = ?`,a:q,h:`想一想：${b} 乘几等于 ${b*q}？`};
+}
+
+/* 提升题生成器 */
+function mid(){
+  const t=rint(R,1,5);
+  if(t===1){const a=rint(R,2,9),b=rint(R,2,9),c=rint(R,3,20);
+    return{u:'乘加',q:`${a} × ${b} + ${c} = ?`,a:a*b+c,h:`先算乘法 ${a}×${b}=${a*b}，再加 ${c}。`};}
+  if(t===2){const m=rint(R,2,8);
+    return{u:'测量',q:`${m} 米 = ( ) 厘米`,a:m*100,h:`1 米 = 100 厘米。`};}
+  if(t===3){const k=rint(R,3,8),each=rint(R,2,9);
+    return{u:'平均分',q:`${k*each} 个苹果平均分给 ${k} 个小朋友，每人分到几个？`,a:each,h:`平均分用除法：${k*each} ÷ ${k}。`};}
+  if(t===4){const price=rint(R,12,48),paid=Math.ceil((price+5)/10)*10;
+    return{u:'购物找钱',q:`买一个 ${price} 元的文具盒，付了 ${paid} 元，应找回多少元？`,a:paid-price,h:`找回的钱 = 付的钱 − 用掉的钱。`};}
+  const k=rint(R,2,9),m=rint(R,2,8);
+  return{u:'几个几',q:`${k} 个 ${m} 相加是多少？`,a:k*m,h:`${k} 个 ${m} 相加，就是 ${k} × ${m}。`};
+}
+
+/* 挑战题生成器 */
+function hard(){
+  const t=rint(R,1,5);
+  if(t===1){const total=rint(R,60,98),used=rint(R,15,total-10);
+    return{u:'加与减',q:`一根绳子长 ${total} 厘米，剪去 ${used} 厘米，还剩多少厘米？`,a:total-used,h:`求"还剩"，用减法：${total} − ${used}。`};}
+  if(t===2){const a=rint(R,4,9),b=rint(R,3,9);
+    return{u:'乘法',q:`每盒有 ${a} 支铅笔，${b} 盒一共有多少支？`,a:a*b,h:`求几个几，用乘法：${a} × ${b}。`};}
+  if(t===3){const k=rint(R,3,9),n=rint(R,3,9);
+    return{u:'除法',q:`有 ${k*n} 本书，每 ${k} 本摞一摞，能摞多少摞？`,a:n,h:`求"里面有几个 ${k}"，用除法：${k*n} ÷ ${k}。`};}
+  if(t===4){const s=rint(R,2,9),d=rint(R,2,6),n=4;
+    const arr=[];for(let i=0;i<4;i++)arr.push(s+d*i);
+    return{u:'找规律',q:`${arr.join('，')}，（ ），下一项是多少？`,a:s+d*4,h:`每次增加 ${d}。`};}
+  const money=rint(R,50,90),num=rint(R,2,5),price=rint(R,3,9);
+  return{u:'两步应用题',q:`小明带了 ${money} 元，买了 ${num} 本 ${price} 元的本子，还剩多少元？`,a:money-num*price,h:`先算花掉多少：${num} × ${price} = ${num*price}，再用 ${money} 减去它。`};
+}
+
+const levels=[
+  {name:'基础题',cls:'b1',gen:basic,tip:'今天的"开胃菜"，一定要做对哦'},
+  {name:'提升题',cls:'b2',gen:mid,tip:'要认真想一想，脑筋转个弯'},
+  {name:'挑战题',cls:'b3',gen:hard,tip:'做出来就是今天的"小数学家"！'}
+];
+
+/* ============ 2. 渲染 ============ */
+const wrap=document.getElementById('cards');
+const wk=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+document.getElementById('today').textContent=`${D.getMonth()+1}月${D.getDate()}日 ${wk[D.getDay()]}`;
+
+let solved=0;
+/* 三题尽量不撞同一个知识点 */
+let usedUnits=new Set();
+const qs=levels.map(lv=>{
+  let q=lv.gen(),t=0;
+  while(usedUnits.has(q.u)&&t<8){q=lv.gen();t++;}
+  usedUnits.add(q.u);
+  return q;
+});
+levels.forEach((lv,i)=>{
+  const q=qs[i];
+  const small=q.q.length>18?' small':'';
+  const el=document.createElement('div');
+  el.className='card';
+  el.innerHTML=`
+    <div class="card-top">
+      <span class="badge ${lv.cls}">${lv.name}</span>
+      <span class="unit">${q.u}</span>
+    </div>
+    <div class="q${small}">${q.q}</div>
+    <div class="answer-row">
+      <input type="number" inputmode="numeric" placeholder="填答案" id="in${i}">
+      <button class="btn-check" id="btn${i}">对答案</button>
+      <button class="btn-ghost" id="hint${i}">看提示</button>
+    </div>
+    <div class="fb" id="fb${i}"></div>
+    <div class="hint" id="hd${i}">💡 ${q.h}</div>`;
+  wrap.appendChild(el);
+
+  const inp=el.querySelector('#in'+i);
+  const fb=el.querySelector('#fb'+i);
+  const hd=el.querySelector('#hd'+i);
+  el.querySelector('#hint'+i).onclick=()=>hd.classList.toggle('show');
+
+  const check=()=>{
+    const v=inp.value.trim();
+    if(v===''){inp.focus();return;}
+    if(Number(v)===q.a){
+      fb.className='fb ok';
+      fb.innerHTML=`<span class="big">🎉 太棒了，答对了！</span>答案就是 <b>${q.a}</b>　💡 ${q.h}`;
+      if(!el.dataset.done){el.dataset.done='1';solved++;saveSolved();}
+    }else{
+      fb.className='fb no';
+      fb.innerHTML=`<span class="big">再想一想～</span>你填的是 <b>${v}</b>，不对哦。💡 提示：${q.h}`;
+      hd.classList.add('show');
+    }
+  };
+  el.querySelector('#btn'+i).onclick=check;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+});
+
+/* ============ 3. 打卡记录（存在本机，不上传） ============ */
+function getNum(k,d){const v=localStorage.getItem(k);return v===null?d:Number(v);}
+function saveSolved(){
+  localStorage.setItem('mrti_'+key,solved);
+  localStorage.setItem('mrti_last',key);
+  renderStreak();
+}
+function renderStreak(){
+  const today=localStorage.getItem('mrti_'+key);
+  const last=localStorage.getItem('mrti_last');
+  let streak=getNum('mrti_streak',0);
+  if(today&&last===key&&!localStorage.getItem('mrti_counted_'+key)){
+    streak++;localStorage.setItem('mrti_streak',streak);localStorage.setItem('mrti_counted_'+key,'1');
+  }
+  document.getElementById('streak').textContent=`连续打卡：${streak} 天${solved?`　今日完成 ${solved}/3`:''}`;
+}
+renderStreak();
+</script>
+</body>
+</html>
