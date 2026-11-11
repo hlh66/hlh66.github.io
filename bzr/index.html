@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班主任技能大赛 · 刷题</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0f1623;color:#e6edf7;min-height:100vh;padding:16px 12px 40px;line-height:1.7}
+.wrap{max-width:900px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:22px;font-weight:600;letter-spacing:.5px}
+.sub{font-size:12px;color:#8ea3bf;margin-top:2px}
+.readbox{display:flex;align-items:center;gap:8px;background:#182233;border:1px solid #2a3a52;border-radius:12px;padding:8px 12px}
+.switch{position:relative;width:46px;height:25px;background:#39465c;border-radius:20px;cursor:pointer;transition:.2s;flex:none}
+.switch.on{background:#3ecf8e}
+.switch i{position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
+.switch.on i{left:24px}
+.rate{font-size:12px;color:#8ea3bf;display:flex;align-items:center;gap:4px}
+select,input[type=text],textarea{font-family:inherit;background:#111c2c;color:#e6edf7;border:1px solid #2a3a52;border-radius:9px;padding:7px 9px;font-size:13px;outline:none}
+select:focus,input:focus,textarea:focus{border-color:#4da3ff}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#182233;border:1px solid #2a3a52;border-radius:14px;padding:10px 12px;margin-bottom:12px}
+.toolbar label{font-size:12px;color:#8ea3bf;display:flex;align-items:center;gap:5px}
+.toolbar input[type=text]{flex:1;min-width:130px}
+.chk{display:flex;align-items:center;gap:5px;font-size:12px;color:#b9c9dd;cursor:pointer;user-select:none}
+.chk input{accent-color:#4da3ff}
+.statbar{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#8ea3bf;margin-bottom:12px;padding:0 4px}
+.statbar b{color:#e6edf7;font-size:15px}
+.card{background:#182233;border:1px solid #2a3a52;border-radius:18px;padding:22px;margin-bottom:14px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;background:#223650;color:#9fc6ff;border:1px solid #33507a}
+.tag.m{background:#1d3b39;color:#7ee2bd;border-color:#2c5c54}
+.tag.t{background:#3a2f4d;color:#c8a8ff;border-color:#544075}
+.tag.s{background:#2a3346;color:#9fb0c9;border-color:#3a4761;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qnum{font-size:12px;color:#7d93b0;margin-left:auto;white-space:nowrap}
+.stem{font-size:20px;line-height:1.85;margin-bottom:18px;white-space:pre-wrap;word-break:break-word}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;background:#111c2c;border:2px solid #2a3a52;color:#e6edf7;border-radius:12px;padding:12px 14px;font-size:16px;font-family:inherit;cursor:pointer;transition:.15s;line-height:1.7}
+.opt:hover:not(.locked){border-color:#4da3ff;background:#16273d}
+.opt .k{font-weight:700;color:#7fb6ff;flex:none;min-width:22px}
+.opt.picked{border-color:#4da3ff;background:#1b3352}
+.opt.correct{border-color:#3ecf8e;background:#163a30;color:#b8f5d8}
+.opt.correct .k{color:#3ecf8e}
+.opt.wrong{border-color:#ff6b6b;background:#3a2027;color:#ffc9c9}
+.opt.wrong .k{color:#ff6b6b}
+.opt.locked{cursor:default}
+.opt.dim{opacity:.55}
+.essay{width:100%;min-height:110px;font-size:15px;line-height:1.8;resize:vertical;margin-bottom:10px}
+.btn{font-family:inherit;font-size:14px;font-weight:600;border:none;border-radius:10px;padding:9px 18px;cursor:pointer;background:#2b6cb0;color:#fff;transition:.15s}
+.btn:hover{filter:brightness(1.15)}
+.btn.ghost{background:#26364d;color:#cfe0f5}
+.btn.green{background:#2e9c6e}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.fb{margin-top:16px;border-radius:13px;padding:16px;border:2px solid}
+.fb.ok{background:#122c25;border-color:#2f8f6b}
+.fb.no{background:#2e1c22;border-color:#a0444f}
+.fb-title{font-size:17px;font-weight:600;margin-bottom:8px}
+.fb.ok .fb-title{color:#7ee2bd}
+.fb.no .fb-title{color:#ff9b9b}
+.ansline{font-size:16px;margin-bottom:12px}
+.ansline b{color:#ffd479;font-size:19px}
+.anabox{background:rgba(0,0,0,.22);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.anah{font-size:12px;color:#8ea3bf;letter-spacing:1px;margin-bottom:6px}
+.anatx{font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.anatx.empty{color:#7d93b0;font-size:14px}
+.ref{font-size:14px;color:#a9d3ff;border-left:3px solid #3b6fa8;padding-left:10px;margin-top:8px;line-height:1.8}
+.src{font-size:12px;color:#8ea3bf;margin-top:10px;word-break:break-all}
+.note{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.note textarea{flex:1;min-width:200px;min-height:54px;font-size:14px}
+.blankin{display:inline-block;width:132px;max-width:38vw;margin:0 5px;padding:2px 8px;font-family:inherit;font-size:15px;line-height:1.5;background:#0d1a2b;color:#ffe6a3;border:1px solid #4b6b96;border-bottom:2px solid #4da3ff;border-radius:6px;outline:none;text-align:center}
+.blankin:focus{border-color:#ffe6a3;background:#16273d}
+.blankin.ok{background:#163a30;color:#b8f5d8;border-color:#3ecf8e}
+.blankin.no{background:#3a2027;color:#ffc9c9;border-color:#ff6b6b}
+.blankline{display:flex;gap:9px;flex-wrap:wrap;font-size:14px;line-height:1.9;margin-bottom:8px}
+.blankline span{padding:1px 9px;border-radius:7px;background:rgba(255,255,255,.06)}
+.blankline .r{background:#163a30;color:#b8f5d8}
+.blankline .w{background:#3a2027;color:#ffc9c9}
+.nav{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.tip{text-align:center;font-size:12px;color:#6f829d;margin-top:14px;line-height:1.9}
+@media(max-width:560px){.card{padding:16px}.stem{font-size:18px}.opt{font-size:15px}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>班主任技能大赛 · 刷题</h1>
+      <div class="sub" id="sub">题目与答案从 Word 原卷照搬 · 加载中…</div>
+    </div>
+    <div class="readbox">
+      <span style="font-size:13px">🔊 朗读</span>
+      <div class="switch" id="sw" onclick="toggleRead()"><i></i></div>
+      <span class="rate">语速
+        <select id="rate" onchange="state.rate=parseFloat(this.value)">
+          <option value="0.8">慢</option><option value="1" selected>正常</option><option value="1.2">快</option>
+        </select>
+      </span>
+      <button class="btn ghost" style="padding:6px 10px;font-size:12px" onclick="readCurrent(true)">读本题</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <label>方面 <select id="fAspect" onchange="onAspect()"></select></label>
+    <label>模块 <select id="fModule" onchange="apply()"></select></label>
+    <label>题型 <select id="fType" onchange="apply()">
+      <option value="all">全部</option><option value="single">单选</option>
+      <option value="multi">多选</option><option value="blank">填空</option>
+      <option value="essay">案例/简答</option>
+    </select></label>
+    <label>批次 <select id="fBatch" onchange="apply()"></select></label>
+    <input type="text" id="fKey" placeholder="搜题干关键词…" oninput="apply()">
+    <label class="chk"><input type="checkbox" id="fShuffle" onchange="apply()">随机顺序</label>
+    <label class="chk"><input type="checkbox" id="fNew" onchange="apply()">只刷没做过的</label>
+    <label class="chk"><input type="checkbox" id="fWrong" onchange="apply()">只看错题</label>
+  </div>
+
+  <div class="statbar">
+    <span>本题库 <b id="sTotal">0</b> 道</span>
+    <span>已答 <b id="sDone">0</b></span>
+    <span>答对 <b id="sOk" style="color:#7ee2bd">0</b></span>
+    <span>答错 <b id="sBad" style="color:#ff9b9b">0</b></span>
+    <span>正确率 <b id="sAcc">--</b></span>
+    <span>错题本 <b id="sWrong">0</b></span>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="nav">
+    <button class="btn ghost" onclick="go(-1)">← 上一题</button>
+    <button class="btn" onclick="go(1)">下一题 →</button>
+    <button class="btn ghost" onclick="randomOne()">🎲 随机一题</button>
+    <button class="btn ghost" onclick="retry()">↻ 重做本题</button>
+    <button class="btn ghost" onclick="clearWrong()">清空错题本</button>
+    <button class="btn ghost" onclick="clearSeen()">重置「已做」记录</button>
+  </div>
+  <div class="tip">选择题点一下立即出答案 · 多选题选完点「确定」· 填空题填完点「核对」· 案例题对照参考答案自评<br>批次说明：「原卷题库 / 挖空还原」= 原卷原题；「原文出题」= 政策原句挖空选择题；「出处辨析」= 判断原句出自哪份文件（题干、答案均原文照搬）<br>只想刷原卷题，批次选「原卷题库」或「挖空还原」即可 · 键盘：A/B/C/D 选项 · ← → 翻题 · 空格朗读</div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+const ALL = window.QUESTIONS || [];
+const LS = {
+  get(k, d){ try{ return JSON.parse(localStorage.getItem('bzr_'+k)) ?? d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('bzr_'+k, JSON.stringify(v)); }catch(e){} }
+};
+const state = {
+  list: [], idx: 0, answered: false, picked: new Set(), lastOk: null, selfJudged: false,
+  blankDetail: [], wrong: new Set(LS.get('wrong', [])), seen: new Set(LS.get('seen', [])),
+  notes: LS.get('notes', {}), stats: LS.get('stats', {done:0, ok:0}),
+  read: LS.get('read', false), rate: 1
+};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const typeName = q => q.type === 'essay' ? '案例 / 简答' : q.type === 'blank' ? '填空（原文还原）' : (q.multi ? '多选' : '单选');
+const sorted = s => String(s).split('').sort().join('');
+const normAns = s => String(s == null ? '' : s).replace(/[\s，。、；：（）()《》“”"'．\.？?！!]/g, '');
+const markSeen = q => { state.seen.add(q.id); LS.set('seen', [...state.seen]); };
+
+/* ---------- 朗读 ---------- */
+let voice = null;
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return;
+  const vs = speechSynthesis.getVoices() || [];
+  voice = vs.find(v => /^zh/i.test(v.lang)) || null;
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, force){
+  if((!state.read && !force) || !('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text).replace(/[（　）]/g,' '));
+    u.lang = 'zh-CN'; u.rate = state.rate; u.pitch = 1;
+    if(voice) u.voice = voice;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function toggleRead(){
+  state.read = !state.read; LS.set('read', state.read);
+  $('sw').classList.toggle('on', state.read);
+  if(!state.read && 'speechSynthesis' in window) speechSynthesis.cancel();
+  if(state.read) readCurrent();
+}
+function readCurrent(force){
+  const q = cur(); if(!q) return;
+  let t = '第' + (state.idx+1) + '题。' + q.stem.replace(/______/g, '，什么，');
+  if(q.type === 'choice') for(const k of Object.keys(q.options).sort()) t += ' 选项' + k + '，' + q.options[k] + '。';
+  speak(t, force);
+}
+setInterval(() => { // 手机熄屏后浏览器会暂停朗读，兜底恢复
+  if(state.read && 'speechSynthesis' in window && speechSynthesis.speaking && speechSynthesis.paused) speechSynthesis.resume();
+}, 4000);
+
+/* ---------- 筛选 ---------- */
+function cur(){ return state.list[state.idx]; }
+function fillAspect(){
+  const set = [...new Set(ALL.map(q => q.aspect))].sort();
+  $('fAspect').innerHTML = '<option value="all">全部方面</option>' + set.map(a => '<option>'+esc(a)+'</option>').join('');
+  const bs = [...new Set(ALL.map(q => q.batch || '原卷题库'))];
+  $('fBatch').innerHTML = '<option value="all">全部批次</option>' + bs.map(b => '<option>'+esc(b)+'</option>').join('');
+}
+function onAspect(){
+  const a = $('fAspect').value;
+  const set = [...new Set(ALL.filter(q => a==='all' || q.aspect===a).map(q => q.module))].sort();
+  $('fModule').innerHTML = '<option value="all">全部模块</option>' + set.map(m => '<option>'+esc(m)+'</option>').join('');
+  apply();
+}
+function apply(){
+  const a = $('fAspect').value, m = $('fModule').value, t = $('fType').value, b = $('fBatch').value;
+  const key = $('fKey').value.trim(), onlyWrong = $('fWrong').checked, onlyNew = $('fNew').checked;
+  let list = ALL.filter(q => {
+    if(a !== 'all' && q.aspect !== a) return false;
+    if(m !== 'all' && q.module !== m) return false;
+    if(b !== 'all' && (q.batch || '原卷题库') !== b) return false;
+    if(t === 'single' && !(q.type==='choice' && !q.multi)) return false;
+    if(t === 'multi'  && !(q.type==='choice' &&  q.multi)) return false;
+    if(t === 'blank'  && q.type !== 'blank') return false;
+    if(t === 'essay'  && q.type !== 'essay') return false;
+    if(key && !q.stem.includes(key)) return false;
+    if(onlyWrong && !state.wrong.has(q.id)) return false;
+    if(onlyNew && state.seen.has(q.id)) return false;
+    return true;
+  });
+  if($('fShuffle').checked) for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+  state.list = list; state.idx = 0;
+  $('sTotal').textContent = list.length;
+  render();
+}
+function go(d){
+  if(!state.list.length) return;
+  state.idx = (state.idx + d + state.list.length) % state.list.length;
+  if(state.read && 'speechSynthesis' in window) speechSynthesis.cancel();
+  render(); if(state.read) setTimeout(readCurrent, 120);
+}
+function randomOne(){ if(state.list.length){ state.idx = Math.floor(Math.random()*state.list.length); render(); } }
+function retry(){ render(); }
+
+/* ---------- 渲染 ---------- */
+function render(){
+  state.answered = false; state.picked = new Set(); state.selfJudged = false; state.blankDetail = [];
+  const q = cur(), c = $('card');
+  if(!q){ c.innerHTML = '<div class="stem" style="text-align:center;color:#8ea3bf">没有符合条件的题目，换个筛选条件试试～<br>（若勾了「只刷没做过的」，可能已经全部刷完啦）</div>'; updateStats(); return; }
+  let h = '<div class="tags">'
+    + '<span class="tag">'+esc(q.aspect)+'</span>'
+    + '<span class="tag m">'+esc(q.module)+'</span>'
+    + '<span class="tag t">'+typeName(q)+'</span>'
+    + '<span class="tag s" title="'+esc(q.source)+'">出处：'+esc(q.source)+'</span>'
+    + (q.batch && q.batch !== '原卷题库' ? '<span class="tag m">'+esc(q.batch)+'</span>' : '')
+    + '<span class="qnum">'+(state.idx+1)+' / '+state.list.length+'</span></div>';
+  if(q.type === 'blank'){
+    let i = 0;
+    const body = esc(q.stem).replace(/______/g, () =>
+      '<input class="blankin" data-i="'+(i++)+'" autocomplete="off" placeholder="填这里">');
+    h += '<div class="stem">'+body+'</div>';
+    h += '<div style="font-size:13px;color:#8ea3bf;margin-bottom:10px">共 '+(q.blanks||[]).length
+       + ' 个空 · 答案与解析来自政策原文，填完点核对（回车亦可）</div>';
+    h += '<button class="btn green" onclick="judgeBlank()">核对答案</button>';
+  }else{
+    h += '<div class="stem">'+esc(q.stem)+'</div>';
+    if(q.type === 'choice'){
+      h += '<div class="opts" id="opts">';
+      for(const k of Object.keys(q.options).sort())
+        h += '<button class="opt" data-k="'+k+'" onclick="choose(\''+k+'\')"><span class="k">'+k+'.</span><span>'+esc(q.options[k])+'</span></button>';
+      h += '</div>';
+      if(q.multi) h += '<div style="margin-top:12px"><button class="btn green" id="okBtn" onclick="confirmMulti()">确定答案</button> <span style="font-size:12px;color:#8ea3bf">多选题可选多个，选齐再点确定</span></div>';
+    }else{
+      h += '<textarea class="essay" id="myAns" placeholder="先自己写一写思路，再对照参考答案…"></textarea>';
+      h += '<button class="btn" onclick="showEssay()">查看参考答案（原文照搬）</button>';
+    }
+  }
+  h += '<div id="fb"></div>';
+  c.innerHTML = h;
+  updateStats();
+}
+
+/* ---------- 判题 ---------- */
+function choose(k){
+  const q = cur(); if(!q || state.answered) return;
+  if(q.multi){
+    state.picked.has(k) ? state.picked.delete(k) : state.picked.add(k);
+    document.querySelectorAll('.opt').forEach(b => b.classList.toggle('picked', state.picked.has(b.dataset.k)));
+    return;
+  }
+  state.answered = true;
+  judge(k);
+}
+function confirmMulti(){
+  const q = cur(); if(!q || state.answered || !state.picked.size) return;
+  state.answered = true;
+  judge(sorted([...state.picked].join('')));
+}
+function judge(pick){
+  const q = cur(), ok = sorted(pick) === sorted(q.answer);
+  state.lastOk = ok; markSeen(q);
+  state.stats.done++; if(ok) state.stats.ok++;
+  if(!ok) state.wrong.add(q.id); else state.wrong.delete(q.id);
+  LS.set('stats', state.stats); LS.set('wrong', [...state.wrong]);
+  document.querySelectorAll('.opt').forEach(b => {
+    const k = b.dataset.k; b.classList.add('locked');
+    if(q.answer.includes(k)) b.classList.add('correct');
+    else if(k === pick || (q.multi && state.picked.has(k))) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  const ob = $('okBtn'); if(ob) ob.disabled = true;
+  showFeedback(ok, '你的选择：' + (pick || '未选'), q.answer);
+  if(state.read) speak((ok ? '回答正确。' : '回答错误。') + '正确答案是' + q.answer.split('').join('、') + '。');
+}
+function showEssay(){
+  const q = cur(); if(!q || state.answered) return;
+  state.answered = true; state.lastOk = null; markSeen(q);
+  showFeedback(null, '', q.answer, true);
+}
+function judgeBlank(){
+  const q = cur(); if(!q || state.answered || q.type !== 'blank') return;
+  state.answered = true; markSeen(q);
+  const blanks = q.blanks || [];
+  let okCount = 0;
+  state.blankDetail = [];
+  document.querySelectorAll('.blankin').forEach(inp => {
+    const i = +inp.dataset.i, right = blanks[i] || '', mine = inp.value.trim();
+    const good = !!mine && normAns(mine) === normAns(right);
+    inp.classList.add(good ? 'ok' : 'no');
+    inp.disabled = true;
+    inp.title = good ? '正确' : '正确答案：' + right;
+    if(good) okCount++;
+    state.blankDetail.push({i:i, mine:mine, right:right, good:good});
+  });
+  const ok = okCount === blanks.length;
+  state.lastOk = ok;
+  state.stats.done++; if(ok) state.stats.ok++;
+  if(!ok) state.wrong.add(q.id); else state.wrong.delete(q.id);
+  LS.set('stats', state.stats); LS.set('wrong', [...state.wrong]);
+  showFeedback(ok, '填对 ' + okCount + ' / ' + blanks.length + ' 个空', q.answer, false, true);
+  if(state.read) speak((ok ? '全对。' : '填对' + okCount + '个，共' + blanks.length + '个空。') + '正确答案是' + blanks.join('、'));
+}
+
+/* ---------- 答案 + 解析 ---------- */
+function showFeedback(ok, pickLine, answer, isEssay, isBlank){
+  const q = cur(), box = $('fb');
+  const cls = ok === null ? 'ok' : (ok ? 'ok' : 'no');
+  const title = ok === null ? '📖 参考答案 · 原文照搬' : (ok ? '✅ 答对了！' : '❌ 不对，再看一眼');
+  let h = '<div class="fb '+cls+'"><div class="fb-title">'+title+'</div>';
+  if(!isEssay){
+    h += '<div class="ansline">正确答案 <b>'+esc(answer)+'</b>'
+       + (isBlank ? '' : '　' + esc(Object.keys(q.options).filter(k => answer.includes(k)).map(k => k+'. '+q.options[k]).join('；'))) + '</div>';
+    if(pickLine) h += '<div style="font-size:13px;color:#b9c9dd;margin-bottom:10px">'+esc(pickLine)+'</div>';
+  }
+  if(isBlank && state.blankDetail.length){
+    h += '<div class="blankline">' + state.blankDetail.map(d =>
+      '<span class="'+(d.good?'r':'w')+'">第'+(d.i+1)+'空：'+(d.good ? '✓ '+esc(d.mine) : '✗ '+(esc(d.mine)||'未填')+' → '+esc(d.right))+'</span>').join('') + '</div>';
+  }
+  h += '<div class="anabox"><div class="anah">'+(isBlank ? '政策原文（答案出处，原文照搬）' : '解析 / 参考答案')+'</div>';
+  const note = state.notes[q.id] || '';
+  const body = isEssay ? q.answer : (isBlank ? (q.reference || q.answer) : (note || q.analysis || ''));
+  h += '<div class="anatx'+(body?'':' empty')+'">'+esc(body || '原卷未附文字解析。可在下方补一句，或先看「出处」与「政策原文依据」。')+'</div>';
+  if(isBlank && note) h += '<div class="ref"><b>我的补充</b><br>'+esc(note)+'</div>';
+  if(!isEssay && !isBlank && q.reference) h += '<div class="ref"><b>政策原文依据（自动匹配，原文照搬）</b><br>'+esc(q.reference)+'</div>';
+  h += '</div>';
+  h += '<div class="anabox"><div class="anah">题目归属</div><div style="font-size:14px;line-height:1.9">'
+     + '所属方面：<b style="color:#9fc6ff">'+esc(q.aspect)+'</b>　｜　具体模块：<b style="color:#7ee2bd">'+esc(q.module)+'</b><br>'
+     + '题型：'+typeName(q)+'　｜　批次：'+esc(q.batch || '原卷题库')+'<br>出处：'+esc(q.source)+'</div></div>';
+  h += '<div class="src">来源文件：'+esc(q.source)+'　·　题目文字未作改写，仅将答案挖空</div>';
+  if(!isEssay) h += '<div class="note"><textarea id="noteIn" placeholder="补一句解析 / 记忆要点（自动存本机）">'+esc(note)+'</textarea><button class="btn ghost" onclick="saveNote()">保存</button></div>';
+  if(isEssay) h += '<div style="margin-top:10px;display:flex;gap:8px"><button class="btn green" onclick="selfJudge(true)">✅ 我答对了</button><button class="btn ghost" onclick="selfJudge(false)">❌ 再练一次</button></div>';
+  h += '</div>';
+  box.innerHTML = h;
+  updateStats();
+}
+function saveNote(){
+  const q = cur(), v = $('noteIn').value.trim();
+  if(v) state.notes[q.id] = v; else delete state.notes[q.id];
+  LS.set('notes', state.notes);
+  showFeedback(state.lastOk, '', q.answer, q.type === 'essay', q.type === 'blank');
+}
+function selfJudge(ok){
+  const q = cur();
+  if(state.selfJudged) return;
+  markSeen(q);
+  state.selfJudged = true;
+  state.stats.done++; if(ok) state.stats.ok++;
+  if(!ok) state.wrong.add(q.id); else state.wrong.delete(q.id);
+  LS.set('stats', state.stats); LS.set('wrong', [...state.wrong]);
+  const b = $('fb'); b.insertAdjacentHTML('afterbegin',
+    '<div style="font-size:14px;margin-bottom:8px;color:'+(ok?'#7ee2bd':'#ff9b9b')+'">'+(ok?'已记为答对 ✅':'已加入错题本 ❌')+'</div>');
+  updateStats();
+}
+function updateStats(){
+  $('sDone').textContent = state.stats.done;
+  $('sOk').textContent = state.stats.ok;
+  $('sBad').textContent = state.stats.done - state.stats.ok;
+  $('sAcc').textContent = state.stats.done ? Math.round(state.stats.ok / state.stats.done * 100) + '%' : '--';
+  $('sWrong').textContent = state.wrong.size;
+}
+function clearWrong(){ state.wrong.clear(); LS.set('wrong', []); updateStats(); apply(); }
+function clearSeen(){ state.seen.clear(); LS.set('seen', []); apply(); }
+
+/* ---------- 启动 ---------- */
+$('sub').textContent = '共 ' + ALL.length + ' 道题 · 原卷题目 / 答案 / 参考答案照搬 · 「原文出题」「出处辨析」批次来自政策原文 · 每道标注方面与模块';
+$('sw').classList.toggle('on', state.read);
+if(!('speechSynthesis' in window)) $('sw').title = '当前浏览器不支持语音朗读';
+fillAspect(); onAspect();
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && document.activeElement.classList.contains('blankin')){ judgeBlank(); return; }
+  if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  const k = e.key.toUpperCase();
+  if(/^[A-E]$/.test(k)){ const b = document.querySelector('.opt[data-k="'+k+'"]'); if(b) b.click(); }
+  else if(e.key === 'ArrowRight') go(1);
+  else if(e.key === 'ArrowLeft') go(-1);
+  else if(e.key === ' '){ e.preventDefault(); readCurrent(true); }
+});
+</script>
+</body>
+</html>
