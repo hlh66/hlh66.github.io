@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一加6手机服务器 · 连接与启动指南</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:1.5em;text-align:center;margin:16px 0 4px;color:#7dd3fc}
+.sub{text-align:center;color:#64748b;font-size:.85em;margin-bottom:22px}
+.card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:18px 18px 14px;margin-bottom:16px}
+.card h2{font-size:1.08em;color:#7dd3fc;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;background:#0891b2;color:#fff;font-size:.68em;padding:2px 9px;border-radius:10px;vertical-align:2px}
+.badge.warn{background:#b45309}
+.badge.off{background:#64748b}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin:8px 0}
+td,th{border:1px solid #334155;padding:7px 10px;text-align:left}
+th{background:#0f172a;color:#94a3b8;font-weight:600}
+td code{background:#0f172a;padding:2px 6px;border-radius:5px;color:#fbbf24;font-family:Consolas,monospace;font-size:.95em;word-break:break-all}
+pre{background:#020617;border:1px solid #334155;border-left:4px solid #0891b2;border-radius:8px;padding:13px 14px;overflow-x:auto;margin:10px 0;font-family:Consolas,'Courier New',monospace;font-size:.83em;color:#a5f3fc;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+pre .c{color:#64748b}
+.tip{background:#172554;border-left:4px solid #3b82f6;border-radius:0 10px 10px 0;padding:10px 14px;font-size:.85em;margin:10px 0;color:#bfdbfe}
+.tip b{color:#93c5fd}
+.ok{color:#4ade80;font-weight:bold}
+.no{color:#f87171;font-weight:bold}
+details{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.85em}
+summary{cursor:pointer;color:#fbbf24;font-weight:600}
+details pre{margin:8px 0 2px}
+a.back{display:inline-block;color:#7dd3fc;text-decoration:none;font-size:.85em;margin-top:8px}
+ul{padding-left:22px;font-size:.9em}
+li{margin:4px 0}
+.step{display:flex;gap:10px;margin:8px 0;align-items:flex-start}
+.step .n{flex-shrink:0;width:26px;height:26px;background:#0891b2;border-radius:50%;text-align:center;line-height:26px;font-weight:bold;font-size:.85em;color:#fff}
+@media(max-width:600px){h1{font-size:1.25em}.card{padding:14px 12px 10px}pre{font-size:.75em}td,th{padding:5px 7px;font-size:.8em}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📱 一加6手机服务器 · 连接与启动指南</h1>
+  <div class="sub">Kali Linux (chroot in Termux) · 更新于 2026-11-12 · MQTT 通道已实测打通</div>
+
+  <div class="card">
+    <h2>🛰️ 通道一览</h2>
+    <table>
+      <tr><th>通道</th><th>地址 / Topic</th><th>状态</th></tr>
+      <tr><td><b>MQTT（主力）</b></td><td><code>phone6_cmd_1112</code> 发命令<br><code>phone6_res_1112</code> 收回执<br>broker.emqx.io:1883, qos=1</td><td><span class="ok">✅ 在线</span></td></tr>
+      <tr><td>SSH 隧道</td><td><code>frp-top.com:33333</code><br>root 登录</td><td>随 SakuraFrp</td></tr>
+      <tr><td>文件终端</td><td><code>https://frp-off.com:40476/files</code><br>必须 HTTPS，证书提示点「继续」</td><td><span class="no">需开隧道</span></td></tr>
+    </table>
+    <div class="tip">⚠️ 老的 <b>phone_cmd_001 / phone_res_001</b> 现在是<b>平板</b>在应答，不要用它控制这台手机！</div>
+    <details>
+      <summary>🔑 账号密码（此页面公开，谨慎点开）</summary>
+      <pre>SSH(root)  密码 Kali2026@Secure!
+Termux     用户 u0_a350  密码 123456
+MQTT token phone6-2026（当前代理未强制校验）</pre>
+      <div class="tip">更稳妥的做法：直接在 WorkBuddy 里说「帮我连手机」，我全帮你操作。</div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>🚀 手机开机后 · 启动方式</h2>
+    <div class="step"><div class="n">1</div><div>解锁手机连 WiFi → 打开 <b>Termux</b> → 进 Kali（<code>startkali</code> 或你平时的进法，提示符变 <code>root@kali</code>）</div></div>
+    <div class="step"><div class="n">2</div><div>整段粘贴下面命令（启动全部服务 + 文件终端 + MQTT 代理）：</div></div>
+<pre>bash /root/.hermes/auto-start-services.sh
+cd /root/Desktop/file_terminal && nohup python3 file_terminal_server.py >> file_terminal.log 2>&1 &
+nohup python3 /root/Desktop/phone6_mqtt_agent.py >> /root/Desktop/phone6_mqtt_agent.log 2>&1 &
+setsid nohup /root/Desktop/boot_guard.sh >/dev/null 2>&1 &</pre>
+    <div class="step"><div class="n">3</div><div>验证：</div></div>
+<pre>ss -ltn | grep -E ':5000|:22 '        <span class="c"># 5000=文件终端 22=SSH</span>
+tail -3 /root/Desktop/phone6_mqtt_agent.log   <span class="c"># 看到「已连接 broker」即成功</span></pre>
+    <div class="tip">💡 MQTT 代理有 <b>crontab 每2分钟自愈</b>，正常情况掉线会自己爬起来，不用管。boot_guard.sh 还会顺手拉起 SSH、cron 和 SakuraFrp 客户端。</div>
+  </div>
+
+  <div class="card">
+    <h2>💬 MQTT 怎么发命令</h2>
+    <p style="font-size:.88em;color:#94a3b8">两种格式都行（qos=1）：</p>
+    <pre><span class="c"># 纯文本</span>
+ls /root/Desktop
+
+<span class="c"># JSON（推荐，可对账）</span>
+{"id":"t1","cmd":"echo hello && date"}</pre>
+    <p style="font-size:.88em">回执 JSON 含 <code>stdout / stderr / code / time / host</code>（host=oneplus6-kali）。</p>
+    <ul>
+      <li>单条命令超时 <b>55 秒</b> —— 长任务自己 <code>nohup … &</code> 后台化</li>
+      <li>输出截断 <b>4000 字符</b>，要看全文用 <code>tail</code> 分段</li>
+      <li>黑名单命令直接拒绝（rm -rf / 等）</li>
+      <li>日志：<code>/root/Desktop/phone6_mqtt_agent.log</code></li>
+      <li>电脑端工具：<code>D:\Desktop\服务器\手机服务器\部署MQTT代理.py</code>（局域网一键部署）</li>
+    </ul>
+    <details>
+      <summary>🧪 电脑端 Python 测试片段（复制即用）</summary>
+      <pre>import time, json, paho.mqtt.client as mqtt
+got=[]
+def on_connect(c,u,f,rc,p=None):
+    c.subscribe('phone6_res_1112', qos=1); time.sleep(.5)
+    c.publish('phone6_cmd_1112', 'echo MQTT-OK', qos=1)
+def on_message(c,u,m): got.append(m.payload.decode())
+c=mqtt.Client(client_id='t'+str(int(time.time())),
+    callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+c.on_connect=on_connect; c.on_message=on_message
+c.connect('broker.emqx.io',1883,60); c.loop_start()
+t0=time.time()
+while not got and time.time()-t0&lt;20: time.sleep(.3)
+c.loop_stop(); print(got[0] if got else '无应答')</pre>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>🩹 故障排查速查</h2>
+    <table>
+      <tr><th>症状</th><th>原因 / 解法</th></tr>
+      <tr><td>MQTT 无应答</td><td><code>tail /root/Desktop/phone6_mqtt_agent.log</code>；代理没跑就重启它；crontab 会自动拉起</td></tr>
+      <tr><td>curl 报 Could not resolve host</td><td><b>外面 WiFi 常封 DNS 53 端口</b>。hosts 里已写死 broker IP；下别的域名可 <code>echo 'nameserver 223.5.5.5' > /etc/resolv.conf</code> 后试，不行就用电脑 SFTP 直传文件</td></tr>
+      <tr><td>frp 端口「连接被拒绝」</td><td>SakuraFrp App 没连上或对应隧道没开；<code>boot_guard.sh</code> 会用 am 拉起 App；SSH 隧道=28636911，文件终端=28637128</td></tr>
+      <tr><td>隧道通但 SSH 读不到横幅</td><td>手机里 sshd 没跑：<code>service ssh start</code>（先 <code>ssh-keygen -A</code> 若缺 hostkey）</td></tr>
+      <tr><td>文件终端 40476 打不开</td><td>本机 5000 没监听 → 启动 file_terminal_server.py；或 App 里隧道 28637128 未开</td></tr>
+      <tr><td>代理连不上 broker</td><td>emqx 换 IP 了：电脑解析新 IP 后改手机 <code>/etc/hosts</code>（备份在 /etc/hosts.bak）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📂 关键文件位置（手机端）</h2>
+    <table>
+      <tr><td><code>/root/Desktop/phone6_mqtt_agent.py</code></td><td>MQTT 命令代理</td></tr>
+      <tr><td><code>/root/Desktop/phone6_mqtt_agent.log</code></td><td>代理日志</td></tr>
+      <tr><td><code>/root/Desktop/boot_guard.sh</code></td><td>总守护（SSH/cron/frp/文件终端）</td></tr>
+      <tr><td><code>/root/.hermes/auto-start-services.sh</code></td><td>服务一键启动</td></tr>
+      <tr><td><code>/root/Desktop/file_terminal/</code></td><td>文件终端(5000)</td></tr>
+    </table>
+    <a class="back" href="/">← 返回导航首页</a>
+  </div>
+</div>
+</body>
+</html>
