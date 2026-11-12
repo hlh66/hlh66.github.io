@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多端控制台 · 被控端下载</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#334155;
+  background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 35%,#ede9fe 70%,#fef3c7 100%);
+  background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:30px 18px}
+.card{background:rgba(255,255,255,.8);border:2px solid rgba(147,197,253,.3);border-radius:16px;padding:26px;margin-bottom:16px;box-shadow:0 2px 12px rgba(59,130,246,.08)}
+h1{font-size:1.6em;background:linear-gradient(135deg,#0284c7,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;font-weight:800}
+.sub{color:#64748b;font-size:.9em;margin-bottom:18px}
+.btn{display:inline-block;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:12px;font-size:1.05em;box-shadow:0 4px 14px rgba(37,99,235,.3);margin-right:10px;margin-bottom:10px;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,99,235,.4)}
+.btn.gray{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 4px 14px rgba(100,116,139,.3)}
+ol{padding-left:24px;line-height:2}
+.tip{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:.88em;color:#92400e;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:.88em}
+td,th{padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left}
+th{color:#0284c7}
+a{color:#2563eb}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🖥️ 多端控制台 · 被控端</h1>
+    <div class="sub">版本 v12 · 更新日期 2026-11-12 · 支持公网自动连线，装完即用</div>
+    <a class="btn" href="agent_v12.zip" download>⬇️ 一键下载部署包（推荐）</a>
+    <a class="btn gray" href="pc_agent_web.exe" download>仅下载主程序</a>
+    <div class="tip">💡 手机也能下载：用手机浏览器打开本页即可把包传到电脑。</div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1.1em;margin-bottom:10px;color:#0284c7">安装只需 3 步</h2>
+    <ol>
+      <li>解压部署包，4 个文件放同一文件夹</li>
+      <li>双击 <b>pc_agent_web.exe</b> 运行</li>
+      <li>完成！右下角出现托盘图标，自动上线</li>
+    </ol>
+    <div class="tip">杀毒软件如果报毒，加入信任即可。详细说明看包里的「安装说明.txt」。</div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1.1em;margin-bottom:10px;color:#0284c7">文件清单</h2>
+    <table>
+      <tr><th>文件</th><th>说明</th><th>单独下载</th></tr>
+      <tr><td>pc_agent_web.exe</td><td>主程序 v12</td><td><a href="pc_agent_web.exe" download>下载</a></td></tr>
+      <tr><td>pc_agent_guard.exe</td><td>看护程序</td><td><a href="pc_agent_guard.exe" download>下载</a></td></tr>
+      <tr><td>pc_agent.ini</td><td>配置（公网线路已配好）</td><td><a href="pc_agent.ini" download>下载</a></td></tr>
+      <tr><td>安装说明.txt</td><td>安装与常见问题</td><td><a href="安装说明.txt" download>下载</a></td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <a href="/" style="color:#64748b;font-size:.9em">← 返回导航页</a>
+  </div>
+</div>
+</body>
+</html>
