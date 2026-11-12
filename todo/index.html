@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="待办">
+<title>待办清单 · 洪老师</title>
+<style>
+  :root{
+    --ink:#16191d; --sub:#6b7280; --line:#e6e8ec; --bg:#f4f5f7; --card:#fff;
+    --red:#c0392b; --red-soft:#fdf1ef; --amber:#b7791f; --amber-soft:#fdf6e7;
+    --green:#2f7d4f; --blue:#2c5c8f;
+    --A:#7c4dff; --B:#2c5c8f; --C:#2f7d4f; --D:#b7791f; --E:#6b7280;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;overflow-x:hidden}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+    padding-bottom:40px;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 14px;width:100%}
+
+  /* 顶部 */
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);
+    backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
+  .hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0 9px}
+  h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.02em}
+  .meta{font-size:12px;color:var(--sub);margin-top:2px}
+  .pbox{text-align:right;flex:none}
+  .pnum{font-size:20px;font-weight:700;color:var(--green);line-height:1.1;font-variant-numeric:tabular-nums}
+  .plbl{font-size:11px;color:var(--sub)}
+  .pbar{height:5px;background:#eceef1;border-radius:99px;overflow:hidden;margin-top:6px}
+  .pbar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .3s}
+
+  /* 搜索 */
+  .search{padding:0 0 10px}
+  .search input{width:100%;border:1px solid var(--line);background:#f7f8fa;border-radius:11px;
+    padding:10px 14px;font-size:15px;font-family:inherit;color:var(--ink);outline:none}
+  .search input:focus{border-color:#c9cdd4;background:#fff}
+
+  /* 筛选条 */
+  .chips{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;padding:6px 13px;border-radius:99px;border:1px solid var(--line);
+    background:#fff;color:var(--sub);font-size:13.5px;cursor:pointer;white-space:nowrap}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+  .chip.ghost{background:transparent}
+
+  /* 摘要 */
+  .stats{display:flex;gap:8px;padding:12px 0 4px;flex-wrap:wrap}
+  .stat{flex:1;min-width:88px;background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:9px 11px;cursor:pointer}
+  .stat b{display:block;font-size:19px;line-height:1.2;font-variant-numeric:tabular-nums}
+  .stat span{font-size:11.5px;color:var(--sub)}
+  .stat.red b{color:var(--red)} .stat.amber b{color:var(--amber)} .stat.green b{color:var(--green)}
+
+  /* 分组 */
+  .sec{margin-top:20px}
+  .sec-h{display:flex;align-items:center;gap:8px;padding:0 2px 8px;font-size:14px;color:var(--sub);font-weight:600}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--dc)}
+  .sec-h .n{margin-left:auto;font-weight:500;font-size:12.5px;color:#9aa1ab}
+
+  /* 卡片 */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:13px 14px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start;
+    transition:.14s;position:relative}
+  .card:active{background:#fafbfc}
+  .tick{flex:none;width:23px;height:23px;border-radius:99px;border:2px solid #d4d8de;
+    margin-top:2px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:transparent;transition:.14s;background:#fff}
+  .card.done .tick{background:var(--green);border-color:var(--green);color:#fff}
+  .body{flex:1;min-width:0}
+  .ttl{font-size:15.5px;line-height:1.55;word-break:break-word;overflow-wrap:anywhere}
+  .ttl strong{font-weight:650}
+  .ttl code{background:#f4f5f7;padding:1px 5px;border-radius:4px;font-size:13.5px;
+    font-family:ui-monospace,Consolas,monospace;color:#2c5c8f;word-break:break-all}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+  .tag{font-size:11.5px;color:var(--sub);background:#f4f5f7;border-radius:6px;padding:2px 8px;
+    overflow-wrap:anywhere}
+  .id{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;font-weight:700;
+    color:var(--dc,#6b7280);background:color-mix(in srgb,var(--dc,#6b7280) 12%,#fff);
+    border-radius:6px;padding:2px 7px}
+  .tag.today{background:var(--red);color:#fff;font-weight:700}
+  .tag.hot{background:var(--red-soft);color:var(--red);font-weight:600}
+  .tag.warn{background:var(--amber-soft);color:var(--amber);font-weight:600}
+  .tag.ice{background:#f1f2f4;color:#8b9199}
+  .tag.ok{background:#eaf5ee;color:var(--green);font-weight:600}
+
+  .card.done{opacity:.45}
+  .card.done .ttl{text-decoration:line-through;text-decoration-thickness:1px}
+  .card.ice{opacity:.6}
+
+  .empty{color:var(--sub);text-align:center;padding:46px 0;font-size:14.5px}
+  footer{margin-top:28px;text-align:center;color:#a3a9b2;font-size:12px;line-height:1.9}
+  footer a{color:#8b9199;text-decoration:none;border-bottom:1px dashed #cfd4da}
+  .reset{display:inline-block;margin-top:10px;color:#a3a9b2;font-size:12px;
+    border:1px solid var(--line);border-radius:99px;padding:3px 12px;cursor:pointer;background:#fff}
+  @media(max-width:400px){body{font-size:15.5px}.stat{min-width:76px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div>
+        <h1>待办清单</h1>
+        <div class="meta">2026-11-12 10:10 更新 · 打勾只存在本机</div>
+      </div>
+      <div class="pbox">
+        <div class="pnum" id="pnum">0%</div>
+        <div class="plbl" id="plbl">0 / 0</div>
+        <div class="pbar"><i id="pbar"></i></div>
+      </div>
+    </div>
+    <div class="search"><input id="q" type="search" placeholder="搜关键词：打印 / 截图 / 托管 / ESP32"></div>
+    <div class="chips" id="domChips">
+      <span class="chip on" data-d="all">全部</span>
+      <span class="chip" data-d="A">🧪 科创</span>
+      <span class="chip" data-d="B">📚 教学</span>
+      <span class="chip" data-d="C">🎓 继教</span>
+      <span class="chip" data-d="D">👩‍🏫 培训</span>
+      <span class="chip" data-d="E">🔧 杂事</span>
+    </div>
+    <div class="chips" id="moreChips">
+      <span class="chip ghost" data-sc="到校">🏫 到校办</span>
+      <span class="chip ghost" data-sc="家里">🏠 家里办</span>
+      <span class="chip ghost" data-sc="手机">📱 手机</span>
+      <span class="chip ghost" data-m="15">⏱ 15 分钟能清</span>
+      <span class="chip ghost on" data-h="1" id="hideBtn">✅ 隐藏已完成</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat red" data-jump="today"><b id="sToday">0</b><span>今天要做</span></div>
+    <div class="stat" data-jump="left"><b id="sLeft">0</b><span>还没完成</span></div>
+    <div class="stat green" data-jump="quick"><b id="sQuick">0</b><span>15 分钟能清</span></div>
+  </div>
+
+  <div id="list"></div>
+  <div class="empty" id="empty" style="display:none">没有符合条件的待办</div>
+
+  <footer>
+    数据源：待办总表.md · 本地网页版见「待办中心/看板.html」<br>
+    <a href="/week/">🗓️ 每周工作安排</a>　<a href="/js/">👨‍🏫 教师导航</a>
+    <br><span class="reset" id="reset">清空我的打勾</span>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"id":"A1","d":"A","dn":"科创项目","t":"**定项目**：无硬件全报 + ESP32 选 1（见上方决策卡）","w":"任意","dur":"10 分钟","due":"尽快","st":"todo","m":10,"sc":["随时"],"today":false,"hot":false},{"id":"A2","d":"A","dn":"科创项目","t":"教室电脑管家：改申报抬头为辅导员版 → 交","w":"家里电脑","dur":"1 小时","due":"待定","st":"todo","m":60,"sc":["家里"],"today":false,"hot":false},{"id":"A3","d":"A","dn":"科创项目","t":"3D 创意设计：出 1 个作品（建模 → 打印 → 照片）","w":"家里/学校","dur":"半天","due":"待定","st":"todo","m":240,"sc":["到校","家里"],"today":false,"hot":false},{"id":"A4","d":"A","dn":"科创项目","t":"体感反应墙：按写作指南补实测数据 + 照片","w":"学校教室","dur":"2-3 小时","due":"待定","st":"todo","m":150,"sc":["到校"],"today":false,"hot":false},{"id":"A5","d":"A","dn":"科创项目","t":"确认 10-10 那次提交的真实状态（问了管理员没）","w":"学校","dur":"5 分钟","due":"🔥已过期","st":"warn","m":5,"sc":["到校"],"today":false,"hot":true},{"id":"B1","d":"B","dn":"教学日常","t":"**改作业**（二年级数学，待确认批数）","w":"办公室/家","dur":"1-2 小时","due":"明天要用","st":"todo","m":90,"sc":["到校","家里"],"today":false,"hot":false},{"id":"B2","d":"B","dn":"教学日常","t":"**查分数 / 录成绩**（待确认是哪个系统）","w":"学校电脑","dur":"30 分钟","due":"待定","st":"todo","m":30,"sc":["到校","家里"],"today":false,"hot":false},{"id":"B3","d":"B","dn":"教学日常","t":"**打印学校资料**（先列清单，再一次性打完）","w":"打印室","dur":"1 小时","due":"待定","st":"todo","m":60,"sc":["到校"],"today":false,"hot":false},{"id":"B4","d":"B","dn":"教学日常","t":"和紫华交接打印事宜（合并进 B3，同一趟问完）","w":"学校","dur":"10 分钟","due":"待定","st":"todo","m":10,"sc":["到校"],"today":false,"hot":false},{"id":"B5","d":"B","dn":"教学日常","t":"录做题技巧视频（「解决问题」答题格式）","w":"家里安静角落","dur":"1 小时","due":"无","st":"todo","m":60,"sc":["家里"],"today":false,"hot":false},{"id":"B6","d":"B","dn":"教学日常","t":"过塑大卡片（口诀 / 20以内进位加减 / 10的分与合）+ 网购 A4 塑封膜","w":"家里","dur":"膜到再说","due":"早读要用","st":"todo","m":null,"sc":["家里"],"today":false,"hot":false},{"id":"B7","d":"B","dn":"教学日常","t":"**带东西去学校**：白板几块 + 黑笔 + 工具（清单见 B8）","w":"家里装箱","dur":"10 分钟","due":"明天到校","st":"doing","m":10,"sc":["家里"],"today":false,"hot":false},{"id":"B8","d":"B","dn":"教学日常","t":"**回家取几块白板 + 黑笔**，装好带到学校用（块数待定，回去看一眼再定）","w":"家里 → 学校","dur":"10 分钟","due":"下次回家","st":"todo","m":10,"sc":["到校","家里"],"today":false,"hot":false},{"id":"B9","d":"B","dn":"教学日常","t":"**AI 赋能学科教学质量提升研修**：周三 10-28 下午 2:30-4:30，凤城实验学校报告厅（上午场是别人，下午场有你）→ **自备手提电脑 + 负责录像**，拼车前往","w":"凤城实验学校","dur":"半天","due":"已过 10-28","st":"warn","m":240,"sc":["到校"],"today":false,"hot":true},{"id":"B10","d":"B","dn":"教学日常","t":"家庭医生签约协助（备注栏写了班主任协助，如果你是这批就办）","w":"学校","dur":"20 分钟","due":"本周","st":"warn","m":20,"sc":["到校"],"today":false,"hot":false},{"id":"B11","d":"B","dn":"教学日常","t":"**秋假托管·今天代石林辉老师（四1班）**：7:45 校门值岗 → 8:20 劳动实践 → 9:00 大课间 → 11:20 自主阅读 → 12:00 组织午餐+午休 → 15:10 硬笔书法 → 15:50 下午放学（细表见 `26学年上工作\\代办事项\\04_秋假托管代石老师_1112.md`）","w":"学校 四1","dur":"全天","due":"🔥今天 11-12","st":"doing","m":null,"sc":["到校"],"today":true,"hot":true},{"id":"B12","d":"B","dn":"教学日常","t":"**秋假托管·本人 11/13（四1）**：9:30 自主阅读 → 11:20 硬笔书法 + 午餐午休 → 15:10 棋艺擂台 → 16:30-18:00 托管；值日【运动场】","w":"学校 四1","dur":"全天","due":"11-13","st":"todo","m":null,"sc":["到校"],"today":false,"hot":false},{"id":"C1","d":"C","dn":"继续教育","t":"**看视频**：10 门热点课 + 1 门必修 + 3 门关键课（小学数学校本）","w":"电脑/手机","dur":"每门 10-20 分钟","due":"没写死期但要交","st":"todo","m":15,"sc":["家里","手机"],"today":false,"hot":false},{"id":"C2","d":"C","dn":"继续教育","t":"每门课显示「100%已学习」后**截图**，按 `熹涌陈佐乾纪念学校 洪林华` 命名","w":"电脑","dur":"15 分钟（一次性）","due":"随 C1","st":"todo","m":15,"sc":["家里"],"today":false,"hot":false},{"id":"C3","d":"C","dn":"继续教育","t":"截图交到网盘 `65【智慧中小学】培训、参赛资料\\2026.10月\"区域定制课程 截图证明\"\\低年部`","w":"电脑","dur":"5 分钟","due":"随 C2","st":"todo","m":5,"sc":["家里"],"today":false,"hot":false},{"id":"C4","d":"C","dn":"继续教育","t":"**问学校老师**：继续教育到底怎么弄（入口/看哪些/截图要求/交给谁）","w":"学校","dur":"10 分钟","due":"今天到校","st":"todo","m":10,"sc":["到校"],"today":true,"hot":false},{"id":"D1","d":"D","dn":"师资培训","t":"**定形式**（录视频 / 现场讲 / 网页，见上表）","w":"任意","dur":"5 分钟","due":"","st":"todo","m":5,"sc":["随时"],"today":false,"hot":false},{"id":"D2","d":"D","dn":"师资培训","t":"写讲稿（Agent 能帮老师干什么 + 飞象星球怎么用）","w":"家里整块","dur":"2 小时","due":"","st":"todo","m":120,"sc":["家里"],"today":false,"hot":false},{"id":"D3","d":"D","dn":"师资培训","t":"PPT 课件","w":"家里","dur":"1.5 小时","due":"","st":"todo","m":90,"sc":["家里"],"today":false,"hot":false},{"id":"D4","d":"D","dn":"师资培训","t":"按 D1 的形式产出（录视频 / 试讲 / 做网页）","w":"—","dur":"看形式","due":"","st":"todo","m":null,"sc":["随时"],"today":false,"hot":false},{"id":"D5","d":"D","dn":"师资培训","t":"演示素材：拿自己的 WorkBuddy 现场跑一遍备课/出题/批改","w":"电脑","dur":"30 分钟","due":"","st":"todo","m":30,"sc":["家里"],"today":false,"hot":false},{"id":"E1","d":"E","dn":"设备杂事","t":"QQ 账号绑定手机号","w":"手机","dur":"5 分钟","due":"","st":"todo","m":5,"sc":["手机"],"today":false,"hot":false},{"id":"E2","d":"E","dn":"设备杂事","t":"3D 打印：连机 → 打书立架 → 批量迷你数学教具","w":"家里","dur":"挂机","due":"","st":"todo","m":5,"sc":["家里"],"today":false,"hot":false},{"id":"E3","d":"E","dn":"设备杂事","t":"语音助手换免费模型渠道（选定后改 `对话语音助手.py`）","w":"家里电脑","dur":"20 分钟","due":"","st":"wait","m":20,"sc":["家里"],"today":false,"hot":false},{"id":"E4","d":"E","dn":"设备杂事","t":"监控卡流量复用：确认 5 项（型号/卡是否焊死/ICCID/「永久」几年/用途）","w":"家里","dur":"10 分钟","due":"","st":"todo","m":10,"sc":["家里"],"today":false,"hot":false},{"id":"E5","d":"E","dn":"设备杂事","t":"清理 `拍照填答案/.merge_backup_1017` 备份","w":"电脑","dur":"2 分钟","due":"","st":"ice","m":2,"sc":["家里"],"today":false,"hot":false},{"id":"E6","d":"E","dn":"设备杂事","t":"教师工作台四端（座位/成绩/档案/加分）","w":"—","dur":"很大","due":"","st":"ice","m":null,"sc":["随时"],"today":false,"hot":false},{"id":"E7","d":"E","dn":"设备杂事","t":"**蓝牙适配器：已买 ✅**（10-20 凌晨实测家里主机本来自带蓝牙；洪老师 10-21 说已下单）→ 到货后插上装驱动、配对设备；学校主机要用的话插过去即可","w":"家里/学校","dur":"装配 10 分钟","due":"","st":"todo","m":10,"sc":["到校","家里"],"today":false,"hot":false}];
+const DC = {A:"#7c4dff",B:"#2c5c8f",C:"#2f7d4f",D:"#b7791f",E:"#6b7280"};
+const DN = {A:"科创项目",B:"教学日常",C:"继续教育",D:"师资培训",E:"设备杂事"};
+const KEY = "hlh-todo-v1";
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e){ done = {}; }
+let F = {d:"all", sc:"", m:0, q:"", hide:1};
+
+const $ = s => document.querySelector(s);
+const esc = s => (s||"").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+                          .replace(/`(.+?)`/g,"<code>$1</code>");
+const isDone = d => !!done[d.id];
+
+function pass(d){
+  if (F.d !== "all" && d.d !== F.d) return false;
+  if (F.sc && !(d.sc||[]).includes(F.sc)) return false;
+  if (F.m > 0 && (d.m === null || d.m > F.m)) return false;
+  if (F.hide && isDone(d)) return false;
+  if (F.q){
+    const hay = (d.id + d.t + d.w + d.dur + d.due + d.dn).toLowerCase();
+    if (!hay.includes(F.q.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function cardHTML(d){
+  const c = DC[d.d] || "#6b7280";
+  const cls = ["card"];
+  if (isDone(d)) cls.push("done");
+  if (d.st === "ice") cls.push("ice");
+
+  let tags = `<span class="id" style="--dc:${c}">${d.id}</span>`;
+  if (d.today) tags += `<span class="tag today">今天</span>`;
+  if (d.hot && !d.today) tags += `<span class="tag hot">${esc(d.due)}</span>`;
+  else if (d.due && !d.today) tags += `<span class="tag">${esc(d.due)}</span>`;
+  if (d.st === "warn") tags += `<span class="tag warn">待确认</span>`;
+  if (d.st === "ice") tags += `<span class="tag ice">冰柜</span>`;
+  if (d.st === "wait") tags += `<span class="tag ice">等别人</span>`;
+  if (d.dur) tags += `<span class="tag">${esc(d.dur)}</span>`;
+  if (d.w) tags += `<span class="tag">${esc(d.w)}</span>`;
+  if (isDone(d)) tags += `<span class="tag ok">已完成</span>`;
+
+  return `<div class="${cls.join(" ")}" data-id="${d.id}" style="--dc:${c}">
+    <div class="tick">✓</div>
+    <div class="body"><div class="ttl">${inline(d.t)}</div><div class="tags">${tags}</div></div>
+  </div>`;
+}
+
+function render(){
+  const list = DATA.filter(pass);
+  const groups = {};
+  list.forEach(d => (groups[d.d] = groups[d.d] || []).push(d));
+
+  let out = "";
+  ["A","B","C","D","E"].forEach(k=>{
+    const arr = groups[k];
+    if (!arr || !arr.length) return;
+    const left = arr.filter(d=>!isDone(d)).length;
+    out += `<div class="sec"><div class="sec-h" style="--dc:${DC[k]}">
+      <i class="dot"></i>${DN[k]}<span class="n">${left} / ${arr.length} 待办</span></div>
+      ${arr.map(cardHTML).join("")}</div>`;
+  });
+  $("#list").innerHTML = out;
+  $("#empty").style.display = list.length ? "none" : "block";
+
+  const active = DATA.filter(d => d.st !== "ice");
+  const fin = active.filter(isDone).length;
+  const pct = active.length ? Math.round(fin / active.length * 100) : 0;
+  $("#pnum").textContent = pct + "%";
+  $("#plbl").textContent = `${fin} / ${active.length}`;
+  $("#pbar").style.width = pct + "%";
+
+  $("#sToday").textContent = DATA.filter(d=>d.today && !isDone(d)).length;
+  $("#sLeft").textContent = DATA.filter(d=>d.st!=="ice" && !isDone(d)).length;
+  $("#sQuick").textContent = DATA.filter(d=>d.st!=="ice" && !isDone(d) && d.m!==null && d.m<=15).length;
+
+  document.querySelectorAll(".card").forEach(el=>{
+    el.onclick = ()=>{
+      const id = el.dataset.id;
+      if (done[id]) delete done[id]; else done[id] = Date.now();
+      localStorage.setItem(KEY, JSON.stringify(done));
+      render();
+    };
+  });
+}
+
+$("#domChips").onclick = e=>{
+  const p = e.target.closest(".chip"); if(!p) return;
+  $("#domChips").querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  p.classList.add("on"); F.d = p.dataset.d; render();
+};
+$("#moreChips").onclick = e=>{
+  const p = e.target.closest(".chip"); if(!p) return;
+  if (p.id === "hideBtn"){
+    F.hide = F.hide ? 0 : 1;
+    p.classList.toggle("on", !!F.hide);
+    p.textContent = F.hide ? "✅ 隐藏已完成" : "👀 显示全部";
+    render(); return;
+  }
+  if (p.dataset.sc){
+    const on = p.classList.contains("on");
+    $("#moreChips").querySelectorAll(".chip[data-sc]").forEach(x=>x.classList.remove("on"));
+    if (on){ F.sc = ""; } else { p.classList.add("on"); F.sc = p.dataset.sc; }
+    render(); return;
+  }
+  if (p.dataset.m){
+    const on = p.classList.contains("on");
+    if (on){ p.classList.remove("on"); F.m = 0; }
+    else { p.classList.add("on"); F.m = parseInt(p.dataset.m); }
+    render();
+  }
+};
+$("#q").oninput = e=>{ F.q = e.target.value.trim(); render(); };
+document.querySelectorAll(".stat").forEach(s=>{
+  s.onclick = ()=>{
+    F.d="all"; F.sc=""; F.m=0; F.q=""; $("#q").value="";
+    $("#domChips").querySelectorAll(".chip").forEach(x=>x.classList.toggle("on", x.dataset.d==="all"));
+    $("#moreChips").querySelectorAll(".chip[data-sc]").forEach(x=>x.classList.remove("on"));
+    if (s.dataset.jump === "quick"){
+      document.querySelector('.chip[data-m="15"]').classList.add("on"); F.m = 15;
+    }
+    if (s.dataset.jump === "left"){
+      F.hide = 0; const hb = $("#hideBtn"); hb.classList.remove("on"); hb.textContent = "👀 显示全部";
+    }
+    render();
+    if (s.dataset.jump === "today"){
+      const el = document.querySelector(".tag.today");
+      if (el) el.closest(".card").scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  };
+});
+$("#reset").onclick = ()=>{
+  if (!confirm("清空这台设备上的所有打勾记录？")) return;
+  done = {}; localStorage.removeItem(KEY); render();
+};
+render();
+</script>
+</body>
+</html>
