@@ -24,16 +24,23 @@ Topic（特意避开平板占用的 phone_cmd_001/phone_res_001）:
     - 黑名单命令直接拒绝（rm -rf / 之类防手滑）
 
 自愈:
-    - 依赖手机 crontab（boot_guard 会保活 cron）:
-      */2 * * * * pgrep -f phone6_mqtt_agent >/dev/null || nohup python3 /root/Desktop/phone6_mqtt_agent.py >> /root/Desktop/phone6_mqtt_agent.log 2>&1 &
+    - boot_guard.sh(30秒巡检) + crontab(每2分钟) 双保险自动拉起
+    - 安卓层 wb_keepalive.sh(root看门狗, 每60秒) 在 chroot 之外兜底
 
 依赖: pip install paho-mqtt   （手机 Kali 里已有）
 """
 
 import json
 import os
+import socket
 import subprocess
+import threading
 import time
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    urlopen = None
 
 try:
     import paho.mqtt.client as mqtt
@@ -46,6 +53,12 @@ MQTT_HOST = "broker.emqx.io"
 MQTT_PORT = 1883
 TOPIC_CMD = "phone6_cmd_1112"   # 电脑 -> 手机
 TOPIC_RES = "phone6_res_1112"   # 手机 -> 电脑
+TOPIC_STATUS = "phone6_status_1112"  # 心跳(retain)，电脑据此判断手机在不在线
+
+# broker 直连 IP（外面 WiFi 封 53 端口时的保底；全挂了会走 DoH 自动刷新）
+FALLBACK_IPS = ["34.243.217.54", "44.232.241.40"]
+HOSTS_FILE = "/etc/hosts"
+HEARTBEAT_SEC = 300       # 每5分钟上报一次心跳
 
 CMD_TIMEOUT = 55          # 单条命令超时（秒）
 OUT_LIMIT = 4000          # 回执输出上限（字符）
@@ -98,6 +111,65 @@ def run_cmd(cmd):
         return {"stdout": "", "stderr": "命令超时(%ds)" % CMD_TIMEOUT, "code": -1}
     except Exception as e:
         return {"stdout": "", "stderr": str(e)[:500], "code": -3}
+
+
+# ============ DoH 自救（IP 失效时自动刷新） ============
+def resolve_via_doh():
+    """阿里 DoH 查 broker 最新 IP 并更新 /etc/hosts（绕过被封的 53 端口）"""
+    if not urlopen:
+        return []
+    try:
+        r = urlopen("https://223.5.5.5/resolve?name=broker.emqx.io&type=A", timeout=10)
+        data = json.loads(r.read().decode())
+        ips = [a["data"] for a in data.get("Answer", []) if a.get("type") == 1]
+        if ips:
+            try:
+                lines = [l for l in open(HOSTS_FILE).read().splitlines()
+                         if "broker.emqx.io" not in l]
+                lines += ["%s broker.emqx.io" % ip for ip in ips[:4]]
+                open(HOSTS_FILE, "w").write("\n".join(lines) + "\n")
+                log("hosts 已更新为: %s" % ",".join(ips[:4]))
+            except Exception:
+                pass
+        return ips
+    except Exception:
+        return []
+
+
+def connect_with_fallback(client):
+    """依次试 IP 直连；全失败则 DoH 刷新再试；无限重试直到连上"""
+    ips = list(FALLBACK_IPS)
+    while True:
+        for ip in ips:
+            try:
+                client.connect(ip, MQTT_PORT, keepalive=30)
+                return True
+            except Exception as e:
+                log("连 %s 失败: %s" % (ip, str(e)[:80]))
+        new = resolve_via_doh()
+        if new:
+            ips = new + FALLBACK_IPS
+        time.sleep(20)
+
+
+# ============ 心跳（电脑判断手机在不在线的依据） ============
+def heartbeat_loop(client):
+    while True:
+        try:
+            up = ""
+            try:
+                up = open("/proc/uptime").read().split()[0]
+            except Exception:
+                pass
+            client.publish(TOPIC_STATUS, json.dumps({
+                "host": "oneplus6-kali",
+                "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "uptime_s": up.split(".")[0] if up else "",
+                "pid": os.getpid(),
+            }), qos=1, retain=True)
+        except Exception:
+            pass
+        time.sleep(HEARTBEAT_SEC)
 
 
 # ============ MQTT ============
@@ -154,8 +226,9 @@ def main():
     client.on_message = on_message
     # MQTT 心跳 30s + 自动重连(默认 loop_start 内置重连)
     client.reconnect_delay_set(min_delay=5, max_delay=60)
-    client.connect(MQTT_HOST, MQTT_PORT, keepalive=30)
     log("=== phone6_mqtt_agent 启动 (PID %d) ===" % os.getpid())
+    connect_with_fallback(client)   # v2: IP直连+DoH自救，不再依赖域名解析
+    threading.Thread(target=heartbeat_loop, args=(client,), daemon=True).start()
     client.loop_forever(retry_first_connection=True)
 
 
