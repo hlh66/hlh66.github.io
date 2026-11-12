@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多端控制台 · 连接与使用说明</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#334155;
+  background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 35%,#ede9fe 70%,#fef3c7 100%);
+  background-attachment:fixed}
+.wrap{max-width:760px;margin:0 auto;padding:30px 18px}
+.card{background:rgba(255,255,255,.85);border:2px solid rgba(147,197,253,.3);border-radius:16px;padding:26px;margin-bottom:16px;box-shadow:0 2px 12px rgba(59,130,246,.08)}
+h1{font-size:1.6em;background:linear-gradient(135deg,#0284c7,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;font-weight:800}
+h2{font-size:1.12em;margin-bottom:12px;color:#0284c7}
+.sub{color:#64748b;font-size:.92em;margin-bottom:16px;line-height:1.7}
+.btn{display:inline-block;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;font-weight:bold;padding:13px 26px;border-radius:12px;font-size:1.02em;box-shadow:0 4px 14px rgba(37,99,235,.3);margin:4px 10px 4px 0;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,99,235,.4)}
+.btn.gray{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 4px 14px rgba(100,116,139,.3)}
+ol{padding-left:24px;line-height:2.1}
+ul{padding-left:22px;line-height:1.95}
+.tip{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:.88em;color:#92400e;margin-top:10px;line-height:1.8}
+.ok{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:.88em;color:#166534;margin-top:10px;line-height:1.8}
+table{width:100%;border-collapse:collapse;font-size:.87em;margin-top:6px}
+td,th{padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}
+th{color:#0284c7;white-space:nowrap}
+code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:2px 7px;font-family:Consolas,monospace;font-size:.92em;color:#0f172a;word-break:break-all}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;font-weight:bold;margin-right:10px;flex-shrink:0}
+.step-head{display:flex;align-items:center;margin-bottom:12px}
+.arch{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px 14px;font-family:Consolas,monospace;font-size:.8em;line-height:1.8;overflow-x:auto;white-space:pre}
+.arch b{color:#38bdf8}
+a{color:#2563eb}
+.footer{text-align:center;color:#94a3b8;font-size:.85em;padding:10px 0 20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card">
+    <h1>🖥️ 多端控制台 · 连接与使用</h1>
+    <div class="sub">
+      一句话：<b>在一台电脑上运行一个小程序，手机或其他电脑打开网页就能远程控制它</b> ——
+      发命令、管文件、看屏幕、开网页，全自动连线，<b>不需要公网 IP、不需要服务器、不在同一个网也行</b>。
+    </div>
+    <a class="btn" href="console.html" target="_blank">🚀 打开在线控制台</a>
+    <a class="btn gray" href="/download/" target="_blank">⬇️ 被控端下载页</a>
+  </div>
+
+  <div class="card">
+    <div class="step-head"><span class="step-num">1</span><h2 style="margin:0">在被控电脑上安装（只需一次）</h2></div>
+    <ol>
+      <li>去 <a href="/download/" target="_blank">下载页</a> 下载部署包（或手机下载后传过去）</li>
+      <li>解压后 <b>双击 <code>pc_agent_web.exe</code></b></li>
+      <li>完成！右下角出现托盘图标，<b>自动上线</b>（自动开机自启，重启电脑也不用管）</li>
+    </ol>
+    <div class="tip">💡 杀毒软件报毒点「信任」即可。程序带看护进程，意外退出 2 秒内自动拉起。</div>
+  </div>
+
+  <div class="card">
+    <div class="step-head"><span class="step-num">2</span><h2 style="margin:0">打开控制台，连接</h2></div>
+    <ul>
+      <li>手机 / 平板 / 任意电脑，浏览器打开 <b>在线控制台</b>：<br><code>https://hlh66.github.io/kongzhi/console.html</code></li>
+      <li>Token 已经预填好（和被控端出厂配置一致），<b>点「连接」</b>即可</li>
+      <li>看到「已连接 broker」就绪，直接敲命令回车</li>
+    </ul>
+    <div class="ok">✔ 无需注册、无需登录、无需在同一个局域网 —— 控制台和被控端通过公共 MQTT 服务器自动会合。</div>
+  </div>
+
+  <div class="card">
+    <div class="step-head"><span class="step-num">3</span><h2 style="margin:0">开始使用：常用操作速查</h2></div>
+    <table>
+      <tr><th>想做的事</th><th>在控制台输入</th></tr>
+      <tr><td>看机器在不在线</td><td>点「PING 探活」按钮（3 秒内回 PONG = 在线）</td></tr>
+      <tr><td>看主机名 / 内存占用</td><td><code>__status__</code></td></tr>
+      <tr><td>截一张全屏图</td><td><code>__screenshot__</code></td></tr>
+      <tr><td>看 IP 地址</td><td>点「本机 IP」按钮（或 <code>ipconfig</code>）</td></tr>
+      <tr><td>列目录 / 管文件</td><td><code>dir D:\</code> 等 CMD 命令</td></tr>
+      <tr><td>打开一个网页</td><td>填网址点「让电脑打开这个网页」按钮</td></tr>
+      <tr><td>打开程序</td><td><code>!calc</code>（计算器）、<code>!notepad</code>（记事本）—— <b>开程序必须加 <code>!</code></b></td></tr>
+      <tr><td>关机 / 重启</td><td><code>shutdown /s /t 60</code>（60 秒后关，<code>shutdown /a</code> 取消）</td></tr>
+      <tr><td>远程升级到最新版</td><td>点「检查并自动升级」按钮</td></tr>
+      <tr><td>锁屏</td><td>点「锁屏」按钮</td></tr>
+    </table>
+    <div class="tip">⚠️ 注意：同一个 Token 的<b>所有在线电脑都会执行</b>收到的命令（广播）。只想控制一台时，先确认其他机器已退出。</div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ 它是怎么连上的（原理 30 秒）</h2>
+    <div class="arch"><b>你的浏览器</b> ──WebSocket──▶ <b>公共 MQTT 服务器</b>（broker.emqx.io）
+                                              │
+                     被控电脑上的小程序 ◀──────┘
+                     pc_agent_web.exe（主动订阅命令，秒级到达）</div>
+    <ul style="margin-top:12px">
+      <li>被控端<b>主动连接</b>外网服务器，所以不管它在家、学校还是热点，都连得上</li>
+      <li>实测：从点「发送」到对方电脑执行完，<b>约 1.6 秒</b></li>
+      <li>程序自带<b>看护 + 自动重连 + 多线路自动切换</b>，网络抖动自动恢复</li>
+      <li>安全：命令主题带 32 位随机 Token，下发和回执双重校验，<b>拿到 Token 的人才能控制</b>，不要外传</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>❓ 常见问题</h2>
+    <table>
+      <tr><td><b>点连接失败？</b></td><td>检查手机/电脑能不能上网；公司/校园网若封 WebSocket，换 4G/5G 试试。</td></tr>
+      <tr><td><b>命令发了没反应？</b></td><td>被控电脑没开机或 exe 没运行。让它在被控电脑上双击 <code>pc_agent_web.exe</code>。</td></tr>
+      <tr><td><b>杀毒报毒？</b></td><td>远程控制程序容易被误报，加入信任/白名单即可。</td></tr>
+      <tr><td><b>被控电脑重装系统/换机？</b></td><td>重新下载部署包装一次就行，配置都在包里。</td></tr>
+      <tr><td><b>想改连接口令？</b></td><td>改被控端 <code>pc_agent.ini</code> 里 <code>[mqtt] token=</code>，控制台里填同一个新值。</td></tr>
+      <tr><td><b>360 提示拦截？</b></td><td>在 360 主页防护/浏览器保护里放行，否则它可能锁住默认浏览器设置。</td></tr>
+    </table>
+    <div class="tip">📖 更多细节（命令行 wb 客户端、文件管理、部署说明）见部署包里的 <b>readme.txt</b>。</div>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <a href="/" style="color:#64748b;font-size:.9em">← 返回导航页</a>
+  </div>
+
+  <div class="footer">多端控制台 · MQTT 直连版 · 2026-11-12 更新</div>
+</div>
+</body>
+</html>
