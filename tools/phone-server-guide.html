@@ -60,17 +60,23 @@ MQTT token phone6-2026（当前代理未强制校验）</pre>
   </div>
 
   <div class="card">
-    <h2>🚀 手机开机后 · 启动方式</h2>
-    <div class="step"><div class="n">1</div><div>解锁手机连 WiFi → 打开 <b>Termux</b> → 进 Kali（<code>startkali</code> 或你平时的进法，提示符变 <code>root@kali</code>）</div></div>
-    <div class="step"><div class="n">2</div><div>整段粘贴下面命令（启动全部服务 + 文件终端 + MQTT 代理）：</div></div>
-<pre>bash /root/.hermes/auto-start-services.sh
-cd /root/Desktop/file_terminal && nohup python3 file_terminal_server.py >> file_terminal.log 2>&1 &
-nohup python3 /root/Desktop/phone6_mqtt_agent.py >> /root/Desktop/phone6_mqtt_agent.log 2>&1 &
-setsid nohup /root/Desktop/boot_guard.sh >/dev/null 2>&1 &</pre>
-    <div class="step"><div class="n">3</div><div>验证：</div></div>
-<pre>ss -ltn | grep -E ':5000|:22 '        <span class="c"># 5000=文件终端 22=SSH</span>
-tail -3 /root/Desktop/phone6_mqtt_agent.log   <span class="c"># 看到「已连接 broker」即成功</span></pre>
-    <div class="tip">💡 MQTT 代理有 <b>crontab 每2分钟自愈</b>，正常情况掉线会自己爬起来，不用管。boot_guard.sh 还会顺手拉起 SSH、cron 和 SakuraFrp 客户端。</div>
+    <h2>🚀 手机开机后 · 全自动启动 <span class="badge">2026-11-12 新增</span></h2>
+    <div class="tip">✅ <b>现在开机已经零操作！</b>Magisk 开机脚本 <code>/data/adb/service.d/kali_autostart.sh</code> 会自动：等开机完成 → 挂载 Kali chroot → 拉起 <code>boot_guard.sh</code> 守护全家桶（SSH / cron / 文件终端5000 / 多端控制台5002 / Hermes飞书网关 / MQTT代理 / SakuraFrp App）。开机后约 <b>1~2 分钟</b>所有服务自动就位，MQTT 直接可连。</div>
+    <p style="font-size:.88em;color:#94a3b8">启动链路：安卓开机 → Magisk service.d → kali_autostart.sh → chroot → boot_guard.sh（每30秒轮询，谁掉拉谁）→ crontab（MQTT 代理每2分钟自愈）</p>
+    <p style="font-size:.88em;color:#94a3b8">备用兜底：万一开机脚本没生效，只要打开 Kali 终端（<code>.zshrc</code> 里有自引导），全部服务一样自动拉起。</p>
+    <details>
+      <summary>🔧 手动应急命令（一般用不到，卡死了才看）</summary>
+      <pre><span class="c"># 进 Kali 后手动拉起守护全家桶（重复执行安全，flock 单例）</span>
+setsid nohup /root/Desktop/boot_guard.sh >/dev/null 2>&1 &
+
+<span class="c"># 或手动执行开机脚本（自动判断在安卓层还是chroot里）</span>
+/data/adb/service.d/kali_autostart.sh
+
+<span class="c"># 验证</span>
+ss -ltn | grep -E ':5000|:22 '        <span class="c"># 5000=文件终端 22=SSH</span>
+tail -3 /root/Desktop/phone6_mqtt_agent.log   <span class="c"># 看到「已连接 broker」即成功</span>
+tail -5 /data/local/kali_autostart.log        <span class="c"># 开机脚本执行日志</span></pre>
+    </details>
   </div>
 
   <div class="card">
