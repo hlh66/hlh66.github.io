@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蓝牙麦克风扩音器 · 下载</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#334155;
+  background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 35%,#ede9fe 70%,#fef3c7 100%);
+  background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:30px 18px}
+.card{background:rgba(255,255,255,.8);border:2px solid rgba(147,197,253,.3);border-radius:16px;padding:26px;margin-bottom:16px;box-shadow:0 2px 12px rgba(59,130,246,.08)}
+h1{font-size:1.6em;background:linear-gradient(135deg,#0284c7,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;font-weight:800}
+h2{font-size:1.1em;margin-bottom:10px;color:#0284c7}
+.sub{color:#64748b;font-size:.9em;margin-bottom:18px}
+.btn{display:inline-block;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:12px;font-size:1.05em;box-shadow:0 4px 14px rgba(37,99,235,.3);margin-right:10px;margin-bottom:10px;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,99,235,.4)}
+.btn.gray{background:linear-gradient(135deg,#64748b,#94a3b8);box-shadow:0 4px 14px rgba(100,116,139,.3)}
+.btn.green{background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 4px 14px rgba(16,185,129,.3)}
+ol,ul{padding-left:24px;line-height:2}
+.tip{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:.88em;color:#92400e;margin-top:10px}
+.ok{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:.88em;color:#166534;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:.88em}
+td,th{padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left}
+th{color:#0284c7}
+a{color:#2563eb}
+code{background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.9em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🔊 蓝牙麦克风扩音器</h1>
+    <div class="sub">C 语言小巧版 · 单文件 50KB 左右 · 免安装 · 无 DLL 依赖 · 更新日期 2026-11-13</div>
+    <a class="btn green" href="蓝牙扩音C-窗口版.exe" download>⬇️ 下载窗口版（推荐）</a>
+    <a class="btn gray" href="蓝牙扩音C.exe" download>仅下载黑窗口版</a>
+    <div class="tip">💡 手机也能下载：用手机浏览器打开本页，传到电脑即可。</div>
+  </div>
+
+  <div class="card">
+    <h2>它是干什么的</h2>
+    <p>双击运行后全自动：<b>检测蓝牙适配器 → 找到已配对的蓝牙麦克风（如 M1_K）→ 没连上自动触发连接 → 从电脑音响实时扩音</b>。等于一个软件版小蜜蜂。</p>
+    <div class="ok">✅ 没有内置蓝牙的电脑也能用：插上 USB 蓝牙适配器、在 Windows 设置里配对一次麦克风，本程序就能自动连接并扩音（关键就是自动补上「连接」这一环，否则配对了麦克风端点也出不来）。</div>
+  </div>
+
+  <div class="card">
+    <h2>两个版本怎么选</h2>
+    <table>
+      <tr><th>版本</th><th>特点</th><th>下载</th></tr>
+      <tr><td><b>窗口版</b>（52KB）</td><td>有界面：音响下拉框、蓝牙设备列表（双击连接）、音量/延迟滑条、电平条，最直观</td><td><a href="蓝牙扩音C-窗口版.exe" download>下载</a></td></tr>
+      <tr><td><b>黑窗口版</b>（43KB）</td><td>无界面：双击后窗口里自动跑完连接和扩音，键盘 M 静音 / +− 调音量 / Q 退出</td><td><a href="蓝牙扩音C.exe" download>下载</a></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>使用只需 2 步</h2>
+    <ol>
+      <li>第一次在新电脑上：先在 Windows 设置 → 蓝牙里把麦克风<b>配对一次</b>（系统要求，绕不过）</li>
+      <li>双击 exe → 自动连接蓝牙麦克风 → 对着麦克风说话，音响出声</li>
+    </ol>
+    <div class="tip">⚠️ 防啸叫三件事：音箱音量压在 40% 以内、麦克风离音箱 2 米以上、别把音响选成蓝牙耳机本身。</div>
+  </div>
+
+  <div class="card">
+    <h2>配置文件（可选）</h2>
+    <p>把 <a href="蓝牙扩音C.txt" download>蓝牙扩音C.txt</a> 和 exe 放同一目录，可改蓝牙设备名、音响、增益、延迟：</p>
+    <ul>
+      <li><code>bt = M1_K</code> 蓝牙设备名片段（模糊匹配，换了设备就改成新名字）</li>
+      <li><code>out =</code> 音响名片段，空 = 系统默认扬声器</li>
+      <li><code>gain = 4</code> 增益 dB，声音小就往上加｜<code>latency = 100</code> 延迟 ms</li>
+    </ul>
+    <div class="tip">出问题时黑窗口版可用命令 <code>蓝牙扩音C.exe --list-bt</code> 一眼看到蓝牙适配器和所有设备的状态。</div>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <a href="/" style="color:#64748b;font-size:.9em">← 返回导航页</a>
+  </div>
+</div>
+</body>
+</html>
