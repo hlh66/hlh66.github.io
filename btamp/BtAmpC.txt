@@ -1,0 +1,4 @@
+bt = M1_K
+out = 
+gain = 4
+latency = 100
