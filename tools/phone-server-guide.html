@@ -46,8 +46,8 @@ li{margin:4px 0}
     <table>
       <tr><th>通道</th><th>地址 / Topic</th><th>状态</th></tr>
       <tr><td><b>MQTT（主力）</b></td><td><code>phone6_cmd_1112</code> 发命令<br><code>phone6_res_1112</code> 收回执<br>broker.emqx.io:1883, qos=1</td><td><span class="ok">✅ 在线</span></td></tr>
-      <tr><td>SSH 隧道</td><td><code>frp-top.com:33333</code><br>root 登录</td><td>随 SakuraFrp</td></tr>
-      <tr><td>文件终端</td><td><code>https://frp-off.com:40476/files</code><br>必须 HTTPS，证书提示点「继续」</td><td><span class="no">需开隧道</span></td></tr>
+      <tr><td>SSH 隧道</td><td><code>frp-top.com:33333</code><br>root 登录</td><td><span class="no">学校模式已关</span></td></tr>
+      <tr><td>文件终端</td><td><code>https://frp-off.com:40476/files</code><br>必须 HTTPS，证书提示点「继续」</td><td><span class="no">学校模式已关</span></td></tr>
     </table>
     <div class="tip">⚠️ 老的 <b>phone_cmd_001 / phone_res_001</b> 现在是<b>平板</b>在应答，不要用它控制这台手机！</div>
     <details>
@@ -111,6 +111,17 @@ t0=time.time()
 while not got and time.time()-t0&lt;20: time.sleep(.3)
 c.loop_stop(); print(got[0] if got else '无应答')</pre>
     </details>
+  </div>
+
+  <div class="card">
+    <h2>🏫 学校模式（防检测开关）<span class="badge warn">2026-11-12 新增</span></h2>
+    <div class="tip">🟢 <b>学校网络下 MQTT / 飞书网关随便用</b>——MQTT 是普通物联网协议（broker.emqx.io），飞书是正常 App 流量，都不算穿透。有被检测风险的只有 <b>SakuraFrp 隧道</b>（frp 协议有特征）。</div>
+    <p style="font-size:.88em">原理：手机上有个开关文件 <code>/root/Desktop/no_frp.flag</code>，存在 = boot_guard 每 30 秒自动掐掉 SakuraFrp（不拉起 + 主动 force-stop）。<b>当前状态：✅ 已开启（frp 已关，只走 MQTT）</b></p>
+    <table>
+      <tr><th>场景</th><th>操作（可通过 MQTT 远程执行）</th></tr>
+      <tr><td>学校/公共网络<br>（当前默认）</td><td><code>touch /root/Desktop/no_frp.flag</code><br>关 frp，只留 MQTT + 飞书</td></tr>
+      <tr><td>家里/安全网络<br>要用文件终端或 SSH 时</td><td><code>rm /root/Desktop/no_frp.flag</code><br>等 30 秒 boot_guard 自动拉起 SakuraFrp</td></tr>
+    </table>
   </div>
 
   <div class="card">
