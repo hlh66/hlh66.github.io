@@ -33,8 +33,8 @@ code{background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.9em}
   <div class="card">
     <h1>🔊 蓝牙麦克风扩音器</h1>
     <div class="sub">C 语言小巧版 · 单文件 50KB 左右 · 免安装 · 无 DLL 依赖 · 更新日期 2026-11-13</div>
-    <a class="btn green" href="蓝牙扩音C-窗口版.exe" download>⬇️ 下载窗口版（推荐）</a>
-    <a class="btn gray" href="蓝牙扩音C.exe" download>仅下载黑窗口版</a>
+    <a class="btn green" href="BtAmpGui.exe" download>⬇️ 下载窗口版（推荐）</a>
+    <a class="btn gray" href="BtAmpC.exe" download>仅下载黑窗口版</a>
     <div class="tip">💡 手机也能下载：用手机浏览器打开本页，传到电脑即可。</div>
   </div>
 
@@ -48,8 +48,8 @@ code{background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.9em}
     <h2>两个版本怎么选</h2>
     <table>
       <tr><th>版本</th><th>特点</th><th>下载</th></tr>
-      <tr><td><b>窗口版</b>（52KB）</td><td>有界面：音响下拉框、蓝牙设备列表（双击连接）、音量/延迟滑条、电平条，最直观</td><td><a href="蓝牙扩音C-窗口版.exe" download>下载</a></td></tr>
-      <tr><td><b>黑窗口版</b>（43KB）</td><td>无界面：双击后窗口里自动跑完连接和扩音，键盘 M 静音 / +− 调音量 / Q 退出</td><td><a href="蓝牙扩音C.exe" download>下载</a></td></tr>
+      <tr><td><b>窗口版</b>（52KB）</td><td>有界面：音响下拉框、蓝牙设备列表（双击连接）、音量/延迟滑条、电平条，最直观</td><td><a href="BtAmpGui.exe" download>下载</a></td></tr>
+      <tr><td><b>黑窗口版</b>（43KB）</td><td>无界面：双击后窗口里自动跑完连接和扩音，键盘 M 静音 / +− 调音量 / Q 退出</td><td><a href="BtAmpC.exe" download>下载</a></td></tr>
     </table>
   </div>
 
@@ -64,13 +64,13 @@ code{background:#e2e8f0;border-radius:4px;padding:2px 6px;font-size:.9em}
 
   <div class="card">
     <h2>配置文件（可选）</h2>
-    <p>把 <a href="蓝牙扩音C.txt" download>蓝牙扩音C.txt</a> 和 exe 放同一目录，可改蓝牙设备名、音响、增益、延迟：</p>
+    <p>把 <a href="BtAmpC.txt" download>蓝牙扩音C.txt</a> 和 exe 放同一目录，可改蓝牙设备名、音响、增益、延迟：</p>
     <ul>
       <li><code>bt = M1_K</code> 蓝牙设备名片段（模糊匹配，换了设备就改成新名字）</li>
       <li><code>out =</code> 音响名片段，空 = 系统默认扬声器</li>
       <li><code>gain = 4</code> 增益 dB，声音小就往上加｜<code>latency = 100</code> 延迟 ms</li>
     </ul>
-    <div class="tip">出问题时黑窗口版可用命令 <code>蓝牙扩音C.exe --list-bt</code> 一眼看到蓝牙适配器和所有设备的状态。</div>
+    <div class="tip">出问题时黑窗口版可用命令 <code>BtAmpC.exe --list-bt</code> 一眼看到蓝牙适配器和所有设备的状态。</div>
   </div>
 
   <div class="card" style="text-align:center">
