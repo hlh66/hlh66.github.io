@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="二年级上册数学，写给家长的说明：班里在用哪些东西、各管什么用、什么时候拿出来。">
+<title>二年级数学 · 写给家长</title>
+<style>
+:root{
+  --ink:#1e293b;
+  --ink-2:#475569;
+  --ink-3:#7c8899;
+  --line:#e2e8f0;
+  --blue:#2563eb;
+  --blue-soft:#eff6ff;
+  --orange:#ea8c1c;
+  --orange-soft:#fff7ed;
+  --green:#059669;
+  --green-soft:#ecfdf5;
+  --purple:#7c3aed;
+  --purple-soft:#f5f3ff;
+  --bg:#fbfaf7;
+  --card:#ffffff;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px -12px rgba(15,23,42,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+
+/* ---------- 头部 ---------- */
+header{
+  background:linear-gradient(165deg,#1e3a8a 0%,#2563eb 45%,#3b82f6 100%);
+  color:#fff;padding:52px 0 64px;position:relative;overflow:hidden;
+}
+header::after{
+  content:"";position:absolute;inset:auto 0 -1px 0;height:44px;
+  background:var(--bg);
+  clip-path:polygon(0 100%,100% 100%,100% 0,0 62%);
+}
+.hd-in{position:relative;z-index:1}
+.hd-tag{
+  display:inline-block;font-size:13px;letter-spacing:.12em;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+  padding:5px 14px;border-radius:999px;margin-bottom:18px;
+}
+header h1{font-size:clamp(26px,4.4vw,38px);line-height:1.35;font-weight:800;letter-spacing:-.01em}
+header h1 small{display:block;font-size:.46em;font-weight:500;opacity:.82;margin-top:12px;letter-spacing:0;line-height:1.7}
+.hd-lead{
+  margin-top:22px;font-size:15px;opacity:.9;max-width:640px;
+  border-left:3px solid rgba(255,255,255,.45);padding-left:16px;
+}
+
+/* ---------- 吸顶导航 ---------- */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,250,247,.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{display:flex;gap:6px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav-in a{
+  flex:0 0 auto;font-size:14px;color:var(--ink-2);text-decoration:none;
+  padding:7px 14px;border-radius:9px;white-space:nowrap;transition:.18s;
+}
+.nav-in a:hover{background:var(--blue-soft);color:var(--blue)}
+
+/* ---------- 区块 ---------- */
+section{padding:44px 0 4px}
+.sec-head{margin-bottom:22px}
+.sec-no{
+  font-family:Consolas,monospace;font-size:12px;font-weight:700;
+  color:var(--blue);letter-spacing:.14em;display:block;margin-bottom:6px;
+}
+.sec-head h2{font-size:clamp(20px,3vw,25px);font-weight:800;letter-spacing:-.01em;line-height:1.4}
+.sec-head p{margin-top:8px;font-size:14.5px;color:var(--ink-3);max-width:680px}
+
+/* ---------- 本周提醒 ---------- */
+.now{
+  background:var(--card);border-radius:var(--radius);padding:22px 24px;
+  box-shadow:var(--shadow);border:1px solid var(--line);
+  border-left:5px solid var(--orange);
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+}
+.now .now-lb{font-size:12px;letter-spacing:.1em;color:var(--orange);font-weight:700;margin-bottom:6px}
+.now h3{font-size:19px;font-weight:800;margin-bottom:6px;line-height:1.5}
+.now p{font-size:14.5px;color:var(--ink-2);margin:0}
+.now .pill{
+  background:var(--orange-soft);color:#b45309;font-size:13px;font-weight:700;
+  padding:10px 18px;border-radius:12px;white-space:nowrap;text-align:center;
+}
+@media(max-width:600px){.now{grid-template-columns:1fr}.now .pill{justify-self:start}}
+
+/* ---------- 工具卡 ---------- */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:16px}
+.tool{
+  background:var(--card);border-radius:var(--radius);padding:20px 22px 18px;
+  box-shadow:var(--shadow);border:1px solid var(--line);
+  text-decoration:none;color:inherit;display:flex;flex-direction:column;
+  transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;
+}
+.tool:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(15,23,42,.05),0 18px 36px -14px rgba(37,99,235,.28);border-color:#bfdbfe}
+.tool-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.tool-ico{
+  width:40px;height:40px;border-radius:11px;flex:0 0 40px;
+  display:grid;place-items:center;font-family:Consolas,monospace;font-weight:700;font-size:15px;
+}
+.i-blue{background:var(--blue-soft);color:var(--blue)}
+.i-orange{background:var(--orange-soft);color:#b45309}
+.i-green{background:var(--green-soft);color:var(--green)}
+.i-purple{background:var(--purple-soft);color:var(--purple)}
+.tool h3{font-size:16.5px;font-weight:700;line-height:1.45}
+.tool .sub{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.tool p{font-size:14px;color:var(--ink-2);margin:0 0 14px}
+.tool dl{margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;display:grid;gap:5px}
+.tool dl div{display:flex;gap:8px}
+.tool dt{color:var(--ink-3);flex:0 0 60px}
+.tool dd{color:var(--ink-2);margin:0}
+
+/* ---------- 单元 ---------- */
+.units{display:flex;flex-direction:column;gap:10px}
+.unit{
+  background:var(--card);border-radius:13px;border:1px solid var(--line);
+  box-shadow:0 1px 2px rgba(15,23,42,.03);overflow:hidden;
+  transition:border-color .2s;
+}
+.unit[open]{border-color:#bfdbfe;box-shadow:var(--shadow)}
+.unit summary{
+  list-style:none;cursor:pointer;padding:15px 20px;
+  display:flex;align-items:center;gap:14px;
+}
+.unit summary::-webkit-details-marker{display:none}
+.u-no{
+  flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  font-family:Consolas,monospace;font-weight:700;font-size:14px;
+  background:#f1f5f9;color:#64748b;
+}
+.unit.done .u-no{background:var(--green-soft);color:var(--green)}
+.unit.live .u-no{background:var(--orange-soft);color:#b45309}
+.unit.live{border-left:4px solid var(--orange)}
+.u-main{flex:1;min-width:0}
+.u-main b{font-size:15.5px;font-weight:700;display:block;line-height:1.5}
+.u-main span{font-size:13px;color:var(--ink-3)}
+.u-st{
+  font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap;font-weight:600;
+  background:#f1f5f9;color:#64748b;
+}
+.unit.done .u-st{background:var(--green-soft);color:var(--green)}
+.unit.live .u-st{background:var(--orange-soft);color:#b45309}
+.u-body{padding:0 20px 18px 68px;font-size:14.5px;color:var(--ink-2)}
+.u-body p{margin-bottom:12px}
+.u-body .lbl{
+  display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+  padding:2px 8px;border-radius:5px;margin-right:8px;vertical-align:1px;
+}
+.lbl-a{background:#f1f5f9;color:#475569}
+.lbl-b{background:var(--blue-soft);color:var(--blue)}
+.u-tip{
+  background:var(--blue-soft);border-radius:10px;padding:12px 14px;
+  font-size:14px;color:#1e40af;line-height:1.7;
+}
+.u-tip b{font-weight:700}
+@media(max-width:620px){
+  .u-body{padding-left:20px}
+  .u-st{display:none}
+  .unit summary{gap:10px;padding:13px 16px}
+}
+
+/* ---------- 表格 ---------- */
+.tbl-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:600px}
+th{
+  text-align:left;font-size:12px;letter-spacing:.08em;color:var(--ink-3);font-weight:700;
+  padding:14px 18px;background:#fafbfc;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:15px 18px;border-bottom:1px solid #f1f5f9;vertical-align:top;color:var(--ink-2);line-height:1.65}
+tr:last-child td{border-bottom:none}
+td b{color:var(--ink);font-weight:700}
+.get{font-size:13px;color:var(--ink-3);white-space:nowrap}
+
+/* ---------- 每天十分钟 ---------- */
+.habits{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.habit{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow);position:relative;
+}
+.habit .big{
+  font-family:Consolas,monospace;font-size:32px;font-weight:700;color:#dbeafe;
+  position:absolute;top:12px;right:18px;line-height:1;
+}
+.habit h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.habit .dur{font-size:12.5px;color:var(--green);font-weight:700;margin-bottom:10px}
+.habit p{font-size:14px;color:var(--ink-2);margin:0}
+.habit .do{
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:13.5px;color:var(--ink-2);
+}
+.habit .do b{color:var(--blue)}
+
+/* ---------- FAQ ---------- */
+.faq{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.faq details{border-bottom:1px solid #f1f5f9}
+.faq details:last-child{border-bottom:none}
+.faq summary{
+  cursor:pointer;list-style:none;padding:17px 22px;font-size:15px;font-weight:600;
+  display:flex;align-items:center;gap:12px;transition:background .18s;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{background:#fafbfc}
+.faq summary::before{
+  content:"?";flex:0 0 22px;height:22px;border-radius:50%;
+  background:var(--blue-soft);color:var(--blue);
+  font-size:12.5px;font-weight:800;display:grid;place-items:center;
+}
+.faq details[open] summary::before{content:"!"}
+.faq .ans{padding:0 22px 20px 56px;font-size:14.5px;color:var(--ink-2);line-height:1.8}
+.faq .ans b{color:var(--ink)}
+
+/* ---------- 配合事项 ---------- */
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.check{
+  background:var(--card);border:1px solid var(--line);border-radius:13px;
+  padding:18px 20px;box-shadow:0 1px 2px rgba(15,23,42,.03);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.check .box{
+  flex:0 0 22px;height:22px;border-radius:6px;border:2px solid #cbd5e1;margin-top:2px;
+}
+.check h3{font-size:14.5px;font-weight:700;margin-bottom:4px}
+.check p{font-size:13.5px;color:var(--ink-2);margin:0}
+
+/* ---------- 页脚 ---------- */
+footer{
+  margin-top:52px;padding:32px 0 44px;border-top:1px solid var(--line);
+  font-size:13.5px;color:var(--ink-3);text-align:center;line-height:2;
+}
+footer b{color:var(--ink-2)}
+footer .addr{
+  display:inline-block;margin-top:10px;font-family:Consolas,monospace;font-size:12.5px;
+  background:#f1f5f9;padding:6px 14px;border-radius:8px;color:var(--ink-2);
+}
+
+/* ---------- 手机平板 ---------- */
+@media(max-width:520px){
+  .wrap{padding:0 16px}
+  header{padding:38px 0 48px}
+  section{padding:34px 0 4px}
+  .tool,.habit,.check{padding:18px}
+  .faq .ans{padding-left:22px}
+}
+
+/* 手机上表格改为卡片堆叠，避免横向拖动 */
+@media(max-width:660px){
+  .tbl-wrap{background:transparent;border:none;box-shadow:none;overflow:visible}
+  table{min-width:0;display:block;font-size:14px}
+  thead{display:none}
+  tbody{display:block}
+  tr{
+    display:block;background:var(--card);border:1px solid var(--line);
+    border-radius:13px;padding:16px 18px;margin-bottom:10px;
+    box-shadow:0 1px 2px rgba(15,23,42,.03);
+  }
+  tr:last-child{margin-bottom:0}
+  td{display:block;padding:0;border:none;line-height:1.7}
+  td:nth-child(1){font-size:16.5px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+  td:nth-child(1) .get{display:inline-block;margin-top:2px}
+  td:nth-child(n+2){margin-top:7px}
+  td:nth-child(n+2)::before{
+    display:inline-block;font-size:11.5px;font-weight:700;color:var(--ink-3);
+    background:#f1f5f9;padding:1px 8px;border-radius:5px;margin-right:8px;
+    vertical-align:1px;
+  }
+  td:nth-child(2)::before{content:"是什么"}
+  td:nth-child(3)::before{content:"怎么拿到"}
+  td:nth-child(4)::before{content:"什么时候用"}
+  td .get{white-space:normal;font-size:14px;color:var(--ink-2)}
+}
+@media print{
+  nav,header::after{display:none}
+  body{background:#fff}
+  .unit{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd-in">
+    <span class="hd-tag">二年级 · 数学 · 上册</span>
+    <h1>
+      写给家长：孩子的数学，在家怎么陪
+      <small>这一页把班里在用的东西都摊开讲清楚 —— 有哪些、各管什么用、什么时候拿出来。您不用全用，挑孩子当下需要的两三样就够。</small>
+    </h1>
+    <p class="hd-lead">北师大版二年级上册 · 洪老师 · 2026 年 11 月更新</p>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="#now">本周进度</a>
+    <a href="#tools">在家能用的工具</a>
+    <a href="#units">这学期学什么</a>
+    <a href="#print">可打印资料</a>
+    <a href="#daily">每天十分钟</a>
+    <a href="#faq">常见问题</a>
+    <a href="#help">需要配合</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ========== 本周提醒 ========== -->
+  <section id="now" style="padding-top:38px">
+    <div class="now">
+      <div>
+        <div class="now-lb">这周在学什么</div>
+        <h3>第五单元 · 分一分与除法</h3>
+        <p>孩子正在建立"平均分"和"除法"的概念。这个单元最怕只背算式不懂意思，家里分东西的时候多让孩子动手分、开口说，效果比刷题好。</p>
+      </div>
+      <div class="pill">第 11 周<br>11.9 – 11.13</div>
+    </div>
+  </section>
+
+  <!-- ========== 一、在家能用的工具 ========== -->
+  <section id="tools">
+    <div class="sec-head">
+      <span class="sec-no">PART 01</span>
+      <h2>家里就能用的六个小工具</h2>
+      <p>都是网页，手机、平板、电脑点开就能用，不用下载、不用注册。建议收藏到浏览器书签或加到平板桌面。</p>
+    </div>
+
+    <div class="tools">
+
+      <a class="tool" href="https://hlh66.github.io/kousuan/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-orange">60</div>
+          <div>
+            <h3>乘法口诀 60 秒挑战</h3>
+            <div class="sub">练速度 · 自动记错题</div>
+          </div>
+        </div>
+        <p>限时 60 秒答题，可以只练 2~5 的口诀，也可以练 6~9 或全部。答错会自动进错题本，结束后能一眼看出哪几句没背熟。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>学完口诀后，每天 1~2 轮，饭前睡前都行</dd></div>
+          <div><dt>怎么用</dt><dd>先选范围再开始；错题本里的题，第二天专门再打一轮</dd></div>
+        </dl>
+      </a>
+
+      <a class="tool" href="https://hlh66.github.io/mrti/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-green">1</div>
+          <div>
+            <h3>每日一题</h3>
+            <div class="sub">练思考 · 一天一道</div>
+          </div>
+        </div>
+        <p>每天一道有点绕的题，不是计算题，是让孩子动脑想的那种。做不出来没关系，重点是说一说"你是怎么想的"。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>写完作业还有余力的时候，别硬加</dd></div>
+          <div><dt>怎么用</dt><dd>让孩子讲思路给您听，讲得清比算得对更重要</dd></div>
+        </dl>
+      </a>
+
+      <a class="tool" href="https://hlh66.github.io/cf/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-purple">棋</div>
+          <div>
+            <h3>乘法口诀桌游</h3>
+            <div class="sub">亲子玩 · 可打印</div>
+          </div>
+        </div>
+        <p>把口诀变成棋盘游戏，两个人就能玩。孩子不会觉得在"学习"，但一轮下来口诀要过几十遍。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>周末、放假、孩子抵触刷题的时候</dd></div>
+          <div><dt>怎么用</dt><dd>打印出来，全家一起玩，输赢都算练习</dd></div>
+        </dl>
+      </a>
+
+      <a class="tool" href="https://hlh66.github.io/qipan/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-blue">飞</div>
+          <div>
+            <h3>棋盘飞行游戏</h3>
+            <div class="sub">当奖励用 · 轻量</div>
+          </div>
+        </div>
+        <p>轻量的闯关小游戏，题目和棋盘结合。适合当作"完成任务后的奖励"，让数学和好玩挂上钩。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>完成当天练习后的奖励时间，10 分钟以内</dd></div>
+          <div><dt>怎么用</dt><dd>定好时间，玩完就收，别变成纯玩游戏</dd></div>
+        </dl>
+      </a>
+
+      <a class="tool" href="https://hlh66.github.io/2s/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-blue">库</div>
+          <div>
+            <h3>二年级数学乐园</h3>
+            <div class="sub">找视频 · 按单元分类</div>
+          </div>
+        </div>
+        <p>整册按八个单元整理好的大合集：同步视频、动画演示、在线游戏、练习卷。孩子哪一章没听明白，就来这里找对应单元的视频补一遍。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>预习新单元、或者某个知识点卡住的时候</dd></div>
+          <div><dt>怎么用</dt><dd>先按单元找，再看是"视频"还是"游戏"，别漫无目的翻</dd></div>
+        </dl>
+      </a>
+
+      <a class="tool" href="https://hlh66.github.io/zyzuo/" target="_blank" rel="noopener">
+        <div class="tool-top">
+          <div class="tool-ico i-green">优</div>
+          <div>
+            <h3>优秀作业展示</h3>
+            <div class="sub">看标准 · 学样子</div>
+          </div>
+        </div>
+        <p>班里写得好的作业长什么样。孩子经常不清楚"写好"是什么标准，看几份就明白了：字迹、格式、竖式怎么排。</p>
+        <dl>
+          <div><dt>什么时候</dt><dd>孩子作业潦草、格式乱的时候</dd></div>
+          <div><dt>怎么用</dt><dd>别拿来比较施压，只说"你看这个格式排得多清楚"</dd></div>
+        </dl>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ========== 二、这学期学什么 ========== -->
+  <section id="units">
+    <div class="sec-head">
+      <span class="sec-no">PART 02</span>
+      <h2>这一册，孩子要过八道关</h2>
+      <p>点开每个单元，能看到"孩子要学什么"和"家长在家的三件小事"。已经学过的也可以翻回去看看，很多问题是前面留下的。</p>
+    </div>
+
+    <div class="units">
+
+      <details class="unit done">
+        <summary>
+          <div class="u-no">01</div>
+          <div class="u-main"><b>100 以内加与减（二）</b><span>两位数加减两位数 · 进位退位 · 连加连减</span></div>
+          <div class="u-st">已学完</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>两位数加两位数、减两位数的竖式，重点是进位和退位；连加、连减、加减混合的两步计算。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>买东西时让孩子算总价和找零；检查竖式只看两件事 —— 数位有没有对齐、进位的小数字有没有标。粗心的孩子十有八九栽在第二件上。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit done">
+        <summary>
+          <div class="u-no">02</div>
+          <div class="u-main"><b>测量（一）</b><span>认识厘米和米 · 用尺子量 · 估一估</span></div>
+          <div class="u-st">已学完</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>认识长度单位厘米和米，会用尺子量物体长度，能估测再实测，知道 1 米 = 100 厘米。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>准备一把有清晰厘米刻度的直尺；量桌子、书本、身高、胳膊，先猜再量，猜错很正常，这个过程本身就在建立"量感"。特别提醒：量的时候要从 0 刻度开始，这是最常错的点。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit done">
+        <summary>
+          <div class="u-no">03</div>
+          <div class="u-main"><b>数一数与乘法</b><span>乘法的意义 · 几个几 · 乘法算式</span></div>
+          <div class="u-st">已学完</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>理解乘法是"求几个相同加数的和"，能把"3 个 4"写成 3×4 或 4×3，会读会写乘法算式。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>用小棒、积木、鸡蛋盒摆"几个几"，摆完让孩子说一句"这是几个几"。孩子如果只会算不会说，说明还没真懂，后面学口诀会吃力。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit done">
+        <summary>
+          <div class="u-no">04</div>
+          <div class="u-main"><b>乘法口诀（一）</b><span>2~5 的口诀 · 用口诀算乘法</span></div>
+          <div class="u-st">已学完</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>编制并熟记 2、3、4、5 的乘法口诀，能用口诀算乘法，理解口诀之间的关系。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>口诀要"顺背 + 倒背 + 抽背"三种都过关才算熟；上下学路上玩口诀接龙（您说"三四"，孩子接"十二"）。别让孩子抄十遍，机械抄写记不牢。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit live" open>
+        <summary>
+          <div class="u-no">05</div>
+          <div class="u-main"><b>分一分与除法</b><span>平均分 · 除法的意义 · 除法算式</span></div>
+          <div class="u-st">正在学</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>把一些东西"平均分"成几份，理解除法就是平均分，认识除号，会读写除法算式，知道除法各部分的名称。</p>
+          <div class="u-tip">
+            <b>家里可以这样做（这一周最值得花时间）：</b>分水果、分筷子、分糖果时让孩子来分，并要求说出两句话 —— "把 12 个平均分成 3 份，每份 4 个"，以及"12 里面有 4 个 3"。这两句话对应除法的两种含义，说得出就学通了。分不平均的时候别急着纠正结果，先问"这样每份一样多吗"。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit">
+        <summary>
+          <div class="u-no">06</div>
+          <div class="u-main"><b>图形的运动（一）</b><span>平移 · 旋转 · 轴对称</span></div>
+          <div class="u-st">接下来</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>认识平移和旋转现象，认识轴对称图形，能在方格纸上判断和画出平移后的图形。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>折纸剪窗花（对折剪出来的一定是对称的）；找家里的对称物件；电梯上下、风扇转圈，一边看一边说"这是平移还是旋转"。这个单元靠生活经验，不靠做题。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit">
+        <summary>
+          <div class="u-no">07</div>
+          <div class="u-main"><b>乘法口诀（二）</b><span>6~9 的口诀 · 用口诀求商</span></div>
+          <div class="u-st">接下来</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>编制并熟记 6、7、8、9 的乘法口诀，用一句口诀算两道乘法、两道除法（"四六二十四"能算 4×6、6×4、24÷4、24÷6）。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>这是全册最难背的部分，7、8、9 的口诀一定要提前铺。用「口诀 60 秒」每天打一轮，比一次背半小时有效得多 —— 分散练习永远胜过集中突击。
+          </div>
+        </div>
+      </details>
+
+      <details class="unit">
+        <summary>
+          <div class="u-no">08</div>
+          <div class="u-main"><b>乘除法的应用（一）</b><span>用乘除法解决问题 · 两步问题</span></div>
+          <div class="u-st">接下来</div>
+        </summary>
+        <div class="u-body">
+          <p><span class="lbl lbl-a">学什么</span>用乘法和除法解决实际问题，能根据情境选择用乘还是用除，会解决简单的两步问题。</p>
+          <div class="u-tip">
+            <b>家里可以这样做：</b>让孩子给您"编题"——您给情境（比如一盒鸡蛋 30 个，吃了 6 个），让孩子编一道题再自己解。能编题的孩子，读题能力一定不差；应用题做错，多半是读不懂题而不是不会算。
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- ========== 三、可打印资料 ========== -->
+  <section id="print">
+    <div class="sec-head">
+      <span class="sec-no">PART 03</span>
+      <h2>可以打印、可以领的资料</h2>
+      <p>这些是纸质的，比在屏幕上做更护眼，也方便留档。需要哪份跟我说，或者到班级群文件里下载。</p>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:24%">资料名称</th>
+            <th style="width:33%">是什么</th>
+            <th style="width:22%">怎么拿到</th>
+            <th style="width:21%">什么时候用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>每日一练</b><br><span class="get">中方格本格式</span></td>
+            <td>一天一页的口算练习，中方格本排版，数字占格规范，写完直接能看出书写问题。</td>
+            <td class="get">班级群 / 找老师要</td>
+            <td class="get">每天课后 10 分钟</td>
+          </tr>
+          <tr>
+            <td><b>单元练习卷</b><br><span class="get">每单元一份</span></td>
+            <td>每个单元学完的检测卷，题量和难度跟课堂一致，能看出这一单元到底掌握没掌握。</td>
+            <td class="get">班级群</td>
+            <td class="get">单元学完后一周内</td>
+          </tr>
+          <tr>
+            <td><b>期中复习综合卷</b><br><span class="get">学生卷 + 答案解析</span></td>
+            <td>按期中范围出的综合卷，配详细的答案解析 —— 解析是给家长看的，讲清每道题考什么、孩子错在哪。</td>
+            <td class="get">班级群</td>
+            <td class="get">期中前两到三周</td>
+          </tr>
+          <tr>
+            <td><b>期中练习卷（3 份）</b><br><span class="get">A3 双面打印</span></td>
+            <td>三份不同梯度的练习卷，已排好 A3 双面版式，直接拿去打印店印就行。</td>
+            <td class="get">班级群下载后打印</td>
+            <td class="get">期中前分散做，别一次做完</td>
+          </tr>
+          <tr>
+            <td><b>课本笔记版</b><br><span class="get">全书 128 页</span></td>
+            <td>课本原页 + 老师手写的批注、方法提示、重点总结框。孩子课上没记全的，这里都有。</td>
+            <td class="get">找老师查看 / 班级群</td>
+            <td class="get">预习新单元、复习旧单元</td>
+          </tr>
+          <tr>
+            <td><b>乘法口诀表</b><br><span class="get">可打印</span></td>
+            <td>一到九的完整口诀表，大字排版。</td>
+            <td class="get">班级群</td>
+            <td class="get">打印贴在书桌前，天天看得见</td>
+          </tr>
+          <tr>
+            <td><b>表扬贴纸</b><br><span class="get">可打印</span></td>
+            <td>数学主题的奖励贴纸，孩子完成目标后贴一张，比口头表扬更有"看得见"的分量。</td>
+            <td class="get">班级群</td>
+            <td class="get">设小目标时用，别滥发</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 四、每天十分钟 ========== -->
+  <section id="daily">
+    <div class="sec-head">
+      <span class="sec-no">PART 04</span>
+      <h2>每天十分钟，比周末补两小时管用</h2>
+      <p>低年级数学靠的是"高频短时"，不是"集中突击"。三件小事，加起来不超过十五分钟。</p>
+    </div>
+
+    <div class="habits">
+      <div class="habit">
+        <div class="big">01</div>
+        <h3>口算打卡</h3>
+        <div class="dur">5 分钟</div>
+        <p>20 道口算，掐表做，做完立刻对答案。不求快，先求对；连对三天再提速。</p>
+        <div class="do"><b>关键：</b>错了不要只说"错了"，让孩子自己再算一遍并说出过程。</div>
+      </div>
+      <div class="habit">
+        <div class="big">02</div>
+        <h3>说一句数学话</h3>
+        <div class="dur">3 分钟</div>
+        <p>吃饭、走路、坐车的时候随口问一句："这盒鸡蛋有几个几？""这个能平均分成几份？"</p>
+        <div class="do"><b>关键：</b>要孩子用完整的句子回答，说清楚"几个几""平均分成几份"。</div>
+      </div>
+      <div class="habit">
+        <div class="big">03</div>
+        <h3>翻一眼错题</h3>
+        <div class="dur">3 分钟</div>
+        <p>把当天或本周错的题再看一遍，只问一句"上次为什么错，这次会了吗"。</p>
+        <div class="do"><b>关键：</b>错题本是给孩子的，不是给家长检查用的，别拿来当"罪证"。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 五、常见问题 ========== -->
+  <section id="faq">
+    <div class="sec-head">
+      <span class="sec-no">PART 05</span>
+      <h2>家长最常问的几个问题</h2>
+      <p>都是家长会上真被问到的，答案尽量说得实在。</p>
+    </div>
+
+    <div class="faq">
+      <details>
+        <summary>孩子口诀就是背不下来，一背就哭，怎么办？</summary>
+        <div class="ans">
+          先别硬背整表。口诀里 7、8、9 最难，2、5 最容易，<b>从容易的开始建立信心</b>。其次要分散：每天三次、每次三分钟，比一次背二十分钟有效得多。<br><br>
+          还有个办法是"倒着来"——先让孩子用口诀做题，做着做着自然就记住了，比干背有意思。用「口诀 60 秒」每天打一轮，孩子会当成游戏，不抵触。
+        </div>
+      </details>
+
+      <details>
+        <summary>口算要多快才算达标？</summary>
+        <div class="ans">
+          二年级上册的合理目标是：<b>20 道 100 以内加减法，3 分钟内完成且正确率 90% 以上</b>；表内乘除法，每分钟 8~10 题。<br><br>
+          但这个数字只是参考。真正要看的是"稳不稳"——今天快明天慢，说明还不熟；稳定在某个速度，就说明到位了。<b>别为了追求速度牺牲正确率</b>，二年级养成的粗心习惯很难改。
+        </div>
+      </details>
+
+      <details>
+        <summary>孩子明明会做，考试总是粗心错，怎么办？</summary>
+        <div class="ans">
+          "粗心"这个词太笼统了，它背后通常是三件具体的事：<br><br>
+          <b>一是看错数字</b>——训练"指读"，手指着题一个字一个字读；<br>
+          <b>二是竖式数位没对齐</b>——要求写竖式必须用尺子画横线，对齐成习惯；<br>
+          <b>三是算完不检查</b>——教一个具体动作：算完倒回去，用估算判断结果合不合理（比如 38+25 结果肯定在 60 左右，算出 53 就不对）。<br><br>
+          把"细心点"换成可执行的动作，孩子才知道该做什么。
+        </div>
+      </details>
+
+      <details>
+        <summary>要不要提前学后面的内容？</summary>
+        <div class="ans">
+          不建议系统提前学。二年级上册的乘除法是"概念型"知识，靠的是大量动手分、摆、说的经验，<b>提前学往往只学到"会算"，学不到"懂意思"</b>，到了三年级学多位数乘除就露馅。<br><br>
+          如果孩子学有余力，更好的做法是"往深里走"而不是"往前面赶"：同一道题换个问法、让孩子自己编题、玩口诀桌游。这些都在加深理解，而不是抢跑。
+        </div>
+      </details>
+
+      <details>
+        <summary>每天花多少时间在数学上合适？</summary>
+        <div class="ans">
+          二年级，<b>课后 15~20 分钟足够</b>（不含学校作业）。超过这个量，效率会直线下降，还容易让孩子讨厌数学。<br><br>
+          时间分配上，宁可"每天 10 分钟"也不要"周末 2 小时"。数学是熟练度型的能力，靠的是天天见面。
+        </div>
+      </details>
+
+      <details>
+        <summary>我自己数学就不好，辅导不了怎么办？</summary>
+        <div class="ans">
+          二年级的数学您一定都会算，难的不是算，是"怎么讲"。三个替代方案：<br><br>
+          <b>一，让孩子讲给您听</b>——您只需要问"为什么"，不用会做；<br>
+          <b>二，用「二年级数学乐园」里的视频</b>——孩子哪一章没懂，找到对应单元的视频看一遍，比您讲十遍清楚；<br>
+          <b>三，直接问我</b>——哪道题不会讲，拍给我，我给您一段话怎么跟孩子说。<br><br>
+          您不需要是数学老师，您需要的是"陪着一起想"的态度。
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ========== 六、需要配合 ========== -->
+  <section id="help">
+    <div class="sec-head">
+      <span class="sec-no">PART 06</span>
+      <h2>需要您配合的几件小事</h2>
+      <p>都是很小的动作，但对孩子帮助很大。</p>
+    </div>
+
+    <div class="checks">
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>文具：一把刻度清晰的直尺</h3>
+          <p>刻度要能看清厘米，别买花哨的卡通尺。第二单元测量、各单元画图都要用。</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>学具：小棒或积木一盒</h3>
+          <p>20~50 根的小棒（或棉签、纽扣都行）。学乘法、学平均分都要摆，动手摆过的孩子理解得快得多。</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>作业：签字之外，看一眼错题</h3>
+          <p>签字只是形式。真正有用的是花一分钟看看孩子错在哪，问一句"这题当时怎么想的"。</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>口算：天天练，别攒着</h3>
+          <p>口算像练琴，隔一天就生疏。每天 5 分钟，比一次做 100 道有效。</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>错题：允许错，但要重做</h3>
+          <p>错了不可怕，可怕的是错了就过去了。错题重做一遍、说清原因，这道题才算真的会了。</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="box"></div>
+        <div>
+          <h3>心态：不比别人，比上一次</h3>
+          <p>二年级的成绩波动很正常，重点是跟自己比。孩子愿意坐下来做题，就已经值得肯定了。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <b>洪老师 · 二年级数学</b><br>
+    孩子哪道题不会讲、哪个知识点卡住，随时找我，拍张照片就行。<br>
+    <span class="addr">2026 年 11 月更新 · 内容随教学进度调整</span>
+  </div>
+</footer>
+
+</body>
+</html>
