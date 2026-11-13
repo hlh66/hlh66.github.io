@@ -22,7 +22,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .toggle button.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent;
   box-shadow:0 4px 14px rgba(99,102,241,.35)}
 
-/* 今天（高亮卡） */
+/* 最新/今天（高亮卡，永远展开） */
 .today-card{background:#fff;border-radius:20px;padding:22px 22px 18px;margin-bottom:22px;
   border:3px solid #6366f1;box-shadow:0 10px 30px rgba(99,102,241,.22);position:relative;overflow:hidden}
 .today-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;
@@ -31,6 +31,8 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
   color:#fff;font-size:.8em;font-weight:700;padding:5px 14px;border-radius:999px;margin-bottom:10px}
 .today-badge .dot{width:8px;height:8px;border-radius:50%;background:#fde047;animation:blink 1.4s infinite}
 @keyframes blink{50%{opacity:.35}}
+.badge-old{background:#94a3b8}
+.badge-old .dot{background:#fff;animation:none}
 .day-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
 .day-head .d{font-size:1.25em;font-weight:800;color:#1e293b}
 .day-head .w{font-size:.85em;color:#7c3aed;font-weight:700}
@@ -88,7 +90,6 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 
   <div id="main"></div>
 
-  <a class="back" href="/">← 返回主页</a>
   <div class="footer">洪老师数学乐园 · 每日作业</div>
 </div>
 
@@ -131,18 +132,25 @@ function setMode(m){
 function render(){
   const today=todayStr();
   const list=[...HOMEWORK].sort((a,b)=>b.date.localeCompare(a.date));
-  const todayIdx=list.findIndex(d=>d.date===today);
   let html='';
 
-  if(todayIdx<0){
-    html+='<div class="notice">🌙 <b>今天（'+fmtDate(today)+' '+weekday(today)+'）的作业还没发布</b><br>下面是最近一次布置的作业，可以先看看</div>';
+  if(list.length===0){
+    html='<div class="notice">🌙 <b>作业还没发布</b><br>发布后会显示在这里</div>';
+    main.innerHTML=html;return;
   }
 
+  // 第 0 条 = 最新发布的：永远展开高亮（今天→"今天的作业"，过期→"最新发布"）
   list.forEach((day,i)=>{
+    const isNewest=(i===0);
     const isToday=day.date===today;
-    if(isToday){
-      html+='<div class="today-card">'+
-        '<span class="today-badge"><span class="dot"></span>今天的作业</span>'+
+    if(isNewest){
+      const badge=isToday
+        ?'<span class="today-badge"><span class="dot"></span>今天的作业</span>'
+        :'<span class="today-badge badge-old"><span class="dot"></span>最新发布</span>';
+      const note=isToday?'':'<div class="notice" style="margin-bottom:14px;padding:10px 14px">📌 今天（'+fmtDate(today)+' '+weekday(today)+'）的作业还没发布，下面是最近一次布置的</div>';
+      html+=note+
+        '<div class="today-card">'+
+        badge+
         '<div class="day-head"><span class="d">'+fmtDate(day.date)+'</span>'+
         '<span class="w">'+weekday(day.date)+'</span></div>'+
         (mode==='simple'?simpleHtml(day,'simple-list'):day.detail.map(secHtml).join(''))+
@@ -160,7 +168,7 @@ function render(){
     }
   });
 
-  if(todayIdx>=0&&list.length>1) html+='<div class="divider">— 以前的作业（点开查看） —</div>';
+  if(list.length>1) html+='<div class="divider">— 以前的作业（点开查看） —</div>';
   main.innerHTML=html;
 }
 
