@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日作业 · 二年级数学</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#334155;
+  background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 45%,#ede9fe 100%);background-attachment:fixed}
+.container{max-width:760px;margin:0 auto;padding:18px 14px 30px}
+
+.header{text-align:center;padding:26px 12px 12px}
+.header h1{font-size:1.9em;font-weight:800;color:#1e293b}
+.header p{margin-top:6px;font-size:.9em;color:#64748b}
+
+/* 视图切换 */
+.toggle{display:flex;justify-content:center;gap:8px;margin:14px 0 20px}
+.toggle button{border:2px solid #c7d2fe;background:rgba(255,255,255,.8);color:#475569;
+  padding:9px 22px;border-radius:999px;font-size:.95em;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:.2s}
+.toggle button.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(99,102,241,.35)}
+
+/* 今天（高亮卡） */
+.today-card{background:#fff;border-radius:20px;padding:22px 22px 18px;margin-bottom:22px;
+  border:3px solid #6366f1;box-shadow:0 10px 30px rgba(99,102,241,.22);position:relative;overflow:hidden}
+.today-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899)}
+.today-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;font-size:.8em;font-weight:700;padding:5px 14px;border-radius:999px;margin-bottom:10px}
+.today-badge .dot{width:8px;height:8px;border-radius:50%;background:#fde047;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.35}}
+.day-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.day-head .d{font-size:1.25em;font-weight:800;color:#1e293b}
+.day-head .w{font-size:.85em;color:#7c3aed;font-weight:700}
+.day-head .lab{font-size:.72em;color:#94a3b8;background:#f1f5f9;padding:3px 10px;border-radius:8px}
+
+/* 板块 */
+.sec{margin-top:14px}
+.sec-t{font-size:.92em;font-weight:700;color:#475569;margin-bottom:7px}
+.sec ul{list-style:none}
+.sec li{background:#f8fafc;border-left:3px solid #a5b4fc;border-radius:0 10px 10px 0;
+  padding:9px 13px;margin-bottom:7px;font-size:.94em;line-height:1.65;color:#334155}
+.sec li a{color:#4338ca;text-decoration:none;border-bottom:1px dashed #818cf8}
+.sec li a:hover{color:#6d28d9}
+.today-card .sec li{border-left-color:#6366f1;background:#eef2ff}
+.simple-list li{border-left-color:#10b981;background:#ecfdf5}
+.today-card .simple-list li{border-left-color:#059669;background:#ecfdf5}
+
+/* 往日折叠行 */
+.past{background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(15,23,42,.06);overflow:hidden}
+.past-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none}
+.past-head:hover{background:#f8fafc}
+.past-head .d{font-weight:700;color:#475569;font-size:.95em;white-space:nowrap}
+.past-head .w{font-size:.78em;color:#94a3b8;white-space:nowrap}
+.past-head .pre{flex:1;font-size:.85em;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.past-head .arr{color:#cbd5e1;font-size:.8em;transition:.25s;flex:0 0 auto}
+.past.open .arr{transform:rotate(90deg)}
+.past-body{display:none;padding:2px 16px 14px;border-top:1px dashed #e2e8f0}
+.past.open .past-body{display:block}
+.past-body .sec-t{margin-top:10px}
+
+/* 未发布提示 */
+.notice{background:#fffbeb;border:2px dashed #fcd34d;border-radius:16px;padding:16px 18px;
+  margin-bottom:18px;font-size:.92em;line-height:1.7;color:#92400e;text-align:center}
+.notice b{color:#b45309}
+
+.divider{display:flex;align-items:center;gap:10px;margin:6px 0 14px;color:#94a3b8;font-size:.8em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e8f0}
+
+.back{display:block;text-align:center;color:#64748b;text-decoration:none;padding:16px;font-size:.9em}
+.footer{text-align:center;padding:8px 0 4px;color:#94a3b8;font-size:.75em}
+@media(max-width:520px){.header h1{font-size:1.5em}.today-card{padding:18px 16px 14px}.toggle button{padding:8px 18px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📚 每日作业</h1>
+    <p>二年级数学 · 每天放学后来看这里</p>
+  </div>
+
+  <div class="toggle">
+    <button id="btnSimple">✏️ 简易版</button>
+    <button id="btnDetail">📖 详细版</button>
+  </div>
+
+  <div id="main"></div>
+
+  <a class="back" href="/">← 返回主页</a>
+  <div class="footer">洪老师数学乐园 · 每日作业</div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const btnSimple=document.getElementById('btnSimple');
+const btnDetail=document.getElementById('btnDetail');
+const main=document.getElementById('main');
+let mode=localStorage.getItem('mrzy_mode')||'simple';
+
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+function weekday(dateStr){
+  const days=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  return days[new Date(dateStr+'T00:00:00').getDay()];
+}
+function fmtDate(s){const p=s.split('-');return (+p[0])+'年'+(+p[1])+'月'+(+p[2])+'日';}
+
+function secHtml(sec){
+  const lis=sec.items.map(it=>{
+    if(typeof it==='object'&&it.href) return '<li><a href="'+it.href+'">'+it.x+'</a></li>';
+    return '<li>'+it+'</li>';
+  }).join('');
+  return '<div class="sec"><div class="sec-t">'+sec.t+'</div><ul>'+lis+'</ul></div>';
+}
+function simpleHtml(day,cls){
+  return '<div class="sec '+cls+'"><div class="sec-t">✏️ 今天的作业</div><ul>'+
+    day.simple.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>';
+}
+
+function setMode(m){
+  mode=m;localStorage.setItem('mrzy_mode',m);
+  btnSimple.classList.toggle('on',m==='simple');
+  btnDetail.classList.toggle('on',m==='detail');
+  render();
+}
+
+function render(){
+  const today=todayStr();
+  const list=[...HOMEWORK].sort((a,b)=>b.date.localeCompare(a.date));
+  const todayIdx=list.findIndex(d=>d.date===today);
+  let html='';
+
+  if(todayIdx<0){
+    html+='<div class="notice">🌙 <b>今天（'+fmtDate(today)+' '+weekday(today)+'）的作业还没发布</b><br>下面是最近一次布置的作业，可以先看看</div>';
+  }
+
+  list.forEach((day,i)=>{
+    const isToday=day.date===today;
+    if(isToday){
+      html+='<div class="today-card">'+
+        '<span class="today-badge"><span class="dot"></span>今天的作业</span>'+
+        '<div class="day-head"><span class="d">'+fmtDate(day.date)+'</span>'+
+        '<span class="w">'+weekday(day.date)+'</span></div>'+
+        (mode==='simple'?simpleHtml(day,'simple-list'):day.detail.map(secHtml).join(''))+
+        '</div>';
+    }else{
+      const pre=(day.simple&&day.simple[0])||'';
+      html+='<div class="past">'+
+        '<div class="past-head" onclick="this.parentNode.classList.toggle(\'open\')">'+
+        '<span class="d">'+fmtDate(day.date).replace('年','/').replace('月','/').replace('日','')+'</span>'+
+        '<span class="w">'+weekday(day.date)+'</span>'+
+        '<span class="pre">'+pre+'</span><span class="arr">▶</span></div>'+
+        '<div class="past-body">'+
+        (mode==='simple'?simpleHtml(day,'simple-list'):day.detail.map(secHtml).join(''))+
+        '</div></div>';
+    }
+  });
+
+  if(todayIdx>=0&&list.length>1) html+='<div class="divider">— 以前的作业（点开查看） —</div>';
+  main.innerHTML=html;
+}
+
+btnSimple.onclick=()=>setMode('simple');
+btnDetail.onclick=()=>setMode('detail');
+setMode(mode);
+</script>
+</body>
+</html>
