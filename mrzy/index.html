@@ -29,13 +29,21 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .day-head .d{font-size:1.25em;font-weight:800;color:#1e293b}
 .day-head .w{font-size:.85em;color:#7c3aed;font-weight:700}
 
-/* 以前的作业（白卡，同样全展开） */
-.past-card{background:#fff;border-radius:16px;padding:18px 20px 14px;margin-bottom:14px;
-  box-shadow:0 2px 10px rgba(15,23,42,.06)}
-.past-card .day-head .d{font-size:1.05em;color:#475569}
-.past-card .day-head .w{color:#94a3b8}
+/* 以前的作业（折叠行，点击展开） */
+.past{background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(15,23,42,.06);overflow:hidden}
+.past-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none}
+.past-head:hover{background:#f8fafc}
+.past-head .d{font-weight:700;color:#475569;font-size:.95em;white-space:nowrap}
+.past-head .w{font-size:.78em;color:#94a3b8;white-space:nowrap}
+.past-head .pre{flex:1;font-size:.85em;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.past-head .arr{color:#cbd5e1;font-size:.8em;transition:.25s;flex:0 0 auto}
+.past.open .arr{transform:rotate(90deg)}
+.past-body{display:none;padding:2px 16px 14px;border-top:1px dashed #e2e8f0}
+.past.open .past-body{display:block}
+.past .sec-t{margin-top:10px}
+.past .simple-list li{border-left-color:#94a3b8;background:#f8fafc}
 
-/* 板块：简易作业 + 详细内容，全部直接摊开 */
+/* 未发布提示 */
 .sec{margin-top:14px}
 .sec-t{font-size:.92em;font-weight:700;color:#475569;margin-bottom:7px}
 .sec ul{list-style:none}
@@ -46,6 +54,11 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;col
 .today-card .sec li{border-left-color:#6366f1;background:#eef2ff}
 .simple-list li{border-left-color:#10b981;background:#ecfdf5}
 .today-card .simple-list li{border-left-color:#059669;background:#ecfdf5}
+
+/* 简要/详细分界 */
+.detail-sep{display:flex;align-items:center;gap:8px;margin:16px 0 2px;padding-top:12px;
+  border-top:1px dashed #c7d2fe;font-size:.85em;font-weight:700;color:#7c3aed}
+.detail-sep::after{content:'';flex:1;height:1px;background:#e2e8f0}
 
 /* 未发布提示 */
 .notice{background:#fffbeb;border:2px dashed #fcd34d;border-radius:16px;padding:14px 18px;
@@ -92,14 +105,14 @@ function secHtml(sec){
   }).join('');
   return '<div class="sec"><div class="sec-t">'+sec.t+'</div><ul>'+lis+'</ul></div>';
 }
-function simpleHtml(day,cls,title){
-  return '<div class="sec '+cls+'"><div class="sec-t">'+title+'</div><ul>'+
+// 简要作业（几行字，一眼看到重点）
+function briefHtml(day,cls){
+  return '<div class="sec '+cls+'"><div class="sec-t">✏️ '+(isToday(day.date)?'今天要做':'作业一览')+'</div><ul>'+
     day.simple.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>';
 }
-// 一天的完整内容：简易作业一览 + 详细板块，全部展开
-function dayHtml(day,isTop){
-  return simpleHtml(day,'simple-list',isToday(day.date)?'✏️ 今天要做':'✏️ 作业一览')+
-    day.detail.map(secHtml).join('');
+// 详细内容（单独一块，明确标出）
+function detailHtml(day){
+  return '<div class="detail-sep">📖 详细内容</div>'+day.detail.map(secHtml).join('');
 }
 function isToday(d){return d===todayStr();}
 
@@ -113,7 +126,7 @@ function render(){
     return;
   }
 
-  // 第 0 条 = 最新发布的：置顶高亮，永远展开（今天→"今天的作业"，过期→"最新发布"）
+  // 第 0 条 = 最新发布的：置顶高亮展开 = 重点（今天→"今天的作业"，过期→"最新发布"）
   const newest=list[0];
   const newestToday=isToday(newest.date);
   const badge=newestToday
@@ -127,18 +140,24 @@ function render(){
     badge+
     '<div class="day-head"><span class="d">'+fmtDate(newest.date)+'</span>'+
     '<span class="w">'+weekday(newest.date)+'</span></div>'+
-    dayHtml(newest,true)+
+    briefHtml(newest,'simple-list')+
+    detailHtml(newest)+
     '</div>';
 
-  // 以前的作业：同样全部展开，往下滑就能看
+  // 以前的作业：只留记录，折叠收起，想看时点一下展开
   if(list.length>1){
-    html+='<div class="divider">— 以前的作业 —</div>';
+    html+='<div class="divider">— 以前的作业（点开查看） —</div>';
     list.slice(1).forEach(day=>{
-      html+='<div class="past-card">'+
-        '<div class="day-head"><span class="d">'+fmtDate(day.date)+'</span>'+
-        '<span class="w">'+weekday(day.date)+'</span></div>'+
-        dayHtml(day,false)+
-        '</div>';
+      const pre=(day.simple&&day.simple[0])||'';
+      html+='<div class="past">'+
+        '<div class="past-head" onclick="this.parentNode.classList.toggle(\'open\')">'+
+        '<span class="d">'+fmtDate(day.date)+'</span>'+
+        '<span class="w">'+weekday(day.date)+'</span>'+
+        '<span class="pre">'+pre+'</span><span class="arr">▶</span></div>'+
+        '<div class="past-body">'+
+        briefHtml(day,'simple-list')+
+        detailHtml(day)+
+        '</div></div>';
     });
   }
 
