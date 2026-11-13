@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 操控软件下载</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f1f5f9; padding:16px; max-width:760px; margin:0 auto; }
+  h1 { font-size:22px; color:#1e293b; margin:12px 0 4px; }
+  .sub { color:#64748b; font-size:13px; margin-bottom:20px; }
+  .card { background:#fff; border-radius:14px; padding:18px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.08); border-left:5px solid #2563eb; }
+  .card h2 { font-size:17px; color:#1e293b; margin-bottom:6px; }
+  .card p { font-size:13.5px; color:#475569; line-height:1.7; margin-bottom:10px; }
+  .tag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:20px; background:#dbeafe; color:#1d4ed8; margin-right:6px; vertical-align:middle; }
+  .tag.ok { background:#dcfce7; color:#15803d; }
+  .tag.wait { background:#fef3c7; color:#b45309; }
+  .btn { display:inline-block; padding:10px 18px; border-radius:10px; background:#2563eb; color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; margin-right:10px; margin-top:4px; }
+  .btn.green { background:#16a34a; }
+  .btn.gray { background:#64748b; }
+  code { display:block; background:#0f172a; color:#4ade80; padding:12px; border-radius:8px; font-size:12.5px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; font-family:monospace; margin:8px 0; }
+  .note { font-size:12px; color:#94a3b8; margin-top:6px; }
+</style>
+</head>
+<body>
+<h1>🤖 AI 操控软件下载</h1>
+<div class="sub">常用 AI 智能体软件的安装包 & 安装脚本 · 2026-11-13</div>
+
+<div class="card" style="border-left-color:#7c3aed;">
+  <h2>① MIKA <span class="tag ok">已上线</span></h2>
+  <p>本地 AI 智能体（Android arm64 版，v0.1.39，约 80MB）。平板已部署同款。</p>
+  <a class="btn" href="Mika-v0.1.39-arm64.apk">⬇️ 下载 APK</a>
+  <div class="note">安装后需在设置里填入 API Key 才能操控设备。</div>
+</div>
+
+<div class="card" style="border-left-color:#16a34a;">
+  <h2>② DSH（DeepSeek Harness）<span class="tag ok">已上线</span></h2>
+  <p>DeepSeek 官方终端 AI 智能体 · Termux 专用补丁版安装脚本（已修好 Android 下 node-pty / koffi / sharp 等一堆坑）。</p>
+  <p>Termux 里一条命令安装：</p>
+  <code>curl -fsSL https://hlh66.github.io/tools/apps/dsh-termux-installer.sh -o dsh-install.sh &amp;&amp; bash dsh-install.sh</code>
+  <a class="btn green" href="dsh-termux-installer.sh">⬇️ 下载安装脚本</a>
+  <div class="note">安装完运行 <b>dsh web</b> 启动网页版；API Key 需自行配置（脚本会自动扫描已有 Key）。</div>
+</div>
+
+<div class="card" style="border-left-color:#94a3b8;">
+  <h2>③ MINIS <span class="tag wait">待上传</span></h2>
+  <p>MQTT 远程 AI 智能体（已在一加6 手机上运行）。源码目前在小米手机上，拿到后会上传到这里。</p>
+  <a class="btn gray" href="#">暂未提供</a>
+</div>
+
+<p class="note" style="text-align:center;margin-top:24px;"><a href="/" style="color:#2563eb;">← 返回导航首页</a></p>
+</body>
+</html>
