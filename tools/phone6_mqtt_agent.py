@@ -177,12 +177,13 @@ def main():
     acquire_lock()
     state = {"online": False}
 
-    def on_connect(c, u, flags, rc, p=None):
+    def on_connect(c, u, *args):
         state["online"] = True
         log("已连接 broker, 订阅 %s" % TOPIC_CMD)
         c.subscribe(TOPIC_CMD, qos=1)
 
-    def on_disconnect(c, u, rc, p=None):
+    def on_disconnect(c, u, *args):
+        # 注意: 参数个数用 *args 兼容 paho 2.x 回调签名(写死参数会 TypeError 崩溃)
         state["online"] = False
         log("与 broker 断开(将自动重连)")
 
