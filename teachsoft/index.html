@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教室电脑软件 · 下载与对比</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;color:#1e293b;min-height:100vh;
+  background:linear-gradient(135deg,#e0f2fe 0%,#e8e7ff 38%,#fef3c7 100%);background-attachment:fixed}
+a{color:#2563eb}
+.wrap{max-width:1060px;margin:0 auto;padding:24px 16px 60px}
+.head{text-align:center;margin-bottom:20px}
+.head h1{font-size:1.85em;font-weight:900;background:linear-gradient(90deg,#0369a1,#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.head p{color:#64748b;font-size:.9em;line-height:1.7}
+
+.box{background:rgba(255,255,255,.9);border-radius:18px;padding:20px 22px;margin-bottom:16px;
+  box-shadow:0 3px 16px rgba(59,130,246,.09);border:1px solid rgba(255,255,255,.9)}
+.concl{background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #86efac}
+.concl h2{font-size:1.12em;color:#166534;margin-bottom:10px}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:10px}
+.pick div{background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px}
+.pick b{display:block;color:#15803d;font-size:1em;margin-bottom:4px}
+.pick span{font-size:.83em;color:#475569;line-height:1.6}
+.concl .note{font-size:.86em;color:#166534;line-height:1.7}
+
+.warn{background:linear-gradient(135deg,#fffbeb,#fef9c3);border:2px solid #fcd34d}
+.warn h2{font-size:1.12em;color:#92400e;margin-bottom:10px}
+.warn table{width:100%;border-collapse:collapse;font-size:.86em}
+.warn th,.warn td{padding:9px 8px;border-bottom:1px solid #fde68a;text-align:left;vertical-align:top;line-height:1.6}
+.warn th{color:#92400e;white-space:nowrap}
+.warn td b{color:#b45309}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.fbtn{border:1.5px solid #cbd5e1;background:#fff;color:#475569;border-radius:20px;padding:7px 15px;
+  font-size:.86em;cursor:pointer;font-family:inherit;transition:.15s}
+.fbtn:hover{border-color:#60a5fa;color:#1d4ed8}
+.fbtn.on{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:700}
+#q{border:1.5px solid #cbd5e1;border-radius:20px;padding:7px 14px;font-size:.86em;
+  font-family:inherit;outline:none;min-width:170px;flex:1;max-width:260px}
+#q:focus{border-color:#60a5fa}
+.count{font-size:.82em;color:#64748b;margin-left:auto}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.app{background:#fff;border:1.5px solid #e2e8f0;border-left:6px solid #3b82f6;border-radius:14px;
+  padding:16px 17px;display:flex;flex-direction:column;transition:.15s}
+.app:hover{box-shadow:0 6px 20px rgba(37,99,235,.13);transform:translateY(-2px)}
+.app.star{border-left-color:#f59e0b;background:linear-gradient(180deg,#fffdf7,#fff)}
+.app.ask{border-left-color:#8b5cf6}
+.app.hw{border-left-color:#10b981}
+.app.keep{border-left-color:#64748b}
+.apphd{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.ico{font-size:1.7em;line-height:1.2}
+.apphd h3{font-size:1.05em;color:#0f172a;line-height:1.35}
+.apphd .vendor{font-size:.75em;color:#94a3b8;font-weight:400;display:block;margin-top:2px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.bg{font-size:.7em;padding:3px 8px;border-radius:20px;font-weight:700}
+.bg.you{background:#ede9fe;color:#6d28d9}
+.bg.rec{background:#fef3c7;color:#b45309}
+.bg.free{background:#dcfce7;color:#15803d}
+.bg.pc{background:#dbeafe;color:#1d4ed8}
+.bg.web{background:#e0f2fe;color:#0369a1}
+.bg.phone{background:#fce7f3;color:#be185d}
+.bg.pay{background:#fee2e2;color:#b91c1c}
+.tagline{font-size:.9em;color:#334155;line-height:1.7;font-weight:600;margin-bottom:8px}
+.desc{font-size:.83em;color:#64748b;line-height:1.75;margin-bottom:10px;flex:1}
+.plat{font-size:.78em;color:#475569;background:#f8fafc;border-radius:8px;padding:7px 10px;margin-bottom:11px;line-height:1.6}
+.plat b{color:#0f172a}
+.links{display:flex;flex-wrap:wrap;gap:7px}
+.dl{display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-size:.83em;
+  font-weight:700;padding:9px 14px;border-radius:9px;transition:.15s}
+.dl:hover{background:#1d4ed8;transform:translateY(-1px)}
+.dl.sec{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}
+.dl.sec:hover{background:#e2e8f0}
+.empty{text-align:center;color:#64748b;padding:30px;font-size:.9em;display:none}
+
+h2.sec{font-size:1.12em;color:#0f172a;margin:26px 0 12px;padding-left:10px;border-left:5px solid #7c3aed}
+.tblwrap{overflow-x:auto;background:#fff;border-radius:14px;border:1.5px solid #e2e8f0}
+table.cmp{width:100%;border-collapse:collapse;font-size:.82em;min-width:820px}
+table.cmp th,table.cmp td{padding:9px 10px;border-bottom:1px solid #f1f5f9;text-align:center;white-space:nowrap}
+table.cmp thead th{background:#f8fafc;color:#475569;font-weight:700;position:sticky;top:0}
+table.cmp th:first-child,table.cmp td:first-child{text-align:left;position:sticky;left:0;background:#fff;font-weight:700;color:#0f172a;z-index:1}
+table.cmp thead th:first-child{background:#f8fafc;z-index:2}
+table.cmp tbody tr:hover td{background:#f8fafc}
+table.cmp tbody tr:hover td:first-child{background:#f8fafc}
+.yes{color:#16a34a;font-weight:900}
+.mid{color:#f59e0b;font-weight:900}
+.no{color:#cbd5e1}
+.fee{font-size:.78em;color:#64748b}
+
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.step{background:#fff;border-radius:12px;padding:15px;border:1px solid #e2e8f0;position:relative;padding-left:48px}
+.step:before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:24px;height:24px;
+  background:#2563eb;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700}
+.step b{display:block;font-size:.93em;margin-bottom:5px;color:#0f172a}
+.step p{font-size:.83em;color:#64748b;line-height:1.7}
+
+.tip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 17px;font-size:.86em;color:#1e40af;line-height:1.85}
+.foot{text-align:center;margin-top:28px;font-size:.85em;color:#64748b;line-height:2}
+.foot a{text-decoration:none}
+@media(max-width:600px){.head h1{font-size:1.45em}.wrap{padding:16px 10px 40px}.box{padding:15px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>🧰 教室电脑软件 · 下载与对比</h1>
+    <p>给教室那台 Windows 电脑 / 一体机挑软件 · 全部是官方链接，点开就下<br>整理：2026-11-15 ｜ 共 11 款 ｜ 按「二年级数学 · 科学」的实际用法排过序</p>
+  </div>
+
+  <div class="box concl">
+    <h2>✅ 一句话结论：先装这 3 个就够了</h2>
+    <div class="pick">
+      <div><b>① 班级优化大师</b><span>管纪律、加分组分、随机点名。二年级最吃这套，<b>永久免费</b>，Win7 以上能装。</span></div>
+      <div><b>② 批改邦 · 桌面端</b><span>改作业 + 试卷转课件 + <b>教室远程喊话</b>，最像你说的「教室管家」。</span></div>
+      <div><b>③ 希沃白板 5</b><span>上课放课件、投屏讲题、手机翻页。免费。</span></div>
+    </div>
+    <p class="note">再加一个「希沃管家（大板端）」挡弹窗广告就行。手机上另外配「小猿 AI」拍口算作业。<b>下面 11 款都可以慢慢看，不用一次全装。</b></p>
+  </div>
+
+  <div class="box warn">
+    <h2>⚠️ 名字太像了，先别下错</h2>
+    <table>
+      <tr><th>名字</th><th>是干什么的</th><th>教室电脑能装吗</th></tr>
+      <tr><td><b>OurTeacher</b><br>（你说的 Our teacher）</td><td>AI 备课助手：一键生成教案 / PPT、作文批改、班级宠物积分、随机点名</td><td>❌ 没有 Windows 版，主要是<b>网页 + 手机</b>。会员年费约 990 元</td></tr>
+      <tr><td><b>批改邦</b><br>（邦，北京批改邦科技）</td><td>AI 改作文、听默写批改、试卷转讲评课件、<b>教室远程喊话</b>、班级宠物积分</td><td>✅ <b>能装</b>，官方电脑端免费下载，Win7/8/10/11</td></tr>
+      <tr><td><b>批改帮</b><br>（帮，深圳佳创纬科技）</td><td>另一款安卓小工具：错题收集、拍试卷、奖状 / 课程表模板、扫描识字</td><td>❌ 只有<b>安卓手机</b>，跟上面「批改邦」不是一家</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">📦 软件清单（点按钮直接去官网下载）</h2>
+  <div class="tools">
+    <button class="fbtn on" data-f="all">全部 11 款</button>
+    <button class="fbtn" data-f="管班">管班纪律</button>
+    <button class="fbtn" data-f="批改">改作业</button>
+    <button class="fbtn" data-f="上课">上课备课</button>
+    <button class="fbtn" data-f="设备">设备维护</button>
+    <button class="fbtn" data-f="免费">免费下载</button>
+    <input id="q" placeholder="🔍 搜名字或功能，如「喊话」">
+    <span class="count" id="count"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">没找到，换个词试试～</div>
+
+  <h2 class="sec">📊 功能对比表（左右滑动看全）</h2>
+  <div class="tblwrap">
+    <table class="cmp">
+      <thead><tr>
+        <th>软件</th><th>装教室电脑</th><th>网页免装</th><th>手机能用</th><th>加分点名</th>
+        <th>拍照改作业</th><th>AI 备课/PPT</th><th>家校沟通</th><th>花钱情况</th>
+      </tr></thead>
+      <tbody id="cmpbody"></tbody>
+    </table>
+  </div>
+  <p style="font-size:.78em;color:#64748b;margin-top:8px;line-height:1.7">● 支持　◐ 部分 / 需另装　— 不支持　｜「免费」指安装包免费下载，部分软件高级功能要会员，卡片里都写清楚了。</p>
+
+  <h2 class="sec">🧭 装的时候按这个顺序来</h2>
+  <div class="steps">
+    <div class="step"><b>先装「管家」再装别的</b><p>先装希沃管家（大板端）把弹窗广告挡住，再装白板和班级优化大师，省得上课被广告打断。</p></div>
+    <div class="step"><b>教室电脑用 U 盘拷</b><p>教室一体机常不能上网下载：在家下好安装包放 U 盘，拷过去双击装。班级优化大师官方指引就是这么写的。</p></div>
+    <div class="step"><b>手机配同一个账号</b><p>批改邦、班级优化大师都是手机 + 电脑同一账号。手机能远程给教室大屏喊话、随手给学生加分。</p></div>
+  </div>
+
+  <h2 class="sec">💡 给二年级数学 / 科学的小提醒</h2>
+  <div class="tip">
+    · <b>口算、计算题</b>用「小猿 AI」拍照批最快，二年级题量大的时候最省事；<b>作文、听写、试卷讲评</b>才用批改邦。<br>
+    · <b>班级优化大师</b>的分组加分、随机点名、光荣榜，对低年级比任何 AI 都管用，而且完全免费，建议第一个装。<br>
+    · <b>OurTeacher</b> 的 AI 生成教案 / PPT 很好用，但没有电脑客户端、会员不便宜，可以先在网页版免费试用 10 次再决定要不要买。<br>
+    · <b>雨课堂、ClassIn</b> 偏中学和网课，小学日常上课基本用不上，放在清单里只是备查。
+  </div>
+
+  <div class="foot">
+    <a href="/js/">← 回教师导航</a>　·　<a href="/l/">个人导航</a>　·　<a href="/">首页</a><br>
+    链接均指向厂商官网或官方应用市场，下载前认准域名　｜　整理于 2026-11-15
+  </div>
+</div>
+
+<script>
+const Y='<span class="yes">●</span>', M='<span class="mid">◐</span>', N='<span class="no">—</span>';
+const apps=[
+ {n:'班级优化大师',ic:'🏆',v:'希沃 seewo · 广州视睿',cls:'star',
+  bd:['rec','免费','pc','web','phone'],cats:['管班','上课','免费'],
+  tag:'课堂上给学生加分组分、随机点名，二年级最实用的一款',
+  desc:'多元化点评学生、自定义加减分规则、卡通头像与勋章升级、光荣榜实时刷新、随机点名、计时器；班级报表一键导出，家长手机端同步看。官方明确说可以装在教室一体机 / 白板上，Win7 及以上。',
+  plat:'Windows 7+ / 安卓 / iOS / 网页版　·　<b>永久免费</b>',
+  links:[['⬇️ 官网下载电脑版','https://care.seewo.com/'],['PC 端直接下载','http://care.seewo.com/pc/download',1]],
+  c:[Y,Y,Y,Y,N,N,Y,'<span class="fee">完全免费</span>']},
+
+ {n:'批改邦 · 桌面端',ic:'📝',v:'北京批改邦科技有限公司',cls:'star',
+  bd:['you','rec','免费','pc','phone','pay'],cats:['管班','批改','上课','免费'],
+  tag:'改作业 + 试卷转课件 + 教室远程喊话，最像「教室管家」',
+  desc:'作文 / 听默写 AI 批改、AI 改完老师可逐条改、整班批量上传；试卷或作业拍照一键生成带解析的讲评 PPT，可导出；班级宠物积分、随机点名、抽奖扭蛋机、自习安静树、可移动座次表、奖状生成器；桌面端可最小化到托盘、开机自启，手机远程发语音/图文到教室大屏喊话。',
+  plat:'Windows 7 / 8 / 8.1 / 10 / 11 桌面端，另有多端数据同步　·　<b>安装包免费下载</b>，每天有免费批改额度，部分高级功能需会员',
+  links:[['⬇️ 官方电脑端下载','https://xcx.pigaibang.com/computerDesktop'],['官网','https://www.pigaibang.com/',1],['应用宝电脑版','https://sj.qq.com/appdetail/com.pigaibang.pcapp.pigaibang103',1]],
+  c:[Y,Y,Y,Y,Y,Y,Y,'<span class="fee">免费下载·增值会员</span>']},
+
+ {n:'希沃白板 5',ic:'🖊️',v:'希沃 seewo',cls:'',
+  bd:['rec','免费','pc','web','phone'],cats:['上课','免费'],
+  tag:'上课放课件、写板书、手机翻页，教室大屏的标配',
+  desc:'互动课件制作、学科工具（数学画图形、统计图等）、课堂活动模板、思维导图、云课件自动同步；手机与大屏同账号即可遥控翻页、拍学生作业实时投到大屏展示。',
+  plat:'Windows / macOS / 国产化系统 / 移动端　·　<b>免费</b>',
+  links:[['⬇️ 官网下载','https://easinote.seewo.com/']],
+  c:[Y,Y,Y,M,N,M,N,'<span class="fee">免费</span>']},
+
+ {n:'希沃管家（大板端）',ic:'🛡️',v:'希沃 seewo',cls:'keep',
+  bd:['免费','pc'],cats:['设备','免费'],
+  tag:'名字真叫「管家」：挡弹窗、护系统、保持大屏干净',
+  desc:'系统防护、拦截弹窗广告、保持教室大屏纯净。不是教学软件，是给一体机「看门」的，建议第一个装。',
+  plat:'Windows / 国产化系统（大板端）　·　<b>免费</b>',
+  links:[['⬇️ 官方直接下载','http://e.seewo.com/download/file?code=SeewoServiceSetup'],['希沃全部软件','https://e.seewo.com/',1]],
+  c:[Y,N,N,N,N,N,N,'<span class="fee">免费</span>']},
+
+ {n:'OurTeacher（Our Teacher）',ic:'🤖',v:'上海皑顿信息技术有限公司',cls:'ask',
+  bd:['you','web','phone','pay'],cats:['批改','上课','管班'],
+  tag:'你提到的那个：AI 一键生成教案 / PPT，还有班级宠物积分',
+  desc:'教案设计、一键生成 PPT、作文与作业 AI 批改、班级评语与家长沟通话术、周报生成；班级宠物积分、抽奖扭蛋机、随机点名、学科小游戏；课题论文辅助。覆盖幼儿园到高中全学段。',
+  plat:'<b>网页版</b> / 安卓 / iOS（iPhone、iPad、Mac、Vision）　·　<b>没有 Windows 桌面客户端</b><br>新用户免费 10 次；宠物积分、班级作文报等永久免费；会员年费约 990 元 / 半年 790 元，部分 AI 功能消耗「粉笔」',
+  links:[['🌐 打开网页版官网','http://www.ourteacher.cc'],['安卓应用页','http://www.2265.com/soft/563968.html',1],['功能与收费说明','https://www.yjpoo.com/site/6206.html',1]],
+  c:[N,Y,Y,Y,Y,Y,Y,'<span class="fee">试用10次·会员990/年</span>']},
+
+ {n:'批改帮（安卓 App）',ic:'📱',v:'深圳市佳创纬科技有限公司',cls:'ask',
+  bd:['you','phone'],cats:['批改','上课'],
+  tag:'同名但不同公司：错题收集、拍试卷、奖状和课程表模板',
+  desc:'和上面的「批改邦」<b>不是同一款</b>。功能偏小工具：拍照或手动录错题并生成复习提醒、拍试卷识别题目、教案 PPT / 海报模板、奖状制作、课程表、通知文案、文件扫描、文字 / 表格识别、拍照翻译。只有安卓版。',
+  plat:'安卓手机（V1.0.3，约 111 MB）　·　包名 com.pigaibangi.gai',
+  links:[['⬇️ 应用宝官方页','https://sj.qq.com/appdetail/com.pigaibangi.gai']],
+  c:[N,N,Y,N,M,N,N,'<span class="fee">免费下载</span>']},
+
+ {n:'小猿 AI（原小猿口算）',ic:'🧮',v:'猿辅导集团',cls:'hw',
+  bd:['rec','免费','phone'],cats:['批改','免费'],
+  tag:'拍一下 1 秒批完整页口算，二年级数学最省时间',
+  desc:'2025 年 4 月由「小猿口算」升级更名。拍照检查口算、竖式、单位换算、应用题等 100+ 题型，错题自动归类；老师可建班、一键批改全班作业、统计高频错题、题库一键打印分发。基础功能免费，部分视频解析需 VIP。',
+  plat:'安卓 / iOS / 鸿蒙（手机端为主）　·　<b>基础功能免费</b>',
+  links:[['🌐 官网','https://www.xiaoyuankousuan.com/'],['功能问答','https://xiaoyuankousuan.com/faq',1]],
+  c:[N,Y,Y,N,Y,N,N,'<span class="fee">基础免费·VIP增值</span>']},
+
+ {n:'希沃视频展台',ic:'📷',v:'希沃 seewo',cls:'',
+  bd:['免费','pc'],cats:['上课','免费'],
+  tag:'把学生作业 / 实物放到大屏上讲，边讲边批注',
+  desc:'有摄像头或展台就能用：实物高清展示、文档批注讲解、情景画面增强、智能扫描存档。讲评作业、展示科学课小实验很顺手。',
+  plat:'Windows / 国产化系统（大板端）　·　<b>免费</b>',
+  links:[['⬇️ 官网下载','https://e.seewo.com/product/EasiCamera']],
+  c:[Y,N,N,N,M,N,N,'<span class="fee">免费</span>']},
+
+ {n:'国家中小学智慧教育平台',ic:'🏫',v:'教育部 · 官方平台',cls:'hw',
+  bd:['免费','web','phone'],cats:['上课','免费'],
+  tag:'不用装，打开网页就有官方免费课件和资源',
+  desc:'各学段各学科精品课例、课件、课后服务素材，权威且完全免费。备课时找资源、找示范课用，最适合先收藏到浏览器书签。',
+  plat:'网页免安装 / 手机也能开　·　<b>完全免费</b>',
+  links:[['🌐 打开平台','https://basic.smartedu.cn/']],
+  c:[N,Y,Y,N,N,M,N,'<span class="fee">完全免费</span>']},
+
+ {n:'希沃易课堂',ic:'💬',v:'希沃 seewo',cls:'',
+  bd:['免费','pc'],cats:['上课','免费'],
+  tag:'全班一起答题、随堂测，自动出学情数据（可选装）',
+  desc:'常态化智慧课堂工具：参与式课堂互动、随堂答题、翻转学习、全方位学情数据。需要学生端设备配合，二年级用得不多，备查。',
+  plat:'Windows　·　<b>免费</b>',
+  links:[['⬇️ 官网下载','https://class.seewo.com/']],
+  c:[Y,N,M,Y,M,N,N,'<span class="fee">免费</span>']},
+
+ {n:'雨课堂 / ClassIn',ic:'🎓',v:'学堂在线 / 北京翼鸥教育',cls:'keep',
+  bd:['pc','web','phone'],cats:['上课','管班'],
+  tag:'偏中学与网课，小学日常用不上，放这里备查',
+  desc:'雨课堂是 PPT 插件：课前推送、课上弹幕与限时答题、课后 AI 批改，多见于中学和高校。ClassIn 是在线互动课堂，有大屏版 ClassIn X，适合线上直播 / 双师课堂。',
+  plat:'Windows（雨课堂 PPT 插件）/ Win7+、macOS、安卓、iOS（ClassIn）　·　基础免费，学校版收费',
+  links:[['⬇️ 雨课堂下载','https://www.yuketang.cn/download'],['ClassIn 下载','https://static.eeo.cn/cn/download',1]],
+  c:[Y,Y,Y,Y,M,M,Y,'<span class="fee">基础免费·学校版收费</span>']}
+];
+const BG={you:'你提到的',rec:'推荐',free:'免费下载',pc:'电脑版',web:'网页版',phone:'手机端',pay:'部分收费'};
+let cur='all';
+function render(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const list=apps.filter(a=>(cur==='all'||a.cats.includes(cur)) &&
+    (!q||(a.n+a.v+a.tag+a.desc+a.plat).toLowerCase().includes(q)));
+  document.getElementById('grid').innerHTML=list.map(a=>`
+    <div class="app ${a.cls}">
+      <div class="apphd"><div class="ico">${a.ic}</div><h3>${a.n}<span class="vendor">${a.v}</span></h3></div>
+      <div class="badges">${a.bd.map(b=>`<span class="bg ${b}">${BG[b]}</span>`).join('')}</div>
+      <div class="tagline">${a.tag}</div>
+      <div class="desc">${a.desc}</div>
+      <div class="plat">💻 ${a.plat}</div>
+      <div class="links">${a.links.map(l=>`<a class="dl ${l[2]?'sec':''}" href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}</div>
+    </div>`).join('');
+  document.getElementById('empty').style.display=list.length?'none':'block';
+  document.getElementById('count').textContent='显示 '+list.length+' / '+apps.length+' 款';
+}
+document.querySelectorAll('.fbtn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');cur=b.dataset.f;render();
+});
+document.getElementById('q').oninput=render;
+document.getElementById('cmpbody').innerHTML=apps.map(a=>
+  `<tr><td>${a.ic} ${a.n}</td>${a.c.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
+render();
+</script>
+</body>
+</html>
