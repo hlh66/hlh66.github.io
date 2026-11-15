@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>ESP32 收音 · 窗口版下载</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh;color:#334155;
+  background:linear-gradient(135deg,#dbeafe 0%,#e0e7ff 35%,#ede9fe 70%,#fef3c7 100%);
+  background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:30px 18px}
+.card{background:rgba(255,255,255,.8);border:2px solid rgba(147,197,253,.3);border-radius:16px;padding:26px;margin-bottom:16px;box-shadow:0 2px 12px rgba(59,130,246,.08)}
+h1{font-size:1.6em;background:linear-gradient(135deg,#0284c7,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;font-weight:800}
+h2{font-size:1.1em;margin-bottom:10px;color:#0284c7}
+.sub{color:#64748b;font-size:.9em;margin-bottom:18px}
+.btn{display:inline-block;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:12px;font-size:1.05em;box-shadow:0 4px 14px rgba(37,99,235,.3);margin-right:10px;margin-bottom:10px;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,99,235,.4)}
+ol{padding-left:24px;line-height:2}
+.tip{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:.88em;color:#92400e;margin-top:10px;line-height:1.7}
+code{background:#eef2ff;padding:2px 6px;border-radius:5px;color:#3730a3}
+a{color:#2563eb;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🎙️ ESP32 收音 · 窗口版</h1>
+    <div class="sub">2026-11-15 版 · 约 55 KB · Windows 免安装，双击即用</div>
+    <a class="btn" href="esp32-mic-gui.exe" download="收音软件-窗口版.exe">⬇️ 下载软件（EXE）</a>
+    <div class="tip">💡 配合 ESP32-C3 收音板使用。板子一开机就自动连家里 WiFi，两条网同时开着：电脑不用换网、不会断网，也不用按板子上的按钮。</div>
+  </div>
+
+  <div class="card">
+    <h2>三步就能听到声音</h2>
+    <ol>
+      <li>下载后双击打开，不用安装</li>
+      <li>第①栏保持 <b>「WiFi · 同一个局域网」</b>，地址填 <code>espmic.local</code>，点「① 测试连接」等它变绿</li>
+      <li>第②栏选音响 / 耳机 → 点 <b>「▶ 开始收音」</b>，对着板子说话，下面电平条会动</li>
+    </ol>
+    <div class="tip">杀毒软件若提示风险：这是自己用 C 写的小程序、没有数字签名，加入信任即可。软件里只有板子的默认热点名，<b>不含家里 WiFi 密码</b>。板子当前声音走 WiFi，选 USB 那条要先在设置页把声音切成 USB。</div>
+  </div>
+
+  <div class="card">
+    <h2>直接下载链接（可复制）</h2>
+    <p><a href="esp32-mic-gui.exe">https://hlh66.github.io/mic1115/esp32-mic-gui.exe</a></p>
+    <div class="tip">链接是公开的：知道这个网址的人都能下载，转发时留意一下场合。</div>
+  </div>
+</div>
+</body>
+</html>
