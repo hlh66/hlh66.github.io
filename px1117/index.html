@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>魔方机器人 · 训练时间表（A4 打印版 · 全信息）</title>
+<style>
+  /* ===== A4 省墨设置：白底黑字，只有关键格子用淡色 ===== */
+  @page { size: A4 portrait; margin: 10mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","SimHei",sans-serif; color:#1f2933; background:#fff; font-size:10pt; }
+  .page { page-break-after:always; }
+  .page:last-child { page-break-after:auto; }
+  section, table { break-inside:avoid; }
+
+  h1 { font-size:17pt; text-align:center; letter-spacing:1px; padding-bottom:6px;
+       border-bottom:1.5pt solid #9db4e8; margin-bottom:4px; }
+  .head-info { text-align:center; font-size:9.5pt; color:#4b5563; margin-bottom:10px; }
+  h2 { font-size:12pt; margin:12px 0 4px; padding-left:8px; border-left:3.5pt solid #9db4e8; }
+  .sub { font-size:9pt; color:#59636f; margin-bottom:7px; line-height:1.5; }
+
+  table { border-collapse:collapse; width:100%; margin-bottom:8px; table-layout:fixed; }
+  th, td { border:0.6pt solid #b9c2cd; padding:5px 3px; text-align:center; vertical-align:middle;
+           font-size:9pt; line-height:1.35; word-break:break-all; }
+  th { background:#f1f4f8; font-size:9.5pt; }
+  td.rowhead { background:#f7f9fb; font-weight:bold; font-size:9pt; }
+  .ampm { display:block; font-size:7.5pt; color:#7b8694; font-weight:normal; }
+
+  /* 关键格子：淡彩，省墨 */
+  td.go   { background:#e9f6ec; border:1.2pt solid #6fbf85; font-weight:bold; }
+  td.best { background:#fff4d8; border:1.2pt solid #e0b455; font-weight:bold; }
+  td.go .s, td.best .s { color:#b06a00; font-size:11pt; line-height:1; display:block; }
+  td.go .lbl, td.best .lbl { color:#1b6b3a; font-size:8.5pt; display:block; }
+  td.best .lbl { color:#8a5a00; }
+  td .k { color:#111; }
+  td .t { color:#6a7480; font-size:7.5pt; display:block; }
+  td.no  { background:#fff; }
+
+  .legend { font-size:9pt; color:#3c4753; margin:4px 0 10px; }
+  .legend i { display:inline-block; width:13px; height:11px; border:1pt solid #b9c2cd;
+              vertical-align:-1px; margin-right:4px; }
+  .lg-go { background:#e9f6ec !important; border-color:#6fbf85 !important; }
+  .lg-best { background:#fff4d8 !important; border-color:#e0b455 !important; }
+
+  .steps { display:flex; gap:8px; margin:6px 0 10px; }
+  .step { flex:1; border:0.8pt solid #c9d2dd; border-radius:6px; padding:7px 9px; background:#fafbfd; }
+  .step b { font-size:10pt; color:#1b4b8a; }
+  .step p { font-size:9pt; margin-top:3px; line-height:1.5; }
+
+  .tip { border:0.8pt solid #d8c48a; background:#fffdf5; border-radius:6px;
+         padding:8px 11px; font-size:9.5pt; line-height:1.6; margin:8px 0; }
+  .note { font-size:8.5pt; color:#59636f; line-height:1.5; margin-top:4px; }
+  .sign { margin-top:12px; font-size:10pt; }
+  .sign span { display:inline-block; width:48%; }
+
+  .no-print { position:fixed; top:10px; right:10px; z-index:9; }
+  .no-print button { font-size:12pt; padding:8px 18px; border:1pt solid #5b6ef5; border-radius:18px;
+    background:#fff; color:#3a4bb5; cursor:pointer; }
+  @media print {
+    .no-print { display:none; }
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+<div class="no-print"><button onclick="window.print()">打印 / 存成 PDF</button></div>
+
+<!-- ================= 第 1 页：给学生看 ================= -->
+<div class="page">
+  <h1>创客魔方机器人 · 我们的训练时间</h1>
+  <div class="head-info">杨文凯（五3班·郭结仪老师）　｜　石威龙（六3班·黄杜娟老师）　｜　指导老师：洪林华　｜　2026 年秋季学期</div>
+
+  <h2>一、这周哪几节来训练（共 6 个时段，全部写清楚原本上什么课）</h2>
+  <table>
+    <tr>
+      <th style="width:14%">时段</th><th style="width:24%">杨文凯 · 五3班</th>
+      <th style="width:24%">石威龙 · 六3班</th><th style="width:14%">洪老师</th><th style="width:24%">备注</th>
+    </tr>
+    <tr><td><b>周一 第5节</b></td><td>体育与健康（周鑫）</td><td>艺术·音乐（黄杜娟）</td><td>空课</td><td>下午第1节</td></tr>
+    <tr><td><b>周二 第5节</b></td><td>道德与法治（郭结仪）</td><td>体育与健康（周鑫）</td><td>空课</td><td rowspan="2">两节连堂，训练时间最长</td></tr>
+    <tr><td><b>周二 第6节</b></td><td>体育与健康（周鑫）</td><td>道德与法治（黄杜娟）</td><td>空课</td></tr>
+    <tr><td><b>周三 第1节</b></td><td>信息科技（吴兆明）</td><td>劳动（卢秀兰）</td><td>空课</td><td>上午第1节</td></tr>
+    <tr><td><b>周四 第6节</b></td><td>体育·校本综合（郭结仪）</td><td>科学（谢秀丽）</td><td>空课</td><td>下午第2节</td></tr>
+    <tr><td><b>周五 第6节</b></td><td>道法·班队活动（郭结仪）</td><td>道法·班队活动（黄杜娟）</td><td>空课</td><td><b>全校统一班队，最稳定</b></td></tr>
+  </table>
+
+  <h2>二、一周对照表（每一格都写出两位同学原本的课，不再省略）</h2>
+  <div class="sub">写法＝「杨文凯的课 / 石威龙的课」；只有淡绿 / 淡黄格子才来训练，其余照常上课。</div>
+  <table>
+    <tr><th style="width:11%"></th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+    <tr>
+      <td class="rowhead">第1节<span class="ampm">上午</span></td>
+      <td class="no"><span class="k">语文 / 语文</span></td>
+      <td class="no"><span class="k">数学 / 英语</span></td>
+      <td class="go"><span class="s">★</span><span class="k">信息科技 / 劳动</span><span class="lbl">来训练</span></td>
+      <td class="no"><span class="k">语文 / 英语</span></td>
+      <td class="no"><span class="k">音乐 / 数学</span></td>
+    </tr>
+    <tr>
+      <td class="rowhead">第2节<span class="ampm">上午</span></td>
+      <td class="no"><span class="k">数学 / 英语</span></td>
+      <td class="no"><span class="k">英语 / 数学</span></td>
+      <td class="no"><span class="k">英语 / 体育</span></td>
+      <td class="no"><span class="k">数学 / 语文</span></td>
+      <td class="no"><span class="k">语文 / 体育校本</span></td>
+    </tr>
+    <tr>
+      <td class="rowhead">第3节<span class="ampm">上午</span></td>
+      <td class="no"><span class="k">英语 / 体育</span></td>
+      <td class="no"><span class="k">语文 / 语文</span></td>
+      <td class="no"><span class="k">语文 / 数学</span></td>
+      <td class="no"><span class="k">劳动 / 语文</span></td>
+      <td class="no"><span class="k">美术 / 语文</span></td>
+    </tr>
+    <tr>
+      <td class="rowhead">第4节<span class="ampm">上午</span></td>
+      <td class="no"><span class="k">语文书法 / 数学</span></td>
+      <td class="no"><span class="k">音乐 / 语文书法</span></td>
+      <td class="no"><span class="k">语文 / 语文</span></td>
+      <td class="no"><span class="k">综合实践 / 数学</span></td>
+      <td class="no"><span class="k">数学 / 音乐</span></td>
+    </tr>
+    <tr>
+      <td class="rowhead">第5节<span class="ampm">下午</span></td>
+      <td class="go"><span class="s">★</span><span class="k">体育 / 音乐</span><span class="lbl">来训练</span></td>
+      <td class="go"><span class="s">★</span><span class="k">道法 / 体育</span><span class="lbl">来训练</span></td>
+      <td class="no"><span class="k">体育心理 / 信息科技</span></td>
+      <td class="no"><span class="k">科学 / 体育心理</span></td>
+      <td class="no"><span class="k">体育 / 美术</span></td>
+    </tr>
+    <tr>
+      <td class="rowhead">第6节<span class="ampm">下午</span></td>
+      <td class="no"><span class="k">科学 / 综合实践</span></td>
+      <td class="go"><span class="s">★</span><span class="k">体育 / 道法</span><span class="lbl">来训练</span></td>
+      <td class="no"><span class="k">数学 / 科学</span></td>
+      <td class="go"><span class="s">★</span><span class="k">体育校本 / 科学</span><span class="lbl">来训练</span></td>
+      <td class="best"><span class="s">★</span><span class="k">班队 / 班队</span><span class="lbl">来训练 · 最稳定</span></td>
+    </tr>
+  </table>
+  <div class="legend">
+    <span><i class="lg-go"></i>淡绿 = 来训练</span>
+    <span><i class="lg-best"></i>淡黄 = 最稳定的固定时间（周五第6节）</span>
+    <span><i></i>白格 = 正常上课，留在教室</span>
+  </div>
+
+  <div class="steps">
+    <div class="step"><b>1 · 看颜色</b><p>周历上出现淡绿或淡黄格子，就是这节课要来训练。</p></div>
+    <div class="step"><b>2 · 说一声</b><p>跟任课老师讲一句「我去魔方机器人训练」，同意后再离开教室。</p></div>
+    <div class="step"><b>3 · 准时到</b><p>带上魔方和记录本，到训练地点集合，别让搭档等你。</p></div>
+  </div>
+  <div class="tip">小提醒：如果学校临时调课、老师另有安排，以班主任通知为准；抽学生前请指导老师先与该节任课老师沟通。</div>
+</div>
+
+<!-- ================= 第 2 页：完整课表，供核对 ================= -->
+<div class="page">
+  <h1>附页 · 三张完整课程表（含科任老师）</h1>
+  <div class="head-info">全部信息展开，供老师核对 · 淡绿格＝可培训时段 · 数据来源：《（内部使用）教师/班级课程表2026秋.xls》</div>
+
+  <h2>三、五（3）班课程表 · 杨文凯（班主任 郭结仪）</h2>
+  <table>
+    <tr><th style="width:11%"></th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+    <tr><td class="rowhead">第1节</td><td>语文<span class="t">郭结仪</span></td><td>数学<span class="t">黎思婷</span></td><td class="go">信息科技<span class="t">吴兆明</span></td><td>语文<span class="t">郭结仪</span></td><td>艺术·音乐<span class="t">戴韵健</span></td></tr>
+    <tr><td class="rowhead">第2节</td><td>数学<span class="t">黎思婷</span></td><td>英语<span class="t">黄佳坤</span></td><td>英语<span class="t">黄佳坤</span></td><td>数学<span class="t">黎思婷</span></td><td>语文<span class="t">郭结仪</span></td></tr>
+    <tr><td class="rowhead">第3节</td><td>英语<span class="t">黄佳坤</span></td><td>语文<span class="t">郭结仪</span></td><td>语文<span class="t">郭结仪</span></td><td>劳动<span class="t">黄佳坤</span></td><td>艺术·美术<span class="t">李宝诗</span></td></tr>
+    <tr><td class="rowhead">第4节</td><td>语文·书法<span class="t">郭结仪</span></td><td>艺术·音乐<span class="t">戴韵健</span></td><td>语文<span class="t">郭结仪</span></td><td>综合实践活动<span class="t">郭结仪</span></td><td>数学<span class="t">黎思婷</span></td></tr>
+    <tr><td class="rowhead">第5节</td><td class="go">体育与健康<span class="t">周鑫</span></td><td class="go">道德与法治<span class="t">郭结仪</span></td><td>体育·心理健康<span class="t">郭结仪</span></td><td>科学<span class="t">黎思婷</span></td><td>体育与健康<span class="t">周鑫</span></td></tr>
+    <tr><td class="rowhead">第6节</td><td>科学<span class="t">左婉玉</span></td><td class="go">体育与健康<span class="t">周鑫</span></td><td>数学<span class="t">黎思婷</span></td><td class="go">体育·校本综合<span class="t">郭结仪</span></td><td class="best">道法·班队活动<span class="t">郭结仪</span></td></tr>
+  </table>
+
+  <h2>四、六（3）班课程表 · 石威龙（班主任 黄杜娟）</h2>
+  <table>
+    <tr><th style="width:11%"></th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+    <tr><td class="rowhead">第1节</td><td>语文<span class="t">黄杜娟</span></td><td>英语<span class="t">卢秀兰</span></td><td class="go">劳动<span class="t">卢秀兰</span></td><td>英语<span class="t">卢秀兰</span></td><td>数学<span class="t">谢秀丽</span></td></tr>
+    <tr><td class="rowhead">第2节</td><td>英语<span class="t">卢秀兰</span></td><td>数学<span class="t">谢秀丽</span></td><td>体育与健康<span class="t">周鑫</span></td><td>语文<span class="t">黄杜娟</span></td><td>体育·校本综合<span class="t">黄杜娟</span></td></tr>
+    <tr><td class="rowhead">第3节</td><td>体育与健康<span class="t">黄杜娟</span></td><td>语文<span class="t">黄杜娟</span></td><td>数学<span class="t">谢秀丽</span></td><td>语文<span class="t">黄杜娟</span></td><td>语文<span class="t">黄杜娟</span></td></tr>
+    <tr><td class="rowhead">第4节</td><td>数学<span class="t">谢秀丽</span></td><td>语文·书法<span class="t">黄杜娟</span></td><td>语文<span class="t">黄杜娟</span></td><td>数学<span class="t">谢秀丽</span></td><td>艺术·音乐<span class="t">卢少珊</span></td></tr>
+    <tr><td class="rowhead">第5节</td><td class="go">艺术·音乐<span class="t">黄杜娟</span></td><td class="go">体育与健康<span class="t">周鑫</span></td><td>信息科技<span class="t">黄杜娟</span></td><td>体育·心理健康<span class="t">肖鱼</span></td><td>艺术·美术<span class="t">卢秀兰</span></td></tr>
+    <tr><td class="rowhead">第6节</td><td>综合实践活动<span class="t">卢秀兰</span></td><td class="go">道德与法治<span class="t">黄杜娟</span></td><td>科学<span class="t">谢秀丽</span></td><td class="go">科学<span class="t">谢秀丽</span></td><td class="best">道法·班队活动<span class="t">黄杜娟</span></td></tr>
+  </table>
+
+  <h2>五、指导老师 洪林华 任课表（空白格＝空课，可安排培训）</h2>
+  <table>
+    <tr><th style="width:11%"></th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr>
+    <tr><td class="rowhead">第1节</td><td></td><td></td><td class="go"></td><td>数学·二4班</td><td>数学·二4班</td></tr>
+    <tr><td class="rowhead">第2节</td><td>数学·二4班</td><td>数学·二1班</td><td>体育·二3班</td><td></td><td></td></tr>
+    <tr><td class="rowhead">第3节</td><td></td><td></td><td></td><td></td><td>数学·二1班</td></tr>
+    <tr><td class="rowhead">第4节</td><td>体育·二3班</td><td>数学·二4班</td><td>数学·二1班</td><td></td><td></td></tr>
+    <tr><td class="rowhead">第5节</td><td class="go"></td><td class="go"></td><td>体育·二2班</td><td>数学·二1班</td><td>体育·二2班</td></tr>
+    <tr><td class="rowhead">第6节</td><td>数学拓展·二1班</td><td class="go"></td><td>数学拓展·二4班</td><td class="go"></td><td class="best"></td></tr>
+  </table>
+  <div class="note">说明：淡绿色空格＝洪老师该节无课；淡黄格＝周五第6节全校班队，最稳定。以上课表为 2026 秋季学期版本，如有调课以学校最新通知为准。</div>
+  <div class="sign"><span>指导老师签名：＿＿＿＿＿＿＿＿＿＿</span><span>日期：＿＿＿＿年＿＿月＿＿日</span></div>
+</div>
+</body>
+</html>
