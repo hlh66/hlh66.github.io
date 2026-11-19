@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+<meta charset="UTF-8">
+<title>华容道关卡摆法卡（二年级）</title>
+<style>
+  @page { size: A4 portrait; margin: 1.2cm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", "SimHei", sans-serif; color: #222; margin: 0; }
+  h1 { font-size: 20px; text-align: center; margin: 0 0 4px; letter-spacing: 1px; }
+  .sub { text-align: center; font-size: 12px; color: #666; margin: 0 0 12px; }
+  .rule { background: #E6F1FB; border: 1px solid #85B7EB; border-radius: 8px; padding: 9px 14px; font-size: 12px; line-height: 1.7; margin-bottom: 14px; }
+  .rule b { color: #0C447C; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card { border: 1px solid #ccc; border-radius: 10px; padding: 12px; page-break-inside: avoid; }
+  .card h2 { font-size: 15px; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  .badge { font-size: 11px; font-weight: normal; color: #fff; background: #378ADD; border-radius: 20px; padding: 2px 10px; }
+  .row { display: flex; gap: 14px; align-items: center; }
+  .board { display: grid; grid-template-columns: repeat(4, 30px); grid-template-rows: repeat(4, 30px); gap: 3px; }
+  .cell { width: 30px; height: 30px; background: #F0C9A8; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; color: #3a2418; }
+  .cell.empty { background: #fafafa; border: 1px dashed #bbb; }
+  .desc { font-size: 12px; line-height: 1.8; color: #444; flex: 1; }
+  .desc .k { color: #0C447C; font-weight: bold; }
+  .foot { margin-top: 14px; background: #FAEEDA; border-radius: 8px; padding: 9px 14px; font-size: 12px; line-height: 1.7; color: #633806; }
+</style>
+</head>
+<body>
+  <h1>智趣华容道 · 关卡摆法卡</h1>
+  <p class="sub">二年级数学文化节 · 只用 4×4（1—15）棋盘</p>
+
+  <div class="rule">
+    <b>老师怎么摆：</b>先把棋盘摆成「1—15 顺序、空格在右下角」的完成状态，再按下面每一关的图，把数字块移到图示位置即可（空格就是空着的那一格）。<br>
+    <b>难度为什么这样定：</b>每关都是从完成状态倒着走固定步数得到的，保证解得出来、且难度封顶。第1关约3步、第2关约8步、第3关约14步、第4关约20步。<br>
+    <b>给孩子的口诀：</b>先把第一行 1 2 3 4 摆好不动，再一行一行往下排，遇到卡住就把数字往空格方向"让一让"。
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>第1关 · 入门 <span class="badge">约 3 步</span></h2>
+      <div class="row">
+        <div class="board">
+          <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+          <div class="cell">5</div><div class="cell">6</div><div class="cell">7</div><div class="cell">8</div>
+          <div class="cell">9</div><div class="cell">10</div><div class="cell">11</div><div class="cell">12</div>
+          <div class="cell empty"></div><div class="cell">13</div><div class="cell">14</div><div class="cell">15</div>
+        </div>
+        <div class="desc"><span class="k">只挪最后一行</span><br>空格跑到了左下角，把 13、14、15 往左推回去就好。让每个孩子都先尝到甜头。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>第2关 · 初级 <span class="badge">约 8 步</span></h2>
+      <div class="row">
+        <div class="board">
+          <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+          <div class="cell">5</div><div class="cell">10</div><div class="cell">6</div><div class="cell">7</div>
+          <div class="cell">9</div><div class="cell">11</div><div class="cell">8</div><div class="cell">12</div>
+          <div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell empty"></div>
+        </div>
+        <div class="desc"><span class="k">前两行开始乱</span><br>第一行仍是 1—4，第二三行有几个换了位。需要转几个弯，适合入门后的第二关。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>第3关 · 中级 <span class="badge">约 14 步</span></h2>
+      <div class="row">
+        <div class="board">
+          <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+          <div class="cell">9</div><div class="cell">5</div><div class="cell">12</div><div class="cell">7</div>
+          <div class="cell">6</div><div class="cell">10</div><div class="cell">11</div><div class="cell">8</div>
+          <div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell empty"></div>
+        </div>
+        <div class="desc"><span class="k">中间两行打乱</span><br>第一行固定，中间两块区域交叉较多，要动点脑筋。给已经通关前两关的孩子。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>第4关 · 挑战 <span class="badge">约 20 步</span></h2>
+      <div class="row">
+        <div class="board">
+          <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+          <div class="cell">5</div><div class="cell">7</div><div class="cell">8</div><div class="cell">10</div>
+          <div class="cell">11</div><div class="cell">6</div><div class="cell">9</div><div class="cell">12</div>
+          <div class="cell">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell empty"></div>
+        </div>
+        <div class="desc"><span class="k">最接近正式比赛</span><br>打乱程度最大，留给手快、会规划的孩子当压轴挑战，可用来选"华容道小达人"。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>组织建议：</b>四个班先在同一节课里人人玩一遍第1、2关（热身），再各挑代表到礼堂闯第3、4关。<br>
+    礼堂展示可用"看谁步数少"或"限时3分钟通关"的规则；奖状称号统一写<b>「华容道小达人」</b>。
+  </div>
+</body>
+</html>
