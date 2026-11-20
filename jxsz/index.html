@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二上数学·二次备课教学设计（带批注版）使用说明</title>
+<style>
+  :root{
+    --bg:#f6f8fc; --card:#ffffff; --ink:#1f2733; --sub:#5b6776; --line:#e4e9f2;
+    --brand:#3f5bd6; --brand2:#6d5ce0; --teal:#0e9384; --amber:#b26a00;
+    --shadow:0 2px 14px rgba(30,50,90,.07); --radius:14px;
+    --agent-bg:#10192b; --agent-ink:#e8eefc; --agent-sub:#9fb0cc; --agent-line:#2a3a58;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    line-height:1.75;font-size:15px}
+  a{color:var(--brand);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 90px}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,#3f5bd6 0%,#6d5ce0 55%,#8a63d2 100%);
+    color:#fff;padding:44px 0 40px;margin-bottom:0}
+  .hero .wrap{padding-bottom:0}
+  .badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+    padding:4px 12px;border-radius:99px;font-size:12.5px;letter-spacing:.5px;margin-bottom:14px}
+  .hero h1{font-size:30px;margin:0 0 10px;font-weight:800;letter-spacing:-.3px}
+  .hero p{margin:0;font-size:15.5px;opacity:.92;max-width:760px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px}
+  .stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+    border-radius:12px;padding:14px 16px}
+  .stat b{display:block;font-size:26px;line-height:1.2}
+  .stat span{font-size:12.5px;opacity:.85}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(30,50,90,.04)}
+  .nav .wrap{padding:0 22px;display:flex;gap:4px;overflow-x:auto}
+  .nav a{padding:13px 14px;font-size:13.5px;color:var(--sub);white-space:nowrap;border-bottom:2px solid transparent}
+  .nav a.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:700}
+  .nav a:hover{color:var(--brand)}
+
+  /* sections */
+  section{padding-top:44px}
+  h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+    background:var(--brand);color:#fff;border-radius:8px;font-size:14px;flex:none}
+  .lead{color:var(--sub);margin:0 0 20px;font-size:14.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px}
+  .card h3{margin:0 0 12px;font-size:16px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.stats,.grid2,.grid3{grid-template-columns:1fr}
+    .hero h1{font-size:24px}}
+
+  .t-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .t-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .t-card.a::before{background:var(--brand)}
+  .t-card.b::before{background:var(--teal)}
+  .t-card h3{margin:0 0 4px;font-size:17px}
+  .t-card .who{color:var(--sub);font-size:13px;margin-bottom:12px}
+  .t-card p{font-size:13.5px;margin:6px 0}
+
+  /* path / code */
+  .path{display:flex;align-items:center;gap:8px;background:#eef2ff;border:1px solid #dbe3ff;
+    border-radius:10px;padding:10px 12px;margin:8px 0}
+  .path code{flex:1;font-family:Consolas,"Courier New",monospace;font-size:13px;color:#2a3a8a;word-break:break-all}
+  button.copy{border:1px solid #c9d4f5;background:#fff;color:var(--brand);border-radius:7px;
+    padding:5px 11px;font-size:12px;cursor:pointer;white-space:nowrap;transition:.15s}
+  button.copy:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+  pre{background:#0f1830;color:#dbe7ff;border-radius:10px;padding:15px 16px;overflow:auto;
+    font-family:Consolas,"Courier New",monospace;font-size:12.8px;line-height:1.65;margin:10px 0 0}
+  pre .cm{color:#7f93b8}
+  .cw{position:relative}
+  .cw button.copy{position:absolute;right:8px;top:8px;background:rgba(255,255,255,.1);
+    color:#cfe0ff;border-color:rgba(255,255,255,.2)}
+  .cw button.copy:hover{background:rgba(255,255,255,.22)}
+  code.inl{background:#eef1f8;border-radius:5px;padding:1px 6px;font-family:Consolas,monospace;
+    font-size:12.5px;color:#33406b}
+
+  /* table */
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#f1f4fb;color:#3a4658;font-weight:700;font-size:12.5px}
+  tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums;color:var(--sub)}
+  .tag{display:inline-block;background:#eaf0ff;color:var(--brand);border-radius:5px;
+    padding:1px 8px;font-size:11.5px;margin-right:4px}
+  .tag.g{background:#e6f5f1;color:var(--teal)}
+
+  /* steps */
+  .steps{counter-reset:s;display:grid;gap:12px}
+  .step{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .step::before{counter-increment:s;content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;
+    background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .step b{display:block;margin-bottom:2px}
+  .step span{font-size:13.5px;color:var(--sub)}
+
+  details{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:9px}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  details p{margin:10px 0 2px;color:var(--sub);font-size:13.5px}
+
+  /* comment types */
+  .ct{border-left:3px solid var(--brand);background:#f7f9fe;border-radius:0 10px 10px 0;
+    padding:12px 16px;margin-bottom:10px}
+  .ct b{color:var(--brand);font-size:13.5px}
+  .ct p{margin:4px 0 0;font-size:13.3px;color:var(--sub)}
+
+  /* agent zone */
+  .agent{background:var(--agent-bg);color:var(--agent-ink);border-radius:16px;
+    padding:28px;margin-top:8px;box-shadow:0 8px 30px rgba(10,20,40,.2)}
+  .agent h2{color:#fff}
+  .agent h2 .n{background:#3ddc97;color:#06231a}
+  .agent .lead{color:var(--agent-sub)}
+  .agent h3{color:#9fd8ff;font-size:14.5px;margin:22px 0 8px;letter-spacing:.3px}
+  .agent p,.agent li{color:#cddbf2;font-size:13.5px}
+  .agent code{background:rgba(255,255,255,.09);border-radius:5px;padding:1px 6px;
+    font-family:Consolas,monospace;font-size:12.5px;color:#9fe8d0}
+  .agent pre{background:#070e1e;border:1px solid var(--agent-line)}
+  .agent .path{background:rgba(255,255,255,.06);border-color:var(--agent-line)}
+  .agent .path code{color:#bcd0f5}
+  .agent .cw button.copy{background:rgba(255,255,255,.08);border-color:var(--agent-line);color:#bcd0f5}
+  .agent ul{margin:6px 0;padding-left:20px}
+  .agent li{margin-bottom:5px}
+  .sop{background:rgba(255,255,255,.04);border:1px solid var(--agent-line);border-radius:10px;
+    padding:14px 16px;margin-bottom:12px}
+  .sop b{color:#7fe3c4}
+  .warn{border-left:3px solid #ffb454;background:rgba(255,180,84,.09);border-radius:0 8px 8px 0;
+    padding:10px 14px;margin:8px 0;font-size:13px;color:#ffd9a0}
+
+  /* prompt box */
+  .prompt{background:#fffbea;border:1px solid #f0e2a8;border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+  .prompt textarea{width:100%;min-height:150px;border:1px solid #e6d995;border-radius:10px;
+    padding:14px;font-family:inherit;font-size:13.5px;line-height:1.7;color:#4a4026;background:#fffdf5;resize:vertical}
+  .prompt .btnrow{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn{border:none;border-radius:9px;padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer}
+  .btn.main{background:var(--brand);color:#fff}
+  .btn.main:hover{background:#3348bd}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid #c9d4f5}
+  .ok{color:var(--teal);font-size:13px;align-self:center;opacity:0;transition:.2s}
+  .ok.show{opacity:1}
+
+  footer{margin-top:50px;text-align:center;color:var(--sub);font-size:12.5px;
+    border-top:1px solid var(--line);padding-top:22px}
+  .toc-hint{font-size:12px;color:var(--sub);margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">2026 学年第一学期 · 北师大版二年级上册数学</span>
+    <h1>二次备课教学设计（带批注版）· 使用说明</h1>
+    <p>这套资料是给老师的「共案 + 练习答案 + 班级实际批注 + 教学反思」完整教学设计。本页分两部分：前半段给<b>人</b>看，讲清楚是什么、在哪、怎么用；后半段给 <b>Agent</b> 读，让 AI 助手看完就知道怎么帮你改、怎么重新生成。</p>
+    <div class="stats">
+      <div class="stat"><b>12 份</b><span>每位老师一套</span></div>
+      <div class="stat"><b>2 套</b><span>老师A / 老师B</span></div>
+      <div class="stat"><b>3 条/课</b><span>Word 原生批注</span></div>
+      <div class="stat"><b>带图</b><span>情境图·示意图</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="wrap">
+    <a href="#what" class="on">① 这是什么</a>
+    <a href="#where">② 文件在哪</a>
+    <a href="#twosets">③ 两套区别</a>
+    <a href="#list">④ 12 份清单</a>
+    <a href="#comments">⑤ 批注说明</a>
+    <a href="#howto">⑥ 怎么用 · FAQ</a>
+    <a href="#agent">⑦ 给 Agent 的操作指南</a>
+    <a href="#prompt">⑧ 一键复制提示词</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- 1 -->
+<section id="what">
+  <h2><span class="n">1</span>这套资料是什么</h2>
+  <p class="lead">一句话：按学校「个人二次备课」要求做的完整教学设计，每课时都有图、有批注、有教学反思，打开 Word 就能直接用。</p>
+  <div class="grid3">
+    <div class="card" style="margin:0">
+      <h3>📘 内容来源</h3>
+      <p style="color:var(--sub);font-size:13.5px;margin:0">北师大版二上教材 8 个单元全部课时，外加「数学好玩」「综合实践」「总复习」，配套情境图、题目和答案。</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h3>🖊️ 二次备课批注</h3>
+      <p style="color:var(--sub);font-size:13.5px;margin:0">仿照学校《熹涌学校教学设计》样式，每课 3 条 Word 原生批注，写着重点突破、易错突破、关键节点。</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h3>📝 教学反思</h3>
+      <p style="color:var(--sub);font-size:13.5px;margin:0">每单元末尾附反思表。批注和反思都是初稿思路，老师可在 Word 里按自己班级情况直接改。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="where">
+  <h2><span class="n">2</span>文件在哪</h2>
+  <p class="lead">成品集中在「教学设计成品汇总」文件夹，按老师分了两个子文件夹。下面是可直接复制的完整路径。</p>
+  <div class="card">
+    <h3>成品总目录</h3>
+    <div class="path"><code>某某地址\教学设计成品汇总\</code><button class="copy" data-copy="某某地址\教学设计成品汇总\">复制</button></div>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <p style="font-size:13px;color:var(--sub);margin:0 0 6px">老师A老师版（12 份）</p>
+        <div class="path" style="margin:0"><code>某某地址\教学设计成品汇总\老师A\</code><button class="copy" data-copy="某某地址\教学设计成品汇总\老师A\">复制</button></div>
+      </div>
+      <div>
+        <p style="font-size:13px;color:var(--sub);margin:0 0 6px">老师B老师版（12 份）</p>
+        <div class="path" style="margin:0"><code>某某地址\教学设计成品汇总\老师B\</code><button class="copy" data-copy="某某地址\教学设计成品汇总\老师B\">复制</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>文件名长这样</h3>
+    <div class="path"><code>（2026学年第一学期）熹涌学校教学设计 第一单元.docx</code><button class="copy" data-copy="（2026学年第一学期）熹涌学校教学设计 第一单元.docx">复制</button></div>
+    <p style="color:var(--sub);font-size:13.3px;margin:6px 0 0">把「第一单元」换成第三单元、总复习、数学好玩·猜数游戏等，就是全套 12 份。文件名两套完全相同，区别只在批注署名。</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="twosets">
+  <h2><span class="n">3</span>两套有什么区别</h2>
+  <p class="lead">内容、格式、图、批注文字<b>完全一样</b>，唯一区别是批注框里显示的署名。相当于两位老师各自做的二次备课。</p>
+  <div class="grid2">
+    <div class="t-card a">
+      <h3>老师A老师版</h3>
+      <div class="who">二（1）班 · 数学 / 科学</div>
+      <p><span class="tag">批注署名：老师A</span></p>
+      <p style="color:var(--sub)">给洪老师自己用，批注框显示「老师A」。</p>
+    </div>
+    <div class="t-card b">
+      <h3>老师B老师版</h3>
+      <div class="who">二（2）、二（3）班 · 数学</div>
+      <p><span class="tag g">批注署名：老师B</span></p>
+      <p style="color:var(--sub)">整套复制后仅把署名改成「老师B」，共 114 处，正文一字未动。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="list">
+  <h2><span class="n">4</span>12 份清单</h2>
+  <p class="lead">下表是每套的构成（两套一致）。课时数、批注数、页数都已用 Word 逐份核对过。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>文档</th><th>课时</th><th>批注数</th><th>页数</th></tr></thead>
+    <tbody>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第一单元.docx</td><td class="num">6</td><td class="num">18</td><td class="num">20</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第二单元.docx</td><td class="num">3</td><td class="num">9</td><td class="num">12</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第三单元.docx</td><td class="num">5</td><td class="num">15</td><td class="num">28</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第四单元.docx</td><td class="num">4</td><td class="num">12</td><td class="num">20</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第五单元.docx</td><td class="num">6</td><td class="num">18</td><td class="num">34</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第六单元.docx</td><td class="num">2</td><td class="num">6</td><td class="num">10</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第七单元.docx</td><td class="num">4</td><td class="num">12</td><td class="num">10</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 第八单元.docx</td><td class="num">2</td><td class="num">6</td><td class="num">6</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 数学好玩·猜数游戏.docx</td><td class="num">1</td><td class="num">3</td><td class="num">6</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 综合实践·画校园路线图.docx</td><td class="num">1</td><td class="num">3</td><td class="num">7</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 综合实践·参加欢乐购物活动.docx</td><td class="num">1</td><td class="num">3</td><td class="num">7</td></tr>
+      <tr><td>（2026学年第一学期）熹涌学校教学设计 总复习.docx</td><td class="num">3</td><td class="num">9</td><td class="num">7</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="toc-hint">小提示：第 3、5 单元图最多，文件也最大（约 13 MB / 14 MB），属正常现象。</p>
+</section>
+
+<!-- 5 -->
+<section id="comments">
+  <h2><span class="n">5</span>批注是怎么写的</h2>
+  <p class="lead">批注模仿李秋裕老师的二次备课样式，每课时固定 3 条，锚定在学习目标、教学难点和教学过程的关键段落上。红色小字，Word 里点开就能看。</p>
+  <div class="card">
+    <div class="ct"><b>【教学批注·重点突破】</b><p>围绕本课重点给具体教法，比如凑十法、竖式三要点、口诀记忆思路。</p></div>
+    <div class="ct"><b>【教学批注·难点易错】</b><p>格式是「易错：… 突破：…」，点出二年级孩子最容易错的地方和破解办法。</p></div>
+    <div class="ct"><b>【教学批注·关键节点】</b><p>提醒关键环节和数学思想，比如从实物到算式的抽象、单位换算的时机。</p></div>
+  </div>
+  <div class="card">
+    <h3>直接用 Word 改就行</h3>
+    <p style="color:var(--sub);font-size:13.5px;margin:0">批注内容是按教案写的初稿，等于把二次备课思路先落下来了。哪条措辞、详略想调整，直接在 Word 里右键批注修改即可，署名已经就位，不用重新生成。</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="howto">
+  <h2><span class="n">6</span>怎么用 · 常见问题</h2>
+  <div class="steps">
+    <div class="step"><div><b>打开对应老师的文件夹</b><span>在「教学设计成品汇总」里选老师A老师或老师B老师。</span></div></div>
+    <div class="step"><div><b>双击打开要用的单元文档</b><span>用 Word 打开，正文带图，右侧或批注框里能看到红色批注。</span></div></div>
+    <div class="step"><div><b>按本班情况改批注、写反思</b><span>直接在 Word 里改批注文字、补充教学反思，另存即可，不影响原文件。</span></div></div>
+  </div>
+  <div style="margin-top:18px">
+    <details open><summary>同事拿到后要装什么软件吗？</summary><p>只要能打开 .docx 即可（Word 或 WPS 都行）。批注是 Word 原生批注，WPS 也能显示和编辑。</p></details>
+    <details><summary>想把这套给第三位老师用，怎么弄？</summary><p>复制其中一套 12 份到新文件夹，把每份文档内部的批注署名改成新老师名字即可。这个操作交给 Agent 一句话就能完成——把这页发给他，或直接复制下面第 8 节的提示词。</p></details>
+    <details><summary>文件太大、打开慢？</summary><p>第三、第五单元含几十张情境图，文件 13~14 MB 属正常。不建议压缩图片，会影响清晰度。</p></details>
+    <details><summary>批注看不到？</summary><p>在 Word「审阅」选项卡里确认「显示批注」已开启；WPS 在「审阅 → 显示批注」。批注是红色小字，锚定在蓝色/绿色文字旁。</p></details>
+  </div>
+</section>
+
+<!-- 7 AGENT -->
+<section id="agent">
+  <div class="agent">
+    <h2><span class="n">7</span>给 Agent 的操作指南（AI 助手读这一段）</h2>
+    <p class="lead">如果你是被这份网页喂给 AI 助手的 Agent，读完本节即可直接执行任务。信息均为精确路径与已验证做法，不必再去别处找。</p>
+
+    <h3>A. 核心事实</h3>
+    <ul>
+      <li>工作区根目录：<code>某某地址\</code></li>
+      <li>成品（交付用）：<code>教学设计成品汇总\老师A\</code> 与 <code>教学设计成品汇总\老师B\</code>，各 12 份 .docx，文件名相同。</li>
+      <li>老师A版脚本源：<code>教学设计_带批注\</code>（含 <code>add_comments.py</code>、<code>add_comments_rest.py</code> 及 12 份成品）。</li>
+      <li>无批注带图底稿 + 全部生成脚本：<code>单元教学设计\</code>（含 <code>build_units.py</code>、<code>build_with_images.py</code>、<code>build_extra.py</code>、<code>build_extra_with_images.py</code>、<code>lessons.json</code>、模板）。</li>
+      <li>老师B版源：<code>教学设计_带批注_老师B\</code>（仅成品 + 说明，无脚本）。</li>
+      <li>系统 Python（有 python-docx / Pillow / openpyxl）：<code>系统 Python（每台电脑路径不同，需装 python-docx）</code></li>
+      <li>核对页数/批注数用 Word COM 的 <code>ComputeStatistics(2)</code>；<b>不要用</b> <code>ExportAsFixedFormat</code> 导 PDF，会卡死。</li>
+    </ul>
+
+    <h3>B. 批注的技术机制（改动必读）</h3>
+    <p>Word 原生批注由三处配合：<code>word/comments.xml</code> 存批注正文与作者；<code>word/document.xml</code> 用 <code>commentRangeStart / commentRangeEnd / commentReference</code> 锚定到文字；rels 与 Content_Types 注册 comments 部件。批注作者就是 <code>comments.xml</code> 里 <code>w:author</code> 字段（当前值「老师A」或「老师B」）。</p>
+    <div class="warn">改署名只需替换 <code>w:author</code> 的值，<b>不要重跑生成脚本</b>——重跑会连批注文字一起覆盖，且有风险。逐 docx 用 zipfile 读写 <code>word/comments.xml</code> 即可，其余字节保持不动。</div>
+
+    <h3>C. 常见任务标准做法</h3>
+    <div class="sop"><b>任务 1｜给第三位老师再做一套（只改署名）</b>
+      <p>复制任一老师的 12 份 .docx 到新文件夹 → 逐份用 zipfile 打开，仅把 <code>word/comments.xml</code> 中 <code>w:author="老师A"</code>（或老师B）替换成新名字 → 保存。用 Word COM 验证：署名唯一正确、批注数与原版一致、无损坏。</p>
+    </div>
+    <div class="cw"><button class="copy" data-copy="import os, shutil, zipfile
+SRC = r'某某地址\教学设计成品汇总\老师A'
+DST = r'某某地址\教学设计成品汇总\第三位老师'
+OLD, NEW = '老师A', '老师B'  # 改成新老师名字
+os.makedirs(DST, exist_ok=True)
+for f in os.listdir(SRC):
+    if not f.endswith('.docx') or f.startswith('~'): continue
+    src, dst = os.path.join(SRC, f), os.path.join(DST, f)
+    shutil.copy2(src, dst)
+    tmp = dst + '.tmp'
+    with zipfile.ZipFile(dst) as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if item.filename == 'word/comments.xml':
+                data = data.decode('utf-8').replace(f'w:author=&quot;{OLD}&quot;', f'w:author=&quot;{NEW}&quot;').encode('utf-8')
+            zout.writestr(item, data)
+    os.replace(tmp, dst)
+print('done')">复制改署名代码</button>
+<pre>import os, shutil, zipfile
+SRC = r'某某地址\教学设计成品汇总\老师A'
+DST = r'某某地址\教学设计成品汇总\第三位老师'
+OLD, NEW = '老师A', '老师B'  # 改成新老师名字
+os.makedirs(DST, exist_ok=True)
+for f in os.listdir(SRC):
+    if not f.endswith('.docx') or f.startswith('~'): continue
+    src, dst = os.path.join(SRC, f), os.path.join(DST, f)
+    shutil.copy2(src, dst)
+    tmp = dst + '.tmp'
+    with zipfile.ZipFile(dst) as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if item.filename == 'word/comments.xml':
+                data = data.decode('utf-8').replace('w:author="'+OLD+'"', 'w:author="'+NEW+'"').encode('utf-8')
+            zout.writestr(item, data)
+    os.replace(tmp, dst)
+print('done')</pre></div>
+
+    <div class="sop"><b>任务 2｜改某条批注内容</b>
+      <p>优先让老师在 Word 里直接改（最安全）。若要批量改，编辑 <code>教学设计_带批注\add_comments*.py</code> 里的 <code>COMMENTS</code> 字典（按「单元号/标签, 课次」索引，每课 3 条），重跑脚本：第 1、2 单元用 <code>add_comments.py 1 2</code>，其余用 <code>add_comments_rest.py</code>。改完记得同步到汇总文件夹，并重做署名版。</p>
+    </div>
+
+    <div class="sop"><b>任务 3｜从底稿重新生成带批注版</b>
+      <p>前提是 <code>单元教学设计\</code> 里已有带图底稿（12 份「二年级数学第X单元教学设计.docx」等）。流程：无图干净母版 → 用 <code>build_with_images.py</code> / <code>build_extra_with_images.py</code> 把教案连同图片搬进教学过程表 → 用 <code>add_comments.py</code> / <code>add_comments_rest.py</code> 注入批注 → 输出到 <code>教学设计_带批注\</code>。每步都用 Word COM 校验能打开。</p>
+    </div>
+
+    <div class="sop"><b>任务 4｜核查一套成品是否完好</b>
+      <p>用 zipfile 逐个读 <code>word/comments.xml</code>：统计 <code>&lt;w:comment </code> 数量、提取所有 <code>w:author</code> 值应唯一且等于目标老师；再用 Word COM 打开确认页数、批注数、无损坏。12 份逐一核对。</p>
+    </div>
+
+    <h3>D. 搬图/生成时踩过的坑（已解决，别再踩）</h3>
+    <ul>
+      <li><b>图片撞名</b>：跨文档复制段落时，<code>a:blip</code> 的 <code>r:embed</code> 要用目标文档的 <code>get_or_add_image(BytesIO(blob))</code> 重建（按内容哈希去重），否则 Duplicate name、图串位。</li>
+      <li><b>伪 TIFF 图</b>：源教案里有 <code>II 01</code> 头的假 TIFF，Pillow 打不开；它只被 <code>a14:imgLayer</code> 特效引用，clone 段落时剥掉 <code>a:extLst</code> 即可避开。</li>
+      <li><b>Word「文件可能已损坏」根因</b>：某些图用 <code>mc:Choice Requires="wps"</code> 包装，但根元素 <code>mc:Ignorable</code> 没含 <code>wps</code>。保存前给根元素 <code>mc:Ignorable</code> 补上 <code>wps wpg</code>（只补已在 nsmap 声明的前缀），Word 才能打开。</li>
+      <li><b>VML 图命名空间</b>：<code>qn('v:imagedata')</code> 会 KeyError，要用完整 URI <code>{urn:schemas-microsoft-com:vml}imagedata</code>。</li>
+      <li><b>模板母版自带孤儿图</b>：干净母版要先 drop 掉全部 <code>RT.IMAGE</code> 关系，避免无关图残留。</li>
+    </ul>
+
+    <h3>E. 回答别人「这批资料能干嘛」时的标准口径</h3>
+    <p>这是老师A、老师B两位老师二上数学的<b>个人二次备课教学设计</b>：每课时有情境图、共案、练习答案、3 条针对性批注（重点突破/难点易错/关键节点）和教学反思；共 12 份覆盖第 1~8 单元及数学好玩、两项综合实践、总复习。同事若要给自己用，最快的方式是复制一套并换批注署名——把本页发给 Agent 即可自动完成。</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="prompt">
+  <h2><span class="n">8</span>一键复制：发给 Agent 的提示词</h2>
+  <p class="lead">同事想让 AI 帮忙时，把下面这段话连同本网页一起发给它，它读完就知道怎么做了。点「复制提示词」即可。</p>
+  <div class="prompt">
+    <textarea id="ptxt" readonly>请阅读这份说明网页：某某地址\教学设计成品汇总\使用说明.html（若无法读取文件，我把内容贴给你）。
+
+背景：这是北师大版二年级上册数学的「个人二次备课教学设计（带批注版）」，成品在 某某地址\教学设计成品汇总\ 下，按老师分「老师A老师」「老师B老师」两个子文件夹，各 12 份 .docx（第1~8单元＋数学好玩＋2个综合实践＋总复习），带图、带 Word 原生批注。
+
+请按网页第 7 节「给 Agent 的操作指南」执行我接下来的任务。关键约定：
+1) 批注署名是各 docx 内 word/comments.xml 的 w:author 字段；改署名只替换该字段，绝对不要重跑生成脚本。
+2) 系统 Python 路径：系统 Python（每台电脑路径不同，需装 python-docx）（有 python-docx / Pillow）。
+3) 每完成一步用 Word COM 的 ComputeStatistics(2) 校验能打开、批注数和署名正确，不要导出 PDF。
+4) 生成/搬图相关的坑网页第 7 节 D 部分已列明，务必遵守。
+
+我现在要做的是：【在这里写你的需求，例如：给第三位老师再做一套，批注署名改成 XXX】。</textarea>
+    <div class="btnrow">
+      <button class="btn main" id="btnCopyPrompt">复制提示词</button>
+      <button class="btn ghost" id="btnCopyPath">复制成品文件夹路径</button>
+      <span class="ok" id="okmsg">已复制 ✓</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  二上数学 · 二次备课教学设计带批注版 · 使用说明 · 整理于 2026-11-21<br>
+  本页为单文件网页，可直接发给同事，也可交给 Agent 阅读。
+</footer>
+
+</div>
+
+<script>
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy')}catch(e){}
+  document.body.removeChild(ta);
+}
+function doCopy(text,btn){
+  const done=()=>{ if(btn){const o=btn.textContent;btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent=o,1400);} };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>{fallbackCopy(text);done();});
+  }else{ fallbackCopy(text); done(); }
+}
+document.querySelectorAll('button.copy').forEach(b=>{
+  b.addEventListener('click',()=>doCopy(b.getAttribute('data-copy'),b));
+});
+document.getElementById('btnCopyPrompt').addEventListener('click',()=>{
+  doCopy(document.getElementById('ptxt').value,null);
+  const ok=document.getElementById('okmsg'); ok.classList.add('show');
+  setTimeout(()=>ok.classList.remove('show'),1800);
+});
+document.getElementById('btnCopyPath').addEventListener('click',()=>{
+  doCopy('某某地址\\教学设计成品汇总',null);
+  const ok=document.getElementById('okmsg'); ok.textContent='路径已复制 ✓'; ok.classList.add('show');
+  setTimeout(()=>{ok.classList.remove('show');ok.textContent='已复制 ✓';},1800);
+});
+// nav highlight
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ const id='#'+e.target.id;
+    links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')===id)); } });
+},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>io.observe(s));
+</script>
+
+<!-- 机器可读摘要：Agent 可直接解析此 JSON 获取关键事实 -->
+<script type="application/json" id="agent-manifest">
+{
+  "title": "二上数学二次备课教学设计（带批注版）",
+  "workspace": "某某地址",
+  "deliverable_root": "某某地址\\教学设计成品汇总",
+  "sets": [
+    {"teacher": "老师A", "dir": "某某地址\\教学设计成品汇总\\老师A", "count": 12},
+    {"teacher": "老师B", "dir": "某某地址\\教学设计成品汇总\\老师B", "count": 12}
+  ],
+  "docs": ["第一单元","第二单元","第三单元","第四单元","第五单元","第六单元","第七单元","第八单元","数学好玩·猜数游戏","综合实践·画校园路线图","综合实践·参加欢乐购物活动","总复习"],
+  "source_dirs": {
+    "commented_with_scripts": "某某地址\\教学设计_带批注",
+    "base_and_generators": "某某地址\\单元教学设计",
+    "yellow_copy": "某某地址\\教学设计_带批注_老师B"
+  },
+  "scripts": ["add_comments.py","add_comments_rest.py","build_units.py","build_with_images.py","build_extra.py","build_extra_with_images.py"],
+  "python": "系统 Python（每台电脑路径不同，需装 python-docx）",
+  "comment_author_field": "word/comments.xml :: w:author",
+  "rules": [
+    "改署名只替换 w:author，不重跑生成脚本",
+    "每步用 Word COM ComputeStatistics(2) 校验，不用 ExportAsFixedFormat 导 PDF",
+    "搬图用 get_or_add_image 去重；mc:Ignorable 需补 wps wpg；v:imagedata 用完整命名空间 URI"
+  ]
+}
+</script>
+</body>
+</html>
